@@ -3,10 +3,10 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { INavItem } from "@/types/nav";
+import { NavItem } from "@/types/nav";
 
 // Type definition
-type MenuItem = INavItem & {
+type MenuItem = NavItem & {
   children?: MenuItem[];
 };
 
@@ -102,7 +102,7 @@ export default function MobileMenu({
                   {/* ปุ่มลูกศร */}
                   {item.children && item.children.length > 0 && (
                     <button
-                      onClick={() => toggleSubMenu(item._id)}
+                      onClick={() => toggleSubMenu(item._id || "")}
                       className="p-3 text-black hover:bg-zinc-100 rounded-lg"
                     >
                       <svg

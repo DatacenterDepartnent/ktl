@@ -15,12 +15,51 @@ async function getStats() {
     const orders = await db
       .collection("news")
       .countDocuments({ category: "Order" });
-    const totalNav = await db.collection("navbar").countDocuments();
+
+    // ✅ แก้ไข: นับเฉพาะเมนูที่มีลิงก์จริง (ไม่นับ #, ค่าว่าง, หรือ null)
+    const totalNav = await db.collection("navbar").countDocuments({
+      parentId: null, // นับเฉพาะเมนูระดับบนสุด (Parent)
+    });
+
     const totalPages = await db.collection("pages").countDocuments();
 
-    return { totalNews, prNews, orders, totalNav, totalPages };
-  } catch {
-    return { totalNews: 0, prNews: 0, orders: 0, totalNav: 0, totalPages: 0 };
+    // นับจำนวนรูปภาพทั้งหมดในระบบ
+    const imageStats = await db
+      .collection("news")
+      .aggregate([
+        {
+          $project: {
+            imageCount: {
+              $cond: {
+                if: { $isArray: "$images" },
+                then: { $size: "$images" },
+                else: 0,
+              },
+            },
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            totalImages: { $sum: "$imageCount" },
+          },
+        },
+      ])
+      .toArray();
+
+    const totalImages = imageStats.length > 0 ? imageStats[0].totalImages : 0;
+
+    return { totalNews, prNews, orders, totalNav, totalPages, totalImages };
+  } catch (error) {
+    console.error("Error fetching stats:", error);
+    return {
+      totalNews: 0,
+      prNews: 0,
+      orders: 0,
+      totalNav: 0,
+      totalPages: 0,
+      totalImages: 0,
+    };
   }
 }
 
@@ -28,7 +67,7 @@ export default async function DashboardPage() {
   const stats = await getStats();
 
   return (
-    <div className="min-h-screen w-full p-6 md:p-10 bg-[#fafafa] text-zinc-800">
+    <div className="max-w-7xl mx-auto w-full p-6 md:p-10 text-zinc-800">
       {/* --- ส่วนหัว (Header) --- */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6 border-b border-zinc-200 pb-8">
         <div>
@@ -44,6 +83,7 @@ export default async function DashboardPage() {
 
       {/* --- ส่วนแสดงสถิติ (Stats Cards) --- */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+        {/* Card 1: ข่าวทั้งหมด */}
         <div className="bg-white border border-zinc-200 p-8 rounded-3xl shadow-sm hover:shadow-lg transition-shadow relative overflow-hidden">
           <h3 className="font-bold uppercase tracking-widest text-sm text-zinc-400">
             ข่าวทั้งหมด
@@ -56,15 +96,20 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        <div className="bg-white border border-zinc-200 p-8 rounded-3xl shadow-sm hover:shadow-lg transition-shadow">
+        {/* Card 2: รูปภาพทั้งหมด */}
+        <div className="bg-white border border-zinc-200 p-8 rounded-3xl shadow-sm hover:shadow-lg transition-shadow relative overflow-hidden">
           <h3 className="font-bold uppercase tracking-widest text-sm text-zinc-400">
-            ข่าวประชาสัมพันธ์
+            รูปภาพในระบบ
           </h3>
-          <p className="text-5xl font-black text-blue-600 mt-4">
-            {stats.prNews}
+          <p className="text-5xl font-black text-pink-500 mt-4">
+            {stats.totalImages}
           </p>
+          <div className="absolute right-4 top-4 text-4xl opacity-10 grayscale">
+            🖼️
+          </div>
         </div>
 
+        {/* Card 3: เนื้อหาหน้าเว็บ */}
         <div className="bg-white border border-zinc-200 p-8 rounded-3xl shadow-sm hover:shadow-lg transition-shadow">
           <h3 className="font-bold uppercase tracking-widest text-sm text-zinc-400">
             เนื้อหาหน้าเว็บ
@@ -74,9 +119,10 @@ export default async function DashboardPage() {
           </p>
         </div>
 
+        {/* Card 4: เมนูหัวเว็บ (ที่มีลิงก์) */}
         <div className="bg-white border border-zinc-200 p-8 rounded-3xl shadow-sm hover:shadow-lg transition-shadow">
           <h3 className="font-bold uppercase tracking-widest text-sm text-zinc-400">
-            เมนูหัวเว็บ
+            เมนูหัวเว็บ (ลิงก์)
           </h3>
           <p className="text-5xl font-black text-purple-600 mt-4">
             {stats.totalNav}
@@ -90,7 +136,6 @@ export default async function DashboardPage() {
           เมนูลัด (Quick Actions)
         </h2>
 
-        {/* ปรับ Grid เป็น 4 ช่อง */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {/* 1. ปุ่มจัดการข่าว */}
           <Link

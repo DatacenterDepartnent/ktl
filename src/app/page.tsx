@@ -43,35 +43,26 @@ export default async function Home() {
   const latestNews = await getLatestNews();
 
   return (
-    <main className="min-h-screen flex flex-col relative bg-[#f8f9fa]">
-      {" "}
-      {/* พื้นหลังขาวเทาจางๆ */}
+    <main className="flex-col relative max-w-7xl mx-auto flex items-center justify-between">
       <Navbar />
-      <div className="container mx-auto px-4 py-16">
-        {/* --- Header Section (ตามแบบเป๊ะ) --- */}
+      <div className="container px-4 py-24">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
-          {/* ฝั่งซ้าย: หัวข้อข่าว */}
           <div className="flex gap-4">
-            {/* เส้นขีดสีส้มแนวตั้ง */}
             <div className="w-1.5 bg-orange-500 rounded-full h-auto self-stretch"></div>
 
             <div className="space-y-1">
-              {/* UPDATE NEWS สีส้ม */}
               <h4 className="text-orange-500 font-bold text-xs tracking-widest uppercase">
                 Update News
               </h4>
-              {/* ข่าวประชาสัมพันธ์ ตัวใหญ่ */}
               <h1 className="text-3xl md:text-4xl font-bold text-zinc-800">
                 ข่าวประชาสัมพันธ์
               </h1>
-              {/* คำอธิบายย่อย */}
               <p className="text-zinc-500 text-sm">
                 ติดตามข่าวสารและกิจกรรมล่าสุดของเรา
               </p>
             </div>
           </div>
 
-          {/* ฝั่งขวา: ปุ่มดูข่าวทั้งหมด (สีส้ม) */}
           <Link
             href="/news"
             className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white px-6 py-2.5 rounded-full font-bold text-sm transition-all shadow-md shadow-orange-200 self-start md:self-center"

@@ -7,7 +7,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <section className="min-h-screen">
+    // <section className="max-w-7xl mx-auto ">
+    <section>
       <Navbar />
       <main>{children}</main>
     </section>

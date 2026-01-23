@@ -1,38 +1,22 @@
-import clientPromise from "@/lib/db";
 import { NextResponse } from "next/server";
+import clientPromise from "@/lib/db";
 
-// 1. ฟังก์ชัน GET: สำหรับดึงรายการข่าวทั้งหมด (ใช้แสดงหน้าแรก และ Dashboard)
-export async function GET() {
+export async function POST(request: Request) {
   try {
-    const client = await clientPromise;
-    const db = client.db("ktltc_db");
+    // ✅ 1. รับค่า announcementImages เพิ่มเข้ามา
+    const { title, categories, content, images, announcementImages, links } =
+      await request.json();
 
-    // ดึงข้อมูลเรียงจากใหม่ไปเก่า (createdAt: -1)
-    const news = await db
-      .collection("news")
-      .find({})
-      .sort({ createdAt: -1 })
-      .toArray();
-
-    return NextResponse.json(news);
-  } catch {
-    return NextResponse.json(
-      { error: "Failed to fetch news" },
-      { status: 500 },
-    );
-  }
-}
-
-// 2. ฟังก์ชัน POST: สำหรับเพิ่มข่าวใหม่ (นี่คือส่วนที่คุณขาดไป!)
-export async function POST(req: Request) {
-  try {
-    const body = await req.json(); // รับข้อมูลที่ส่งมาจากฟอร์ม
-    const { title, category, content, images } = body;
-
-    // ตรวจสอบความถูกต้องของข้อมูลเบื้องต้น
-    if (!title || !category) {
+    // Validation
+    if (
+      !title ||
+      !categories ||
+      !Array.isArray(categories) ||
+      categories.length === 0 ||
+      !content
+    ) {
       return NextResponse.json(
-        { error: "Title and Category are required" },
+        { error: "กรุณากรอกข้อมูลให้ครบถ้วน (หัวข้อ, หมวดหมู่, เนื้อหา)" },
         { status: 400 },
       );
     }
@@ -40,24 +24,24 @@ export async function POST(req: Request) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    // บันทึกลงฐานข้อมูล
-    const newNews = await db.collection("news").insertOne({
+    const newNews = {
       title,
-      category,
-      content: content || "", // ถ้าไม่มี content ให้ใส่เป็นว่าง
-      images: images || [], // ถ้าไม่มีรูป ให้ใส่อาร์เรย์ว่าง
-      createdAt: new Date(), // บันทึกเวลาปัจจุบัน
-    });
+      categories,
+      content,
+      images: images || [],
+      // ✅ 2. บันทึกลง DB (ถ้าไม่มีให้เป็น empty array)
+      announcementImages: announcementImages || [],
+      links: links || [],
+      createdAt: new Date().toISOString(),
+    };
 
-    return NextResponse.json({
-      success: true,
-      message: "News created successfully",
-      id: newNews.insertedId,
-    });
+    await db.collection("news").insertOne(newNews);
+
+    return NextResponse.json({ success: true }, { status: 201 });
   } catch (error) {
-    console.error("Database Error:", error);
+    console.error("API Error:", error);
     return NextResponse.json(
-      { error: "Failed to create news" },
+      { error: "Internal Server Error" },
       { status: 500 },
     );
   }

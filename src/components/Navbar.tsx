@@ -1,6 +1,6 @@
 import Link from "next/link";
 import clientPromise from "@/lib/db";
-import { INavItem } from "@/types/nav";
+import { NavItem } from "@/types/nav";
 import { cookies } from "next/headers";
 // 1. อย่าลืม Import MobileMenu เข้ามา
 import MobileMenu from "./MobileMenu";
@@ -8,7 +8,7 @@ import MobileMenu from "./MobileMenu";
 export const dynamic = "force-dynamic";
 
 // สร้าง Type สำหรับเมนูที่มีลูก (ใช้แบบเดียวกับ MobileMenu เพื่อความชัวร์)
-type MenuItem = INavItem & {
+type MenuItem = NavItem & {
   children?: MenuItem[];
 };
 
@@ -23,7 +23,7 @@ async function getNavItems() {
       .find({})
       .sort({ order: 1 })
       .toArray();
-    const allItems = JSON.parse(JSON.stringify(items)) as INavItem[];
+    const allItems = JSON.parse(JSON.stringify(items)) as NavItem[];
 
     // จัดโครงสร้างแม่-ลูก
     const parents = allItems.filter((item) => !item.parentId);
@@ -47,7 +47,7 @@ export default async function Navbar() {
   const username = cookieStore.get("username")?.value;
 
   return (
-    <nav className="sticky top-0 z-50 w-full backdrop-blur-xl  border-b border-zinc-800 shadow-sm">
+    <nav className="sticky top-0 z-50 w-full backdrop-blur-xl    border-zinc-800 shadow-sm">
       <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         {/* LOGO */}
         <Link

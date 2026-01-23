@@ -1,16 +1,13 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  typescript: {
-    // ยอมให้ Build ผ่านแม้มี Error เพื่อความรวดเร็ว
-    ignoreBuildErrors: true,
-  },
-
-  // @ts-expect-error: บางเวอร์ชันของ NextConfig อาจมองไม่เห็น property eslint
-  eslint: {
-    // ข้ามการตรวจ ESLint ระหว่าง Build บน Vercel
-    ignoreDuringBuilds: true,
-  },
+  // typescript: {
+  //   // ยอมให้ Build ผ่านแม้มี Error เพื่อความรวดเร็ว
+  //   ignoreBuildErrors: true,
+  // },
+  
+  // ✅ เพิ่มบรรทัดนี้ (หน่วยเป็นวินาที)
+  staticPageGenerationTimeout: 180,
 
   images: {
     // รองรับไฟล์ภาพประสิทธิภาพสูง

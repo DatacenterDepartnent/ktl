@@ -3,7 +3,7 @@
 
 export default function AboutPage() {
   return (
-    <div className="max-w-5xl mx-auto px-6 mt-8">
+    <div className="max-w-7xl mx-auto px-6 mt-8">
       {/* --- หัวข้อหน้า --- */}
       <div className="flex items-center gap-3 mb-10 border-b border-zinc-100 pb-4">
         <span className="text-3xl">🏫</span>

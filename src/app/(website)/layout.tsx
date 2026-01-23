@@ -6,9 +6,13 @@ export default function WebsiteLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-white text-zinc-800 font-sans pb-20">
-      <Navbar />
-      <main>{children}</main>
-    </div>
+    <>
+      <main>
+        <Navbar />
+        <div className="bg-white text-zinc-800 font-sans py-24">
+          <div>{children}</div>
+        </div>
+      </main>
+    </>
   );
 }

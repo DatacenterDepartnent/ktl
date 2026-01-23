@@ -1,12 +1,12 @@
 import type { Metadata } from "next";
-import { Kanit } from "next/font/google"; // 1. import Kanit
+import { Prompt } from "next/font/google";
 import "./globals.css";
+import Footer from "@/components/Footer";
 
-// 2. ตั้งค่าฟอนต์
-const kanit = Kanit({
+const prompt = Prompt({
   subsets: ["thai", "latin"],
   weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-kanit",
+  variable: "--font-prompt",
   display: "swap",
 });
 
@@ -22,8 +22,17 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="th">
-      {/* 3. เรียกใช้ฟอนต์ตรง body */}
-      <body className={`${kanit.className}  `}>{children}</body>
+      <head>
+        {/* eslint-disable-next-line @next/next/no-page-custom-font */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@300;400;600&family=Chakra+Petch:wght@300;400;600&family=Lato:wght@300;400;700&family=Mali:wght@300;400;600&family=Mitr:wght@300;400&family=Montserrat:wght@300;400;700&family=Open+Sans:wght@300;400;700&family=Prompt:wght@300;400;600&family=Roboto:wght@300;400;700&family=Sarabun:wght@300;400;600&family=Taviraj:wght@300;400&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className={`${prompt.className} ${prompt.variable} antialiased`}>
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }
