@@ -5,8 +5,6 @@ import { cookies } from "next/headers";
 // 1. อย่าลืม Import MobileMenu เข้ามา
 import MobileMenu from "./MobileMenu";
 
-export const dynamic = "force-dynamic";
-
 // สร้าง Type สำหรับเมนูที่มีลูก (ใช้แบบเดียวกับ MobileMenu เพื่อความชัวร์)
 type MenuItem = NavItem & {
   children?: MenuItem[];

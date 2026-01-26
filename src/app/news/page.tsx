@@ -2,8 +2,6 @@ import clientPromise from "@/lib/db";
 import Navbar from "@/components/Navbar";
 import NewsListClient from "@/components/NewsListClient";
 
-export const dynamic = "force-dynamic";
-
 // ฟังก์ชันดึงข่าว (ทำงานฝั่ง Server)
 async function getNews() {
   try {

@@ -3,8 +3,6 @@ import Link from "next/link";
 import Image from "next/image";
 import DeleteNewsBtn from "@/components/DeleteNewsBtn";
 
-export const dynamic = "force-dynamic";
-
 interface NewsItem {
   _id: string;
   title: string;
