@@ -1,6 +1,7 @@
 import clientPromise from "@/lib/db";
 import Link from "next/link";
 import Image from "next/image";
+import ViewAllNewslettersButton from "@/components/ViewAllNewslettersButton";
 
 interface NewsItem {
   _id: string;
@@ -8,7 +9,6 @@ interface NewsItem {
   category?: string;
   categories?: string[];
   images?: string[];
-  // ✅ เพิ่มฟิลด์ announcementImages
   announcementImages?: string[];
   createdAt: string;
 }
@@ -33,7 +33,7 @@ async function getNewsletters(): Promise<NewsItem[]> {
       .collection("news")
       .find(query)
       .sort({ createdAt: -1 }) // เรียงจากใหม่ไปเก่า
-      .limit(3)
+      .limit(3) // ✅ ดึงมาแค่ 3 เรื่องล่าสุด
       .toArray();
 
     return JSON.parse(JSON.stringify(newsletters));
@@ -64,9 +64,10 @@ export default async function NewsletterPage() {
       <section className="max-w-7xl mx-auto px-4 md:px-8 pb-20">
         {newsletters.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {/* ✅ ปรับ Grid ให้แสดง 3 คอลัมน์ ตั้งแต่หน้าจอขนาดกลาง (md) ขึ้นไป */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 lg:gap-8">
               {newsletters.map((news) => {
-                // ✅ Logic เลือกรูปภาพ: ใช้รูปประกาศเป็นปกก่อน ถ้าไม่มีค่อยใช้รูปทั่วไป
+                // Logic เลือกรูปภาพ: ใช้รูปประกาศเป็นปกก่อน ถ้าไม่มีค่อยใช้รูปทั่วไป
                 const coverImage =
                   news.announcementImages && news.announcementImages.length > 0
                     ? news.announcementImages[0]
@@ -78,7 +79,7 @@ export default async function NewsletterPage() {
                   <Link
                     key={news._id}
                     href={`/news/${news._id}`}
-                    className="group relative block  rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-100 hover:-translate-y-2"
+                    className="group relative block rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-100 hover:-translate-y-2 h-full" // เพิ่ม h-full เพื่อให้การ์ดสูงเท่ากัน
                   >
                     {/* Image Area */}
                     <div className="relative aspect-3/4 w-full bg-slate-100 overflow-hidden">
@@ -147,27 +148,9 @@ export default async function NewsletterPage() {
               })}
             </div>
 
-            {/* ✅ ปุ่มดูข้อมูลทั้งหมด (ใส่กลับมาให้แล้วครับ) */}
+            {/* ปุ่มดูข้อมูลทั้งหมด */}
             <div className="mt-16 text-center">
-              <Link
-                href="/news?category=Newsletter"
-                className="inline-flex items-center gap-2 px-8 py-3.5 bg-yellow-500 hover:bg-yellow-600 text-white font-bold rounded-full shadow-lg shadow-yellow-200 transition-all active:scale-95 group"
-              >
-                <svg
-                  className="w-5 h-5 group-hover:rotate-180 transition-transform duration-500"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                  />
-                </svg>
-                ดูจดหมายข่าวทั้งหมด
-              </Link>
+              <ViewAllNewslettersButton />
             </div>
           </>
         ) : (
