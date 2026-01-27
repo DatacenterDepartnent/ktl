@@ -369,7 +369,7 @@ export default function GECCPage() {
           alt="GECC Banner"
           className="h-full w-full object-cover"
         />
-        <div className="absolute bottom-0 left-0 z-20 container mx-auto w-full p-6 text-center md:p-10 md:text-left">
+        <div className="absolute bottom-0 left-0 z-20 mx-auto w-full p-6 text-center md:p-10 md:text-left">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
