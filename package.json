@@ -9,6 +9,8 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@ant-design/icons": "^6.1.0",
+    "antd": "^6.2.2",
     "bcryptjs": "^3.0.3",
     "browser-image-compression": "^2.0.2",
     "cloudinary": "^2.9.0",

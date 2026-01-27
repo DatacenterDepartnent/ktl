@@ -96,7 +96,7 @@ export default function ManagePages() {
 
   return (
     <div className="max-w-7xl mx-auto p-8 text-zinc-800 font-sans">
-      <div className="max-w-6xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8 pb-6 border-b border-zinc-200">
           <div>

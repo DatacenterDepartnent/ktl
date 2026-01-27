@@ -1,7 +1,6 @@
 import clientPromise from "@/lib/db";
 import Link from "next/link";
 import Image from "next/image";
-import Navbar from "@/components/Navbar";
 import ViewAllButton from "@/components/ViewAllButton";
 
 // Interface ข้อมูลข่าว
@@ -45,7 +44,6 @@ export default async function PressRelease() {
 
   return (
     <main className="flex-col relative max-w-7xl mx-auto flex items-center justify-between">
-      <Navbar />
       <div className="container px-4 py-24">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
           <div className="flex gap-4">
