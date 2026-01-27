@@ -1,7 +1,7 @@
 import clientPromise from "@/lib/db";
 import Navbar from "@/components/Navbar";
 import NewsListClient from "@/components/NewsListClient";
-import RefreshButton from "@/components/RefreshButton"; // ✅ Import ปุ่มมาใช้
+import RefreshButton from "@/components/RefreshButton";
 
 interface NewsItem {
   _id: string;
@@ -19,14 +19,12 @@ async function getNews(): Promise<NewsItem[]> {
     const db = client.db("ktltc_db");
     const collection = db.collection("news");
 
-    // สร้าง Index อัตโนมัติ (ป้องกัน Error Memory Limit)
     try {
       await collection.createIndex({ createdAt: -1 });
     } catch (idxError) {
       console.log("Index check:", idxError);
     }
 
-    // ดึงข้อมูลข่าว
     const news = await collection
       .find({})
       .project({
@@ -34,11 +32,11 @@ async function getNews(): Promise<NewsItem[]> {
         category: 1,
         categories: 1,
         createdAt: 1,
-        images: { $slice: 1 }, // เอาแค่รูปแรก
-        announcementImages: { $slice: 1 }, // เอาแค่รูปแรก
+        images: { $slice: 1 },
+        announcementImages: { $slice: 1 },
       })
       .sort({ createdAt: -1 })
-      .limit(100) // ดึงมา 100 รายการเพื่อให้ Client ค้นหาได้ครอบคลุม
+      .limit(100)
       .toArray();
 
     return JSON.parse(JSON.stringify(news));
@@ -52,20 +50,59 @@ export default async function AllNewsPage() {
   const newsList = await getNews();
 
   return (
-    <main className="bg-slate-50 min-h-screen font-sans text-slate-800">
+    <main className="bg-white min-h-screen font-sans text-slate-900 antialiased">
       <Navbar />
 
-      <div className="pt-20 md:pt-24 pb-10">
+      {/* Hero Section / Header */}
+      <div className="bg-slate-50 border-b border-slate-100 pt-32 pb-16 md:pt-40 md:pb-24">
         <div className="max-w-7xl mx-auto px-6 md:px-10">
-          {/* ✅ ส่วนแสดงปุ่มรีเฟรช (จัดชิดขวา) */}
-          <div className="flex justify-end -mb-5 relative z-10">
-            <RefreshButton />
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+            <div className="space-y-4">
+              <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-slate-900 uppercase">
+                News & <span className="text-blue-600">Events</span>
+              </h1>
+              <p className="text-slate-500 text-lg md:text-xl font-medium max-w-2xl">
+                เกาะติดทุกความเคลื่อนไหว กิจกรรม
+                และประกาศสำคัญจากวิทยาลัยเทคนิคกันทรลักษ์
+              </p>
+            </div>
+
+            {/* Action Bar */}
+            <div className="flex items-center gap-3">
+              <span className="hidden md:inline text-sm font-bold text-slate-400 uppercase tracking-widest">
+                Refresh Feed
+              </span>
+              <RefreshButton />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Content Section */}
+      <div className="py-12 md:py-20">
+        <div className="max-w-7xl mx-auto px-6 md:px-10">
+          {/* ข้อมูลสถิติเล็กๆ เพื่อ UX ที่ดี */}
+          <div className="mb-10 flex items-center gap-4">
+            <div className="h-px flex-1 bg-slate-100"></div>
+            <span className="text-[10px] font-black text-slate-300 uppercase tracking-[0.3em]">
+              Showing {newsList.length} Latest Updates
+            </span>
+            <div className="h-px flex-1 bg-slate-100"></div>
           </div>
 
-          {/* รายการข่าว */}
-          <div className="-mx-6 md:-mx-10">
+          {/* รายการข่าว (NewsListClient จะจัดการ Grid ข้างในเอง) */}
+          <div className="relative">
             <NewsListClient initialNews={newsList} />
           </div>
+
+          {/* Footer Note */}
+          {newsList.length > 0 && (
+            <div className="mt-20 text-center">
+              <p className="text-slate-400 text-sm font-medium">
+                สิ้นสุดรายการข่าวปัจจุบัน
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </main>

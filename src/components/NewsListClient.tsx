@@ -4,15 +4,31 @@ import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
-// ข้อมูลหมวดหมู่สำหรับ Filter
+// --- Configuration ---
 const FILTER_CATEGORIES = [
-  { value: "All", label: "ทั้งหมด" },
+  { value: "All", label: "ทุกหมวดหมู่" },
   { value: "PR", label: "ข่าวประชาสัมพันธ์" },
   { value: "Newsletter", label: "จดหมายข่าว" },
   { value: "Internship", label: "ฝึกประสบการณ์" },
   { value: "Announcement", label: "ข่าวประกาศ" },
   { value: "Bidding", label: "ประกวดราคา" },
   { value: "Order", label: "คำสั่งวิทยาลัย" },
+];
+
+const MONTHS = [
+  { value: "All", label: "ทุกเดือน" },
+  { value: "0", label: "มกราคม" },
+  { value: "1", label: "กุมภาพันธ์" },
+  { value: "2", label: "มีนาคม" },
+  { value: "3", label: "เมษายน" },
+  { value: "4", label: "พฤษภาคม" },
+  { value: "5", label: "มิถุนายน" },
+  { value: "6", label: "กรกฎาคม" },
+  { value: "7", label: "สิงหาคม" },
+  { value: "8", label: "กันยายน" },
+  { value: "9", label: "ตุลาคม" },
+  { value: "10", label: "พฤศจิกายน" },
+  { value: "11", label: "ธันวาคม" },
 ];
 
 interface NewsItem {
@@ -30,164 +46,243 @@ export default function NewsListClient({
 }: {
   initialNews: NewsItem[];
 }) {
-  const [searchQuery, setSearchQuery] = useState("");
+  // --- States ---
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedMonth, setSelectedMonth] = useState("All");
+  const [selectedYear, setSelectedYear] = useState("All");
+  const [visibleCount, setVisibleCount] = useState(15);
 
-  // --- Logic การกรองข้อมูล (Filter) ---
+  // --- 1. สร้างรายการปี (พ.ศ.) อัตโนมัติจากข้อมูล ---
+  const availableYears = useMemo(() => {
+    const years = new Set<string>();
+    initialNews.forEach((news) => {
+      const year = new Date(news.createdAt).getFullYear() + 543;
+      years.add(year.toString());
+    });
+    return Array.from(years).sort((a, b) => b.localeCompare(a));
+  }, [initialNews]);
+
+  // --- 2. Logic การกรองข้อมูล (Filter) ---
   const filteredNews = useMemo(() => {
     let result = Array.isArray(initialNews) ? initialNews : [];
 
-    // 1. กรองหมวดหมู่
+    // กรองหมวดหมู่
     if (selectedCategory !== "All") {
       result = result.filter((news) => {
         const cats = news.categories || (news.category ? [news.category] : []);
-
-        if (selectedCategory === "Newsletter") {
-          return cats.some(
-            (c) => c === "Newsletter" || c === "จดหมายข่าวประชาสัมพันธ์",
-          );
-        }
         return cats.includes(selectedCategory);
       });
     }
 
-    // 2. กรองคำค้นหา
-    if (searchQuery) {
-      result = result.filter((news) =>
-        news.title.toLowerCase().includes(searchQuery.toLowerCase()),
-      );
+    // กรองปี
+    if (selectedYear !== "All") {
+      result = result.filter((news) => {
+        const year = new Date(news.createdAt).getFullYear() + 543;
+        return year.toString() === selectedYear;
+      });
+    }
+
+    // กรองเดือน
+    if (selectedMonth !== "All") {
+      result = result.filter((news) => {
+        const month = new Date(news.createdAt).getMonth();
+        return month.toString() === selectedMonth;
+      });
     }
 
     return result;
-  }, [initialNews, searchQuery, selectedCategory]);
+  }, [initialNews, selectedCategory, selectedMonth, selectedYear]);
+
+  // ตัดข้อมูลตามจำนวนที่จะแสดง
+  const paginatedNews = filteredNews.slice(0, visibleCount);
+
+  // --- Handlers ---
+  const handleLoadMore = () => setVisibleCount((prev) => prev + 10);
 
   return (
-    <div className="w-full pb-20">
-      {/* --- Filter Bar --- */}
-      <div className="mb-10 flex flex-col md:flex-row gap-4 justify-between items-center bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
-        {/* Search */}
-        <div className="relative w-full md:w-96">
-          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+    <div className="w-full pb-32">
+      {/* --- Filter Section: Glassmorphism Style --- */}
+      <div className="mb-16 bg-white/70 backdrop-blur-xl p-3 md:p-4 rounded-[2.5rem] border border-slate-200/60   top-24 z-20 shadow-xl shadow-slate-200/30">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {/* Category Select */}
+          <div className="relative group">
+            <select
+              value={selectedCategory}
+              onChange={(e) => {
+                setSelectedCategory(e.target.value);
+                setVisibleCount(15);
+              }}
+              className="w-full bg-white border-none rounded-full px-6 py-4 text-sm font-bold text-slate-700 appearance-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer transition-all shadow-sm group-hover:bg-slate-50"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </span>
-          <input
-            type="text"
-            placeholder="ค้นหาข่าว..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-slate-700 bg-slate-50"
-          />
-        </div>
+              {FILTER_CATEGORIES.map((cat) => (
+                <option key={cat.value} value={cat.value}>
+                  {cat.label}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={3}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
 
-        {/* Categories (Pills) */}
-        <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0 w-full md:w-auto no-scrollbar">
-          {FILTER_CATEGORIES.map((cat) => (
-            <button
-              key={cat.value}
-              onClick={() => setSelectedCategory(cat.value)}
-              className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold transition-all ${
-                selectedCategory === cat.value
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-200"
-                  : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
-              }`}
+          {/* Year Select */}
+          <div className="relative group">
+            <select
+              value={selectedYear}
+              onChange={(e) => {
+                setSelectedYear(e.target.value);
+                setVisibleCount(15);
+              }}
+              className="w-full bg-white border-none rounded-full px-6 py-4 text-sm font-bold text-slate-700 appearance-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer transition-all shadow-sm group-hover:bg-slate-50"
             >
-              {cat.label}
-            </button>
-          ))}
+              <option value="All">ทุกปี พ.ศ.</option>
+              {availableYears.map((year) => (
+                <option key={year} value={year}>
+                  พ.ศ. {year}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={3}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
+
+          {/* Month Select */}
+          <div className="relative group">
+            <select
+              value={selectedMonth}
+              onChange={(e) => {
+                setSelectedMonth(e.target.value);
+                setVisibleCount(15);
+              }}
+              className="w-full bg-white border-none rounded-full px-6 py-4 text-sm font-bold text-slate-700 appearance-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer transition-all shadow-sm group-hover:bg-slate-50"
+            >
+              {MONTHS.map((m) => (
+                <option key={m.value} value={m.value}>
+                  {m.label}
+                </option>
+              ))}
+            </select>
+            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={3}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* --- News Grid --- */}
-      {filteredNews.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {filteredNews.map((news) => {
-            const displayCats =
-              news.categories && news.categories.length > 0
-                ? news.categories
-                : news.category
-                  ? [news.category]
-                  : ["ทั่วไป"];
-
+      {/* --- News Grid: Editorial Design --- */}
+      {paginatedNews.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-16">
+          {paginatedNews.map((news) => {
             const coverImage =
-              news.announcementImages && news.announcementImages.length > 0
-                ? news.announcementImages[0]
-                : news.images && news.images.length > 0
-                  ? news.images[0]
-                  : "/no-image.png";
-
+              news.announcementImages?.[0] ||
+              news.images?.[0] ||
+              "/no-image.png";
             return (
               <Link
                 key={news._id}
                 href={`/news/${news._id}`}
-                className="group flex flex-col bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 h-full"
+                className="group flex flex-col h-full bg-white transition-all duration-500"
               >
-                {/* 1. Image Cover */}
-                {/* ✅ แก้ไข aspect-[4/3] เป็น aspect-[1.33] หรือ aspect-video เพื่อเลี่ยง warning */}
-                <div className="relative aspect-[1.33] w-full overflow-hidden bg-slate-100">
+                {/* 1. Image Container */}
+                <div className="relative aspect-16/10 w-full overflow-hidden rounded-[3rem] bg-slate-100 shadow-2xl shadow-slate-200/50">
                   <Image
                     src={coverImage}
                     alt={news.title}
                     fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
                   />
-                  {/* Badges */}
-                  <div className="absolute top-3 left-3 flex flex-wrap gap-1 max-w-[90%]">
-                    {displayCats.slice(0, 2).map((cat, idx) => (
-                      <span
-                        key={idx}
-                        className="px-2.5 py-1 bg-white/90 backdrop-blur text-blue-600 text-[10px] font-bold rounded-md uppercase tracking-wider shadow-sm"
-                      >
-                        {cat}
-                      </span>
-                    ))}
+                  {/* Category Badge */}
+                  <div className="absolute top-6 left-6 z-10">
+                    <span className="px-5 py-2 bg-white/80 backdrop-blur-xl border border-white/40 text-blue-700 text-[10px] font-black rounded-full shadow-sm uppercase tracking-widest">
+                      {news.categories?.[0] || "General"}
+                    </span>
                   </div>
+                  {/* Subtle Gradient Overlay */}
+                  <div className="absolute inset-0 bg-linear-to-t from-slate-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </div>
 
-                {/* 2. Content */}
-                <div className="p-5 flex flex-col flex-1 relative">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                    <span className="text-slate-400 text-xs font-medium">
+                {/* 2. Content Details */}
+                <div className="px-3 py-10 flex flex-col flex-1">
+                  {/* Date Metadata */}
+                  <div className="flex items-center gap-4 mb-5">
+                    <div className="h-px w-10 bg-blue-600/30 group-hover:w-16 transition-all duration-700 ease-in-out"></div>
+                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">
                       {new Date(news.createdAt).toLocaleDateString("th-TH", {
-                        year: "numeric",
-                        month: "short",
                         day: "numeric",
+                        month: "short",
+                        year: "numeric",
                       })}
                     </span>
                   </div>
 
-                  <h3 className="text-base md:text-lg font-bold text-slate-800 mb-3 line-clamp-2 leading-snug group-hover:text-blue-600 transition-colors">
+                  {/* News Title */}
+                  <h3 className="text-2xl font-bold text-slate-800 line-clamp-2 leading-[1.35] group-hover:text-blue-600 transition-colors duration-300">
                     {news.title}
                   </h3>
 
-                  <div className="mt-auto pt-4 border-t border-slate-50 flex items-center text-blue-600 text-sm font-bold">
-                    อ่านรายละเอียด
-                    <svg
-                      className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17 8l4 4m0 0l-4 4m4-4H3"
-                      />
-                    </svg>
+                  {/* Summary Placeholder */}
+                  <p className="mt-5 text-slate-500 text-sm leading-relaxed line-clamp-2 font-medium opacity-70">
+                    คลิกเพื่ออ่านรายละเอียดกิจกรรมและความเคลื่อนไหวที่เกิดขึ้นอย่างครบถ้วน...
+                  </p>
+
+                  {/* CTA Footer */}
+                  <div className="mt-10 pt-8 border-t border-slate-100 flex items-center justify-between">
+                    <span className="text-[11px] font-black text-slate-900 uppercase tracking-widest group-hover:text-blue-600 transition-all duration-300 transform group-hover:translate-x-2">
+                      อ่านบทความฉบับเต็ม
+                    </span>
+                    <div className="w-12 h-12 rounded-full border border-slate-200 flex items-center justify-center group-hover:bg-blue-600 group-hover:border-blue-600 group-hover:text-white transition-all duration-500">
+                      <svg
+                        className="w-5 h-5"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2.5}
+                          d="M17 8l4 4m0 0l-4 4m4-4H3"
+                        />
+                      </svg>
+                    </div>
                   </div>
                 </div>
               </Link>
@@ -195,21 +290,41 @@ export default function NewsListClient({
           })}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center py-20 bg-slate-50 rounded-3xl border-2 border-dashed border-slate-200 text-slate-400">
-          <svg
-            className="w-16 h-16 mb-4 opacity-50"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+        <div className="py-48 text-center flex flex-col items-center">
+          <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-8 border border-slate-100">
+            <span className="text-5xl opacity-20">📂</span>
+          </div>
+          <h4 className="text-xl font-bold text-slate-800 tracking-tight">
+            ไม่พบข้อมูลที่คุณค้นหา
+          </h4>
+          <p className="text-slate-400 mt-2 font-medium">
+            กรุณาลองเปลี่ยนเงื่อนไขการกรองข้อมูลใหม่
+          </p>
+          <button
+            onClick={() => {
+              setSelectedCategory("All");
+              setSelectedMonth("All");
+              setSelectedYear("All");
+            }}
+            className="mt-8 text-blue-600 text-xs font-black uppercase tracking-widest hover:text-blue-800 transition-colors underline decoration-2 underline-offset-8"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1}
-              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-            />
-          </svg>
-          <p>ไม่พบข้อมูลข่าวสาร</p>
+            Reset Filters
+          </button>
+        </div>
+      )}
+
+      {/* --- Load More: Minimalist Style --- */}
+      {filteredNews.length > visibleCount && (
+        <div className="flex flex-col items-center justify-center mt-24 space-y-6">
+          <button
+            onClick={handleLoadMore}
+            className="group relative px-16 py-5 bg-slate-900 text-white rounded-full font-black text-[11px] uppercase tracking-[0.4em] shadow-2xl hover:bg-blue-600 transition-all duration-500 active:scale-95"
+          >
+            Load More Stories
+          </button>
+          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">
+            {filteredNews.length - visibleCount} เรื่องราวเพิ่มเติมในฟีด
+          </p>
         </div>
       )}
     </div>

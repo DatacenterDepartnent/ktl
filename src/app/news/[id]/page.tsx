@@ -242,14 +242,6 @@ export default async function NewsDetailPage({
           {/* --- รูปประกาศ/จดหมายข่าว (Documents) --- */}
           {news.announcementImages && news.announcementImages.length > 0 && (
             <section className="pt-16 max-w-2xl mx-auto space-y-10">
-              <div className="text-center space-y-2">
-                <h3 className="text-xl font-bold text-slate-900">
-                  ประกาศ / เอกสารแนบ
-                </h3>
-                <p className="text-slate-400 text-sm">
-                  เลื่อนเพื่ออ่านรายละเอียดเอกสารอย่างเป็นทางการ
-                </p>
-              </div>
               <div className="space-y-8">
                 {news.announcementImages.map((img, idx) => (
                   <div
