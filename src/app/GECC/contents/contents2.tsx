@@ -1,0 +1,25 @@
+import Link from "next/link";
+import React from "react";
+
+export default function Contents2() {
+  return (
+    <>
+      <div className="pt-6">
+        <p>
+          แบบสํารวจความต้องการของผู้รับบริการที่มีต่อการให้บริการศูนย์ราชการสะดวก
+          (Government Easy Contact Center : GECC) วิทยาลัยเทคนิคกันทรลักษ์
+        </p>
+        <div className="pt-2">
+          <Link
+            href="https://docs.google.com/forms/d/e/1FAIpQLSdEf2XmgVMrNhz7Fl6O_8e_4yp5SjWyGxhC-pM64vIMPfBw3w/viewform"
+            target="_blank"
+          >
+            <button className="hover:bg-body-color hover:border-body-color disabled:bg-gray-3 disabled:border-gray-3 disabled:text-black-5 inline-flex items-center justify-center rounded-full border px-7 py-3 text-center text-base font-medium text-white">
+              แบบสํารวจ GECC
+            </button>
+          </Link>
+        </div>
+      </div>
+    </>
+  );
+}

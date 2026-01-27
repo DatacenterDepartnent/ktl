@@ -24,7 +24,7 @@ export default function RefreshButton() {
     <button
       onClick={handleRefresh}
       disabled={isPending}
-      className="group flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 shadow-sm rounded-full text-sm font-bold text-slate-600 hover:text-blue-600 hover:border-blue-200 hover:shadow-md transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
+      className="group flex items-center gap-2 px-4 py-2  border border-slate-200 shadow-sm rounded-full text-sm font-bold text-slate-600 hover:text-blue-600 hover:border-blue-200 hover:shadow-md transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
     >
       <svg
         className={`w-4 h-4 text-slate-400 group-hover:text-blue-500 transition-transform duration-700 ${

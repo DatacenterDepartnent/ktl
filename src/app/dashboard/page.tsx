@@ -109,7 +109,7 @@ export default async function DashboardPage() {
       {/* --- ส่วนแสดงสถิติ (Stats Cards) --- */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-16">
         {/* Card 1: ข่าวทั้งหมด */}
-        <div className="bg-white border border-zinc-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all relative overflow-hidden">
+        <div className=" border border-zinc-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all relative overflow-hidden">
           <h3 className="font-bold uppercase tracking-widest text-[10px] text-zinc-400">
             ข่าวทั้งหมด
           </h3>
@@ -120,7 +120,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Card 2: จำนวนหน้า */}
-        <div className="bg-white border border-zinc-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all relative overflow-hidden">
+        <div className=" border border-zinc-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all relative overflow-hidden">
           <h3 className="font-bold uppercase tracking-widest text-[10px] text-zinc-400">
             หน้าเนื้อหา
           </h3>
@@ -131,7 +131,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Card 3: เมนู (ลิงก์) */}
-        <div className="bg-white border border-zinc-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all relative overflow-hidden">
+        <div className=" border border-zinc-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all relative overflow-hidden">
           <h3 className="font-bold uppercase tracking-widest text-[10px] text-zinc-400">
             เมนูหลัก (ลิงก์)
           </h3>
@@ -142,7 +142,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Card 4: จำนวนรูปภาพ */}
-        <div className="bg-white border border-zinc-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all relative overflow-hidden">
+        <div className=" border border-zinc-200 p-6 rounded-2xl shadow-sm hover:shadow-md transition-all relative overflow-hidden">
           <h3 className="font-bold uppercase tracking-widest text-[10px] text-zinc-400">
             จำนวนรูปภาพ
           </h3>
@@ -194,7 +194,7 @@ export default async function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Link
             href="/dashboard/news"
-            className="group bg-white border border-zinc-200 hover:border-blue-500 p-6 rounded-2xl transition-all shadow-sm hover:shadow-xl hover:-translate-y-1"
+            className="group  border border-zinc-200 hover:border-blue-500 p-6 rounded-2xl transition-all shadow-sm hover:shadow-xl hover:-translate-y-1"
           >
             <span className="text-4xl mb-4 block filter grayscale group-hover:grayscale-0 transition-all">
               📰
@@ -209,7 +209,7 @@ export default async function DashboardPage() {
 
           <Link
             href="/dashboard/navbar"
-            className="group bg-white border border-zinc-200 hover:border-purple-500 p-6 rounded-2xl transition-all shadow-sm hover:shadow-xl hover:-translate-y-1"
+            className="group  border border-zinc-200 hover:border-purple-500 p-6 rounded-2xl transition-all shadow-sm hover:shadow-xl hover:-translate-y-1"
           >
             <span className="text-4xl mb-4 block filter grayscale group-hover:grayscale-0 transition-all">
               🔗
@@ -224,7 +224,7 @@ export default async function DashboardPage() {
 
           <Link
             href="/dashboard/pages"
-            className="group bg-white border border-zinc-200 hover:border-yellow-500 p-6 rounded-2xl transition-all shadow-sm hover:shadow-xl hover:-translate-y-1"
+            className="group  border border-zinc-200 hover:border-yellow-500 p-6 rounded-2xl transition-all shadow-sm hover:shadow-xl hover:-translate-y-1"
           >
             <span className="text-4xl mb-4 block filter grayscale group-hover:grayscale-0 transition-all">
               📝

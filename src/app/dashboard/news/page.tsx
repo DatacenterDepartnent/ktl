@@ -94,7 +94,7 @@ export default async function ManageNewsPage() {
           return (
             <div
               key={news._id}
-              className="group bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full"
+              className="group  border border-zinc-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full"
             >
               {/* ส่วนรูปภาพ */}
               <div className="relative w-full aspect-[4/3] bg-zinc-100 overflow-hidden">
@@ -111,7 +111,7 @@ export default async function ManageNewsPage() {
                   {displayCategories.map((cat, idx) => (
                     <span
                       key={idx}
-                      className="px-2 py-1 bg-white/95 backdrop-blur-sm text-blue-600 text-[10px] font-bold uppercase tracking-wider rounded-md shadow-sm border border-blue-100"
+                      className="px-2 py-1 /95 backdrop-blur-sm text-blue-600 text-[10px] font-bold uppercase tracking-wider rounded-md shadow-sm border border-blue-100"
                     >
                       {cat}
                     </span>
@@ -176,7 +176,7 @@ export default async function ManageNewsPage() {
       </div>
 
       {newsList.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-32 border-2 border-dashed border-zinc-200 rounded-3xl bg-white text-center">
+        <div className="flex flex-col items-center justify-center py-32 border-2 border-dashed border-zinc-200 rounded-3xl  text-center">
           <div className="w-16 h-16 bg-zinc-50 rounded-full flex items-center justify-center mb-4">
             <span className="text-3xl opacity-50">📂</span>
           </div>

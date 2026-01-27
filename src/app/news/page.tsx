@@ -1,5 +1,5 @@
 import clientPromise from "@/lib/db";
-import Navbar from "@/components/Navbar";
+
 import NewsListClient from "@/components/NewsListClient";
 import RefreshButton from "@/components/RefreshButton";
 
@@ -50,9 +50,7 @@ export default async function AllNewsPage() {
   const newsList = await getNews();
 
   return (
-    <main className="bg-white min-h-screen font-sans text-slate-900 antialiased">
-      <Navbar />
-
+    <main className=" min-h-screen  text-slate-900 antialiased">
       {/* Hero Section / Header */}
       <div className="bg-slate-50 border-b border-slate-100 pt-32 pb-16 md:pt-40 md:pb-24">
         <div className="max-w-7xl mx-auto px-6 md:px-10">

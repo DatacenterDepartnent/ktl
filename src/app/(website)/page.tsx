@@ -47,7 +47,7 @@ export default async function HomePage() {
   const latestNews = await getLatestNews();
 
   return (
-    <main className="min-h-screen bg-slate-50 font-sans text-slate-800">
+    <main className="min-h-screen bg-slate-50  text-slate-800">
       {/* --- Hero Section (แบนเนอร์ส่วนหัว) --- */}
       <section className="relative w-full h-100 md:h-125 bg-slate-900 overflow-hidden flex items-center justify-center text-center px-4">
         {/* Background Image Overlay */}
@@ -79,7 +79,7 @@ export default async function HomePage() {
             </Link>
             <Link
               href="/about"
-              className="px-8 py-3 bg-white/10 hover:bg-white/20 text-white border border-white/20 rounded-full font-bold transition-all backdrop-blur-sm"
+              className="px-8 py-3 /10 hover:/20 text-white border border-white/20 rounded-full font-bold transition-all backdrop-blur-sm"
             >
               เกี่ยวกับเรา
             </Link>
@@ -134,7 +134,7 @@ export default async function HomePage() {
                 <Link
                   key={news._id}
                   href={`/news/${news._id}`}
-                  className="group bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full"
+                  className="group  rounded-2xl overflow-hidden shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full"
                 >
                   <div className="relative aspect-video bg-slate-100 overflow-hidden">
                     <Image
@@ -144,7 +144,7 @@ export default async function HomePage() {
                       className="object-cover group-hover:scale-105 transition-transform duration-700"
                     />
                     <div className="absolute top-3 left-3">
-                      <span className="px-3 py-1 bg-white/95 backdrop-blur text-blue-600 text-[10px] font-bold uppercase tracking-wider rounded-md shadow-sm">
+                      <span className="px-3 py-1 /95 backdrop-blur text-blue-600 text-[10px] font-bold uppercase tracking-wider rounded-md shadow-sm">
                         {getCategoryLabel(categoryToShow)}
                       </span>
                     </div>

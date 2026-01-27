@@ -51,7 +51,7 @@ export default function AboutPage() {
         <div className="bg-linear-to-br from-blue-50 to-white p-8 rounded-2xl border border-blue-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
           <div className="absolute top-0 right-0 text-9xl opacity-5">👁️</div>
           <div className="relative z-10">
-            <div className="text-4xl mb-4 bg-white w-16 h-16 flex items-center justify-center rounded-full shadow-sm">
+            <div className="text-4xl mb-4  w-16 h-16 flex items-center justify-center rounded-full shadow-sm">
               👁️
             </div>
             <h3 className="text-xl font-bold text-blue-800 mb-2">
@@ -68,7 +68,7 @@ export default function AboutPage() {
         <div className="bg-linear-to-br from-orange-50 to-white p-8 rounded-2xl border border-orange-100 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
           <div className="absolute top-0 right-0 text-9xl opacity-5">🎯</div>
           <div className="relative z-10">
-            <div className="text-4xl mb-4 bg-white w-16 h-16 flex items-center justify-center rounded-full shadow-sm">
+            <div className="text-4xl mb-4  w-16 h-16 flex items-center justify-center rounded-full shadow-sm">
               🎯
             </div>
             <h3 className="text-xl font-bold text-orange-800 mb-2">

@@ -95,7 +95,7 @@ export default function ManagePages() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-8 text-zinc-800 font-sans">
+    <div className="max-w-7xl mx-auto p-8 text-zinc-800 ">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8 pb-6 border-b border-zinc-200">
@@ -117,7 +117,7 @@ export default function ManagePages() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Form Section */}
-          <div className="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-zinc-200 h-fit">
+          <div className=" p-6 md:p-8 rounded-3xl shadow-sm border border-zinc-200 h-fit">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-xl font-bold flex items-center gap-2 text-zinc-800">
                 {editId ? (
@@ -160,7 +160,7 @@ export default function ManagePages() {
                       value={slug}
                       onChange={(e) => setSlug(e.target.value)}
                       placeholder="about"
-                      className="w-full bg-white border border-zinc-200 p-3 pl-6 rounded-xl text-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm font-mono text-sm"
+                      className="w-full  border border-zinc-200 p-3 pl-6 rounded-xl text-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm font-mono text-sm"
                       required
                     />
                   </div>
@@ -173,7 +173,7 @@ export default function ManagePages() {
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
                     placeholder="เช่น เกี่ยวกับเรา"
-                    className="w-full bg-white border border-zinc-200 p-3 rounded-xl text-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm"
+                    className="w-full  border border-zinc-200 p-3 rounded-xl text-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm"
                     required
                   />
                 </div>
@@ -277,7 +277,7 @@ export default function ManagePages() {
                     className={`p-5 border rounded-2xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4 transition-all duration-300 ${
                       editId === p._id
                         ? "bg-yellow-50 border-yellow-300 ring-2 ring-yellow-200 shadow-md"
-                        : "bg-white border-zinc-200 hover:shadow-lg hover:-translate-y-1"
+                        : " border-zinc-200 hover:shadow-lg hover:-translate-y-1"
                     }`}
                   >
                     <div>
@@ -295,7 +295,7 @@ export default function ManagePages() {
                     <div className="flex gap-2 w-full md:w-auto">
                       <button
                         onClick={() => handleEdit(p)}
-                        className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-zinc-50 hover:bg-white hover:text-blue-600 border border-zinc-200 hover:border-blue-200 px-4 py-2 rounded-lg text-sm font-bold text-zinc-600 transition-all shadow-sm"
+                        className="flex-1 md:flex-none flex items-center justify-center gap-2 bg-zinc-50 hover: hover:text-blue-600 border border-zinc-200 hover:border-blue-200 px-4 py-2 rounded-lg text-sm font-bold text-zinc-600 transition-all shadow-sm"
                       >
                         <svg
                           className="w-4 h-4"
@@ -337,7 +337,7 @@ export default function ManagePages() {
                 ))}
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-zinc-200 rounded-3xl bg-white">
+              <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-zinc-200 rounded-3xl ">
                 <div className="text-4xl mb-4 opacity-50">📄</div>
                 <h3 className="text-lg font-bold text-zinc-600">
                   ยังไม่มีข้อมูลหน้าเว็บ

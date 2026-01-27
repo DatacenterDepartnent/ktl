@@ -234,7 +234,7 @@ export default function AddNewsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-32 font-sans text-slate-800 relative">
+    <div className="min-h-screen bg-slate-50/50 pb-32  text-slate-800 relative">
       <style jsx global>{`
         @import url("https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap");
         body {
@@ -251,7 +251,7 @@ export default function AddNewsPage() {
       `}</style>
 
       {/* --- Top Bar --- */}
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-20 shadow-sm backdrop-blur-md bg-white/80">
+      <div className=" border-b border-slate-200 sticky top-0 z-20 shadow-sm backdrop-blur-md /80">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link
@@ -293,7 +293,7 @@ export default function AddNewsPage() {
 
       <div className="max-w-5xl mx-auto px-6 py-10 space-y-8">
         {/* --- Card 1: ข้อมูลหลัก --- */}
-        <section className="bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 border border-slate-100">
+        <section className=" rounded-3xl p-8 shadow-xl shadow-slate-200/50 border border-slate-100">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl">
               📝
@@ -309,7 +309,7 @@ export default function AddNewsPage() {
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-lg font-semibold text-slate-800 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder:text-slate-400"
+                className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-lg font-semibold text-slate-800 focus: focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder:text-slate-400"
                 placeholder="เช่น ประกาศรับสมัครนักศึกษา..."
                 required
               />
@@ -329,7 +329,7 @@ export default function AddNewsPage() {
                       className={`relative p-4 rounded-2xl border-2 cursor-pointer transition-all duration-200 group overflow-hidden ${
                         isSelected
                           ? `${cat.color} ring-2 ring-offset-1 ring-blue-100`
-                          : "bg-white border-slate-100 text-slate-500 hover:border-slate-300"
+                          : " border-slate-100 text-slate-500 hover:border-slate-300"
                       }`}
                     >
                       <div className="flex items-center gap-3 relative z-10">
@@ -423,7 +423,7 @@ export default function AddNewsPage() {
         </section>
 
         {/* --- Card 2: รูปภาพทั่วไป --- */}
-        <section className="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col">
+        <section className=" rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-slate-700 flex items-center gap-2">
               <span className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-sm">
@@ -444,7 +444,7 @@ export default function AddNewsPage() {
               className="absolute inset-0 opacity-0 cursor-pointer z-10"
               onChange={handleImageChange}
             />
-            <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+            <div className="w-12 h-12 rounded-full  shadow-sm flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
               <svg
                 className="w-6 h-6 text-blue-500"
                 fill="none"
@@ -505,7 +505,7 @@ export default function AddNewsPage() {
         </section>
 
         {/* --- Card 3: จดหมายข่าว --- */}
-        <section className="bg-white rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col">
+        <section className=" rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-slate-700 flex items-center gap-2">
               <span className="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center text-sm">
@@ -526,7 +526,7 @@ export default function AddNewsPage() {
               className="absolute inset-0 opacity-0 cursor-pointer z-10"
               onChange={handleNewsletterChange}
             />
-            <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+            <div className="w-12 h-12 rounded-full  shadow-sm flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
               <svg
                 className="w-6 h-6 text-purple-500"
                 fill="none"
@@ -587,7 +587,7 @@ export default function AddNewsPage() {
         </section>
 
         {/* --- Card 4: ลิงก์ --- */}
-        <section className="bg-white rounded-3xl p-8 shadow-xl shadow-slate-200/50 border border-slate-100">
+        <section className=" rounded-3xl p-8 shadow-xl shadow-slate-200/50 border border-slate-100">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl">
               🔗
@@ -604,7 +604,7 @@ export default function AddNewsPage() {
               onChange={(e) =>
                 setCurrentLink({ ...currentLink, label: e.target.value })
               }
-              className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 outline-none"
+              className="flex-1  border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 outline-none"
             />
             <input
               placeholder="วาง URL ที่นี่..."
@@ -612,7 +612,7 @@ export default function AddNewsPage() {
               onChange={(e) =>
                 setCurrentLink({ ...currentLink, url: e.target.value })
               }
-              className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 outline-none font-mono"
+              className="flex-1  border border-slate-200 rounded-xl px-4 py-3 text-sm focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/10 outline-none font-mono"
             />
             <button
               type="button"
@@ -628,7 +628,7 @@ export default function AddNewsPage() {
               {links.map((l, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between bg-white border border-slate-200 p-3 pl-4 rounded-xl shadow-sm hover:border-indigo-300 transition-colors group"
+                  className="flex items-center justify-between  border border-slate-200 p-3 pl-4 rounded-xl shadow-sm hover:border-indigo-300 transition-colors group"
                 >
                   <div className="flex items-center gap-3 overflow-hidden">
                     <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs">
@@ -670,7 +670,7 @@ export default function AddNewsPage() {
       </div>
 
       {/* --- Action Bar (ล่างสุด) --- */}
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-slate-200 z-50 flex justify-center shadow-2xl">
+      <div className="fixed bottom-0 left-0 right-0 p-4 /80 backdrop-blur-md border-t border-slate-200 z-50 flex justify-center shadow-2xl">
         <div className="max-w-5xl w-full flex gap-4">
           <Link
             href="/dashboard/news"

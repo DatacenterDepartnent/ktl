@@ -72,7 +72,7 @@ export default function MobileMenu({
 
       {/* --- ส่วนเมนูที่เลื่อนลงมา --- */}
       {isOpen && (
-        <div className="absolute top-16 left-0 w-full bg-white border-b border-zinc-200 shadow-xl z-50 overflow-y-auto max-h-[80vh]">
+        <div className="absolute top-16 left-0 w-full  border-b border-zinc-200 shadow-xl z-50 overflow-y-auto max-h-[80vh]">
           <div className="flex flex-col p-4 space-y-2">
             {/* เมนูหน้าแรก */}
             <Link

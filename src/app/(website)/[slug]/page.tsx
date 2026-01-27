@@ -29,7 +29,7 @@ export default async function DynamicPage({ params }: PageProps) {
   }
 
   return (
-    <div className="max-w-7xl mx-auto font-sans pb-20">
+    <div className="max-w-7xl mx-auto  pb-20">
       <main className="px-4 mt-4">
         {/* เนื้อหาบทความ */}
         <article

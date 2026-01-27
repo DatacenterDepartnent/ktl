@@ -84,7 +84,7 @@ export default async function NewsletterPage() {
                     {/* Image Area */}
                     <div className="relative aspect-[3/4] w-full bg-slate-100 overflow-hidden">
                       {/* Date Badge */}
-                      <div className="absolute top-4 right-4 z-10 bg-white/95 backdrop-blur shadow-md px-3 py-1.5 rounded-lg flex items-center gap-2 text-xs font-bold text-slate-600">
+                      <div className="absolute top-4 right-4 z-10 /95 backdrop-blur shadow-md px-3 py-1.5 rounded-lg flex items-center gap-2 text-xs font-bold text-slate-600">
                         <svg
                           className="w-4 h-4 text-yellow-500"
                           fill="none"

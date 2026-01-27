@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import { Prompt } from "next/font/google";
-import "./globals.css";
 import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
+import "@ant-design/v5-patch-for-react-19";
+import "../styles/prism-vsc-dark-plus.css";
+import "../styles/index.css";
 
 const prompt = Prompt({
   subsets: ["thai", "latin"],
@@ -30,6 +33,7 @@ export default function RootLayout({
         />
       </head>
       <body className={`${prompt.className} ${prompt.variable} antialiased`}>
+        <Navbar />
         {children}
         <Footer />
       </body>

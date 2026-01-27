@@ -54,7 +54,7 @@ export default async function AnnouncementPage() {
   const announcements = await getAnnouncements();
 
   return (
-    <main className="min-h-screen bg-slate-50 font-sans text-slate-800">
+    <main className="min-h-screen bg-slate-50  text-slate-800">
       <div className="pt-24 md:pt-32 pb-20 container mx-auto px-4 md:px-8">
         {/* --- Header Section --- */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-6 border-b border-slate-200 pb-6">
@@ -107,11 +107,11 @@ export default async function AnnouncementPage() {
                 <Link
                   key={news._id}
                   href={`/news/${news._id}`}
-                  className="group flex flex-col bg-white rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 h-full"
+                  className="group flex flex-col  rounded-2xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 h-full"
                 >
                   {/* Image Area */}
                   <div className="relative aspect-4/3 w-full overflow-hidden bg-slate-100">
-                    <div className="absolute top-3 left-3 z-10 bg-white/95 backdrop-blur shadow-sm px-3 py-1 rounded-lg flex items-center gap-2 text-xs font-bold text-slate-700 border border-slate-100">
+                    <div className="absolute top-3 left-3 z-10 /95 backdrop-blur shadow-sm px-3 py-1 rounded-lg flex items-center gap-2 text-xs font-bold text-slate-700 border border-slate-100">
                       <svg
                         className="w-3.5 h-3.5 text-slate-400"
                         fill="none"
@@ -181,7 +181,7 @@ export default async function AnnouncementPage() {
             })}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-200 text-slate-400">
+          <div className="flex flex-col items-center justify-center py-20  rounded-3xl border-2 border-dashed border-slate-200 text-slate-400">
             <svg
               className="w-16 h-16 mb-4 opacity-50"
               fill="none"

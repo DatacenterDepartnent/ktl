@@ -72,13 +72,14 @@ export default async function PressRelease() {
               <Link
                 href={`/news/${news._id}`}
                 key={news._id}
-                className="group flex flex-col bg-white rounded-2xl overflow-hidden border border-zinc-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full"
+                className="group flex flex-col  rounded-2xl overflow-hidden border border-zinc-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 h-full"
               >
                 {/* 1. รูปภาพ (สัดส่วน 4:3 เหมือนในรูป) */}
                 <div className="relative aspect-4/3 w-full overflow-hidden bg-zinc-100">
                   <Image
                     src={news.images?.[0] || "/no-image.png"}
                     alt={news.title}
+                    unoptimized // 👈 ใส่ตรงนี้เพื่อบังคับให้แสดงรูปโดยไม่เช็ค config
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
@@ -121,7 +122,7 @@ export default async function PressRelease() {
           </div>
         ) : (
           // กรณีไม่มีข่าว
-          <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-zinc-300 rounded-2xl bg-white/50">
+          <div className="flex flex-col items-center justify-center py-20 text-center border border-dashed border-zinc-300 rounded-2xl /50">
             <div className="text-4xl mb-4">📰</div>
             <h3 className="text-xl font-bold text-zinc-600">
               ยังไม่มีข่าวประชาสัมพันธ์

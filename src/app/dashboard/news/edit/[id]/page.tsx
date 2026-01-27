@@ -248,7 +248,7 @@ export default function EditNewsPage({
     );
 
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-40 font-sans text-slate-800 antialiased">
+    <div className="min-h-screen bg-slate-50/50 pb-40  text-slate-800 antialiased">
       <style jsx global>{`
         @import url("https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap");
         body {
@@ -257,7 +257,7 @@ export default function EditNewsPage({
       `}</style>
 
       {/* --- Top Bar --- */}
-      <div className="bg-white border-b border-slate-200 sticky top-0 z-30 px-6 py-4 flex items-center justify-between backdrop-blur-md">
+      <div className=" border-b border-slate-200 sticky top-0 z-30 px-6 py-4 flex items-center justify-between backdrop-blur-md">
         <div className="flex items-center gap-4">
           <Link
             href="/dashboard/news"
@@ -276,7 +276,7 @@ export default function EditNewsPage({
 
       <div className="max-w-5xl mx-auto px-6 py-10 space-y-8">
         {/* --- Card 1: ข้อมูลหลัก --- */}
-        <section className="bg-white rounded-3xl p-8 shadow-xl border border-slate-100 space-y-6">
+        <section className=" rounded-3xl p-8 shadow-xl border border-slate-100 space-y-6">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl">
               📝
@@ -291,7 +291,7 @@ export default function EditNewsPage({
             <input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-lg font-bold focus:bg-white focus:border-amber-500 outline-none transition-all shadow-sm"
+              className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 text-lg font-bold focus: focus:border-amber-500 outline-none transition-all shadow-sm"
               placeholder="ระบุหัวข้อข่าว..."
             />
           </div>
@@ -311,7 +311,7 @@ export default function EditNewsPage({
                         : [...prev, cat.value],
                     )
                   }
-                  className={`p-4 rounded-2xl border-2 cursor-pointer transition-all text-center font-bold text-sm ${categories.includes(cat.value) ? cat.color : "bg-white border-slate-100 text-slate-400 hover:border-slate-200"}`}
+                  className={`p-4 rounded-2xl border-2 cursor-pointer transition-all text-center font-bold text-sm ${categories.includes(cat.value) ? cat.color : " border-slate-100 text-slate-400 hover:border-slate-200"}`}
                 >
                   {cat.label}
                 </div>
@@ -347,7 +347,7 @@ export default function EditNewsPage({
         </section>
 
         {/* --- Card 2: รูปภาพทั่วไป --- */}
-        <section className="bg-white rounded-3xl p-8 shadow-xl border border-slate-100 space-y-6">
+        <section className=" rounded-3xl p-8 shadow-xl border border-slate-100 space-y-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <h2 className="font-bold text-slate-700 flex items-center gap-2 text-lg">
               🖼️ รูปภาพทั่วไป (แนวนอน)
@@ -433,7 +433,7 @@ export default function EditNewsPage({
         </section>
 
         {/* --- Card 3: จดหมายข่าว --- */}
-        <section className="bg-white rounded-3xl p-8 shadow-xl border border-slate-100 space-y-6">
+        <section className=" rounded-3xl p-8 shadow-xl border border-slate-100 space-y-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <h2 className="font-bold text-slate-700 flex items-center gap-2 text-lg">
               📜 จดหมายข่าว (แนวตั้ง)
@@ -521,7 +521,7 @@ export default function EditNewsPage({
         </section>
 
         {/* --- Card 4: ลิงก์ภายนอก --- */}
-        <section className="bg-white rounded-3xl p-8 shadow-xl border border-slate-100 space-y-4 pb-12">
+        <section className=" rounded-3xl p-8 shadow-xl border border-slate-100 space-y-4 pb-12">
           <h2 className="font-bold text-slate-700 flex items-center gap-2 text-lg">
             🔗 ลิงก์ภายนอก / เอกสารแนบ
           </h2>
@@ -532,7 +532,7 @@ export default function EditNewsPage({
               onChange={(e) =>
                 setCurrentLink({ ...currentLink, label: e.target.value })
               }
-              className="flex-1 bg-slate-50 p-4 rounded-2xl outline-none border border-slate-200 focus:bg-white focus:border-indigo-500 transition-all"
+              className="flex-1 bg-slate-50 p-4 rounded-2xl outline-none border border-slate-200 focus: focus:border-indigo-500 transition-all"
             />
             <input
               placeholder="URL ลิงก์"
@@ -540,7 +540,7 @@ export default function EditNewsPage({
               onChange={(e) =>
                 setCurrentLink({ ...currentLink, url: e.target.value })
               }
-              className="flex-1 bg-slate-50 p-4 rounded-2xl outline-none border border-slate-200 focus:bg-white focus:border-indigo-500 transition-all font-mono text-sm"
+              className="flex-1 bg-slate-50 p-4 rounded-2xl outline-none border border-slate-200 focus: focus:border-indigo-500 transition-all font-mono text-sm"
             />
             <button
               type="button"
@@ -583,7 +583,7 @@ export default function EditNewsPage({
       </div>
 
       {/* --- Floating Bottom Bar --- */}
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/90 backdrop-blur-md border-t border-slate-200 flex justify-center z-40 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)]">
+      <div className="fixed bottom-0 left-0 right-0 p-6 /90 backdrop-blur-md border-t border-slate-200 flex justify-center z-40 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)]">
         <div className="max-w-5xl w-full flex gap-4">
           <Link
             href="/dashboard/news"

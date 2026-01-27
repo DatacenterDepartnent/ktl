@@ -102,7 +102,7 @@ export default function NewsListClient({
   return (
     <div className="w-full pb-32">
       {/* --- Filter Section: Glassmorphism Style --- */}
-      <div className="mb-16 bg-white/70 backdrop-blur-xl p-3 md:p-4 rounded-[2.5rem] border border-slate-200/60   top-24 z-20 shadow-xl shadow-slate-200/30">
+      <div className="mb-16 /70 backdrop-blur-xl p-3 md:p-4 rounded-[2.5rem] border border-slate-200/60   top-24 z-20 shadow-xl shadow-slate-200/30">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           {/* Category Select */}
           <div className="relative group">
@@ -112,7 +112,7 @@ export default function NewsListClient({
                 setSelectedCategory(e.target.value);
                 setVisibleCount(15);
               }}
-              className="w-full bg-white border-none rounded-full px-6 py-4 text-sm font-bold text-slate-700 appearance-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer transition-all shadow-sm group-hover:bg-slate-50"
+              className="w-full  border-none rounded-full px-6 py-4 text-sm font-bold text-slate-700 appearance-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer transition-all shadow-sm group-hover:bg-slate-50"
             >
               {FILTER_CATEGORIES.map((cat) => (
                 <option key={cat.value} value={cat.value}>
@@ -145,7 +145,7 @@ export default function NewsListClient({
                 setSelectedYear(e.target.value);
                 setVisibleCount(15);
               }}
-              className="w-full bg-white border-none rounded-full px-6 py-4 text-sm font-bold text-slate-700 appearance-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer transition-all shadow-sm group-hover:bg-slate-50"
+              className="w-full  border-none rounded-full px-6 py-4 text-sm font-bold text-slate-700 appearance-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer transition-all shadow-sm group-hover:bg-slate-50"
             >
               <option value="All">ทุกปี พ.ศ.</option>
               {availableYears.map((year) => (
@@ -179,7 +179,7 @@ export default function NewsListClient({
                 setSelectedMonth(e.target.value);
                 setVisibleCount(15);
               }}
-              className="w-full bg-white border-none rounded-full px-6 py-4 text-sm font-bold text-slate-700 appearance-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer transition-all shadow-sm group-hover:bg-slate-50"
+              className="w-full  border-none rounded-full px-6 py-4 text-sm font-bold text-slate-700 appearance-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer transition-all shadow-sm group-hover:bg-slate-50"
             >
               {MONTHS.map((m) => (
                 <option key={m.value} value={m.value}>
@@ -218,7 +218,7 @@ export default function NewsListClient({
               <Link
                 key={news._id}
                 href={`/news/${news._id}`}
-                className="group flex flex-col h-full bg-white transition-all duration-500"
+                className="group flex flex-col h-full  transition-all duration-500"
               >
                 {/* 1. Image Container */}
                 <div className="relative aspect-16/10 w-full overflow-hidden rounded-[3rem] bg-slate-100 shadow-2xl shadow-slate-200/50">
@@ -231,7 +231,7 @@ export default function NewsListClient({
                   />
                   {/* Category Badge */}
                   <div className="absolute top-6 left-6 z-10">
-                    <span className="px-5 py-2 bg-white/80 backdrop-blur-xl border border-white/40 text-blue-700 text-[10px] font-black rounded-full shadow-sm uppercase tracking-widest">
+                    <span className="px-5 py-2 /80 backdrop-blur-xl border border-white/40 text-blue-700 text-[10px] font-black rounded-full shadow-sm uppercase tracking-widest">
                       {news.categories?.[0] || "General"}
                     </span>
                   </div>

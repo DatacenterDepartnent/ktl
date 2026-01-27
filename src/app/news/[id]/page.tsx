@@ -2,7 +2,7 @@ import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 import Link from "next/link";
 import Image from "next/image";
-import Navbar from "@/components/Navbar";
+
 import { FootTitle } from "@/components/FootTitle";
 
 interface NewsItem {
@@ -117,9 +117,7 @@ export default async function NewsDetailPage({
       : ["ข่าวทั่วไป"];
 
   return (
-    <div className="min-h-screen bg-white font-sans text-slate-800 antialiased">
-      <Navbar />
-
+    <div className="min-h-screen   text-slate-800 antialiased">
       <main className="container mx-auto px-4 py-8 md:py-16">
         <div className="max-w-4xl mx-auto space-y-12">
           {/* Breadcrumb & Metadata */}
@@ -186,7 +184,7 @@ export default async function NewsDetailPage({
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl hover:border-blue-500 hover:shadow-xl transition-all group"
+                    className="flex items-center justify-between p-4  border border-slate-200 rounded-2xl hover:border-blue-500 hover:shadow-xl transition-all group"
                   >
                     <span className="font-bold text-slate-700 group-hover:text-blue-600 truncate mr-4">
                       {link.label}

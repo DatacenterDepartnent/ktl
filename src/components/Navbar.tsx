@@ -58,6 +58,7 @@ export default async function Navbar() {
             alt="KTL Logo"
             width={48}
             height={48}
+            priority
           />
         </Link>
 
@@ -121,7 +122,7 @@ export default async function Navbar() {
           {username ? (
             <Link
               href="/dashboard"
-              className="flex items-center gap-3 hover:bg-white/5 px-3 py-1 rounded-full transition-colors cursor-pointer"
+              className="flex items-center gap-3 hover:/5 px-3 py-1 rounded-full transition-colors cursor-pointer"
             >
               <div className="text-right hidden sm:block">
                 <div className="text-[10px] font-bold tracking-widest uppercase">

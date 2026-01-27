@@ -95,7 +95,7 @@ export default function ManageNavbar() {
   const parentOptions = navItems.filter((item) => !item.parentId);
 
   return (
-    <div className="max-w-7xl mx-auto  p-4 md:p-8 text-zinc-800 font-sans">
+    <div className="max-w-7xl mx-auto  p-4 md:p-8 text-zinc-800 ">
       <div className="">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-6 border-b border-zinc-200 gap-4">
@@ -116,7 +116,7 @@ export default function ManageNavbar() {
         </div>
 
         {/* Form Section */}
-        <section className="mb-12 bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-zinc-200">
+        <section className="mb-12  p-6 md:p-8 rounded-3xl shadow-sm border border-zinc-200">
           <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-zinc-800">
             {editId ? (
               <>
@@ -144,7 +144,7 @@ export default function ManageNavbar() {
                 <input
                   value={label}
                   onChange={(e) => setLabel(e.target.value)}
-                  className="bg-white p-3 border border-zinc-200 rounded-xl text-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm"
+                  className=" p-3 border border-zinc-200 rounded-xl text-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm"
                   placeholder="เช่น หน้าแรก"
                   required
                 />
@@ -156,7 +156,7 @@ export default function ManageNavbar() {
                 <input
                   value={path}
                   onChange={(e) => setPath(e.target.value)}
-                  className="bg-white p-3 border border-zinc-200 rounded-xl text-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm"
+                  className=" p-3 border border-zinc-200 rounded-xl text-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm"
                   placeholder="เช่น /about"
                   required
                 />
@@ -169,7 +169,7 @@ export default function ManageNavbar() {
                   type="number"
                   value={order}
                   onChange={(e) => setOrder(Number(e.target.value))}
-                  className="bg-white p-3 border border-zinc-200 rounded-xl text-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm"
+                  className=" p-3 border border-zinc-200 rounded-xl text-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm"
                 />
               </div>
               <div className="flex flex-col gap-2">
@@ -179,7 +179,7 @@ export default function ManageNavbar() {
                 <select
                   value={parentId}
                   onChange={(e) => setParentId(e.target.value)}
-                  className="bg-white p-3 border border-zinc-200 rounded-xl text-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm cursor-pointer"
+                  className=" p-3 border border-zinc-200 rounded-xl text-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm cursor-pointer"
                   disabled={
                     !!editId && navItems.some((i) => i.parentId === editId)
                   }
@@ -240,7 +240,7 @@ export default function ManageNavbar() {
                 className={`border rounded-2xl p-4 md:p-5 transition-all duration-300 ${
                   editId === parent._id
                     ? "bg-yellow-50 border-yellow-300 ring-2 ring-yellow-200 shadow-md"
-                    : "bg-white border-zinc-200 hover:shadow-md"
+                    : " border-zinc-200 hover:shadow-md"
                 }`}
               >
                 {/* Parent Row */}
