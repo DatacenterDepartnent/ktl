@@ -8,6 +8,7 @@ import {
 } from "react-icons/fa";
 import clientPromise from "@/lib/db";
 import VisitorTracker from "./VisitorTracker"; // ✅ 1. Import ตัวดักจับที่สร้างใหม่
+import Image from "next/image";
 
 interface NavItem {
   _id: string;
@@ -75,7 +76,13 @@ export default async function Footer() {
           <div className="lg:col-span-1 space-y-6">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 bg-slate-800 rounded-full flex items-center justify-center border border-slate-700 shadow-sm">
-                <span className="font-bold text-xl text-white">KTL</span>
+                {/* <span className="font-bold text-xl text-white">KTL</span> */}
+                <Image
+                  src="/images/favicon.ico"
+                  alt="KTL Logo"
+                  width={48}
+                  height={48}
+                />
               </div>
               <div>
                 <h2 className="font-bold text-lg leading-tight text-white">

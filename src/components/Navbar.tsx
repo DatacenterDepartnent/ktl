@@ -4,6 +4,7 @@ import { NavItem } from "@/types/nav";
 import { cookies } from "next/headers";
 // 1. อย่าลืม Import MobileMenu เข้ามา
 import MobileMenu from "./MobileMenu";
+import Image from "next/image";
 
 // สร้าง Type สำหรับเมนูที่มีลูก (ใช้แบบเดียวกับ MobileMenu เพื่อความชัวร์)
 type MenuItem = NavItem & {
@@ -52,12 +53,12 @@ export default async function Navbar() {
           href="/"
           className="font-black text-2xl tracking-tighter flex items-center gap-1"
         >
-          {/* กล่องสีน้ำเงิน ตัวหนังสือขาว */}
-          <span className="bg-blue-600 text-white px-2 py-0.5 rounded-md shadow-sm">
-            KTL
-          </span>
-          {/* ตัวหนังสือสีดำ/เทาเข้ม */}
-          <span className="text-zinc-800">TC</span>
+          <Image
+            src="/images/favicon.ico"
+            alt="KTL Logo"
+            width={48}
+            height={48}
+          />
         </Link>
 
         {/* --- DESKTOP MENU (ซ่อนบนมือถือ md:flex) --- */}
