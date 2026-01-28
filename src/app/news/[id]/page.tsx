@@ -94,14 +94,14 @@ export default async function NewsDetailPage({
 
   if (!news) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-6 text-center">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 p-6 text-center dark:bg-black">
         <div className="text-8xl mb-6">🔍</div>
-        <h1 className="text-2xl font-bold text-slate-900 mb-4">
+        <h1 className="text-2xl font-bold text-slate-900 mb-4 dark:text-slate-100">
           ไม่พบข้อมูลข่าวสารที่คุณต้องการ
         </h1>
         <Link
           href="/news"
-          className="px-8 py-3 bg-blue-600 text-white rounded-full font-bold shadow-lg"
+          className="px-8 py-3 bg-blue-600 text-white rounded-full font-bold shadow-lg hover:bg-blue-700 transition-colors"
         >
           กลับสู่หน้าหลัก
         </Link>
@@ -117,14 +117,14 @@ export default async function NewsDetailPage({
       : ["ข่าวทั่วไป"];
 
   return (
-    <div className="min-h-screen   text-slate-800 antialiased">
+    <div className="min-h-screen text-slate-800 antialiased dark:bg-transparent dark:text-slate-200">
       <main className="container mx-auto px-4 py-8 md:py-16">
         <div className="max-w-4xl mx-auto space-y-12">
           {/* Breadcrumb & Metadata */}
           <header className="space-y-6">
             <Link
               href="/news"
-              className="inline-flex items-center text-slate-400 hover:text-blue-600 text-sm font-semibold group transition-colors"
+              className="inline-flex items-center text-slate-400 hover:text-blue-600 text-sm font-semibold group transition-colors dark:text-slate-500 dark:hover:text-blue-400"
             >
               <svg
                 className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform"
@@ -145,17 +145,17 @@ export default async function NewsDetailPage({
               {displayCategories.map((cat, i) => (
                 <span
                   key={i}
-                  className="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold uppercase rounded-lg border border-blue-100"
+                  className="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold uppercase rounded-lg border border-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800"
                 >
                   {cat}
                 </span>
               ))}
             </div>
-            <div className="text-3xl md:text-5xl font-black text-slate-900 leading-tight">
+            <div className="text-3xl md:text-5xl font-black text-slate-900 leading-tight dark:text-white">
               {/* {news.title} */}
               <div className="text-center">วิทยาลัยเทคนิคกันทรลักษ์</div>
             </div>
-            <time className="text-slate-400 text-sm block">
+            <time className="text-slate-400 text-sm block dark:text-slate-500">
               เผยแพร่เมื่อ:{" "}
               {new Date(news.createdAt).toLocaleDateString("th-TH", {
                 year: "numeric",
@@ -167,14 +167,14 @@ export default async function NewsDetailPage({
 
           {/* เนื้อหาข่าว */}
           <article
-            className="prose prose-slate prose-lg max-w-none prose-p:leading-relaxed prose-img:rounded-3xl"
+            className="prose prose-slate prose-lg max-w-none prose-p:leading-relaxed prose-img:rounded-3xl dark:prose-invert"
             dangerouslySetInnerHTML={{ __html: news.content || "" }}
           />
 
           {/* ลิงก์แนบ */}
           {news.links && news.links.length > 0 && (
-            <section className="bg-slate-50 rounded-3xl p-6 md:p-8 border border-slate-100">
-              <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-3">
+            <section className="bg-slate-50 rounded-3xl p-6 md:p-8 border border-slate-100 dark:bg-zinc-900 dark:border-zinc-800">
+              <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-3 dark:text-white">
                 ลิงก์ที่เกี่ยวข้องและเอกสารดาวน์โหลด
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -184,13 +184,13 @@ export default async function NewsDetailPage({
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center justify-between p-4  border border-slate-200 rounded-2xl hover:border-blue-500 hover:shadow-xl transition-all group"
+                    className="flex items-center justify-between p-4 border border-slate-200 rounded-2xl hover:border-blue-500 hover:shadow-xl transition-all group dark:border-zinc-700 dark:hover:border-blue-500"
                   >
-                    <span className="font-bold text-slate-700 group-hover:text-blue-600 truncate mr-4">
+                    <span className="font-bold text-slate-700 group-hover:text-blue-600 truncate mr-4 dark:text-slate-300 dark:group-hover:text-blue-400">
                       {link.label}
                     </span>
                     <svg
-                      className="w-5 h-5 text-slate-300 group-hover:text-blue-500 group-hover:translate-x-1 transition-all"
+                      className="w-5 h-5 text-slate-300 group-hover:text-blue-500 group-hover:translate-x-1 transition-all dark:text-slate-600 dark:group-hover:text-blue-400"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -212,9 +212,9 @@ export default async function NewsDetailPage({
 
           {/* --- ประมวลภาพกิจกรรม (Gallery) --- */}
           {news.images && news.images.length > 0 && (
-            <section className="pt-12 border-t border-slate-100">
+            <section className="pt-12 border-t border-slate-100 dark:border-zinc-800">
               <div className="flex items-center justify-between mb-8">
-                <h3 className="text-xl font-bold text-slate-900 flex items-center gap-3">
+                <h3 className="text-xl font-bold text-slate-900 flex items-center gap-3 dark:text-white">
                   <span className="w-2 h-8 bg-blue-600 rounded-full"></span>
                   ประมวลภาพกิจกรรม ({news.images.length})
                 </h3>
@@ -223,7 +223,7 @@ export default async function NewsDetailPage({
                 {news.images.map((img, idx) => (
                   <div
                     key={idx}
-                    className="relative aspect-4/3 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 group border border-slate-100"
+                    className="relative aspect-4/3 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 group border border-slate-100 dark:border-zinc-800"
                   >
                     <Image
                       src={img}
@@ -239,12 +239,12 @@ export default async function NewsDetailPage({
 
           {/* --- รูปประกาศ/จดหมายข่าว (Documents) --- */}
           {news.announcementImages && news.announcementImages.length > 0 && (
-            <section className="pt-16 max-w-2xl mx-auto space-y-10">
+            <section className="pt-16 max-w-2xl mx-auto space-y-10 border-t border-slate-100 dark:border-zinc-800">
               <div className="space-y-8">
                 {news.announcementImages.map((img, idx) => (
                   <div
                     key={idx}
-                    className="relative w-full rounded-2xl overflow-hidden shadow-md"
+                    className="relative w-full rounded-2xl overflow-hidden shadow-md dark:shadow-none dark:border dark:border-zinc-800"
                   >
                     <Image
                       src={img}
@@ -260,16 +260,16 @@ export default async function NewsDetailPage({
           )}
 
           {/* --- Navigation System (Next/Prev) --- */}
-          <nav className="pt-12 mt-12 border-t border-slate-100">
+          <nav className="pt-12 mt-12 border-t border-slate-100 dark:border-zinc-800">
             <div className="grid grid-cols-2 gap-4 md:gap-8">
               {/* Previous Button */}
               <div className="flex flex-col">
                 {prev ? (
                   <Link
                     href={`/news/${prev._id}`}
-                    className="group flex flex-col h-full p-5 rounded-3xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/20 transition-all shadow-sm"
+                    className="group flex flex-col h-full p-5 rounded-3xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/20 transition-all shadow-sm dark:border-zinc-800 dark:hover:border-blue-900 dark:hover:bg-blue-900/10"
                   >
-                    <span className="text-[10px] font-black text-slate-300 group-hover:text-blue-500 uppercase tracking-[0.15em] mb-3 flex items-center gap-2">
+                    <span className="text-[10px] font-black text-slate-300 group-hover:text-blue-500 uppercase tracking-[0.15em] mb-3 flex items-center gap-2 dark:text-slate-600 dark:group-hover:text-blue-400">
                       <svg
                         className="w-3 h-3"
                         fill="none"
@@ -286,12 +286,12 @@ export default async function NewsDetailPage({
                       <span className="md:hidden">Previous</span>
                       <span className="hidden md:inline">Previous News</span>
                     </span>
-                    <p className="font-bold text-[11px] md:text-base text-slate-600 group-hover:text-slate-900 line-clamp-2 leading-snug">
+                    <p className="font-bold text-[11px] md:text-base text-slate-600 group-hover:text-slate-900 line-clamp-2 leading-snug dark:text-slate-400 dark:group-hover:text-slate-200">
                       {prev.title}
                     </p>
                   </Link>
                 ) : (
-                  <div className="h-full p-5 rounded-3xl border border-dashed border-slate-100 flex items-center justify-center text-[10px] text-slate-200 uppercase font-black">
+                  <div className="h-full p-5 rounded-3xl border border-dashed border-slate-100 flex items-center justify-center text-[10px] text-slate-200 uppercase font-black dark:border-zinc-800 dark:text-zinc-700">
                     Oldest Post
                   </div>
                 )}
@@ -302,9 +302,9 @@ export default async function NewsDetailPage({
                 {next ? (
                   <Link
                     href={`/news/${next._id}`}
-                    className="group flex flex-col items-end h-full p-5 rounded-3xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/20 transition-all shadow-sm"
+                    className="group flex flex-col items-end h-full p-5 rounded-3xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/20 transition-all shadow-sm dark:border-zinc-800 dark:hover:border-blue-900 dark:hover:bg-blue-900/10"
                   >
-                    <span className="text-[10px] font-black text-slate-300 group-hover:text-blue-500 uppercase tracking-[0.15em] mb-3 flex items-center gap-2">
+                    <span className="text-[10px] font-black text-slate-300 group-hover:text-blue-500 uppercase tracking-[0.15em] mb-3 flex items-center gap-2 dark:text-slate-600 dark:group-hover:text-blue-400">
                       <span className="md:hidden">Next</span>
                       <span className="hidden md:inline">Next News</span>
                       <svg
@@ -321,12 +321,12 @@ export default async function NewsDetailPage({
                         />
                       </svg>
                     </span>
-                    <p className="font-bold text-[11px] md:text-base text-slate-600 group-hover:text-slate-900 line-clamp-2 leading-snug">
+                    <p className="font-bold text-[11px] md:text-base text-slate-600 group-hover:text-slate-900 line-clamp-2 leading-snug dark:text-slate-400 dark:group-hover:text-slate-200">
                       {next.title}
                     </p>
                   </Link>
                 ) : (
-                  <div className="h-full p-5 rounded-3xl border border-dashed border-slate-100 flex items-center justify-center text-[10px] text-slate-200 uppercase font-black">
+                  <div className="h-full p-5 rounded-3xl border border-dashed border-slate-100 flex items-center justify-center text-[10px] text-slate-200 uppercase font-black dark:border-zinc-800 dark:text-zinc-700">
                     Latest Post
                   </div>
                 )}

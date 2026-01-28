@@ -17,7 +17,7 @@ import {
   CoffeeOutlined,
   ReadOutlined,
   TeamOutlined,
-} from "@ant-design/icons"; // ใช้ Icon เพื่อสื่อความหมาย
+} from "@ant-design/icons";
 
 // Import Components
 import Mechanic from "../mechanic/page";
@@ -35,30 +35,47 @@ import Ordinary from "../ordinary/page";
 import PersonnelInformation from "./PersonnelInformation";
 import ExecutiveBoard from "../executiveboard/page";
 
+// --- Helper Component: กรอบรองหลังไอคอน ---
+const IconBox = ({
+  colorClass,
+  children,
+}: {
+  colorClass: string;
+  children: React.ReactNode;
+}) => (
+  <div
+    className={`flex h-10 w-10 items-center justify-center rounded-xl transition-colors ${colorClass}`}
+  >
+    {React.cloneElement(children as React.ReactElement<any>, {
+      style: { fontSize: "18px" },
+    })}
+  </div>
+);
+
 export default function Personnel() {
   // Animation Variants
   const containerVar = {
     hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+    visible: { opacity: 1, transition: { staggerChildren: 0.05 } },
   };
 
   const itemVar = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: { y: 10, opacity: 0 },
     visible: { y: 0, opacity: 1 },
   };
 
-  // Helper function to create items with icons
+  // Styles สำหรับ Accordion
   const itemClasses = {
-    base: "py-0 w-full",
-    title: "font-normal text-medium text-slate-700 dark:text-slate-200",
+    base: "mb-2 rounded-2xl border border-slate-200 bg-white shadow-sm transition-all dark:border-neutral-800 dark:bg-neutral-900", // ✅ ย้ายสีพื้นหลังมาตรงนี้
+    title: "font-semibold text-medium text-slate-800 dark:text-slate-100",
     trigger:
-      "px-4 py-4 data-[hover=true]:bg-slate-50 rounded-xl flex items-center",
-    indicator: "text-medium",
-    content: "text-small px-4 pb-4",
+      "px-4 py-3 data-[hover=true]:bg-slate-50 dark:data-[hover=true]:bg-neutral-800 rounded-2xl flex items-center transition-colors",
+    indicator: "text-medium text-slate-400 dark:text-slate-500",
+    content: "text-small px-4 pb-4 dark:text-slate-300",
   };
 
   return (
-    <section className="py-16 font-sans">
+    <section className="py-16 font-sans dark:bg-transparent">
       <motion.div
         initial="hidden"
         whileInView="visible"
@@ -68,7 +85,7 @@ export default function Personnel() {
       >
         {/* --- Header Section --- */}
         <motion.div variants={itemVar} className="mb-12 text-center">
-          <div className="mb-4 inline-flex items-center justify-center rounded-full bg-blue-50 px-4 py-1.5 text-sm font-semibold text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
+          <div className="mb-4 inline-flex items-center justify-center rounded-full bg-blue-50 px-4 py-1.5 text-sm font-semibold text-blue-600 dark:bg-blue-900/30 dark:text-blue-300">
             <TeamOutlined className="mr-2" /> บุคลากรของเรา
           </div>
           <h1 className="text-3xl font-extrabold text-slate-800 md:text-4xl dark:text-white">
@@ -82,160 +99,190 @@ export default function Personnel() {
         {/* --- Accordion Menu --- */}
         <motion.div variants={itemVar}>
           <Accordion
-            variant="splitted" // แบบแยกชิ้น ดูทันสมัยกว่า
-            className="gap-4"
+            variant="splitted"
+            className="gap-3 px-0"
             itemClasses={itemClasses}
           >
+            {/* 1. ผู้บริหาร */}
             <AccordionItem
               key="1"
               aria-label="Executives"
-              startContent={<UserOutlined className="text-xl text-[#DAA520]" />}
-              title={
-                <span className="text-lg font-semibold">
-                  ผู้บริหารสถานศึกษา
-                </span>
+              startContent={
+                <IconBox colorClass="bg-yellow-50 text-yellow-600 dark:bg-yellow-900/20 dark:text-yellow-400">
+                  <UserOutlined />
+                </IconBox>
               }
-              className="rounded-2xl border border-slate-100 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
+              title="ผู้บริหารสถานศึกษา"
             >
-              <div className="py-4">
+              <div className="py-2">
                 <ExecutiveBoard />
               </div>
             </AccordionItem>
 
-            {/* --- Technical Departments --- */}
+            {/* 2. ช่างยนต์ */}
             <AccordionItem
               key="2"
               aria-label="Mechanic"
-              startContent={<ToolOutlined className="text-xl text-blue-500" />}
+              startContent={
+                <IconBox colorClass="bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">
+                  <ToolOutlined />
+                </IconBox>
+              }
               title="แผนกวิชาช่างยนต์"
-              className="rounded-2xl bg-white shadow-sm dark:bg-neutral-900"
             >
               <Mechanic />
             </AccordionItem>
 
+            {/* 3. ช่างกล */}
             <AccordionItem
               key="3"
               aria-label="Machine"
               startContent={
-                <SettingOutlined className="text-xl text-slate-500" />
+                <IconBox colorClass="bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                  <SettingOutlined />
+                </IconBox>
               }
               title="แผนกวิชาช่างกลโรงงาน"
-              className="rounded-2xl bg-white shadow-sm dark:bg-neutral-900"
             >
               <Machine />
             </AccordionItem>
 
+            {/* 4. ช่างเชื่อม */}
             <AccordionItem
               key="4"
               aria-label="Welder"
               startContent={
-                <FireOutlined className="text-xl text-orange-500" />
+                <IconBox colorClass="bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400">
+                  <FireOutlined />
+                </IconBox>
               }
               title="แผนกวิชาช่างเชื่อมโลหะ"
-              className="rounded-2xl bg-white shadow-sm dark:bg-neutral-900"
             >
               <Welder />
             </AccordionItem>
 
+            {/* 5. ไฟฟ้า */}
             <AccordionItem
               key="5"
               aria-label="Electricity"
               startContent={
-                <ThunderboltOutlined className="text-xl text-yellow-500" />
+                <IconBox colorClass="bg-amber-50 text-amber-600 dark:bg-amber-900/20 dark:text-amber-400">
+                  <ThunderboltOutlined />
+                </IconBox>
               }
               title="แผนกวิชาช่างไฟฟ้ากำลัง"
-              className="rounded-2xl bg-white shadow-sm dark:bg-neutral-900"
             >
               <Electricity />
             </AccordionItem>
 
+            {/* 6. อิเล็กทรอนิกส์ */}
             <AccordionItem
               key="6"
               aria-label="Electronics"
-              startContent={<WifiOutlined className="text-xl text-green-500" />}
+              startContent={
+                <IconBox colorClass="bg-emerald-50 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400">
+                  <WifiOutlined />
+                </IconBox>
+              }
               title="แผนกวิชาช่างอิเล็กทรอนิกส์"
-              className="rounded-2xl bg-white shadow-sm dark:bg-neutral-900"
             >
               <Electronics />
             </AccordionItem>
 
+            {/* 7. เทคนิคพื้นฐาน */}
             <AccordionItem
               key="7"
               aria-label="Technique"
               startContent={
-                <ToolOutlined className="text-xl text-indigo-500" />
+                <IconBox colorClass="bg-indigo-50 text-indigo-600 dark:bg-indigo-900/20 dark:text-indigo-400">
+                  <ToolOutlined />
+                </IconBox>
               }
               title="แผนกวิชาช่างเทคนิคพื้นฐาน"
-              className="rounded-2xl bg-white shadow-sm dark:bg-neutral-900"
             >
               <Technique />
             </AccordionItem>
 
+            {/* 8. ก่อสร้าง */}
             <AccordionItem
               key="8"
               aria-label="Construct"
               startContent={
-                <BuildOutlined className="text-xl text-amber-700" />
+                <IconBox colorClass="bg-stone-100 text-stone-600 dark:bg-stone-800 dark:text-stone-400">
+                  <BuildOutlined />
+                </IconBox>
               }
               title="แผนกวิชาช่างก่อสร้าง"
-              className="rounded-2xl bg-white shadow-sm dark:bg-neutral-900"
             >
               <Construct />
             </AccordionItem>
 
-            {/* --- Business & Other Departments --- */}
+            {/* 9. บัญชี */}
             <AccordionItem
               key="9"
               aria-label="Accounting"
               startContent={
-                <CalculatorOutlined className="text-xl text-teal-500" />
+                <IconBox colorClass="bg-teal-50 text-teal-600 dark:bg-teal-900/20 dark:text-teal-400">
+                  <CalculatorOutlined />
+                </IconBox>
               }
               title="แผนกวิชาการบัญชี"
-              className="rounded-2xl bg-white shadow-sm dark:bg-neutral-900"
             >
               <Accounting />
             </AccordionItem>
 
+            {/* 10. การตลาด */}
             <AccordionItem
               key="10"
               aria-label="Marketing"
-              startContent={<ShopOutlined className="text-xl text-rose-500" />}
+              startContent={
+                <IconBox colorClass="bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400">
+                  <ShopOutlined />
+                </IconBox>
+              }
               title="แผนกวิชาการตลาด"
-              className="rounded-2xl bg-white shadow-sm dark:bg-neutral-900"
             >
               <Marketing />
             </AccordionItem>
 
+            {/* 11. เทคโนโลยี */}
             <AccordionItem
               key="11"
               aria-label="Technology"
               startContent={
-                <LaptopOutlined className="text-xl text-purple-500" />
+                <IconBox colorClass="bg-purple-50 text-purple-600 dark:bg-purple-900/20 dark:text-purple-400">
+                  <LaptopOutlined />
+                </IconBox>
               }
               title="แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล"
-              className="rounded-2xl bg-white shadow-sm dark:bg-neutral-900"
             >
               <Technology />
             </AccordionItem>
 
+            {/* 12. โรงแรม */}
             <AccordionItem
               key="12"
               aria-label="Hotel"
               startContent={
-                <CoffeeOutlined className="text-brown-500 text-xl" />
+                <IconBox colorClass="bg-red-50 text-[#8D6E63] dark:bg-red-900/20 dark:text-[#A1887F]">
+                  <CoffeeOutlined />
+                </IconBox>
               }
               title="แผนกวิชาการโรงแรม"
-              className="rounded-2xl bg-white shadow-sm dark:bg-neutral-900"
             >
               <Hotel />
             </AccordionItem>
 
+            {/* 13. สามัญ */}
             <AccordionItem
               key="13"
               aria-label="Ordinary"
-              startContent={<ReadOutlined className="text-xl text-sky-500" />}
+              startContent={
+                <IconBox colorClass="bg-sky-50 text-sky-600 dark:bg-sky-900/20 dark:text-sky-400">
+                  <ReadOutlined />
+                </IconBox>
+              }
               title="แผนกวิชาสามัญสัมพันธ์"
-              className="rounded-2xl bg-white shadow-sm dark:bg-neutral-900"
             >
               <Ordinary />
             </AccordionItem>

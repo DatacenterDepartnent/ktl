@@ -44,21 +44,21 @@ export default async function ManageNewsPage() {
   const newsList = await getNews();
 
   return (
-    <div className="max-w-7xl mx-auto w-full p-8 text-zinc-800">
+    <div className="max-w-7xl mx-auto w-full p-8 text-zinc-800 dark:text-zinc-200">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-10 gap-4 border-b border-zinc-200 pb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-10 gap-4 border-b border-zinc-200 pb-6 dark:border-zinc-800">
         <div>
-          <h1 className="text-2xl md:text-3xl font-black text-zinc-900 tracking-tight">
+          <h1 className="text-2xl md:text-3xl font-black text-zinc-900 tracking-tight dark:text-white">
             จัดการข่าวสาร
           </h1>
-          <p className="text-zinc-500 mt-1 text-sm md:text-base">
+          <p className="text-zinc-500 mt-1 text-sm md:text-base dark:text-zinc-400">
             รายการข่าวประชาสัมพันธ์ทั้งหมด ({newsList.length} รายการ)
           </p>
         </div>
 
         <Link
           href="/dashboard/news/add"
-          className="w-full md:w-auto flex justify-center items-center gap-2 bg-blue-600 text-white px-6 py-3 md:py-2.5 rounded-xl md:rounded-full font-bold hover:bg-blue-500 shadow-md shadow-blue-200 transition-all active:scale-95 text-sm md:text-base"
+          className="w-full md:w-auto flex justify-center items-center gap-2 bg-blue-600 text-white px-6 py-3 md:py-2.5 rounded-xl md:rounded-full font-bold hover:bg-blue-500 shadow-md shadow-blue-200 transition-all active:scale-95 text-sm md:text-base dark:shadow-none dark:hover:bg-blue-500"
         >
           <svg
             className="w-5 h-5"
@@ -80,7 +80,7 @@ export default async function ManageNewsPage() {
       {/* Grid Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {newsList.map((news, index) => {
-          // ✅ Logic เลือกรูปปก: เอาจาก images ก่อน ถ้าไม่มีเอาจาก announcementImages ถ้าไม่มีเลยค่อยใช้ No Image
+          // ✅ Logic เลือกรูปปก
           const displayImage =
             news.images?.[0] || news.announcementImages?.[0] || "/no-image.png";
 
@@ -94,10 +94,10 @@ export default async function ManageNewsPage() {
           return (
             <div
               key={news._id}
-              className="group  border border-zinc-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full"
+              className="group border border-zinc-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full bg-white dark:bg-zinc-900 dark:border-zinc-800 dark:hover:shadow-black/40"
             >
               {/* ส่วนรูปภาพ */}
-              <div className="relative w-full aspect-[4/3] bg-zinc-100 overflow-hidden">
+              <div className="relative w-full aspect-[4/3] bg-zinc-100 overflow-hidden dark:bg-zinc-800">
                 <Image
                   src={displayImage}
                   alt={news.title}
@@ -111,7 +111,7 @@ export default async function ManageNewsPage() {
                   {displayCategories.map((cat, idx) => (
                     <span
                       key={idx}
-                      className="px-2 py-1 /95 backdrop-blur-sm text-blue-600 text-[10px] font-bold uppercase tracking-wider rounded-md shadow-sm border border-blue-100"
+                      className="px-2 py-1 bg-white/95 backdrop-blur-sm text-blue-600 text-[10px] font-bold uppercase tracking-wider rounded-md shadow-sm border border-blue-100 dark:bg-zinc-900/90 dark:text-blue-400 dark:border-zinc-700"
                     >
                       {cat}
                     </span>
@@ -121,7 +121,7 @@ export default async function ManageNewsPage() {
 
               {/* ส่วนเนื้อหา */}
               <div className="p-5 flex flex-col flex-1">
-                <div className="flex items-center gap-2 mb-3 text-zinc-400 text-[11px] font-medium">
+                <div className="flex items-center gap-2 mb-3 text-zinc-400 text-[11px] font-medium dark:text-zinc-500">
                   <svg
                     className="w-3.5 h-3.5"
                     fill="none"
@@ -142,14 +142,14 @@ export default async function ManageNewsPage() {
                   })}
                 </div>
 
-                <h3 className="text-base font-bold text-zinc-900 mb-4 line-clamp-2 leading-snug group-hover:text-blue-600 transition-colors min-h-[3rem]">
+                <h3 className="text-base font-bold text-zinc-900 mb-4 line-clamp-2 leading-snug group-hover:text-blue-600 transition-colors min-h-[3rem] dark:text-zinc-100 dark:group-hover:text-blue-400">
                   {news.title}
                 </h3>
 
-                <div className="mt-auto flex justify-between items-center pt-4 border-t border-zinc-100">
+                <div className="mt-auto flex justify-between items-center pt-4 border-t border-zinc-100 dark:border-zinc-800">
                   <Link
                     href={`/dashboard/news/edit/${news._id}`}
-                    className="flex items-center text-zinc-500 hover:text-blue-600 font-bold text-sm transition-colors"
+                    className="flex items-center text-zinc-500 hover:text-blue-600 font-bold text-sm transition-colors dark:text-zinc-400 dark:hover:text-blue-400"
                   >
                     <svg
                       className="w-4 h-4 mr-1"
@@ -176,12 +176,14 @@ export default async function ManageNewsPage() {
       </div>
 
       {newsList.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-32 border-2 border-dashed border-zinc-200 rounded-3xl  text-center">
-          <div className="w-16 h-16 bg-zinc-50 rounded-full flex items-center justify-center mb-4">
+        <div className="flex flex-col items-center justify-center py-32 border-2 border-dashed border-zinc-200 rounded-3xl text-center dark:border-zinc-800 dark:bg-zinc-900/50">
+          <div className="w-16 h-16 bg-zinc-50 rounded-full flex items-center justify-center mb-4 dark:bg-zinc-800">
             <span className="text-3xl opacity-50">📂</span>
           </div>
-          <h3 className="text-xl font-bold text-zinc-800">ไม่พบรายการข่าว</h3>
-          <p className="text-zinc-500 mt-1">
+          <h3 className="text-xl font-bold text-zinc-800 dark:text-zinc-200">
+            ไม่พบรายการข่าว
+          </h3>
+          <p className="text-zinc-500 mt-1 dark:text-zinc-400">
             เริ่มสร้างข่าวประชาสัมพันธ์ใหม่ได้เลย
           </p>
         </div>

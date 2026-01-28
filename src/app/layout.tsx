@@ -6,6 +6,7 @@ import "@ant-design/v5-patch-for-react-19";
 import "../styles/prism-vsc-dark-plus.css";
 import "../styles/index.css";
 import "../styles/globals.css";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const prompt = Prompt({
   subsets: ["thai", "latin"],
@@ -25,7 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th">
+    // ✅ เพิ่ม suppressHydrationWarning ตรงนี้ เพื่อแก้ Error หน้าจอแดง
+    <html lang="th" suppressHydrationWarning>
       <head>
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
         <link
@@ -34,9 +36,16 @@ export default function RootLayout({
         />
       </head>
       <body className={`${prompt.className} ${prompt.variable} antialiased`}>
-        <Navbar />
-        {children}
-        <Footer />
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Navbar />
+          {children}
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

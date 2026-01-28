@@ -78,3 +78,35 @@ export async function PUT(req: Request) {
     );
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ error: "ID is required" }, { status: 400 });
+    }
+
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
+    // ลบข้อมูล
+    const result = await db.collection("pages").deleteOne({
+      _id: new ObjectId(id), // หรือ id ตามรูปแบบที่คุณเก็บ
+    });
+
+    if (result.deletedCount === 0) {
+      return NextResponse.json(
+        { error: "ไม่พบข้อมูลที่ต้องการลบ" },
+        { status: 404 },
+      );
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    // ต้อง Return JSON เสมอ เพื่อไม่ให้หน้าบ้าน Error
+    return NextResponse.json({ error: "Server Error" }, { status: 500 });
+  }
+}

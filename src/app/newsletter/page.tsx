@@ -47,14 +47,14 @@ export default async function NewsletterPage() {
   const newsletters = await getNewsletters();
 
   return (
-    <main className="min-h-screen text-slate-800">
+    <main className="min-h-screen text-slate-800 dark:text-slate-200">
       {/* --- Header Section --- */}
       <section className="pt-16 pb-10 text-center px-4">
         <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-3">
-          <span className="text-slate-800">จดหมายข่าว</span>{" "}
+          <span className="text-slate-800 dark:text-white">จดหมายข่าว</span>{" "}
           <span className="text-yellow-500">ประชาสัมพันธ์</span>
         </h1>
-        <p className="text-slate-500 text-sm md:text-base">
+        <p className="text-slate-500 text-sm md:text-base dark:text-slate-400">
           ติดตามวารสารและข่าวสารกิจกรรมต่างๆ ผ่านรูปแบบจดหมายข่าวอิเล็กทรอนิกส์
         </p>
         <div className="w-16 h-1 bg-yellow-400 mx-auto mt-6 rounded-full"></div>
@@ -79,12 +79,12 @@ export default async function NewsletterPage() {
                   <Link
                     key={news._id}
                     href={`/news/${news._id}`}
-                    className="group relative block rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-100 hover:-translate-y-2 h-full" // เพิ่ม h-full เพื่อให้การ์ดสูงเท่ากัน
+                    className="group relative block rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-slate-100 hover:-translate-y-2 h-full dark:border-slate-800 dark:shadow-black/40" // เพิ่ม h-full เพื่อให้การ์ดสูงเท่ากัน
                   >
                     {/* Image Area */}
-                    <div className="relative aspect-[3/4] w-full bg-slate-100 overflow-hidden">
+                    <div className="relative aspect-[3/4] w-full bg-slate-100 overflow-hidden dark:bg-slate-800">
                       {/* Date Badge */}
-                      <div className="absolute top-4 right-4 z-10 /95 backdrop-blur shadow-md px-3 py-1.5 rounded-lg flex items-center gap-2 text-xs font-bold text-slate-600">
+                      <div className="absolute top-4 right-4 z-10 bg-white/95 backdrop-blur shadow-md px-3 py-1.5 rounded-lg flex items-center gap-2 text-xs font-bold text-slate-600 dark:bg-slate-900/90 dark:text-slate-300">
                         <svg
                           className="w-4 h-4 text-yellow-500"
                           fill="none"
@@ -116,7 +116,7 @@ export default async function NewsletterPage() {
                       />
 
                       {/* Gradient Overlay */}
-                      <div className="absolute inset-x-0 bottom-0 h-2/3 bg-linear-to-t from-black/80 via-black/40 to-transparent"></div>
+                      <div className="absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
                     </div>
 
                     {/* Content Overlay */}
@@ -158,9 +158,9 @@ export default async function NewsletterPage() {
           </>
         ) : (
           /* Empty State */
-          <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-slate-200 rounded-3xl bg-slate-50">
+          <div className="flex flex-col items-center justify-center py-20 border-2 border-dashed border-slate-200 rounded-3xl bg-slate-50 dark:bg-slate-900 dark:border-slate-800">
             <div className="text-4xl mb-4 opacity-50">📭</div>
-            <p className="text-slate-500 font-medium">
+            <p className="text-slate-500 font-medium dark:text-slate-400">
               ยังไม่มีจดหมายข่าวในขณะนี้
             </p>
           </div>

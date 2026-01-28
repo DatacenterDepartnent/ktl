@@ -11,9 +11,9 @@ import {
   IconBulb,
   IconHeart,
   IconQuote,
-} from "@tabler/icons-react"; // ใช้ Icon set ไหนก็ได้ หรือลบออกถ้าไม่มี
+} from "@tabler/icons-react";
 
-// --- ข้อมูลองค์กร (แก้ไขข้อความตรงนี้) ---
+// --- ข้อมูลองค์กร ---
 const ORG_INFO = [
   {
     id: "vision",
@@ -75,12 +75,13 @@ export default function WelcomePage() {
   const [activeTab, setActiveTab] = useState(ORG_INFO[0]);
 
   return (
-    <section className="relative w-full overflow-hidden bg-slate-50 py-20 font-sans ">
+    <section className="relative w-full overflow-hidden bg-slate-50 py-20 font-sans dark:bg-transparent">
       {/* --- Background Decorations --- */}
       <div className="pointer-events-none absolute inset-0 z-0">
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] bg-size-[24px_24px]" />
-        <div className="absolute top-0 left-1/4 h-96 w-96 rounded-full bg-blue-500/20 blur-[100px] filter" />
-        <div className="absolute right-1/4 bottom-0 h-96 w-96 rounded-full bg-indigo-500/20 blur-[100px] filter " />
+        {/* ปรับสี Grid ใน Dark Mode */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] bg-size-[24px_24px] dark:bg-[linear-gradient(to_right,#ffffff12_1px,transparent_1px),linear-gradient(to_bottom,#ffffff12_1px,transparent_1px)]" />
+        <div className="absolute top-0 left-1/4 h-96 w-96 rounded-full bg-blue-500/20 blur-[100px] filter dark:bg-blue-500/10" />
+        <div className="absolute right-1/4 bottom-0 h-96 w-96 rounded-full bg-indigo-500/20 blur-[100px] filter dark:bg-indigo-500/10" />
       </div>
 
       <motion.div
@@ -91,37 +92,37 @@ export default function WelcomePage() {
         className="relative z-10 container mx-auto max-w-7xl px-4 lg:px-8"
       >
         <div className="grid gap-12 lg:grid-cols-12 lg:items-start lg:gap-8">
-          {/* --- Left Column: Director Spotlight (Keep Original) --- */}
+          {/* --- Left Column: Director Spotlight --- */}
           <div className="flex flex-col items-center justify-center lg:col-span-5 lg:justify-start">
             <CardContainer className="inter-var w-full max-w-sm lg:max-w-md">
-              <CardBody className="group/card relative h-auto w-auto rounded-3xl border border-white/40 bg-white/60 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:shadow-blue-500/20 ">
+              {/* Card Body: ปรับพื้นหลังและขอบใน Dark Mode */}
+              <CardBody className="group/card relative h-auto w-auto rounded-3xl border border-white/40 bg-white/60 p-6 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:shadow-blue-500/20 dark:border-white/10 dark:bg-slate-900/60 dark:hover:shadow-blue-900/40">
                 <CardItem translateZ="30" className="mb-4">
-                  <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-bold tracking-wider text-blue-600 uppercase ">
+                  {/* Badge: ปรับสีใน Dark Mode */}
+                  <span className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-bold tracking-wider text-blue-600 uppercase dark:border-blue-900/50 dark:bg-blue-900/20 dark:text-blue-300">
                     KTLTC Director
                   </span>
                 </CardItem>
                 <CardItem
                   translateZ="50"
-                  className="text-3xl font-extrabold text-slate-800"
+                  className="text-3xl font-extrabold text-slate-800 dark:text-slate-100"
                 >
-                  <span className="bg-linear-to-r from-slate-800 to-slate-500 bg-clip-text text-transparent ">
+                  <span className="bg-gradient-to-r from-slate-800 to-slate-500 bg-clip-text text-transparent dark:from-white dark:to-slate-400">
                     นางสาวทักษิณา ชมจันทร์
                   </span>
                 </CardItem>
                 <CardItem
                   as="p"
                   translateZ="60"
-                  className="mt-2 text-sm font-medium text-slate-500 "
+                  className="mt-2 text-sm font-medium text-slate-500 dark:text-slate-400"
                 >
                   ผู้อำนวยการวิทยาลัยเทคนิคกันทรลักษ์
                 </CardItem>
                 <CardItem translateZ="80" className="mt-8 w-full">
-                  {/* บังคับความสูงและสัดส่วนให้ชัดเจน */}
-                  <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl shadow-lg ring-1 ring-black/5">
+                  <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl shadow-lg ring-1 ring-black/5 dark:ring-white/10">
                     <NextImage
                       src="/images/ปก/3.webp"
                       alt="Director Image"
-                      // เพิ่ม Properties เหล่านี้เพื่อให้ HeroUI จัดการขนาดได้ถูกต้อง
                       width={500}
                       height={625}
                       priority
@@ -135,18 +136,18 @@ export default function WelcomePage() {
 
           {/* --- Right Column: Organization Info Tabs --- */}
           <div className="flex h-full flex-col lg:col-span-7">
-            <div className="relative h-full overflow-hidden rounded-3xl border border-white/50 bg-white/40 shadow-xl backdrop-blur-xl ">
-              {/* 1. Header Area: Dynamic Title */}
-              <div className="border-b border-slate-200/60 bg-white/50 px-8 py-6 backdrop-blur-sm">
+            {/* Main Container: ปรับพื้นหลังและขอบใน Dark Mode */}
+            <div className="relative h-full overflow-hidden rounded-3xl border border-white/50 bg-white/40 shadow-xl backdrop-blur-xl dark:border-slate-700 dark:bg-slate-900/40">
+              {/* 1. Header Area */}
+              <div className="border-b border-slate-200/60 bg-white/50 px-8 py-6 backdrop-blur-sm dark:border-slate-700/60 dark:bg-slate-800/50">
                 <div className="flex items-center gap-4">
-                  {/* Icon Box */}
                   <div
                     className={`flex h-12 w-12 items-center justify-center rounded-2xl shadow-sm transition-colors duration-300 ${activeTab.color} text-white`}
                   >
                     {activeTab.icon}
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-slate-800">
+                    <h3 className="text-xl font-bold text-slate-800 dark:text-slate-100">
                       ข้อมูลองค์กร
                     </h3>
                     <AnimatePresence mode="wait">
@@ -155,7 +156,7 @@ export default function WelcomePage() {
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -5 }}
-                        className="text-sm font-medium text-slate-500"
+                        className="text-sm font-medium text-slate-500 dark:text-slate-400"
                       >
                         แสดงข้อมูล: {activeTab.label}
                       </motion.p>
@@ -164,7 +165,7 @@ export default function WelcomePage() {
                 </div>
               </div>
 
-              {/* 2. Menu Selection Area (Scrollable on mobile) */}
+              {/* 2. Menu Selection Area */}
               <div className="px-6 pt-6">
                 <div className="flex flex-wrap gap-2 pb-2">
                   {ORG_INFO.map((tab) => (
@@ -174,7 +175,7 @@ export default function WelcomePage() {
                       className={`relative rounded-full px-4 py-2 text-sm font-medium transition-colors duration-200 focus:outline-none ${
                         activeTab.id === tab.id
                           ? "text-white"
-                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900  "
+                          : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                       }`}
                     >
                       {/* Active State Background Animation */}
@@ -190,7 +191,6 @@ export default function WelcomePage() {
                         />
                       )}
 
-                      {/* Text & Icon Layer */}
                       <span className="relative z-10 flex items-center gap-2">
                         {tab.icon} {tab.label}
                       </span>
@@ -210,15 +210,18 @@ export default function WelcomePage() {
                     transition={{ duration: 0.3 }}
                     className="flex flex-col gap-4"
                   >
-                    <div className="inline-block w-fit rounded-lg bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500">
+                    {/* Badge: ปรับสีใน Dark Mode */}
+                    <div className="inline-block w-fit rounded-lg bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
                       {activeTab.label}
                     </div>
 
-                    <h2 className="text-2xl leading-tight font-bold text-slate-900">
+                    {/* Title: ปรับสีใน Dark Mode */}
+                    <h2 className="text-2xl leading-tight font-bold text-slate-900 dark:text-white">
                       {activeTab.title}
                     </h2>
 
-                    <div className="h-1 w-20 rounded-full bg-slate-200 ">
+                    {/* Divider: ปรับสีใน Dark Mode */}
+                    <div className="h-1 w-20 rounded-full bg-slate-200 dark:bg-slate-700">
                       <motion.div
                         className={`h-full rounded-full ${activeTab.color}`}
                         initial={{ width: 0 }}
@@ -227,7 +230,8 @@ export default function WelcomePage() {
                       />
                     </div>
 
-                    <p className="text-lg leading-relaxed text-slate-600">
+                    {/* Content: ปรับสีใน Dark Mode */}
+                    <p className="text-lg leading-relaxed text-slate-600 dark:text-slate-300">
                       {activeTab.content}
                     </p>
                   </motion.div>

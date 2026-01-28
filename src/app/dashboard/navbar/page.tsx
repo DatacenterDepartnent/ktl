@@ -42,7 +42,7 @@ export default function ManageNavbar() {
   };
 
   const handleEdit = (item: NavItem) => {
-    setEditId(item._id || null); // ✅ เติม || null
+    setEditId(item._id || null);
     setLabel(item.label);
     setPath(item.path);
     setOrder(item.order);
@@ -95,39 +95,39 @@ export default function ManageNavbar() {
   const parentOptions = navItems.filter((item) => !item.parentId);
 
   return (
-    <div className="max-w-7xl mx-auto  p-4 md:p-8 text-zinc-800 ">
+    <div className="max-w-7xl mx-auto p-4 md:p-8 text-zinc-800 dark:text-zinc-200">
       <div className="">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-6 border-b border-zinc-200 gap-4">
+        <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-6 border-b border-zinc-200 gap-4 dark:border-zinc-800">
           <div>
-            <h1 className="text-2xl md:text-3xl font-black text-zinc-900 tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-black text-zinc-900 tracking-tight dark:text-white">
               จัดการเมนู (Navbar)
             </h1>
-            <p className="text-zinc-500 mt-1 text-sm md:text-base">
+            <p className="text-zinc-500 mt-1 text-sm md:text-base dark:text-zinc-400">
               ตั้งค่าลิงก์และโครงสร้างเมนูบนหัวเว็บ
             </p>
           </div>
           <Link
             href="/dashboard"
-            className="text-sm font-bold text-zinc-500 hover:text-blue-600 transition-colors self-start md:self-auto"
+            className="text-sm font-bold text-zinc-500 hover:text-blue-600 transition-colors self-start md:self-auto dark:text-zinc-400 dark:hover:text-blue-400"
           >
             ← กลับ Dashboard
           </Link>
         </div>
 
         {/* Form Section */}
-        <section className="mb-12  p-6 md:p-8 rounded-3xl shadow-sm border border-zinc-200">
-          <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-zinc-800">
+        <section className="mb-12 p-6 md:p-8 rounded-3xl shadow-sm border border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800">
+          <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-zinc-800 dark:text-white">
             {editId ? (
               <>
-                <span className="w-8 h-8 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-sm">
+                <span className="w-8 h-8 bg-yellow-100 text-yellow-600 rounded-full flex items-center justify-center text-sm dark:bg-yellow-900/30 dark:text-yellow-400">
                   ✏️
                 </span>
                 แก้ไขเมนู
               </>
             ) : (
               <>
-                <span className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm">
+                <span className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm dark:bg-blue-900/30 dark:text-blue-400">
                   ➕
                 </span>
                 เพิ่มเมนูใหม่
@@ -138,48 +138,48 @@ export default function ManageNavbar() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-bold text-zinc-600">
+                <label className="text-sm font-bold text-zinc-600 dark:text-zinc-400">
                   ชื่อเมนู (Label)
                 </label>
                 <input
                   value={label}
                   onChange={(e) => setLabel(e.target.value)}
-                  className=" p-3 border border-zinc-200 rounded-xl text-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm"
+                  className="p-3 border border-zinc-200 rounded-xl text-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white dark:placeholder-zinc-500"
                   placeholder="เช่น หน้าแรก"
                   required
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-bold text-zinc-600">
+                <label className="text-sm font-bold text-zinc-600 dark:text-zinc-400">
                   ลิงก์ (Path)
                 </label>
                 <input
                   value={path}
                   onChange={(e) => setPath(e.target.value)}
-                  className=" p-3 border border-zinc-200 rounded-xl text-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm"
+                  className="p-3 border border-zinc-200 rounded-xl text-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white dark:placeholder-zinc-500"
                   placeholder="เช่น /about"
                   required
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-bold text-zinc-600">
+                <label className="text-sm font-bold text-zinc-600 dark:text-zinc-400">
                   ลำดับ (Order)
                 </label>
                 <input
                   type="number"
                   value={order}
                   onChange={(e) => setOrder(Number(e.target.value))}
-                  className=" p-3 border border-zinc-200 rounded-xl text-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm"
+                  className="p-3 border border-zinc-200 rounded-xl text-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-bold text-zinc-600">
+                <label className="text-sm font-bold text-zinc-600 dark:text-zinc-400">
                   เมนูหลัก (Parent)
                 </label>
                 <select
                   value={parentId}
                   onChange={(e) => setParentId(e.target.value)}
-                  className=" p-3 border border-zinc-200 rounded-xl text-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm cursor-pointer"
+                  className="p-3 border border-zinc-200 rounded-xl text-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm cursor-pointer dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
                   disabled={
                     !!editId && navItems.some((i) => i.parentId === editId)
                   }
@@ -203,8 +203,8 @@ export default function ManageNavbar() {
                 disabled={isLoading}
                 className={`flex-1 py-3.5 rounded-xl font-bold transition-all shadow-md hover:shadow-lg active:scale-95 ${
                   editId
-                    ? "bg-yellow-500 hover:bg-yellow-400 text-white shadow-yellow-200"
-                    : "bg-blue-600 hover:bg-blue-500 text-white shadow-blue-200"
+                    ? "bg-yellow-500 hover:bg-yellow-400 text-white shadow-yellow-200 dark:shadow-none dark:bg-yellow-600 dark:hover:bg-yellow-500"
+                    : "bg-blue-600 hover:bg-blue-500 text-white shadow-blue-200 dark:shadow-none dark:bg-blue-600 dark:hover:bg-blue-500"
                 }`}
               >
                 {isLoading
@@ -218,7 +218,7 @@ export default function ManageNavbar() {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="px-6 md:px-8 py-3.5 rounded-xl font-bold bg-zinc-100 hover:bg-zinc-200 text-zinc-600 transition-colors"
+                  className="px-6 md:px-8 py-3.5 rounded-xl font-bold bg-zinc-100 hover:bg-zinc-200 text-zinc-600 transition-colors dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700"
                 >
                   ยกเลิก
                 </button>
@@ -229,7 +229,7 @@ export default function ManageNavbar() {
 
         {/* Tree Structure Section */}
         <section className="space-y-4">
-          <h2 className="text-xl font-bold text-zinc-800 mb-6 flex items-center gap-2">
+          <h2 className="text-xl font-bold text-zinc-800 mb-6 flex items-center gap-2 dark:text-white">
             <span className="text-2xl">🌳</span> โครงสร้างเมนูปัจจุบัน
           </h2>
 
@@ -239,21 +239,21 @@ export default function ManageNavbar() {
                 key={parent._id}
                 className={`border rounded-2xl p-4 md:p-5 transition-all duration-300 ${
                   editId === parent._id
-                    ? "bg-yellow-50 border-yellow-300 ring-2 ring-yellow-200 shadow-md"
-                    : " border-zinc-200 hover:shadow-md"
+                    ? "bg-yellow-50 border-yellow-300 ring-2 ring-yellow-200 shadow-md dark:bg-yellow-900/20 dark:border-yellow-700 dark:ring-yellow-900"
+                    : "border-zinc-200 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:border-zinc-700"
                 }`}
               >
                 {/* Parent Row */}
                 <div className="flex justify-between items-center mb-3 gap-2">
                   <div className="flex items-center gap-3 overflow-hidden">
-                    <span className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs shrink-0">
+                    <span className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs shrink-0 dark:bg-blue-900/30 dark:text-blue-300">
                       {parent.order}
                     </span>
                     <div className="min-w-0">
-                      <span className="font-bold text-zinc-800 text-lg block truncate">
+                      <span className="font-bold text-zinc-800 text-lg block truncate dark:text-white">
                         {parent.label}
                       </span>
-                      <span className="text-xs text-zinc-400 font-mono bg-zinc-100 px-2 py-0.5 rounded hidden md:inline-block">
+                      <span className="text-xs text-zinc-400 font-mono bg-zinc-100 px-2 py-0.5 rounded hidden md:inline-block dark:bg-zinc-800 dark:text-zinc-500">
                         {parent.path}
                       </span>
                     </div>
@@ -262,7 +262,7 @@ export default function ManageNavbar() {
                   <div className="flex items-center gap-1 md:gap-2 shrink-0">
                     <button
                       onClick={() => handleEdit(parent)}
-                      className="p-2 text-zinc-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                      className="p-2 text-zinc-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors dark:text-zinc-500 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
                       title="แก้ไข"
                     >
                       <svg
@@ -280,8 +280,8 @@ export default function ManageNavbar() {
                       </svg>
                     </button>
                     <button
-                      onClick={() => handleDelete(parent._id || "")} // ✅ เติม || ""
-                      className="p-2 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      onClick={() => handleDelete(parent._id || "")}
+                      className="p-2 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors dark:text-zinc-500 dark:hover:bg-red-900/20 dark:hover:text-red-400"
                       title="ลบ"
                     >
                       <svg
@@ -301,7 +301,7 @@ export default function ManageNavbar() {
                   </div>
                 </div>
 
-                {/* Children Rows (Fix: Mobile Padding & Icons) */}
+                {/* Children Rows */}
                 <div className="pl-2 md:pl-11 space-y-2 mt-2">
                   {navItems
                     .filter((c) => c.parentId === parent._id)
@@ -310,20 +310,22 @@ export default function ManageNavbar() {
                         key={child._id}
                         className={`flex justify-between items-center text-sm p-3 rounded-xl border transition-all ${
                           editId === child._id
-                            ? "bg-yellow-100 border-yellow-300 text-yellow-800"
-                            : "bg-zinc-50 border-zinc-100 text-zinc-600 hover:border-zinc-300"
+                            ? "bg-yellow-100 border-yellow-300 text-yellow-800 dark:bg-yellow-900/30 dark:border-yellow-700 dark:text-yellow-200"
+                            : "bg-zinc-50 border-zinc-100 text-zinc-600 hover:border-zinc-300 dark:bg-zinc-800/50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:border-zinc-600"
                         }`}
                       >
                         <div className="flex items-center gap-2 md:gap-3 overflow-hidden">
-                          <span className="text-zinc-300 shrink-0">↳</span>
-                          <span className="w-6 h-6 rounded bg-zinc-200 text-zinc-500 flex items-center justify-center font-bold text-[10px] shrink-0">
+                          <span className="text-zinc-300 shrink-0 dark:text-zinc-600">
+                            ↳
+                          </span>
+                          <span className="w-6 h-6 rounded bg-zinc-200 text-zinc-500 flex items-center justify-center font-bold text-[10px] shrink-0 dark:bg-zinc-700 dark:text-zinc-400">
                             {child.order}
                           </span>
                           <div className="min-w-0 flex flex-col md:block">
                             <span className="font-medium truncate block md:inline">
                               {child.label}
                             </span>
-                            <span className="text-[10px] md:text-xs text-zinc-400 font-mono md:ml-2 truncate hidden sm:inline">
+                            <span className="text-[10px] md:text-xs text-zinc-400 font-mono md:ml-2 truncate hidden sm:inline dark:text-zinc-500">
                               ({child.path})
                             </span>
                           </div>
@@ -332,7 +334,7 @@ export default function ManageNavbar() {
                         <div className="flex gap-1 shrink-0 ml-2">
                           <button
                             onClick={() => handleEdit(child)}
-                            className="p-1.5 text-zinc-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="p-1.5 text-zinc-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors dark:text-zinc-500 dark:hover:bg-blue-900/20 dark:hover:text-blue-400"
                             title="แก้ไข"
                           >
                             <svg
@@ -350,8 +352,8 @@ export default function ManageNavbar() {
                             </svg>
                           </button>
                           <button
-                            onClick={() => handleDelete(child._id || "")} // ✅ เติม || ""
-                            className="p-1.5 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                            onClick={() => handleDelete(child._id || "")}
+                            className="p-1.5 text-zinc-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors dark:text-zinc-500 dark:hover:bg-red-900/20 dark:hover:text-red-400"
                             title="ลบ"
                           >
                             <svg
