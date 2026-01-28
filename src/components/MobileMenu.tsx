@@ -2,13 +2,19 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { NavItem } from "@/types/nav";
 import ThemeToggle from "./ThemeToggle"; // ✅ Import ปุ่มสลับธีม
 
 type MenuItem = NavItem & {
   children?: MenuItem[];
 };
+
+interface UserProfile {
+  name: string;
+  role: string;
+  username: string;
+}
 
 export default function MobileMenu({
   menuTree = [],
@@ -17,7 +23,47 @@ export default function MobileMenu({
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [openSubMenuId, setOpenSubMenuId] = useState<string | null>(null);
+  const [user, setUser] = useState<UserProfile | null>(null); // ✅ State เก็บข้อมูลผู้ใช้
   const pathname = usePathname();
+  const router = useRouter();
+
+  // 1. ตรวจสอบสถานะล็อกอินเมื่อโหลดหน้าเว็บ
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("/api/profile"); // เรียก API Profile ที่เราทำไว้
+        if (res.ok) {
+          const data = await res.json();
+          setUser(data);
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user", error);
+        setUser(null);
+      }
+    };
+
+    fetchUser();
+  }, [pathname]); // เช็คใหม่ทุกครั้งที่เปลี่ยนหน้า (เผื่อ login/logout)
+
+  // 2. ฟังก์ชันออกจากระบบ
+  const handleLogout = async () => {
+    try {
+      const res = await fetch("/api/auth/logout", { method: "POST" }); // สมมติว่ามี API Logout
+      if (res.ok) {
+        setUser(null);
+        router.push("/login");
+        router.refresh();
+      } else {
+        // Fallback: ถ้าไม่มี API Logout ให้เคลียร์ cookie ฝั่ง client หรือ redirect
+        // document.cookie = "token=; Max-Age=0; path=/;";
+        window.location.href = "/login";
+      }
+    } catch (error) {
+      window.location.href = "/login";
+    }
+  };
 
   const closeMenu = () => {
     setIsOpen(false);
@@ -103,6 +149,7 @@ export default function MobileMenu({
                 หน้าแรก
               </Link>
 
+              {/* วนลูปเมนูหลัก */}
               {safeMenuTree.map((item) => {
                 const hasChildren = item.children && item.children.length > 0;
                 const isActive = openSubMenuId === item._id;
@@ -116,17 +163,12 @@ export default function MobileMenu({
                         : "bg-zinc-50 border-zinc-100 dark:bg-zinc-900 dark:border-zinc-800"
                     }`}
                   >
-                    {/* ส่วนหัวเมนู (Parent Row) */}
                     {hasChildren ? (
-                      // ✅ กรณีมีลูก: เป็นปุ่ม Toggle เต็มใบ
                       <button
                         onClick={() => toggleSubMenu(item._id || "")}
                         className="flex justify-between items-center w-full p-4 text-left font-bold text-base text-zinc-700 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
                       >
-                        {/* ชื่อหัวข้อ */}
                         <span>{item.label}</span>
-
-                        {/* ไอคอนลูกศร */}
                         <svg
                           className={`w-5 h-5 text-zinc-400 transition-transform duration-300 ${
                             isActive ? "rotate-180 text-blue-500" : ""
@@ -144,7 +186,6 @@ export default function MobileMenu({
                         </svg>
                       </button>
                     ) : (
-                      // กรณีไม่มีลูก: เป็น Link ธรรมดา
                       <Link
                         href={item.path}
                         onClick={closeMenu}
@@ -158,7 +199,7 @@ export default function MobileMenu({
                       </Link>
                     )}
 
-                    {/* เมนูย่อย (Children) */}
+                    {/* เมนูย่อย */}
                     {hasChildren && isActive && (
                       <div className="bg-white dark:bg-zinc-950 border-t border-zinc-100 dark:border-zinc-800 animate-in slide-in-from-top-1 duration-200">
                         {item.children!.map((child: MenuItem) => (
@@ -188,7 +229,7 @@ export default function MobileMenu({
                 );
               })}
 
-              {/* ✅ ส่วนเลือกธีม (เพิ่มใหม่) */}
+              {/* ส่วนเลือกธีม */}
               <div className="flex items-center justify-between p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 mt-2">
                 <span className="font-bold text-zinc-700 dark:text-zinc-200">
                   โหมดแสดงผล
@@ -196,15 +237,58 @@ export default function MobileMenu({
                 <ThemeToggle />
               </div>
 
-              {/* ปุ่ม Login */}
-              <div className="pt-2 pb-8">
-                <Link
-                  href="/login"
-                  onClick={closeMenu}
-                  className="block w-full text-center py-4 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold text-lg shadow-lg shadow-blue-500/20 active:scale-95 transition-transform"
-                >
-                  เข้าสู่ระบบ / Admin
-                </Link>
+              {/* ✅ ส่วนจัดการสมาชิก / เข้าสู่ระบบ (Dynamic) */}
+              <div className="pt-4 pb-8 space-y-3 border-t border-zinc-100 dark:border-zinc-800 mt-4">
+                {user ? (
+                  // --- กรณีล็อกอินแล้ว ---
+                  <div className="flex flex-col space-y-3">
+                    <div className="flex items-center gap-3 px-4 mb-2">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold text-xl shadow-md">
+                        {user.name?.charAt(0).toUpperCase() || "U"}
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="font-bold text-zinc-800 dark:text-white text-lg">
+                          {user.name}
+                        </span>
+                        <span className="text-xs text-zinc-500 dark:text-zinc-400 uppercase tracking-wide">
+                          {user.role}
+                        </span>
+                      </div>
+                    </div>
+
+                    <Link
+                      href="/dashboard"
+                      onClick={closeMenu}
+                      className="mx-1 block text-center py-3.5 rounded-xl bg-blue-50 text-blue-700 font-bold border border-blue-100 hover:bg-blue-100 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-900/50 transition-colors"
+                    >
+                      🚀 ไปที่ Dashboard
+                    </Link>
+
+                    <Link
+                      href="/dashboard/profile"
+                      onClick={closeMenu}
+                      className="mx-1 block text-center py-3.5 rounded-xl border border-zinc-200 text-zinc-700 font-semibold hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800 transition-colors"
+                    >
+                      👤 จัดการโปรไฟล์
+                    </Link>
+
+                    <button
+                      onClick={handleLogout}
+                      className="mx-1 mt-2 block w-full text-center py-3.5 rounded-xl text-red-600 font-semibold hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/10 transition-colors"
+                    >
+                      ออกจากระบบ
+                    </button>
+                  </div>
+                ) : (
+                  // --- กรณีไม่ได้ล็อกอิน ---
+                  <Link
+                    href="/login"
+                    onClick={closeMenu}
+                    className="block w-full text-center py-4 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold text-lg shadow-lg shadow-blue-500/20 active:scale-95 transition-transform hover:shadow-blue-500/40"
+                  >
+                    เข้าสู่ระบบ / Admin
+                  </Link>
+                )}
               </div>
             </div>
           </div>
