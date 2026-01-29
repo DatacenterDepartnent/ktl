@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Prompt } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Footer from "@/components/Footer";
@@ -70,6 +71,7 @@ export default function RootLayout({
           <Navbar />
           {children}
           <SpeedInsights />
+          <Analytics />
           <Footer />
         </ThemeProvider>
       </body>
