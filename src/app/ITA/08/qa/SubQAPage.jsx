@@ -124,7 +124,7 @@ export default async function SubQAPage() {
               </div>
 
               {/* Tickets List Area */}
-              <div className="space-y-4 bg-white p-4 md:p-6">
+              <div className="space-y-4 bg">
                 {ticketsByCategory[category].map((filteredTicket, i) => (
                   <div
                     key={

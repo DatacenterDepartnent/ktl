@@ -68,7 +68,7 @@ export default function CalendarPage() {
         },
       }}
     >
-      <section className="min-h-[500px] bg-slate-50/50 py-12 font-sans dark:bg-neutral-950">
+      <section className="min-h-[500px] px-4 bg-slate-50/50 py-12 font-sans dark:bg-neutral-950">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -78,7 +78,7 @@ export default function CalendarPage() {
           <div className="flex flex-col items-center justify-center gap-8 lg:flex-row lg:items-start">
             {/* --- ส่วนปฏิทิน (Calendar Widget) --- */}
             <div className="w-full max-w-md">
-              <div className="relative overflow-hidden rounded-3xl bg-white p-6 shadow-xl ring-1 ring-slate-100 dark:bg-neutral-900 dark:ring-neutral-800">
+              <div className="relative overflow-hidden rounded-3xl bg-white px-2 py-2 shadow-xl ring-1 ring-slate-100 dark:bg-neutral-900 dark:ring-neutral-800">
                 {/* Header ตกแต่ง */}
                 <div className="mb-6 flex items-center justify-between border-b border-slate-100 pb-4 dark:border-neutral-800">
                   <div className="flex items-center gap-3">
@@ -109,7 +109,7 @@ export default function CalendarPage() {
             {/* --- ส่วนแสดงรายละเอียด (Event Detail Side Panel) --- */}
             {/* เพิ่มส่วนนี้เพื่อให้ดูเป็น Dashboard ที่สมบูรณ์ */}
             <div className="w-full max-w-md">
-              <div className="h-full rounded-3xl bg-white p-6 shadow-lg ring-1 ring-slate-100 dark:bg-neutral-900 dark:ring-neutral-800">
+              <div className="h-full rounded-3xl bg-white px-4 shadow-lg ring-1 ring-slate-100 dark:bg-neutral-900 dark:ring-neutral-800">
                 <h3 className="mb-4 text-xl font-bold text-slate-800 dark:text-slate-100">
                   กิจกรรมเดือนนี้
                 </h3>

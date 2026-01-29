@@ -66,26 +66,26 @@ export default function Personnel() {
 
   // Styles สำหรับ Accordion
   const itemClasses = {
-    base: "mb-2 rounded-2xl border border-slate-200 bg-white shadow-sm transition-all dark:border-neutral-800 dark:bg-neutral-900", // ✅ ย้ายสีพื้นหลังมาตรงนี้
-    title: "font-semibold text-medium text-slate-800 dark:text-slate-100",
+    base: "mb-2 rounded-2xl py-3 border border-slate-200 bg-white shadow-sm transition-all dark:border-neutral-800 dark:bg-neutral-900", // ✅ ย้ายสีพื้นหลังมาตรงนี้
+    title: "font-semibold  text-medium text-slate-800 dark:text-slate-100",
     trigger:
-      "px-4 py-3 data-[hover=true]:bg-slate-50 dark:data-[hover=true]:bg-neutral-800 rounded-2xl flex items-center transition-colors",
+      "py-1 px-1 data-[hover=true]:bg-slate-50 dark:data-[hover=true]:bg-neutral-800 rounded-2xl flex items-center transition-colors",
     indicator: "text-medium text-slate-400 dark:text-slate-500",
-    content: "text-small px-4 pb-4 dark:text-slate-300",
+    content: "text-small px-2 pb-4 dark:text-slate-300",
   };
 
   return (
-    <section className=" font-sans dark:bg-transparent">
+    <section className="dark:bg-transparent">
       <motion.div
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
         variants={containerVar}
-        className="container mx-auto max-w-5xl px-4 md:px-8"
+        className=""
       >
         {/* --- Header Section --- */}
         <motion.div variants={itemVar} className="mb-12 text-center">
-          <div className="mb-4 inline-flex items-center justify-center rounded-full bg-blue-50 px-4 py-1.5 text-sm font-semibold text-blue-600 dark:bg-blue-900/30 dark:text-blue-300">
+          <div className="inline-flex items-center justify-center rounded-full bg-blue-50 text-sm font-semibold text-blue-600 dark:bg-blue-900/30 dark:text-blue-300">
             <TeamOutlined className="mr-2" /> บุคลากรของเรา
           </div>
           <h1 className="text-3xl font-extrabold text-slate-800 md:text-4xl dark:text-white">
