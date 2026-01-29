@@ -16,9 +16,33 @@ const prompt = Prompt({
   display: "swap",
 });
 
+// ✅ ปรับปรุง Metadata เพื่อให้รองรับ Favicon และ OG Image
 export const metadata: Metadata = {
   title: "KTLTC - วิทยาลัยเทคนิคกันทรลักษ์",
   description: "ระบบบริหารจัดการข่าวสารและข้อมูลวิทยาลัย",
+  // เพิ่ม Favicon
+  icons: {
+    icon: "/images/favicon.ico", // ตรวจสอบว่ามีไฟล์ที่ public/images/favicon.ico
+    shortcut: "/images/favicon.ico",
+    apple: "/images/logo.png", // แนะนำให้มีรูปโลโก้ PNG สำหรับ Apple Devices
+  },
+  // เพิ่ม Open Graph (รูปเวลาแชร์ลิงก์)
+  openGraph: {
+    title: "วิทยาลัยเทคนิคกันทรลักษ์ | KTLTC",
+    description: "ระบบบริหารจัดการข่าวสารและข้อมูลวิทยาลัยเทคนิคกันทรลักษ์",
+    url: "https://ktltc.vercel.app", // URL จริงของเว็บ
+    siteName: "KTLTC",
+    images: [
+      {
+        url: "/images/og-image.png", // ⚠️ อย่าลืมเอารูปขนาด 1200x630px ไปวางที่ public/images/
+        width: 1200,
+        height: 630,
+        alt: "KTLTC Preview Image",
+      },
+    ],
+    locale: "th_TH",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -27,7 +51,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // ✅ เพิ่ม suppressHydrationWarning ตรงนี้ เพื่อแก้ Error หน้าจอแดง
+    // ✅ เพิ่ม suppressHydrationWarning เพื่อแก้ Error หน้าจอแดง (คงเดิม)
     <html lang="th" suppressHydrationWarning>
       <head>
         {/* eslint-disable-next-line @next/next/no-page-custom-font */}
