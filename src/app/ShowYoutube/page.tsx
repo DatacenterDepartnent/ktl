@@ -57,7 +57,7 @@ const videoList = [
 
 export default function ShowYoutube() {
   return (
-    <section className="bg-white py-12 font-sans dark:bg-neutral-950">
+    <section className="bg-white px-2 rounded-4xl py-12 font-sans dark:bg-neutral-950">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}

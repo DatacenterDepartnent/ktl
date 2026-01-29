@@ -117,9 +117,9 @@ export default async function NewsDetailPage({
       : ["ข่าวทั่วไป"];
 
   return (
-    <div className="min-h-screen text-slate-800 antialiased dark:bg-transparent dark:text-slate-200">
+    <div className="min-h-screen px-4 text-slate-800 antialiased dark:bg-transparent dark:text-slate-200">
       <main className=" py-8 md:py-16">
-        <div className="max-w-4xl mx-auto space-y-12">
+        <div className="max-w-7xl mx-auto space-y-12">
           {/* Breadcrumb & Metadata */}
           <header className="space-y-6">
             <Link

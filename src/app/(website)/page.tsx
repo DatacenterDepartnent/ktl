@@ -59,7 +59,7 @@ export default async function HomePage() {
           <div className="w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
         </div>
 
-        <div className="relative z-20 max-w-4xl mx-auto space-y-6">
+        <div className="relative z-20 max-w-7xl mx-auto space-y-6">
           <span className="inline-block px-4 py-1.5 rounded-full bg-blue-600/20 text-blue-300 border border-blue-500/30 text-sm font-bold tracking-wide uppercase">
             Welcome to KTLTC
           </span>

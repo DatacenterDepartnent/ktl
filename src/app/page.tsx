@@ -16,7 +16,7 @@ import SubQAPage from "./ITA/08/qa/SubQAPage";
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col">
       <main className="grow ">
         <div className=" ">
           <ScrollUp />
@@ -51,10 +51,10 @@ export default function Home() {
         <div className="py-6 max-w-7xl mx-auto">
           <Announcement />
         </div>
-        <div className="py-6 max-w-7xl mx-auto">
+        <div className="py-6 px-4 max-w-7xl mx-auto">
           <ShowFacebook />
         </div>
-        <div className="py-6 max-w-7xl mx-auto">
+        <div className="py-6 px-4 max-w-7xl mx-auto">
           <ShowYoutube />
         </div>
         <div className="py-6 max-w-7xl mx-auto">

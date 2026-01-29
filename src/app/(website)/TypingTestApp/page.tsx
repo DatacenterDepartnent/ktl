@@ -1,7 +1,7 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef, useCallback, JSX } from 'react';
-import { motion } from 'framer-motion';
+import { useState, useEffect, useRef, useCallback, JSX } from "react";
+import { motion } from "framer-motion";
 
 interface HistoryRecord {
   wpm: number;
@@ -30,8 +30,8 @@ const calculateWPM = (typedCharacters: number, seconds: number): number => {
 
 // ฟังก์ชันสำหรับจัดการประวัติการพิมพ์และเรียงลำดับ
 const getHistory = (): HistoryRecord[] => {
-  if (typeof window !== 'undefined') {
-    const history = localStorage.getItem('typingHistory');
+  if (typeof window !== "undefined") {
+    const history = localStorage.getItem("typingHistory");
     const parsedHistory: HistoryRecord[] = history ? JSON.parse(history) : [];
     // เรียงลำดับจากคะแนนสูงสุดไปต่ำสุด
     return parsedHistory.sort((a, b) => b.wpm - a.wpm);
@@ -46,13 +46,15 @@ const saveHistory = (wpm: number): void => {
   if (history.length > 10) {
     history.shift();
   }
-  localStorage.setItem('typingHistory', JSON.stringify(history));
+  localStorage.setItem("typingHistory", JSON.stringify(history));
 };
 
 export default function TypingTestApp(): JSX.Element {
-  const [textToType, setTextToType] = useState<string>('');
-  const [typedText, setTypedText] = useState<string>('');
-  const [status, setStatus] = useState<'ready' | 'countdown' | 'typing' | 'finished'>('ready');
+  const [textToType, setTextToType] = useState<string>("");
+  const [typedText, setTypedText] = useState<string>("");
+  const [status, setStatus] = useState<
+    "ready" | "countdown" | "typing" | "finished"
+  >("ready");
   const [timer, setTimer] = useState<number>(60);
   const [countdown, setCountdown] = useState<number>(3);
   const [wpm, setWpm] = useState<number>(0);
@@ -65,21 +67,21 @@ export default function TypingTestApp(): JSX.Element {
     // สุ่มเลือกข้อความ
     const newText = paragraphs[Math.floor(Math.random() * paragraphs.length)];
     setTextToType(newText);
-    setTypedText('');
+    setTypedText("");
     setTimer(60);
     setWpm(0);
     setAccuracy(0);
     setCountdown(3);
-    setStatus('ready');
+    setStatus("ready");
   };
 
   const handleStartCountdown = (): void => {
-    setStatus('countdown');
+    setStatus("countdown");
     const countdownId = setInterval(() => {
-      setCountdown(prev => {
+      setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(countdownId);
-          setStatus('typing');
+          setStatus("typing");
           inputRef.current?.focus();
           startTimer();
           return 0;
@@ -94,10 +96,10 @@ export default function TypingTestApp(): JSX.Element {
       clearInterval(timerId.current);
     }
     timerId.current = setInterval(() => {
-      setTimer(prev => {
+      setTimer((prev) => {
         if (prev <= 1) {
           clearInterval(timerId.current!);
-          setStatus('finished');
+          setStatus("finished");
           return 0;
         }
         return prev - 1;
@@ -129,14 +131,13 @@ export default function TypingTestApp(): JSX.Element {
     // แก้ไข: ตรวจสอบว่าข้อความที่พิมพ์ตรงกับต้นฉบับแบบไม่มีช่องว่างเกิน
     if (value.trim() === textToType) {
       clearInterval(timerId.current!);
-      setStatus('finished');
+      setStatus("finished");
     }
-
   };
 
   // ใช้ useEffect เพื่อบันทึกประวัติเมื่อสถานะเกมเปลี่ยนเป็น 'finished'
   useEffect(() => {
-    if (status === 'finished') {
+    if (status === "finished") {
       saveHistory(wpm);
       setHistory(getHistory());
     }
@@ -156,15 +157,17 @@ export default function TypingTestApp(): JSX.Element {
 
   const getCharClassName = (char: string, index: number): string => {
     if (index >= typedText.length) {
-      return 'text-gray-400';
+      return "text-gray-400";
     }
-    return typedText[index] === char ? 'text-green-500' : 'text-red-500';
+    return typedText[index] === char ? "text-green-500" : "text-red-500";
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4 font-mono">
-      <div className="container max-w-4xl mx-auto p-8 rounded-lg shadow-2xl bg-gray-800">
-        <h1 className="text-4xl font-bold mb-6 text-center text-teal-400">เกมทดสอบความเร็วการพิมพ์</h1>
+      <div className="container max-w-7xl mx-auto p-8 rounded-lg shadow-2xl bg-gray-800">
+        <h1 className="text-4xl font-bold mb-6 text-center text-teal-400">
+          เกมทดสอบความเร็วการพิมพ์
+        </h1>
 
         {/* ส่วนแสดงผลข้อมูล WPM, ความแม่นยำ และเวลา */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 text-center">
@@ -173,7 +176,9 @@ export default function TypingTestApp(): JSX.Element {
             <p className="text-3xl font-bold text-yellow-400">{timer}</p>
           </div>
           <div className="p-4 bg-gray-700 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold text-gray-400">ความเร็ว (WPM)</h2>
+            <h2 className="text-xl font-semibold text-gray-400">
+              ความเร็ว (WPM)
+            </h2>
             <p className="text-3xl font-bold text-yellow-400">{wpm}</p>
           </div>
           <div className="p-4 bg-gray-700 rounded-lg shadow-md">
@@ -184,7 +189,7 @@ export default function TypingTestApp(): JSX.Element {
 
         {/* ส่วนตัวอย่างข้อความ */}
         <div className="relative text-2xl mb-8 p-6 bg-gray-700 rounded-lg shadow-inner min-h-[150px] overflow-hidden">
-          {status === 'countdown' && (
+          {status === "countdown" && (
             <motion.div
               initial={{ scale: 2, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -194,7 +199,7 @@ export default function TypingTestApp(): JSX.Element {
               {countdown}
             </motion.div>
           )}
-          {textToType.split('').map((char, index) => (
+          {textToType.split("").map((char, index) => (
             <span key={index} className={getCharClassName(char, index)}>
               {char}
             </span>
@@ -207,14 +212,18 @@ export default function TypingTestApp(): JSX.Element {
           type="text"
           value={typedText}
           onChange={handleInputChange}
-          disabled={status !== 'typing'}
+          disabled={status !== "typing"}
           className="w-full text-2xl p-4 mb-8 bg-gray-900 text-white rounded-lg border-2 border-gray-600 focus:outline-none focus:border-teal-400"
-          placeholder={status === 'typing' ? 'เริ่มพิมพ์ที่นี่...' : 'กด "เริ่ม" เพื่อเริ่ม'}
+          placeholder={
+            status === "typing"
+              ? "เริ่มพิมพ์ที่นี่..."
+              : 'กด "เริ่ม" เพื่อเริ่ม'
+          }
         />
 
         {/* ส่วนปุ่มควบคุม */}
         <div className="flex justify-center">
-          {status === 'ready' && (
+          {status === "ready" && (
             <button
               onClick={handleStartCountdown}
               className="px-8 py-4 bg-teal-500 text-white font-bold text-2xl rounded-full shadow-lg hover:bg-teal-600 transition-all duration-300 transform hover:scale-105"
@@ -222,7 +231,7 @@ export default function TypingTestApp(): JSX.Element {
               เริ่ม
             </button>
           )}
-          {status === 'finished' && (
+          {status === "finished" && (
             <button
               onClick={startTest}
               className="px-8 py-4 bg-purple-500 text-white font-bold text-2xl rounded-full shadow-lg hover:bg-purple-600 transition-all duration-300 transform hover:scale-105"
@@ -234,7 +243,9 @@ export default function TypingTestApp(): JSX.Element {
 
         {/* ส่วนกราฟประวัติย้อนหลัง */}
         <div className="mt-12">
-          <h2 className="text-2xl font-bold mb-4 text-center text-teal-400">ประวัติความเร็ว (WPM)</h2>
+          <h2 className="text-2xl font-bold mb-4 text-center text-teal-400">
+            ประวัติความเร็ว (WPM)
+          </h2>
           <div className="flex items-end justify-center h-48 bg-gray-700 rounded-lg p-4 shadow-inner">
             {history.length === 0 && (
               <p className="text-gray-400 text-lg">ยังไม่มีประวัติการพิมพ์</p>

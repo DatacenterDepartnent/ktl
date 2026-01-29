@@ -25,7 +25,7 @@ export default function ShowFacebook() {
   };
 
   return (
-    <section className="rounded-3xl bg-slate-50/50 py-12 font-sans dark:bg-neutral-950">
+    <section className="rounded-3xl px-2 bg-slate-50/50 py-12 font-sans dark:bg-neutral-950">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -33,7 +33,7 @@ export default function ShowFacebook() {
         className=""
       >
         {/* --- Header --- */}
-        <div className="mb-8 flex flex-col items-center justify-center gap-3 text-center">
+        <div className="mb-8  flex flex-col items-center justify-center gap-3 text-center">
           <motion.div
             whileHover={{ scale: 1.1, rotate: 10 }}
             className="rounded-full bg-white p-2 shadow-md dark:bg-neutral-800"

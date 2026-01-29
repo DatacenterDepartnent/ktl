@@ -54,7 +54,7 @@ export default async function AnnouncementPage() {
   const announcements = await getAnnouncements();
 
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-800 dark:bg-transparent dark:text-slate-200">
+    <main className="px-4 bg-slate-50 text-slate-800 dark:bg-transparent dark:text-slate-200">
       <div className="pt-24 md:pt-32 pb-20  md:px-8">
         {/* --- Header Section --- */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-6 border-b border-slate-200 pb-6 dark:border-slate-800">

@@ -15,7 +15,7 @@ import {
 
 const Features = () => {
   return (
-    <section className="relative overflow-hidden rounded-3xl py-16 font-sans dark:bg-transparent">
+    <section className="relative px-4 overflow-hidden rounded-3xl py-16 font-sans dark:bg-transparent">
       {/* Background Blobs: ปรับสีให้จางลงใน dark mode */}
       <div className="absolute top-0 right-0 -mt-20 -mr-20 h-96 w-96 rounded-full bg-blue-100/50 blur-3xl dark:bg-blue-900/10" />
       <div className="absolute bottom-0 left-0 -mb-20 -ml-20 h-80 w-80 rounded-full bg-indigo-100/50 blur-3xl dark:bg-indigo-900/10" />
@@ -47,7 +47,7 @@ const Features = () => {
         </div>
 
         {/* --- Tabs Section --- */}
-        <div className="mx-auto max-w-4xl">
+        <div className="mx-auto max-w-7xl">
           {/* Main Card: พื้นหลังเข้มใน dark mode */}
           <Card className="rounded-3xl border border-slate-100 bg-white p-2 shadow-xl dark:border-neutral-800 dark:bg-neutral-900">
             <Tabs

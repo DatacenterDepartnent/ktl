@@ -121,7 +121,7 @@ const SuveryModal = ({ isOpen, onClose, suvery }: ModalProps) => {
       onClick={onClose}
     >
       <div
-        className="flex max-h-[90vh] w-full max-w-4xl transform flex-col rounded-2xl border border-gray-100 bg-white p-6 shadow-2xl transition-all duration-300 dark:border-gray-700 dark:bg-gray-800"
+        className="flex max-h-[90vh] w-full max-w-7xl transform flex-col rounded-2xl border border-gray-100 bg-white p-6 shadow-2xl transition-all duration-300 dark:border-gray-700 dark:bg-gray-800"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header (Sticky) */}

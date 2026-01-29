@@ -548,7 +548,7 @@ export default function ITA() {
           </p>
         </div>
         {/* Main CTA Card */}
-        <div className="mx-auto mb-16 max-w-4xl">
+        <div className="mx-auto mb-16 max-w-7xl">
           <MainDownloadCard />
         </div>
         {/* --- Info Cards Section (Modern Layout) --- */}

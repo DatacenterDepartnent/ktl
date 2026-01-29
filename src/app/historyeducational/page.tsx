@@ -44,7 +44,7 @@ export default function HistoryEducational() {
         </div>
 
         {/* --- History Section (Timeline Style) --- */}
-        <div className="mx-auto max-w-4xl">
+        <div className="mx-auto max-w-7xl">
           <div className="mb-8 flex items-center gap-3 border-b border-slate-200 pb-4 dark:border-neutral-800">
             <HistoryOutlined className="text-2xl text-blue-600" />
             <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">

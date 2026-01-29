@@ -10,7 +10,7 @@ import Link from "next/link";
 
 const StudentSupportSystem = () => {
   return (
-    <section className="py-16 max-w-7xl mx-auto dark:bg-transparent">
+    <section className="py-16 max-w-7xl px-4 mx-auto dark:bg-transparent">
       <div className=" lg:px-20">
         {/* --- Header Section --- */}
         <motion.div
