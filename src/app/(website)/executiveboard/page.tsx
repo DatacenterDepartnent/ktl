@@ -29,7 +29,7 @@ export default function ExecutiveBoard() {
         whileInView="visible"
         viewport={{ once: true }}
         variants={containerVar}
-        className="container mx-auto px-4"
+        className=""
       >
         {/* --- Header Section --- */}
         <motion.div variants={itemVar} className="mb-16 text-center">

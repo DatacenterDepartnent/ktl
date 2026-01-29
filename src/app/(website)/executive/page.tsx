@@ -10,8 +10,8 @@ import { UserOutlined, StarFilled } from "@ant-design/icons";
 
 export default function EDUAdmin() {
   return (
-    <section className="bg-slate-50 py-16 font-sans dark:bg-neutral-950">
-      <div className="container mx-auto px-4">
+    <section className="px-4">
+      <div className="">
         {/* --- Header --- */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}

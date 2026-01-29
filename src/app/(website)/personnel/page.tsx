@@ -75,7 +75,7 @@ export default function Personnel() {
   };
 
   return (
-    <section className="py-16 font-sans dark:bg-transparent">
+    <section className=" font-sans dark:bg-transparent">
       <motion.div
         initial="hidden"
         whileInView="visible"

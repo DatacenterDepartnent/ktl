@@ -92,13 +92,13 @@ export default function AcademicAffairsPage() {
   };
 
   return (
-    <section className="min-h-screen bg-slate-50 py-16 font-sans dark:bg-neutral-950">
+    <section className="">
       <motion.div
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
         variants={containerVar}
-        className="container mx-auto max-w-4xl px-4 md:px-8"
+        className=""
       >
         {/* --- Header --- */}
         <motion.div variants={itemVar} className="mb-12 text-center">

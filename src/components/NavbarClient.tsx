@@ -6,6 +6,7 @@ import Image from "next/image";
 import MobileMenu from "./MobileMenu";
 import { NavItem } from "@/types/nav";
 import ThemeToggle from "./ThemeToggle";
+import LogoutBtn from "./LogoutBtn"; // อย่าลืม import ถ้ามี component นี้
 
 type MenuItem = NavItem & {
   children?: MenuItem[];
@@ -42,7 +43,7 @@ export default function NavbarClient({
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        {/* --- LOGO --- */}
+        {/* --- 1. LOGO (ซ้าย) --- */}
         <Link
           href="/"
           className={`font-black tracking-tighter flex items-center gap-2 hover:opacity-80 transition-transform duration-300 ${
@@ -62,7 +63,7 @@ export default function NavbarClient({
           </span>
         </Link>
 
-        {/* --- DESKTOP MENU --- */}
+        {/* --- 2. DESKTOP MENU (กลาง - ซ่อนในมือถือ) --- */}
         <div className="hidden md:flex items-center gap-6">
           <Link
             href="/"
@@ -120,26 +121,98 @@ export default function NavbarClient({
           ))}
         </div>
 
-        {/* --- AUTH SECTION & THEME TOGGLE --- */}
-        <nav className="... flex items-center justify-between ...">
-          {/* 1. Logo */}
+        {/* --- 3. RIGHT ACTIONS (ขวา) --- */}
+        <div className="flex items-center gap-3 sm:gap-4">
+          {/* ✅ Theme Toggle (แสดงทุกหน้าจอ) */}
+          <ThemeToggle />
 
-          {/* 2. Desktop Menu (Hidden on mobile) */}
+          {/* ✅ User Profile / Login Button (เฉพาะ Desktop) */}
+          <div className="hidden md:flex items-center gap-4">
+            {username ? (
+              <div
+                className="relative"
+                onMouseEnter={() => setIsUserDropdownOpen(true)}
+                onMouseLeave={() => setIsUserDropdownOpen(false)}
+              >
+                <button className="flex items-center gap-3 hover:bg-zinc-100 dark:hover:bg-zinc-800 px-3 py-1.5 rounded-full transition-colors cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-700">
+                  <div className="text-right hidden sm:block">
+                    <div className="text-[10px] font-bold tracking-widest uppercase text-zinc-400">
+                      {role?.replace("_", " ") || "Member"}
+                    </div>
+                    <div className="text-xs font-bold text-zinc-700 dark:text-zinc-200">
+                      {username}
+                    </div>
+                  </div>
+                  <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20">
+                    {username.charAt(0).toUpperCase()}
+                  </div>
+                </button>
 
-          {/* 3. Right Actions Group */}
-          <div className="flex items-center gap-4">
-            {/* ✅ Theme Toggle: แสดงตลอดทั้ง Mobile และ Desktop */}
-            <ThemeToggle />
+                {/* Dropdown Menu */}
+                {isUserDropdownOpen && (
+                  <div className="absolute right-0 top-full pt-2 w-64 animate-in fade-in zoom-in-95 duration-200">
+                    <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-2xl overflow-hidden">
+                      {/* Header */}
+                      <div className="px-5 py-3 border-b border-zinc-100 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-800/50">
+                        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                          Signed in as
+                        </p>
+                        <p className="text-sm font-bold text-slate-800 dark:text-white truncate">
+                          {username}
+                        </p>
+                      </div>
 
-            {/* ✅ User Profile: แสดงเฉพาะ Desktop */}
-            <div className="hidden md:flex items-center gap-4"></div>
+                      <div className="p-2 space-y-1">
+                        {/* Super Admin Console */}
+                        {role === "super_admin" && (
+                          <Link
+                            href="/dashboard/super-admin"
+                            className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-yellow-600 hover:bg-yellow-50 dark:text-yellow-400 dark:hover:bg-yellow-900/20 rounded-lg transition-colors"
+                          >
+                            <span>⚡</span> Super Admin Console
+                          </Link>
+                        )}
 
-            {/* ✅ Mobile Menu: แสดงเฉพาะ Mobile */}
-            <div className="md:hidden">
-              <MobileMenu menuTree={menuTree} />
-            </div>
+                        {/* Edit Profile */}
+                        <Link
+                          href="/dashboard/profile"
+                          className="flex items-center gap-3 px-3 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                        >
+                          <span>👤</span> ข้อมูลส่วนตัว
+                        </Link>
+
+                        {/* Dashboard */}
+                        <Link
+                          href="/dashboard"
+                          className="flex items-center gap-3 px-3 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                        >
+                          <span>🏠</span> Dashboard
+                        </Link>
+
+                        {/* Logout */}
+                        <div className="border-t border-zinc-100 dark:border-zinc-800 mt-2 pt-2">
+                          <LogoutBtn />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="px-5 py-2 rounded-full bg-blue-600 text-white text-xs font-bold hover:bg-blue-500 shadow-md shadow-blue-500/20 transition hover:scale-105 active:scale-95"
+              >
+                เข้าสู่ระบบ
+              </Link>
+            )}
           </div>
-        </nav>
+
+          {/* ✅ Mobile Menu (Hamburger - เฉพาะ Mobile) */}
+          <div className="md:hidden">
+            <MobileMenu menuTree={menuTree} />
+          </div>
+        </div>
       </div>
     </nav>
   );

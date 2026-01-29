@@ -263,7 +263,7 @@ export default function EditNewsPage({
       `}</style>
 
       {/* --- Top Bar --- */}
-      <div className="border-b border-slate-200 sticky top-0 z-30 px-6 py-4 flex items-center justify-between backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
+      <div className="border-b border-slate-200 sticky top-0 z-30 px-4 py-4 flex items-center justify-between backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
         <div className="flex items-center gap-4">
           <Link
             href="/dashboard/news"
@@ -280,11 +280,11 @@ export default function EditNewsPage({
         )}
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 py-10 space-y-8">
+      <div className="max-w-7xl mx-auto px-4 py-10 space-y-8">
         {/* --- Card 1: ข้อมูลหลัก --- */}
-        <section className="rounded-3xl p-8 shadow-xl border border-slate-100 space-y-6 dark:bg-zinc-900 dark:border-zinc-800">
+        <section className="rounded-3xl space-y-6">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-2xl bg-amber-100 text-amber-600 flex items-center justify-center text-xl dark:bg-amber-900/30 dark:text-amber-400">
+            <div className="w-10 h-10 rounded-2xl  text-amber-600 flex items-center justify-center text-xl dark:bg-amber-900/30 dark:text-amber-400">
               📝
             </div>
             <h2 className="text-lg font-bold text-slate-700 dark:text-slate-200">
@@ -361,7 +361,7 @@ export default function EditNewsPage({
         </section>
 
         {/* --- Card 2: รูปภาพทั่วไป --- */}
-        <section className="rounded-3xl p-8 shadow-xl border border-slate-100 space-y-6 dark:bg-zinc-900 dark:border-zinc-800">
+        <section className="rounded-3xl space-y-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <h2 className="font-bold text-slate-700 flex items-center gap-2 text-lg dark:text-slate-200">
               🖼️ รูปภาพทั่วไป (แนวนอน)
@@ -453,7 +453,7 @@ export default function EditNewsPage({
         </section>
 
         {/* --- Card 3: จดหมายข่าว --- */}
-        <section className="rounded-3xl p-8 shadow-xl border border-slate-100 space-y-6 dark:bg-zinc-900 dark:border-zinc-800">
+        <section className="rounded-3xl space-y-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <h2 className="font-bold text-slate-700 flex items-center gap-2 text-lg dark:text-slate-200">
               📜 จดหมายข่าว (แนวตั้ง)
@@ -481,7 +481,6 @@ export default function EditNewsPage({
               )}
             </div>
           </div>
-
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             {newsletterImages.map((img, idx) => (
               <div
@@ -547,7 +546,7 @@ export default function EditNewsPage({
         </section>
 
         {/* --- Card 4: ลิงก์ภายนอก --- */}
-        <section className="rounded-3xl p-8 shadow-xl border border-slate-100 space-y-4 pb-12 dark:bg-zinc-900 dark:border-zinc-800">
+        <section className="rounded-3xl space-y-6">
           <h2 className="font-bold text-slate-700 flex items-center gap-2 text-lg dark:text-slate-200">
             🔗 ลิงก์ภายนอก / เอกสารแนบ
           </h2>
@@ -604,7 +603,7 @@ export default function EditNewsPage({
                 </button>
               </div>
             ))}
-        </div>
+          </div>
         </section>
       </div>
 

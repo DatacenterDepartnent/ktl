@@ -343,7 +343,7 @@ export default function GECCPage() {
     <section className="min-h-screen bg-slate-50 pb-20 ">
       {/* Header & Breadcrumb */}
       <div className="sticky top-0 z-40 border-b border-slate-200 ">
-        <div className="container mx-auto px-4 py-4">
+        <div className=" py-4">
           <Breadcrumb
             items={[
               { href: "/", title: <HomeOutlined /> },

@@ -118,7 +118,7 @@ export default async function NewsDetailPage({
 
   return (
     <div className="min-h-screen text-slate-800 antialiased dark:bg-transparent dark:text-slate-200">
-      <main className="container mx-auto px-4 py-8 md:py-16">
+      <main className=" py-8 md:py-16">
         <div className="max-w-4xl mx-auto space-y-12">
           {/* Breadcrumb & Metadata */}
           <header className="space-y-6">

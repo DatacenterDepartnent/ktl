@@ -25,7 +25,7 @@ const Features = () => {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         viewport={{ once: true }}
-        className="relative z-10 container mx-auto px-4"
+        className="relative z-10 "
       >
         {/* --- Header --- */}
         <div className="mb-12 text-center">

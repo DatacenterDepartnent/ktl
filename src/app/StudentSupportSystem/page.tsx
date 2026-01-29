@@ -11,7 +11,7 @@ import Link from "next/link";
 const StudentSupportSystem = () => {
   return (
     <section className="py-16 max-w-7xl mx-auto dark:bg-transparent">
-      <div className="container mx-auto px-4 lg:px-20">
+      <div className=" lg:px-20">
         {/* --- Header Section --- */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}

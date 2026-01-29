@@ -51,7 +51,9 @@ const PersonCard = ({
           )}
 
           <div className="linear:text-slate-500 mt-2 space-y-1 text-xs text-slate-400">
-            {details?.map((line, idx) => <p key={idx}>{line}</p>)}
+            {details?.map((line, idx) => (
+              <p key={idx}>{line}</p>
+            ))}
           </div>
         </div>
       </BackgroundGradient>
@@ -122,7 +124,7 @@ const DepartmentSection = ({
 export default function AdministrativeStructure() {
   return (
     <section className=" ">
-      <div className="container mx-auto px-4">
+      <div className="">
         {/* --- Header --- */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}

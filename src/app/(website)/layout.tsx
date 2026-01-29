@@ -8,7 +8,7 @@ export default function WebsiteLayout({
   return (
     <>
       <main>
-        <div className="text-zinc-800  py-24">
+        <div className="text-zinc-800 py-24">
           <div>{children}</div>
         </div>
       </main>

@@ -55,7 +55,7 @@ export default async function AnnouncementPage() {
 
   return (
     <main className="min-h-screen bg-slate-50 text-slate-800 dark:bg-transparent dark:text-slate-200">
-      <div className="pt-24 md:pt-32 pb-20 container mx-auto px-4 md:px-8">
+      <div className="pt-24 md:pt-32 pb-20  md:px-8">
         {/* --- Header Section --- */}
         <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-6 border-b border-slate-200 pb-6 dark:border-slate-800">
           <div className="space-y-2 border-l-4 border-red-500 pl-4">

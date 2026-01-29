@@ -9,8 +9,8 @@ import { UserOutlined, StarFilled } from "@ant-design/icons"; // แนะนำ
 
 export default function EDUAdmin() {
   return (
-    <section className="py-16 font-sans">
-      <div className="container mx-auto px-4">
+    <section className="px-4 font-sans">
+      <div className="">
         {/* --- Header --- */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}

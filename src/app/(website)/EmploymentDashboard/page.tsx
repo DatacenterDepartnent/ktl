@@ -66,7 +66,7 @@ export default async function EmploymentDashboard(props: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-white/50 py-16 transition-colors duration-300 dark:bg-gray-900">
+    <div className="min-h-screen bg-white/50 py-16 px-4 transition-colors duration-300 dark:bg-gray-900">
       <div className="mx-auto max-w-7xl space-y-8">
         {/* --- HEADER SECTION --- */}
         <div className="flex flex-col items-start justify-between gap-4 border-b border-orange-200 pb-6 md:flex-row md:items-center dark:border-orange-800">

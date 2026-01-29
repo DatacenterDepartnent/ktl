@@ -85,7 +85,7 @@ export default function PlanNing() {
   };
 
   return (
-    <section className="min-h-screen py-16 font-sans">
+    <section className="min-h-screen py-16 px-4 font-sans">
       <motion.div
         initial="hidden"
         whileInView="visible"

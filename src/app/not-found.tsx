@@ -23,7 +23,7 @@ const ErrorContent = () => {
           <div className="h-[300px] w-[300px] rounded-full bg-blue-400/20 blur-[100px] sm:h-[500px] sm:w-[500px] " />
         </div>
 
-        <div className="container mx-auto px-4 text-center">
+        <div className=" text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}

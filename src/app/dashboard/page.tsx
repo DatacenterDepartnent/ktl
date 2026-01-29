@@ -92,7 +92,7 @@ export default async function DashboardPage() {
   const stats = await getStats();
 
   return (
-    <div className="max-w-7xl mx-auto w-full p-6 md:p-10 text-zinc-800 dark:text-zinc-200">
+    <div className="max-w-7xl mx-auto w-full px-4 py-12 text-zinc-800 dark:text-zinc-200">
       {/* --- ส่วนหัว (Header) --- */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6 border-b border-zinc-200 pb-8 dark:border-zinc-800">
         <div>

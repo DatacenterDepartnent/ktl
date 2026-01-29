@@ -490,7 +490,7 @@ export default function ITA() {
       <BackgroundDecor />
       {/* Header Section */}
       <div className="relative z-10 border-b backdrop-blur-md">
-        <div className="container mx-auto px-4 py-4">
+        <div className=" py-4">
           <Breadcrumb
             items={[
               {
@@ -527,7 +527,7 @@ export default function ITA() {
       </div>
 
       {/* Hero Content */}
-      <div className="relative z-10 container mx-auto px-4 py-12 md:py-20">
+      <div className="relative z-10  py-12 md:py-20">
         <div className="mx-auto mb-12 max-w-5xl text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}

@@ -32,13 +32,13 @@ export default function Philosophy() {
   };
 
   return (
-    <section className="linear:bg-neutral-950 py-16 font-sans">
+    <section className="linear:bg-neutral-950">
       <motion.div
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
         variants={containerVar}
-        className="container mx-auto max-w-6xl px-4 md:px-8"
+        className="mx-auto max-w-7xl px-4"
       >
         {/* --- Header Section --- */}
         <motion.div variants={itemVar} className="mb-16 text-center">

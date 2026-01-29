@@ -116,7 +116,7 @@ export default function ManageNavbar() {
         </div>
 
         {/* Form Section */}
-        <section className="mb-12 p-6 md:p-8 rounded-3xl shadow-sm border border-zinc-200 dark:bg-zinc-900 dark:border-zinc-800">
+        <section className="mb-12">
           <h2 className="text-xl font-bold mb-6 flex items-center gap-2 text-zinc-800 dark:text-white">
             {editId ? (
               <>

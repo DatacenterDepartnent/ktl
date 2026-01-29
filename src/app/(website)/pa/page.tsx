@@ -154,7 +154,7 @@ export default function PaPage() {
     <section className="min-h-screen bg-slate-50 pb-20 font-sans dark:bg-neutral-950">
       {/* --- Breadcrumb & Header --- */}
       <div className="border-b border-slate-200 bg-white pt-[100px] pb-8 dark:border-neutral-800 dark:bg-neutral-900">
-        <div className="container mx-auto px-4 text-center">
+        <div className=" text-center">
           <h1 className="mb-2 text-2xl font-extrabold text-slate-800 md:text-4xl dark:text-white">
             การประเมินผล<span className="text-[#DAA520]">การพัฒนางาน (PA)</span>
           </h1>

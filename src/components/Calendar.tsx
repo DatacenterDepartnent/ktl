@@ -73,7 +73,7 @@ export default function CalendarPage() {
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
-          className="container mx-auto px-4"
+          className=""
         >
           <div className="flex flex-col items-center justify-center gap-8 lg:flex-row lg:items-start">
             {/* --- ส่วนปฏิทิน (Calendar Widget) --- */}

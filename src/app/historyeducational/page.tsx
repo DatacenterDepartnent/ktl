@@ -11,7 +11,7 @@ import {
 
 export default function HistoryEducational() {
   return (
-    <section className="bg-white py-16 font-sans dark:bg-neutral-950">
+    <section className="bg-white py-16 px-4 font-sans dark:bg-neutral-950">
       {/* --- Background Decoration --- */}
       <div className="pointer-events-none absolute top-0 right-0 -mt-20 -mr-20 h-96 w-96 rounded-full bg-blue-100/30 blur-3xl dark:bg-blue-900/10" />
       <div className="pointer-events-none absolute bottom-0 left-0 -mb-20 -ml-20 h-80 w-80 rounded-full bg-indigo-100/30 blur-3xl dark:bg-indigo-900/10" />
@@ -21,7 +21,7 @@ export default function HistoryEducational() {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         viewport={{ once: true }}
-        className="relative z-10 container mx-auto px-4 md:px-8"
+        className="relative z-10  md:px-8"
       >
         {/* --- Header Section --- */}
         <div className="mb-16 flex flex-col items-center text-center">

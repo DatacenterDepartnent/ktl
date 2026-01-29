@@ -44,7 +44,7 @@ export default async function ManageNewsPage() {
   const newsList = await getNews();
 
   return (
-    <div className="max-w-7xl mx-auto w-full p-8 text-zinc-800 dark:text-zinc-200">
+    <div className="max-w-7xl mx-auto w-full p-4 text-zinc-800 dark:text-zinc-200">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-10 gap-4 border-b border-zinc-200 pb-6 dark:border-zinc-800">
         <div>
@@ -58,7 +58,7 @@ export default async function ManageNewsPage() {
 
         <Link
           href="/dashboard/news/add"
-          className="w-full md:w-auto flex justify-center items-center gap-2 bg-blue-600 text-white px-6 py-3 md:py-2.5 rounded-xl md:rounded-full font-bold hover:bg-blue-500 shadow-md shadow-blue-200 transition-all active:scale-95 text-sm md:text-base dark:shadow-none dark:hover:bg-blue-500"
+          className="w-full md:w-auto flex justify-center items-center gap-2 bg-blue-600 text-white px-4 py-3 md:py-2.5 rounded-xl md:rounded-full font-bold hover:bg-blue-500 shadow-md shadow-blue-200 transition-all active:scale-95 text-sm md:text-base dark:shadow-none dark:hover:bg-blue-500"
         >
           <svg
             className="w-5 h-5"

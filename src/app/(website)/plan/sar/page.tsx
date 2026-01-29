@@ -54,7 +54,7 @@ export default function SarPage() {
   };
 
   return (
-    <section className="min-h-screen bg-slate-50 py-16 font-sans dark:bg-neutral-950">
+    <section className="min-h-screen ">
       <motion.div
         initial="hidden"
         whileInView="visible"

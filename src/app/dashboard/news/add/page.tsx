@@ -297,9 +297,9 @@ export default function AddNewsPage() {
         </div>
       </div>
 
-      <div className="max-w-5xl mx-auto px-6 py-10 space-y-8">
+      <div className="max-w-7xl mx-auto px-4 py-10 space-y-8">
         {/* --- Card 1: ข้อมูลหลัก --- */}
-        <section className="rounded-3xl p-8 shadow-xl shadow-slate-200/50 border border-slate-100 dark:bg-zinc-900 dark:border-zinc-800 dark:shadow-none">
+        <section className="rounded-3xl space-y-6">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl dark:bg-blue-900/30 dark:text-blue-400">
               📝
@@ -437,7 +437,8 @@ export default function AddNewsPage() {
         </section>
 
         {/* --- Card 2: รูปภาพทั่วไป --- */}
-        <section className="rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col dark:bg-zinc-900 dark:border-zinc-800 dark:shadow-none">
+        <section className="rounded-3xl space-y-6">
+          {" "}
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-slate-700 flex items-center gap-2 dark:text-slate-200">
               <span className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-sm dark:bg-blue-900/30 dark:text-blue-400">
@@ -449,7 +450,6 @@ export default function AddNewsPage() {
               แนวนอน
             </span>
           </div>
-
           <div className="relative group cursor-pointer min-h-[160px] border-2 border-dashed border-slate-300 rounded-2xl bg-slate-50 hover:bg-blue-50 hover:border-blue-400 transition-all flex flex-col items-center justify-center mb-6 overflow-hidden dark:bg-zinc-800 dark:border-zinc-700 dark:hover:bg-blue-900/10 dark:hover:border-blue-500">
             <input
               type="file"
@@ -480,7 +480,6 @@ export default function AddNewsPage() {
               หรือลากไฟล์มาวางที่นี่
             </span>
           </div>
-
           {imagePreviews.length > 0 && (
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 animate-fade-in-up">
               {imagePreviews.map((src, i) => (
@@ -519,7 +518,7 @@ export default function AddNewsPage() {
         </section>
 
         {/* --- Card 3: จดหมายข่าว --- */}
-        <section className="rounded-3xl p-6 shadow-xl shadow-slate-200/50 border border-slate-100 flex flex-col dark:bg-zinc-900 dark:border-zinc-800 dark:shadow-none">
+        <section className="rounded-3xl space-y-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="font-bold text-slate-700 flex items-center gap-2 dark:text-slate-200">
               <span className="w-8 h-8 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center text-sm dark:bg-purple-900/30 dark:text-purple-400">
@@ -531,7 +530,6 @@ export default function AddNewsPage() {
               แนวตั้ง
             </span>
           </div>
-
           <div className="relative group cursor-pointer min-h-[160px] border-2 border-dashed border-slate-300 rounded-2xl bg-slate-50 hover:bg-purple-50 hover:border-purple-400 transition-all flex flex-col items-center justify-center mb-6 overflow-hidden dark:bg-zinc-800 dark:border-zinc-700 dark:hover:bg-purple-900/10 dark:hover:border-purple-500">
             <input
               type="file"
@@ -562,7 +560,6 @@ export default function AddNewsPage() {
               สำหรับเอกสาร/คำสั่ง
             </span>
           </div>
-
           {newsletterPreviews.length > 0 && (
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 animate-fade-in-up">
               {newsletterPreviews.map((src, i) => (
@@ -601,7 +598,7 @@ export default function AddNewsPage() {
         </section>
 
         {/* --- Card 4: ลิงก์ --- */}
-        <section className="rounded-3xl p-8 shadow-xl shadow-slate-200/50 border border-slate-100 dark:bg-zinc-900 dark:border-zinc-800 dark:shadow-none">
+        <section className="rounded-3xl space-y-6">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl dark:bg-indigo-900/30 dark:text-indigo-400">
               🔗
@@ -610,8 +607,7 @@ export default function AddNewsPage() {
               ลิงก์ภายนอก / เอกสารแนบ
             </h2>
           </div>
-
-          <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex flex-col md:flex-row gap-3 dark:bg-zinc-800 dark:border-zinc-700">
+          <div className="flex flex-col md:flex-row gap-3">
             <input
               placeholder="ชื่อปุ่ม (เช่น ดาวน์โหลด PDF)"
               value={currentLink.label}
@@ -636,7 +632,6 @@ export default function AddNewsPage() {
               + เพิ่มลิงก์
             </button>
           </div>
-
           {links.length > 0 && (
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-3">
               {links.map((l, i) => (
