@@ -152,12 +152,6 @@ async function getAdjacentNews(currentNews: NewsItem) {
   }
 }
 
-function getGridClass(count: number) {
-  if (count === 1) return "grid-cols-1";
-  if (count === 2) return "grid-cols-1 md:grid-cols-2";
-  return "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"; // Optimized for 3 columns on large screens
-}
-
 export default async function NewsDetailPage({
   params,
 }: {
@@ -222,8 +216,10 @@ export default async function NewsDetailPage({
 
               <div className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white leading-tight tracking-tight">
                 {/* Use actual title if available, otherwise fallback */}
-                {/* {news.title || "วิทยาลัยเทคนิคกันทรลักษ์"} */}
-                <p className="text-center">วิทยาลัยเทคนิคกันทรลักษ์</p>
+                <p className="text-center">
+                  {/* {news.title || "วิทยาลัยเทคนิคกันทรลักษ์"} */}
+                  วิทยาลัยเทคนิคกันทรลักษ์
+                </p>
               </div>
 
               <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-zinc-800 pt-6">
@@ -291,7 +287,42 @@ export default async function NewsDetailPage({
 
           <hr className="border-slate-200 dark:border-zinc-800" />
 
-          {/* --- Gallery Section --- */}
+          {/* --- Documents / Posters Section (ข่าวประกาศ/คำสั่ง) --- */}
+          {news.announcementImages && news.announcementImages.length > 0 && (
+            <section className="space-y-8">
+              <div className="flex items-center gap-3">
+                <div className="h-8 w-1.5 bg-amber-500 rounded-full"></div>
+                <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
+                  จดหมายข่าวประชาสัมพันธ์
+                </h3>
+              </div>
+
+              <div className="flex flex-col gap-10">
+                {news.announcementImages.map((img, idx) => (
+                  <a
+                    key={idx}
+                    href={img}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block relative w-full rounded-2xl overflow-hidden shadow-2xl bg-white dark:bg-zinc-900 ring-1 ring-slate-900/5 dark:ring-white/10 cursor-zoom-in hover:opacity-95 transition-opacity"
+                  >
+                    <Image
+                      src={img}
+                      alt={`Announcement ${idx + 1}`}
+                      // ✅ Uncropped: width 100%, height auto
+                      width={0}
+                      height={0}
+                      sizes="100vw"
+                      style={{ width: "100%", height: "auto" }}
+                      priority={idx === 0}
+                    />
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* --- Gallery Section (ภาพกิจกรรม) --- */}
           {news.images && news.images.length > 0 && (
             <section className="space-y-8">
               <div className="flex items-center gap-3">
@@ -304,54 +335,33 @@ export default async function NewsDetailPage({
                 </h3>
               </div>
 
+              {/* ✅ Masonry Logic: Check length < 5 ? 1 column : 3 columns */}
               <div
-                className={`grid gap-4 md:gap-6 ${getGridClass(news.images.length)}`}
+                className={`${
+                  news.images.length < 5
+                    ? "columns-1" // ถ้าน้อยกว่า 5 รูป -> 1 คอลัมน์ (รูปใหญ่เต็ม)
+                    : "columns-1 sm:columns-2 lg:columns-3" // ถ้า 5 รูปขึ้นไป -> แบ่ง 3 คอลัมน์
+                } gap-4 space-y-4`}
               >
                 {news.images.map((img, idx) => (
-                  <div
+                  <a
                     key={idx}
-                    className="group relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm hover:shadow-xl transition-all duration-500"
+                    href={img}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block relative w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm hover:shadow-xl transition-all duration-300 break-inside-avoid cursor-zoom-in"
                   >
                     <Image
                       src={img}
                       alt={`Gallery image ${idx + 1}`}
-                      fill
-                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                      // ✅ Uncropped: width 100%, height auto
+                      width={0}
+                      height={0}
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-500"></div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* --- Documents / Posters Section --- */}
-          {news.announcementImages && news.announcementImages.length > 0 && (
-            <section className="space-y-8">
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-1.5 bg-amber-500 rounded-full"></div>
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
-                  ประกาศ / โปสเตอร์
-                </h3>
-              </div>
-
-              <div className="flex flex-col gap-10">
-                {news.announcementImages.map((img, idx) => (
-                  <div
-                    key={idx}
-                    className="relative w-full rounded-2xl overflow-hidden shadow-2xl bg-white dark:bg-zinc-900 ring-1 ring-slate-900/5 dark:ring-white/10"
-                  >
-                    <Image
-                      src={img}
-                      alt={`Announcement ${idx + 1}`}
-                      width={1600}
-                      height={2000}
-                      className="w-full h-auto"
                       style={{ width: "100%", height: "auto" }}
-                      priority={idx === 0}
+                      className="transition-transform duration-700 hover:scale-105"
                     />
-                  </div>
+                  </a>
                 ))}
               </div>
             </section>

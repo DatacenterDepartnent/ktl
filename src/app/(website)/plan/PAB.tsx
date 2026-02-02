@@ -66,9 +66,6 @@ export default function PAB() {
             alt="Image description ทรัพยากร"
           />
         </div>
-        {/* <div className='rounded-[22px] pt-4'>
-                                            <Image src="/images/บุคลากร/ทรัพยากร/บริหารงานทั่วไป.webp" alt="Image description ทรัพยากร" />
-                                        </div> */}
       </div>
     </>
   );
