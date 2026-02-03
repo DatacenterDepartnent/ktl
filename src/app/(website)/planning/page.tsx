@@ -8,11 +8,19 @@ import Plan2566 from "./2566/page";
 import Plan2567 from "./2567/page";
 import Plan2568 from "./2568/page";
 import Plan2569 from "./2569/page";
+import SQDP from "./SQDP/page";
 
 // Import Components
 
 // 1. Data Configuration (รวมข้อมูลไว้ที่นี่เพื่อความสะอาดของโค้ด)
 const planningJobs = [
+  {
+    key: "5",
+    title: "แผนพัฒนาคุณภาพสถานศึกษา",
+    subtitle: "School Quality Development Plan.",
+    icon: <DatabaseOutlined />,
+    component: <SQDP />,
+  },
   {
     key: "1",
     title: "ปีงบประมาณ 2569",
@@ -59,7 +67,7 @@ const planningJobs = [
     component: <Plan2566 />,
   },
 ];
-
+// แผนพัฒนาคุณภาพสถานศึกษา (พ.ศ. 2565 – 2569) ฉบับสมบู
 export default function PlanNing() {
   // Animation Variants
   const containerVar = {
