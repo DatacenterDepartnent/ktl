@@ -169,7 +169,7 @@ export default function PlanningPage() {
         className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6"
       >
         {/* --- Header --- */}
-        <motion.div variants={itemVar} className="mb-16 text-center">
+        <motion.div variants={itemVar} className="mb-12 text-center">
           <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 shadow-sm text-xs font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest mb-6">
             <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse" />
             Departments
