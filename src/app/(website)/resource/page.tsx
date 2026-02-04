@@ -86,6 +86,13 @@ const resourceJobs = [
     component: <PW />,
     color: "bg-purple-500",
     lightColor: "bg-purple-50 text-purple-600",
+    actions: [
+      {
+        label: "ข้อมูลครุภัณฑ์",
+        href: "/Equipment",
+        icon: <ArrowRightOutlined />, // ใช้ icon มาตรฐานแทน component หน้าเว็บ
+      },
+    ],
   },
   {
     key: "7",

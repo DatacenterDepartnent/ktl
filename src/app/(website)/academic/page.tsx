@@ -11,7 +11,6 @@ import {
   DesktopOutlined,
   BookOutlined,
   ReadOutlined,
-  BankOutlined,
   ArrowRightOutlined,
 } from "@ant-design/icons";
 
@@ -22,6 +21,7 @@ import MAEW from "./MAEW";
 import TMW from "./TMW";
 import CDW from "./CDW";
 import ARAL from "./ARAL";
+import CourseInformation from "../CourseInformation/page";
 
 // 1. Data Configuration (ปรับสี Theme ให้เป็นโทนฟ้า-น้ำเงิน สบายตาและดูฉลาด)
 const academicJobs = [
@@ -69,6 +69,13 @@ const academicJobs = [
     component: <CDW />,
     color: "bg-emerald-500",
     lightColor: "bg-emerald-50 text-emerald-600",
+    actions: [
+      {
+        label: "หลักสูตรการเรียน การสอน",
+        href: "/CourseInformation",
+        icon: <ArrowRightOutlined />, // ใช้ icon มาตรฐานแทน component หน้าเว็บ
+      },
+    ],
   },
   {
     key: "6",
@@ -163,7 +170,7 @@ export default function AcademicAffairsPage() {
                 }
               >
                 <div className="animate-in fade-in slide-in-from-top-4 duration-500 ease-out">
-                  {/* Action Buttons Toolbar (Placeholder) */}
+                  {/* Action Buttons Toolbar */}
                   {/* @ts-ignore: Check if actions exist */}
                   {job.actions && (
                     <div className="mb-8 flex flex-wrap gap-3 p-4 bg-slate-50 dark:bg-zinc-800/50 rounded-xl border border-slate-100 dark:border-zinc-700/50">

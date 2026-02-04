@@ -1,13 +1,7 @@
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <section>
-      <div
-        className="
-  px-4
-      "
-      >
-        {children}
-      </div>
+      <div className="py-24 px-4">{children}</div>
     </section>
   );
 }
