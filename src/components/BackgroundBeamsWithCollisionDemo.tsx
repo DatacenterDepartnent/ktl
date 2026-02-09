@@ -40,7 +40,7 @@ export default function BackgroundBeamsWithCollisionDemo() {
           image={
             <div className="relative w-full rounded-xl overflow-hidden shadow-lg">
               <Image
-                src="/63/00.webp"
+                src="/wallpaper/1.webp"
                 alt="สมเด็จพระนางเจ้าสิริกิติ์"
                 width={1200}
                 height={800}
@@ -59,9 +59,9 @@ export default function BackgroundBeamsWithCollisionDemo() {
           description={null}
           image={
             <div className="relative w-full rounded-xl overflow-hidden shadow-lg">
-              <LinkPreview url="https://ktltcv2.vercel.app/pressrelease/2568/press6810/press77">
+              <LinkPreview url="https://ktltc.vercel.app/news/69892ed2e016a8b49ffc9974">
                 <Image
-                  src="/77/00.webp"
+                  src="/wallpaper/2.webp"
                   alt="ข่าวประชาสัมพันธ์"
                   width={1200}
                   height={800}

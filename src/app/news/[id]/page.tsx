@@ -223,7 +223,7 @@ export default async function NewsDetailPage({
 
               <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-zinc-800 pt-6">
                 <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                  <span className=" rounded-full bg-blue-500"></span>
                   เผยแพร่เมื่อ:
                 </div>
                 <time className="font-medium text-slate-700 dark:text-slate-300">
