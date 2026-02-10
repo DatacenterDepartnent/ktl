@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
-import Image from "next/image"; // ✅ ใช้ Next.js Image เพื่อความชัด
+import Image from "next/image"; 
 import { motion } from "framer-motion";
 import { LinkPreview } from "./ui/link-preview";
 

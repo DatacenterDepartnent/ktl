@@ -190,7 +190,7 @@ export default async function NewsDetailPage({
     <div className="min-h-screen bg-slate-50/50 dark:bg-zinc-950 text-slate-800 dark:text-slate-200 font-sans selection:bg-blue-100 dark:selection:bg-blue-900/30">
       <main className="pb-16 md:pb-24">
         {/* --- Hero / Header Section --- */}
-        <div className="bg-white dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800 pt-12 pb-12 md:pb-16 px-4">
+        <div className="bg-white dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800 pt-12 pb-6 px-4">
           <div className="max-w-4xl mx-auto space-y-8">
             {/* Breadcrumb */}
             <Link
@@ -238,7 +238,7 @@ export default async function NewsDetailPage({
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 mt-12 space-y-4">
+        <div className="max-w-4xl mx-auto px-4 mt-6 space-y-4">
           {/* --- Content Body --- */}
           <article
             className="prose prose-lg prose-slate dark:prose-invert max-w-none 
