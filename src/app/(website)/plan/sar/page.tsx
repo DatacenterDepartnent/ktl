@@ -60,7 +60,7 @@ export default function SarPage() {
         whileInView="visible"
         viewport={{ once: true }}
         variants={containerVar}
-        className="container mx-auto max-w-5xl px-4 md:px-8"
+        className=""
       >
         {/* --- Header Section --- */}
         <div className="mb-12 text-center">

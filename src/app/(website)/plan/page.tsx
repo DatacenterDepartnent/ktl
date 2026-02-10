@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
 import { Accordion, AccordionItem, Button } from "@heroui/react";
 import { motion } from "framer-motion";
@@ -149,11 +148,11 @@ export default function PlanningPage() {
     title: "font-bold text-lg text-slate-800 dark:text-slate-100",
     subtitle: "text-xs font-medium text-slate-400 mt-1",
     trigger:
-      "px-6 py-5 bg-white dark:bg-zinc-900/80 backdrop-blur-xl hover:bg-slate-50/80 rounded-2xl border border-slate-200/60 dark:border-zinc-800 shadow-sm transition-all duration-300 data-[hover=true]:border-indigo-200 dark:data-[hover=true]:border-indigo-900",
+      "px-4 py-5 bg-white dark:bg-zinc-900/80 backdrop-blur-xl hover:bg-slate-50/80 rounded-2xl border border-slate-200/60 dark:border-zinc-800 shadow-sm transition-all duration-300 data-[hover=true]:border-indigo-200 dark:data-[hover=true]:border-indigo-900",
     indicator:
       "text-lg text-slate-400 data-[open=true]:text-indigo-500 data-[open=true]:rotate-90",
     content:
-      "text-small px-6 pb-8 pt-4 bg-white/50 dark:bg-zinc-900/50 rounded-b-2xl border-x border-b border-slate-200/60 dark:border-zinc-800 -mt-2",
+      "text-small pb-8 pt-4 bg-white/50 dark:bg-zinc-900/50 rounded-b-2xl border-x border-b border-slate-200/60 dark:border-zinc-800 -mt-2",
   };
 
   return (
@@ -166,7 +165,7 @@ export default function PlanningPage() {
         whileInView="visible"
         viewport={{ once: true }}
         variants={containerVar}
-        className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6"
+        className="relative z-10 max-w-5xl mx-auto"
       >
         {/* --- Header --- */}
         <motion.div variants={itemVar} className="mb-12 text-center">
@@ -191,7 +190,7 @@ export default function PlanningPage() {
           <Accordion
             variant="splitted"
             itemClasses={itemClasses}
-            className="px-0 gap-4"
+            className=" gap-4"
             showDivider={false}
           >
             {planningJobs.map((job) => (

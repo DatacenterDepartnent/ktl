@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Image } from "@heroui/image";
-import { BackgroundGradient } from "@/components/ui/background-gradient";
 import { motion } from "framer-motion";
 import { Data } from "./data";
 import {
@@ -14,7 +13,7 @@ import {
 
 export default function EDUAdmin() {
   return (
-    <section className="relative min-h-screen overflow-hidden bg-slate-50 font-sans text-slate-800 dark:bg-neutral-950 dark:text-slate-200">
+    <section className="relative min-h-screen overflow-hidden bg-slate-50 px-4 py-20 font-sans text-slate-800 dark:bg-neutral-950 dark:text-slate-200">
       {/* --- Ambient Background --- */}
       <div className="pointer-events-none absolute top-0 left-1/2 -z-10 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-yellow-500/10 blur-[100px]" />
 
@@ -60,12 +59,19 @@ export default function EDUAdmin() {
               </div>
 
               <div className="flex flex-col items-center text-center">
-                <div className="mb-6 h-[400px] w-full overflow-hidden rounded-2xl shadow-lg ring-4 ring-yellow-50 dark:ring-neutral-800">
+                {/* Image Container: Center Added */}
+                <div className="mb-6 flex h-[400px] w-full justify-center items-center overflow-hidden rounded-2xl shadow-lg ring-4 ring-yellow-50 dark:ring-neutral-800">
                   <Image
                     src="/images/ผู้บริหาร/1.webp"
                     alt="นางสาวทักษิณา ชมจันทร์"
-                    className="h-full w-full object-cover object-top transition-transform duration-700 hover:scale-105"
+                    // Changed object-top to object-center
+                    className="h-full w-full object-cover object-center transition-transform duration-700 hover:scale-105"
                     width={400}
+                    // Force wrapper to be full width/height
+                    classNames={{
+                      wrapper: "w-full h-full",
+                      img: "w-full h-full",
+                    }}
                   />
                 </div>
 
@@ -113,13 +119,19 @@ export default function EDUAdmin() {
               className="group relative h-full"
             >
               <div className="h-full overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-lg transition-all duration-300 hover:border-yellow-200 hover:shadow-xl dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-yellow-900/50">
-                {/* Image Container */}
-                <div className="relative h-[320px] w-full overflow-hidden bg-slate-100 dark:bg-neutral-800">
+                {/* Image Container: Center Added */}
+                <div className="relative flex h-[320px] w-full items-center justify-center overflow-hidden bg-slate-100 dark:bg-neutral-800">
                   <Image
                     src={item.img}
                     alt={item.title}
-                    className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
+                    // Changed object-top to object-center
+                    className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
                     width={300}
+                    // Force wrapper to be full width/height
+                    classNames={{
+                      wrapper: "w-full h-full",
+                      img: "w-full h-full",
+                    }}
                   />
                   {/* Overlay Gradient */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />

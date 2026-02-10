@@ -1,73 +1,186 @@
+"use client";
+
 import React from "react";
-import { LinkPreview } from "@/components/ui/link-preview";
 import { Image } from "@heroui/image";
 import { Button } from "@heroui/react";
+import { LinkPreview } from "@/components/ui/link-preview";
+import { motion } from "framer-motion";
+import {
+  SafetyCertificateOutlined,
+  AuditOutlined,
+  CheckCircleFilled,
+  TeamOutlined,
+  FilePdfOutlined,
+  ReadOutlined,
+} from "@ant-design/icons";
 
 export default function QAES() {
-  return (
-    <>
-      <h1 className="py-2 text-center text-xl">
-        คณะผู้รับผิดชอบงานประกันคุณภาพและมาตรฐานการศึกษา
-      </h1>
-      <div className="flex justify-center pb-4">
-        <div className="rounded-[22px] pt-4">
-          <Image src="/images/error.webp" alt="Image" />
-        </div>
-      </div>
-      <div className="py-6 text-base sm:text-lg">
-        <p className="text-xl">
-          1. ส่งเสริมสนับสนุนให้บุคลากรในสถานศึกษาได้มีความรู้ความเข้าใจหลักการ
-          จุดหมายและหลักเหณฑ์ของการประกันคุณภาพและมาตรฐานการศึกษา
-        </p>
-        <p>
-          2. วางแผนดำเนินงานด้านการประกันคุณภาพและมาตรฐานการศึกษาของสถานศึกษา
-          เพื่อนำไปสู่การพัฒนาคุณภาพและมาตรฐานการศึกษาอย่างต่อเนื่องและรองรับการประเมินคุณภาพการศึกษาภายในและภายนอก
-        </p>
-        <p>
-          3. ประสานงานกับฝ่ายต่างๆ แผนกวิชา และงานต่างๆ
-          ในสถานศึกษารวมทั้งสถานประกอบการ บุคคล องค์กรและหน่วยงานภายนอก
-          ในการดำเนินงานตามระบบการประกันคุณภาพการศึกษา
-        </p>
-        <p>
-          4. ประสานกับสำนักงานรับรองมาตรฐานและประเมินคุณภาพการศึกษา
-          (องค์การมหาชน) ในการดำเนินงานตามระบบการประกันคุณภาพภายนอกของสถานศึกษา
-        </p>
-        <p>
-          5. ประสานงานและให้ความร่วมมือกับหน่วยงานต่างๆ
-          ทั้งภายในและภายนอกสถานศึกษา
-        </p>
-        <p>
-          6. จัดทำปฏิทินปฏิบัติงาน เสนโครงการและรายงานการปฏิบัติงานตามลำดับขั้น
-        </p>
-        <p>
-          7. ดูแล บำรุงรักษา และรับผิดชอบทรัพย์สินของสถานศึกษาที่ได้รับมอบหมาย
-        </p>
-        <p>8. ปฏิบัติงานอื่นตามที่ได้รับมอบหมาย </p>
-      </div>
-      <div className="grid gap-4 md:grid-flow-col">
-        <div className="rounded-[22px] pt-4">
-          <Image
-            src="/images/บุคลากร/แผน/2.webp"
-            alt="Image description ทรัพยากร"
-          />
-        </div>
-      </div>
+  // Animation Variants
+  const containerVar = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 },
+    },
+  };
 
-      <div className="flex justify-center gap-4 pt-8">
-        <Button className="px-12 py-8 text-xl" color="primary" variant="shadow">
+  const itemVar = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.5 } },
+  };
+
+  // ข้อมูลหน้าที่ความรับผิดชอบ
+  const responsibilities = [
+    "ส่งเสริมสนับสนุนให้บุคลากรในสถานศึกษาได้มีความรู้ความเข้าใจหลักการ จุดหมายและหลักเกณฑ์ของการประกันคุณภาพและมาตรฐานการศึกษา",
+    "วางแผนดำเนินงานด้านการประกันคุณภาพและมาตรฐานการศึกษาของสถานศึกษา เพื่อนำไปสู่การพัฒนาคุณภาพอย่างต่อเนื่อง",
+    "รองรับการประเมินคุณภาพการศึกษาภายในและภายนอก",
+    "ประสานงานกับฝ่ายต่างๆ แผนกวิชา งานต่างๆ สถานประกอบการ และหน่วยงานภายนอก ในการดำเนินงานตามระบบการประกันคุณภาพ",
+    "ประสานกับสำนักงานรับรองมาตรฐานและประเมินคุณภาพการศึกษา (องค์การมหาชน) หรือ สมศ. ในการประเมินคุณภาพภายนอก",
+    "จัดทำปฏิทินปฏิบัติงาน เสนอโครงการและรายงานการปฏิบัติงานตามลำดับขั้น",
+    "ดูแล บำรุงรักษา และรับผิดชอบทรัพย์สินของสถานศึกษาที่ได้รับมอบหมาย",
+    "ปฏิบัติงานอื่นตามที่ได้รับมอบหมาย",
+  ];
+
+  return (
+    <section className="bg-slate-50 py-12 font-sans text-slate-800 dark:bg-neutral-950 dark:text-slate-200">
+      <div className="">
+        {/* --- Header Section --- */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-12 text-center"
+        >
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+            <SafetyCertificateOutlined /> Quality Assurance
+          </div>
+          <h1 className="text-3xl font-extrabold md:text-5xl leading-tight">
+            งานประกันคุณภาพ <br className="md:hidden" />
+            <span className="bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
+              และมาตรฐานการศึกษา
+            </span>
+          </h1>
+        </motion.div>
+
+        {/* --- Main Content Grid --- */}
+        <motion.div
+          variants={containerVar}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="grid gap-12 lg:grid-cols-2"
+        >
+          {/* Left Column: Image & Personnel */}
+          <motion.div variants={itemVar} className="space-y-8">
+            <div className="overflow-hidden rounded-3xl shadow-xl shadow-emerald-100/50 dark:bg-zinc-900 dark:shadow-none">
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
+                <Image
+                  src="/images/error.webp"
+                  alt="หัวหน้างานประกันคุณภาพ"
+                  className="h-full w-full object-cover"
+                  removeWrapper
+                />
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
+                  <h3 className="text-xl font-bold text-white">
+                    หัวหน้างานประกันคุณภาพฯ
+                  </h3>
+                </div>
+              </div>
+            </div>
+
+            <div className="">
+              <div className="mb-4 flex items-center gap-2 text-emerald-600 dark:text-emerald-400">
+                <TeamOutlined className="text-xl" />
+                <span className="font-bold">บุคลากรในสังกัด</span>
+              </div>
+              <div className="">
+                <Image
+                  src="/images/บุคลากร/แผน/2.webp"
+                  alt="บุคลากรงานประกันคุณภาพ"
+                  className="h-full w-full"
+                  removeWrapper
+                />
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Right Column: Responsibilities */}
+          <motion.div variants={itemVar}>
+            <div className="">
+              <div className="mb-6 flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
+                  <AuditOutlined className="text-2xl" />
+                </div>
+                <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
+                  ขอบข่ายหน้าที่และความรับผิดชอบ
+                </h2>
+              </div>
+
+              <div className="space-y-4">
+                {responsibilities.map((text, index) => (
+                  <motion.div
+                    key={index}
+                    whileHover={{ x: 5 }}
+                    className="flex gap-4 rounded-xl border border-slate-50 bg-slate-50/50 p-4 transition-colors hover:border-emerald-100 hover:bg-emerald-50/30 dark:border-zinc-800 dark:bg-zinc-800/50 dark:hover:border-emerald-900"
+                  >
+                    <div className="shrink-0 pt-1">
+                      <CheckCircleFilled className="text-lg text-emerald-500" />
+                    </div>
+                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+                      {text}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
+
+        {/* --- Action Buttons --- */}
+        <motion.div
+          variants={itemVar}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="mt-16 flex flex-col items-center justify-center gap-6 border-t border-slate-200 pt-12 md:flex-row dark:border-zinc-800"
+        >
           <LinkPreview url="/plan/sar">
-            รายงานประจำของสถานศึกษา (SAR)
+            <Button
+              className="group h-auto bg-white px-8 py-4 text-emerald-600 shadow-lg ring-1 ring-emerald-100 transition-all hover:bg-emerald-50 dark:bg-zinc-900 dark:text-emerald-400 dark:ring-emerald-900"
+              variant="flat"
+            >
+              <div className="flex items-center gap-3">
+                <ReadOutlined className="text-2xl" />
+                <div className="text-left">
+                  <div className="text-xs font-semibold uppercase text-emerald-400">
+                    Internal Report
+                  </div>
+                  <div className="text-lg font-bold">รายงานประจำปี (SAR)</div>
+                </div>
+              </div>
+            </Button>
           </LinkPreview>
-        </Button>
-        <Button className="px-12 py-8 text-xl" color="primary" variant="shadow">
-          <LinkPreview
-            url="/pdf/งานประกันฯ/ฉบับจริงรายงานการประกันภายนอกรอบ5.pdf"
-            target="_blank"
-          >
-            ฉบับจริงรายงานการประกันภายนอกรอบ5
+
+          <LinkPreview url="/pdf/งานประกันฯ/ฉบับจริงรายงานการประกันภายนอกรอบ5.pdf">
+            <Button
+              className="group h-auto bg-emerald-600 px-8 py-4 text-white shadow-lg shadow-emerald-200/50 transition-all hover:bg-emerald-700 dark:bg-emerald-700 dark:shadow-none dark:hover:bg-emerald-600"
+              variant="solid"
+            >
+              <div className="flex items-center gap-3">
+                <FilePdfOutlined className="text-2xl" />
+                <div className="text-left">
+                  <div className="text-xs font-semibold uppercase text-emerald-200">
+                    External Assessment
+                  </div>
+                  <div className="text-lg font-bold">
+                    รายงานประเมินภายนอก (รอบ 5)
+                  </div>
+                </div>
+              </div>
+            </Button>
           </LinkPreview>
-        </Button>
+        </motion.div>
       </div>
-    </>
+    </section>
   );
 }

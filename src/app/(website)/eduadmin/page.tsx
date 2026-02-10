@@ -2,7 +2,6 @@
 
 import React from "react";
 import { Image } from "@heroui/image";
-import { BackgroundGradient } from "@/components/ui/background-gradient";
 import { motion } from "framer-motion";
 import { Data } from "./data";
 import {
@@ -60,12 +59,19 @@ export default function EDUAdmin() {
               </div>
 
               <div className="flex flex-col items-center text-center">
-                <div className="mb-6 h-[400px] w-full overflow-hidden rounded-2xl shadow-lg ring-4 ring-yellow-50 dark:ring-neutral-800">
+                {/* Image Container: Center */}
+                <div className="mb-6 flex h-[400px] w-full justify-center overflow-hidden rounded-2xl shadow-lg ring-4 ring-yellow-50 dark:ring-neutral-800">
                   <Image
                     src="/images/ผู้บริหาร/1.webp"
                     alt="นางสาวทักษิณา ชมจันทร์"
+                    // ใช้ object-center
                     className="h-full w-full object-cover object-top transition-transform duration-700 hover:scale-105"
                     width={400}
+                    // บังคับ Wrapper ให้อยู่ตรงกลาง
+                    classNames={{
+                      wrapper: "mx-auto w-full h-full",
+                      img: "mx-auto",
+                    }}
                   />
                 </div>
 
@@ -93,9 +99,7 @@ export default function EDUAdmin() {
             <div className="w-full border-t border-slate-200 dark:border-neutral-800"></div>
           </div>
           <div className="relative flex justify-center">
-            <span className="bg-slate-50 px-6 text-lg font-bold text-slate-500 dark:bg-neutral-950">
-              รองผู้อำนวยการฝ่ายต่างๆ
-            </span>
+            <span className="bg-slate-50 px-6 text-lg font-bold text-slate-500 dark:bg-neutral-950"></span>
           </div>
         </div>
 
@@ -113,13 +117,19 @@ export default function EDUAdmin() {
               className="group relative h-full"
             >
               <div className="h-full overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-lg transition-all duration-300 hover:border-yellow-200 hover:shadow-xl dark:border-neutral-800 dark:bg-neutral-900 dark:hover:border-yellow-900/50">
-                {/* Image Container */}
-                <div className="relative h-[320px] w-full overflow-hidden bg-slate-100 dark:bg-neutral-800">
+                {/* Image Container: Flex Center added */}
+                <div className="relative flex h-[320px] w-full items-center justify-center overflow-hidden bg-slate-100 dark:bg-neutral-800">
                   <Image
                     src={item.img}
                     alt={item.title}
+                    // เปลี่ยน object-top เป็น object-center
                     className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
                     width={300}
+                    // บังคับ Wrapper ให้อยู่ตรงกลาง
+                    classNames={{
+                      wrapper: "mx-auto w-full h-full",
+                      img: "mx-auto",
+                    }}
                   />
                   {/* Overlay Gradient */}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />

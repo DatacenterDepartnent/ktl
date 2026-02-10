@@ -235,6 +235,7 @@ export default function Buildings() {
           </p>
         </motion.div>
 
+        <div className="text-center text-xs text-red-500 pb-4">เลื่อนได้นะ</div>
         {/* --- Table Container --- */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -1,72 +1,141 @@
+"use client";
+
 import React from "react";
 import { Image } from "@heroui/image";
+import { motion } from "framer-motion";
+import {
+  FundProjectionScreenOutlined,
+  ContainerFilled,
+  FileTextOutlined,
+  CheckCircleFilled,
+  TeamOutlined,
+} from "@ant-design/icons";
 
 export default function PAB() {
+  // Animation Variants
+  const containerVar = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 },
+    },
+  };
+
+  const itemVar = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.5 } },
+  };
+
+  const responsibilities = [
+    "จัดทำแผนปฏิบัติราชการ แผนพัฒนาสถานศึกษา และแผนปฏิบัติการประจำปีตามนโยบายให้สอดคล้องกับแผนระดับชาติและนโยบายต้นสังกัด",
+    "จัดทำข้อมูลแผนการรับนักเรียน นักศึกษา การยุบ ขยาย และเพิ่มประเภทวิชา สาขาวิชาเปิดสอน ให้สอดคล้องกับความต้องการของตลาดแรงงาน",
+    "ตรวจสอบและควบคุมการใช้จ่ายเงินงบประมาณ เงินนอกงบประมาณให้เป็นไปตามแผน และดำเนินการปรับแผนการใช้จ่ายเงิน",
+    "รวบรวมแผนการใช้จ่ายเงินงบประมาณ เงินนอกงบประมาณ (ค่าวัสดุฝึก) และสำรวจความต้องการครุภัณฑ์เพื่อการจัดซื้อจัดจ้าง",
+    "วิเคราะห์รายจ่ายของสถานศึกษาเพื่อปรับปรุงการใช้จ่ายให้มีประสิทธิภาพ",
+    "จัดทำรายงานสรุปผลการปฏิบัติงานตามตัวชี้วัด การใช้เงินงบประมาณและนอกงบประมาณ เสนอต่อหน่วยงานต้นสังกัดภายในเวลาที่กำหนด",
+    "ประสานงานและให้ความร่วมมือกับหน่วยงานต่างๆ ทั้งภายในและภายนอกสถานศึกษา",
+    "จัดทำปฏิทินการปฏิบัติงาน เสนอโครงการและรายงานการปฏิบัติงานตามลำดับขั้น",
+    "ดูแล บำรุงรักษา และรับผิดชอบทรัพย์สินของสถานศึกษาที่ได้รับมอบหมาย",
+    "ปฏิบัติงานอื่นตามที่ได้รับมอบหมาย",
+  ];
+
   return (
-    <>
-      <h1 className="py-2 text-center text-xl">
-        คณะผู้รับผิดชอบงานวางแผน และงบประมาณ
-      </h1>
-      <div className="flex justify-center pb-4">
-        <div className="rounded-[22px] pt-4">
-          <Image
-            src="/images/บุคลากร/แผน/งานวางแผนและงบประมาณ.webp"
-            alt="Image description ทรัพยากร"
-          />
-        </div>
+    <section className="bg-slate-50 font-sans text-slate-800 dark:bg-neutral-950 dark:text-slate-200">
+      <div className=" ">
+        {/* --- Header Section --- */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-12 text-center"
+        >
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-teal-500/30 bg-teal-500/10 px-4 py-1.5 text-sm font-semibold text-teal-600 dark:text-teal-400">
+            <FundProjectionScreenOutlined /> Planning & Budgeting
+          </div>
+          <h1 className="text-3xl font-extrabold md:text-5xl leading-tight">
+            งานวางแผน <br className="md:hidden" />
+            <span className="bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
+              และงบประมาณ
+            </span>
+          </h1>
+        </motion.div>
+
+        {/* --- Main Content Grid --- */}
+        <motion.div
+          variants={containerVar}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="grid gap-12 lg:grid-cols-12"
+        >
+          {/* Left Column: Images (4 Columns) */}
+          <motion.div variants={itemVar} className="space-y-8 lg:col-span-5">
+            {/* หัวหน้างาน */}
+            <div className=" ">
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
+                <Image
+                  src="/images/บุคลากร/แผน/งานวางแผนและงบประมาณ.webp"
+                  alt="หัวหน้างานวางแผน"
+                  className="h-full w-full object-cover"
+                  removeWrapper
+                />
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
+                  <h3 className="text-xl font-bold text-white">
+                    หัวหน้างานวางแผนฯ
+                  </h3>
+                </div>
+              </div>
+            </div>
+
+            {/* บุคลากร */}
+            <div className=" ">
+              <div className="mb-4 flex items-center gap-2 px-2 text-teal-600 dark:text-teal-400">
+                <TeamOutlined className="text-xl" />
+                <span className="font-bold">บุคลากรในสังกัด</span>
+              </div>
+              <div className="overflow-hidden rounded-2xl bg-slate-100">
+                <Image
+                  src="/images/บุคลากร/แผน/1.webp"
+                  alt="บุคลากรงานวางแผน"
+                  className=" "
+                  removeWrapper
+                />
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Right Column: Responsibilities (8 Columns) */}
+          <motion.div variants={itemVar} className="lg:col-span-7">
+            <div className=" ">
+              <div className="mb-6 flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-100 text-teal-600 dark:bg-teal-900/30 dark:text-teal-400">
+                  <ContainerFilled className="text-2xl" />
+                </div>
+                <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
+                  ขอบข่ายหน้าที่และความรับผิดชอบ
+                </h2>
+              </div>
+
+              <div className="space-y-4">
+                {responsibilities.map((text, index) => (
+                  <motion.div
+                    key={index}
+                    whileHover={{ x: 5 }}
+                    className="flex gap-4 rounded-xl border border-slate-50 bg-slate-50/50 p-4 transition-colors hover:border-teal-100 hover:bg-teal-50/30 dark:border-zinc-800 dark:bg-zinc-800/50 dark:hover:border-teal-900"
+                  >
+                    <div className="shrink-0 pt-1">
+                      <CheckCircleFilled className="text-lg text-teal-500" />
+                    </div>
+                    <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 md:text-base">
+                      {text}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
       </div>
-      <div className="py-6 text-base sm:text-lg">
-        <p className="text-xl">มีหน้าที่และความรับผิดชอบ ดังต่อไปนี้</p>
-        <p>
-          1. จัดทำแผนปฏิบัติราชการแผนพัฒนาสถานศึกษา
-          และแผนปฏิบัติการประจำปีตามนโยบายและภารกิจของสถานให้สอดคล้องกับแผนพัฒนาเศรษฐกิจและสังคมแห่งชาติ
-          แผนการศึกษาแห่งชาติ นโยบายรัฐบาล นโยบายกระทรวงศึกษาธิการ
-          และนโยบายสำนักงานคณะกรรมการการอาชีวศึกษา
-        </p>
-        <p>
-          2. จัดทำข้อมูลแผนการรับนักเรียน นักศึกษา การยุบ ขยาย
-          และเพิ่มประเภทวิชา สาขาวิชาเปิดสอนในสถานศึกษา
-          เพื่อให้สอดคล้องกับความต้องการของตลาดแรงงานสังคม ชุมชนและท้องถิ่น
-          ตามความพร้อมและศักยภาพของสถานศึกษา
-        </p>
-        <p>
-          3. ตรวจสอบและควบคุมการใช้จ่ายเงินงบประมาณ
-          เงินนอกงบประมาณให้เป็นไปตามแผนที่กำหนดและดำเนินการเรื่องการปรับแผนการใช้จ่ายเงินของสถานศึกษา
-        </p>
-        <p>
-          4. รวบรวมแผนการใช้จ่ายเงินงบประมาณ เงินนอกงบประมาณ เป็นค่าวัสดุฝึก
-          ของแผนกวิชา สำรวจความต้องการวัสดุครุภัณฑ์ของแผนกวิชาและงานต่างๆ
-          เพื่อเป็นข้อมูลในการประกอบการพิจารณาจัดซื้อจัดจ้าง
-        </p>
-        <p>
-          5. วิเคราะห์รายจ่ายของสถานศึกษาเพื่อปรับปรุงการใช้จ่ายให้มีประสิทธิภาพ
-        </p>
-        <p>
-          6. จัดทำรายงานสรุปผลการปฏิบัติงานตามตัวชี้วัดในแผนงานและโครงการ
-          การใช้เงินงบประมาณและนอกงบประมาณ
-          เสนอต่อสำนักงานคณะกรรมการการอาชีวศึกษาและหน่วยงานอื่นที่เกี่ยวข้องภายในระยะเวลาที่กำหนด
-        </p>
-        <p>
-          7. ประสานงานและให้ความร่วมมือกับหน่วยงานต่างๆ
-          ทั้งภายในและภายนอกสถานศึกษา
-        </p>
-        <p>
-          8. จัดทำปฏิทินการปฏิบัติงาน
-          เสนอโครงการและรายงานการปฏิบัติงานตามลำดับขั้น
-        </p>
-        <p>
-          9. ดูแล บำรุงรักษา และรับผิดชอบทรัพย์สินของสถานศึกษาที่ได้รับมอบหมาย
-        </p>
-        <p>10. ปฏิบัติงานอื่นตามที่ได้รับมอบหมาย</p>
-      </div>
-      <div className="grid gap-4 md:grid-flow-col">
-        <div className="rounded-[22px] pt-4">
-          <Image
-            src="/images/บุคลากร/แผน/1.webp"
-            alt="Image description ทรัพยากร"
-          />
-        </div>
-      </div>
-    </>
+    </section>
   );
 }

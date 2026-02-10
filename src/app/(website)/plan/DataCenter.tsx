@@ -1,63 +1,140 @@
+"use client";
+
 import React from "react";
 import { Image } from "@heroui/image";
+import { motion } from "framer-motion";
+import {
+  DatabaseOutlined,
+  CloudServerOutlined,
+  CheckCircleFilled,
+  TeamOutlined,
+} from "@ant-design/icons";
 
 export default function DataCenter() {
+  // Animation Variants
+  const containerVar = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 },
+    },
+  };
+
+  const itemVar = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.5 } },
+  };
+
+  // ข้อมูลหน้าที่ความรับผิดชอบ
+  const responsibilities = [
+    "รวบรวมข้อมูลจากหน่วยงานภายในและภายนอกสถานศึกษา ประมวลผล จัดเก็บ รักษา จัดทํา และบริการข้อมูลและสารสนเทศ",
+    "จัดทำข้อมูลเกี่ยวกับนักเรียน นักศึกษา สถานประกอบการ ตลาดแรงงาน บุคลากร งบประมาณ ครุภัณฑ์ อาคารสถานที่ แผนการเรียน และข้อมูลทางเศรษฐกิจและสังคม",
+    "ดำเนินการตามหลักเกณฑ์และวิธีการที่สํานักงานคณะกรรมการการอาชีวศึกษากําหนด ด้วยระบบอิเล็กทรอนิกส์ โดยประสานงานกับแผนกวิชาและงานต่างๆ",
+    "รวบรวมและเผยแพร่สารสนเทศต่างๆ ที่เป็นประโยชน์ต่อการจัดการศึกษาและการประกอบอาชีพ",
+    "พัฒนาระบบเครือข่ายข้อมูลของสถานศึกษา ให้สามารถเชื่อมโยงกับสถานศึกษาอื่น สอศ. กระทรวงศึกษาธิการ และหน่วยงานอื่น",
+    "กํากับ ควบคุม ดูแลระบบให้เป็นไปตามกฎหมายว่าด้วยการกระทําความผิดเกี่ยวกับคอมพิวเตอร์",
+    "ดําเนินการเกี่ยวกับศูนย์กําลังคนอาชีวศึกษาของสถานศึกษา",
+    "ประสานงานและให้ความร่วมมือกับหน่วยงานต่างๆ ทั้งภายในและภายนอกสถานศึกษา",
+    "จัดทําปฏิทินการปฏิบัติงาน เสนอโครงการและรายงานการปฏิบัติงานตามลําดับขั้น",
+    "ดูแล บํารุงรักษา และรับผิดชอบทรัพย์สินของสถานศึกษาที่ได้รับมอบหมาย",
+    "ปฏิบัติงานอื่นตามที่ได้รับมอบหมาย",
+  ];
+
   return (
-    <>
-      <h1 className="py-2 text-center text-xl">
-        คณะผู้รับผิดชอบงานศูนย์ข้อมูลและสารสนเทศ
-      </h1>
-      <div className="flex justify-center pb-4">
-        <div className="rounded-[22px] pt-4">
-          <Image src="/images/error.webp" alt="Image description ทรัพยากร" />
-        </div>
+    <section className="bg-slate-50 py-12 font-sans text-slate-800 dark:bg-neutral-950 dark:text-slate-200">
+      <div className="">
+        {/* --- Header Section --- */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-12 text-center"
+        >
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-4 py-1.5 text-sm font-semibold text-cyan-600 dark:text-cyan-400">
+            <DatabaseOutlined /> Data & Information Center
+          </div>
+          <h1 className="text-3xl font-extrabold md:text-5xl leading-tight">
+            งานศูนย์ข้อมูล <br className="md:hidden" />
+            <span className="bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">
+              และสารสนเทศ
+            </span>
+          </h1>
+        </motion.div>
+
+        {/* --- Main Content Grid --- */}
+        <motion.div
+          variants={containerVar}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="grid gap-12 lg:grid-cols-2"
+        >
+          {/* Left Column: Image & Personnel */}
+          <motion.div variants={itemVar} className="space-y-8">
+            <div className="overflow-hidden rounded-3xl shadow-xl shadow-cyan-100/50 dark:bg-zinc-900 dark:shadow-none">
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
+                <Image
+                  src="/images/error.webp"
+                  alt="หัวหน้างานศูนย์ข้อมูล"
+                  className="h-full w-full object-cover"
+                  removeWrapper
+                />
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
+                  <h3 className="text-xl font-bold text-white">
+                    หัวหน้างานศูนย์ข้อมูลฯ
+                  </h3>
+                </div>
+              </div>
+            </div>
+
+            <div className="">
+              <div className="mb-4 flex items-center gap-2 text-cyan-600 dark:text-cyan-400">
+                <TeamOutlined className="text-xl" />
+                <span className="font-bold">บุคลากรในสังกัด</span>
+              </div>
+              <div className="">
+                <Image
+                  src="/images/บุคลากร/แผน/4.webp"
+                  alt="บุคลากรงานศูนย์ข้อมูล"
+                  className="h-full w-full"
+                  removeWrapper
+                />
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Right Column: Responsibilities */}
+          <motion.div variants={itemVar}>
+            <div className="">
+              <div className="mb-6 flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-100 text-cyan-600 dark:bg-cyan-900/30 dark:text-cyan-400">
+                  <CloudServerOutlined className="text-2xl" />
+                </div>
+                <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
+                  ขอบข่ายหน้าที่และความรับผิดชอบ
+                </h2>
+              </div>
+
+              <div className="space-y-4">
+                {responsibilities.map((text, index) => (
+                  <motion.div
+                    key={index}
+                    whileHover={{ x: 5 }}
+                    className="flex gap-4 rounded-xl border border-slate-50 bg-slate-50/50 p-4 transition-colors hover:border-cyan-100 hover:bg-cyan-50/30 dark:border-zinc-800 dark:bg-zinc-800/50 dark:hover:border-cyan-900"
+                  >
+                    <div className="shrink-0 pt-1">
+                      <CheckCircleFilled className="text-lg text-cyan-500" />
+                    </div>
+                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+                      {text}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
       </div>
-      <div className="py-6 text-base sm:text-lg">
-        <p className="text-xl">มีหน้าที่และความรับผิดชอบ ดังต่อไปนี้</p>
-        <p>
-          1. รวบรวมข้อมูลจากหน่วยงานภายในและภายนอกสถานศึกษา ประมวลผล จัดเก็บ
-          รักษา จัดทํา และบริการข้อมูลและสารสนเทศ เกี่ยวกับนักเรียน นักศึกษา
-          สถานประกอบการ ตลาดแรงงาน บุคลากร งบประมาณ ครุภัณฑ์ อาคารสถานที่
-          แผนการเรียน และ ข้อมูลทางเศรษฐกิจและสังคม ตามหลักเกณฑ์และวิธีการ
-          ที่สํานักงานคณะกรรมการการอาชีวศึกษากําหนด ด้วยระบบ อิเล็กทรอนิกส์
-          โดยประสานงานกับแผนกวิชาและ งานต่างๆ
-          ในสถานศึกษาและหน่วยงานอื่นที่เกี่ยวข้องbr
-          <br />
-          2. รวบรวมและเผยแพร่สารสนเทศต่างๆ
-          ที่เป็นประโยชน์ต่อการจัดการศึกษาและการประกอบ อาชีพ
-          <br />
-          3. พัฒนาระบบเครือข่ายข้อมูลของสถานศึกษา
-          ให้สามารถเชื่อมโยงกับสถานศึกษาอื่น สํานักงานคณะกรรมการการอาชีวศึกษา
-          กระทรวงศึกษาธิการ และหน่วยงานอื่น รวมทั้งการพัฒนาศักยภาพ
-          การใช้ข้อมูลจากเครือข่ายอินเตอร์เน็ต
-          <br />
-          4. กํากับ ควบคุม
-          ดูแลระบบให้เป็นไปตามกฎหมายว่าด้วยการกระทําความผิดเกี่ยวกับ คอมพิวเตอร์
-          <br />
-          5. ดําเนินการเกี่ยวกับศูนย์กําลังคนอาชีวศึกษาของสถานศึกษา
-          <br />
-          6. ประสานงานและให้ความร่วมมือกับหน่วยงานต่างๆ
-          ทั้งภายในและภายนอกสถานศึกษา
-          <br />
-          7. จัดทําปฏิทินการปฏิบัติงาน
-          เสนอโครงการและรายงานการปฏิบัติงานตามลําดับขั้น
-          <br />
-          8. ดูแล บํารุงรักษา และรับผิดชอบทรัพย์สินของสถานศึกษาที่ได้รับมอบหมาย
-          <br />
-          9. ปฏิบัติงานอื่นตามที่ได้รับมอบหมาย
-        </p>
-      </div>
-      <div className="grid gap-4 md:grid-flow-col">
-        <div className="rounded-[22px] pt-4">
-          <Image
-            src="/images/บุคลากร/แผน/4.webp"
-            alt="Image description ทรัพยากร"
-          />
-        </div>
-        {/* <div className='rounded-[22px] pt-4'>
-                                            <Image src="/images/บุคลากร/ทรัพยากร/บริหารงานทั่วไป.webp" alt="Image description ทรัพยากร" />
-                                        </div> */}
-      </div>
-    </>
+    </section>
   );
 }

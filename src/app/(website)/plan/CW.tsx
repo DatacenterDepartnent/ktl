@@ -1,46 +1,133 @@
+"use client";
+
 import React from "react";
 import { Image } from "@heroui/image";
+import { motion } from "framer-motion";
+import {
+  GlobalOutlined,
+  UsergroupAddOutlined,
+  CheckCircleFilled,
+  TeamOutlined,
+} from "@ant-design/icons";
 
 export default function CW() {
+  // Animation Variants
+  const containerVar = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 },
+    },
+  };
+
+  const itemVar = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.5 } },
+  };
+
+  // ข้อมูลหน้าที่ความรับผิดชอบ
+  const responsibilities = [
+    "ประสานความร่วมมือและดำเนินกิจกรรมต่างๆ ของสถานศึกษา ประสานความร่วมมือกับต่างประเทศและความช่วยเหลือจากภายนอกในการร่วมลงทุนเพื่อการศึกษา",
+    "ประสานงานและให้ความร่วมมือกับหน่วยงานต่างๆ ทั้งภายในและภายนอกสถานศึกษา",
+    "จัดทำปฏิทินการปฏิบัติงาน เสนอโครงการและรายงานการปฏิบัติงานตามลำดับขั้น",
+    "ดูแล บำรุงรักษาและรับผิดชอบทรัพย์สินของสถานศึกษาที่ได้รับมอบหมาย",
+  ];
+
   return (
-    <>
-      <h1 className="py-2 text-center text-xl">
-        คณะผู้รับผิดชอบงานความร่วมมือ
-      </h1>
-      <div className="flex justify-center pb-4">
-        <div className="rounded-[22px] pt-4">
-          <Image
-            src="/images/บุคลากร/แผน/งานความร่วมมือ.webp"
-            alt="Image description ทรัพยากร"
-          />
-        </div>
+    <section className="bg-slate-50 py-12 font-sans text-slate-800 dark:bg-neutral-950 dark:text-slate-200">
+      <div className="">
+        {/* --- Header Section --- */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="mb-12 text-center"
+        >
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-sky-500/30 bg-sky-500/10 px-4 py-1.5 text-sm font-semibold text-sky-600 dark:text-sky-400">
+            <GlobalOutlined /> Collaboration Work
+          </div>
+          <h1 className="text-3xl font-extrabold md:text-5xl leading-tight">
+            งานความร่วมมือ <br className="md:hidden" />
+            <span className="bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-transparent">
+              และเครือข่าย
+            </span>
+          </h1>
+        </motion.div>
+
+        {/* --- Main Content Grid --- */}
+        <motion.div
+          variants={containerVar}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="grid gap-12 lg:grid-cols-2"
+        >
+          {/* Left Column: Image & Personnel */}
+          <motion.div variants={itemVar} className="space-y-8">
+            <div className="overflow-hidden rounded-3xl shadow-xl shadow-sky-100/50 dark:bg-zinc-900 dark:shadow-none">
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
+                <Image
+                  src="/images/บุคลากร/แผน/งานความร่วมมือ.webp"
+                  alt="หัวหน้างานความร่วมมือ"
+                  className="h-full w-full object-cover"
+                  removeWrapper
+                />
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
+                  <h3 className="text-xl font-bold text-white">
+                    หัวหน้างานความร่วมมือฯ
+                  </h3>
+                </div>
+              </div>
+            </div>
+
+            <div className="">
+              <div className="mb-4 flex items-center gap-2 text-sky-600 dark:text-sky-400">
+                <TeamOutlined className="text-xl" />
+                <span className="font-bold">บุคลากรในสังกัด</span>
+              </div>
+              <div className="">
+                <Image
+                  src="/images/บุคลากร/แผน/6.webp"
+                  alt="บุคลากรงานความร่วมมือ"
+                  className="h-full w-full"
+                  removeWrapper
+                />
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Right Column: Responsibilities */}
+          <motion.div variants={itemVar}>
+            <div className="">
+              <div className="mb-6 flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-100 text-sky-600 dark:bg-sky-900/30 dark:text-sky-400">
+                  <UsergroupAddOutlined className="text-2xl" />
+                </div>
+                <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
+                  ขอบข่ายหน้าที่และความรับผิดชอบ
+                </h2>
+              </div>
+
+              <div className="space-y-4">
+                {responsibilities.map((text, index) => (
+                  <motion.div
+                    key={index}
+                    whileHover={{ x: 5 }}
+                    className="flex gap-4 rounded-xl border border-slate-50 bg-slate-50/50 p-4 transition-colors hover:border-sky-100 hover:bg-sky-50/30 dark:border-zinc-800 dark:bg-zinc-800/50 dark:hover:border-sky-900"
+                  >
+                    <div className="shrink-0 pt-1">
+                      <CheckCircleFilled className="text-lg text-sky-500" />
+                    </div>
+                    <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+                      {text}
+                    </p>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </motion.div>
       </div>
-      <div className="py-6 text-base sm:text-lg">
-        <p className="text-xl">มีหน้าที่และความรับผิดชอบ ดังต่อไปนี้</p>
-        <p>
-          1. ประสานความร่วมมือและดำเนินกิจกรรมต่างๆ
-          ของสถานศึกษาประสานความร่วมมือกับต่างประเทศและความช่วยเหลือจากภายนอกในการร่วมลงทุนเพื่อการศึกษา
-        </p>
-        <p>
-          2. ประสานงานและให้ความร่วมมือกับหน่วยงานต่างๆ
-          ทั้งภายในและภายนอกสถานศึกษา
-        </p>
-        <p>
-          3.
-          จัดทำปฏิทินการปฏิบัติงานเสนอโครงการและรายงานการปฏิบัติงานตามลำดับขั้น
-        </p>
-        <p>
-          4. ดูแล บำรุงรักษาและรับผิดชอบทรัพย์สินของสถานศึกษาที่ได้รับมอบหมาย
-        </p>
-      </div>
-      <div className="grid gap-4 md:grid-flow-col">
-        <div className="rounded-[22px] pt-4">
-          <Image
-            src="/images/บุคลากร/แผน/6.webp"
-            alt="Image description ทรัพยากร"
-          />
-        </div>
-      </div>
-    </>
+    </section>
   );
 }

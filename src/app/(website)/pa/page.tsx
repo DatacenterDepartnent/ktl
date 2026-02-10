@@ -147,11 +147,11 @@ export default function PaPage() {
     trigger:
       "px-6 py-4 bg-white dark:bg-neutral-900 data-[hover=true]:bg-slate-50 rounded-2xl border border-slate-100 dark:border-neutral-800 shadow-sm transition-all",
     indicator: "text-medium text-slate-400",
-    content: "text-small px-2 pb-6 bg-transparent pt-4",
+    content: "text-small pb-6 bg-transparent pt-4",
   };
 
   return (
-    <section className="min-h-screen bg-slate-50 pb-20 font-sans dark:bg-neutral-950">
+    <section className="bg-slate-50 pb-20 font-sans dark:bg-neutral-950">
       {/* --- Breadcrumb & Header --- */}
       <div className="border-b border-slate-200 bg-white pt-[100px] pb-8 dark:border-neutral-800 dark:bg-neutral-900">
         <div className=" text-center">
@@ -163,7 +163,7 @@ export default function PaPage() {
             Personnel
           </p>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center ">
             <Breadcrumb
               items={[
                 {
@@ -193,7 +193,7 @@ export default function PaPage() {
         whileInView="visible"
         viewport={{ once: true }}
         variants={containerVar}
-        className="relative z-10 container mx-auto -mt-8 max-w-5xl px-4 md:px-8"
+        className="py-12 max-w-7xl mx-auto"
       >
         <Accordion
           variant="splitted"
@@ -216,7 +216,7 @@ export default function PaPage() {
                   : "ไม่มีข้อมูล"
               }
             >
-              <div className="px-2">
+              <div className="">
                 {yearData.active && yearData.personnel.length > 0 ? (
                   <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                     {yearData.personnel.map((person, idx) => (
