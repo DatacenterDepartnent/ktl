@@ -1,6 +1,6 @@
 // src/app/suvery/edit/[id]/page.tsx
 
-import SuveryEditForm from "@/components/SuveryEditForm";
+import SuveryEditForm from "@/components/SuveryEditForm"; // ต้องมั่นใจว่าไฟล์นี้มีอยู่จริง
 import connectDB from "@/lib/mongodb";
 import Suvery from "@/lib/models/suvery";
 import { Types } from "mongoose";
@@ -13,8 +13,9 @@ import {
   Briefcase,
   GraduationCap,
   UserX,
-} from "lucide-react"; // ✅ ใช้ Icon จาก Lucide React
+} from "lucide-react";
 
+// 💡 บังคับให้เป็น Dynamic Page (ไม่ Cache ข้อมูลเก่า)
 export const dynamic = "force-dynamic";
 
 interface EditPageProps {
@@ -23,14 +24,15 @@ interface EditPageProps {
   }>;
 }
 
-// 🚀 ฟังก์ชันดึงข้อมูลจาก DB
+// 🚀 ฟังก์ชันดึงข้อมูลจาก DB โดยตรง (Server Action Style)
 async function getSuveryById(encodedId: string) {
   try {
     await connectDB();
-    // 1. ถอดรหัส Base64 (ถ้ามี)
+
+    // 1. 🔓 ถอดรหัส Base64 (ถ้า ID ถูก encode มาจากหน้า List)
     let id = encodedId;
     try {
-      // ตรวจสอบคร่าวๆ ว่าน่าจะเป็น Base64 หรือไม่ก่อน decode เพื่อลด warning
+      // เช็คเบื้องต้นว่าเป็น Base64 ไหม (ถ้า encodedId ไม่ใช่ ObjectId ปกติ)
       if (!Types.ObjectId.isValid(encodedId)) {
         id = atob(encodedId);
       }
@@ -38,13 +40,19 @@ async function getSuveryById(encodedId: string) {
       console.warn("ID might not be base64 encoded, using as is.");
     }
 
-    // 2. ตรวจสอบ ObjectId
-    if (!Types.ObjectId.isValid(id)) return null;
+    // 2. ตรวจสอบความถูกต้องของ ObjectId ของ MongoDB
+    if (!Types.ObjectId.isValid(id)) {
+      console.error("Invalid ObjectId:", id);
+      return null;
+    }
 
-    // 3. Query
+    // 3. Query ข้อมูลจาก Database
+    // .lean() จะแปลง Mongoose Object เป็น Plain JS Object เพื่อประสิทธิภาพ
     const suveryData = await Suvery.findById(id).lean();
+
     if (!suveryData) return null;
 
+    // 4. แปลง ObjectId และ Date เป็น String เพื่อส่งให้ Client Component ได้
     return JSON.parse(JSON.stringify(suveryData));
   } catch (error) {
     console.error("Error fetching suvery details:", error);
@@ -53,42 +61,13 @@ async function getSuveryById(encodedId: string) {
 }
 
 export default async function EditSuveryPage(props: EditPageProps) {
+  // ✅ Next.js 15: ต้อง await params ก่อนใช้งาน
   const { id } = await props.params;
+
+  // 🔥 ดึงข้อมูลจริงจาก Database
   const suvery = await getSuveryById(id);
 
-  // --------------------------------------------------------
-  // ❌ กรณีไม่พบข้อมูล (Error State)
-  // --------------------------------------------------------
-  if (!suvery) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4 dark:bg-gray-900">
-        <div className="w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-gray-800">
-          <div className="bg-red-50 p-8 text-center dark:bg-red-900/20">
-            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-800 dark:text-red-200">
-              <AlertTriangle className="h-10 w-10" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-              ไม่พบข้อมูล
-            </h2>
-            <p className="mt-2 text-gray-600 dark:text-gray-400">
-              ไม่พบข้อมูลแบบสำรวจที่คุณต้องการแก้ไข หรือข้อมูลอาจถูกลบไปแล้ว
-            </p>
-          </div>
-          <div className="border-t border-gray-100 bg-gray-50 px-6 py-6 dark:border-gray-700 dark:bg-gray-800/50">
-            <Link
-              href="/EmploymentDashboard"
-              className="group flex w-full items-center justify-center rounded-xl bg-gray-900 py-3.5 font-semibold text-white transition-all hover:bg-gray-800 hover:shadow-lg dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
-            >
-              <ArrowLeft className="mr-2 h-5 w-5 transition-transform group-hover:-translate-x-1" />
-              กลับไปหน้า Dashboard
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Helper สำหรับเลือก Icon ตามสถานะ
+  // Helper สำหรับเลือก Icon ตามสถานะ (เพื่อความสวยงามส่วน Header)
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "ทำงานแล้ว":
@@ -112,7 +91,43 @@ export default async function EditSuveryPage(props: EditPageProps) {
   };
 
   // --------------------------------------------------------
-  // ✅ กรณีพบข้อมูล (Success State)
+  // ❌ กรณีไม่พบข้อมูลใน Database (Error State)
+  // --------------------------------------------------------
+  if (!suvery) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4 dark:bg-gray-900">
+        <div className="w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-gray-800">
+          <div className="bg-red-50 p-8 text-center dark:bg-red-900/20">
+            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-800 dark:text-red-200">
+              <AlertTriangle className="h-10 w-10" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+              ไม่พบข้อมูล
+            </h2>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">
+              ไม่พบข้อมูลรหัส{" "}
+              <span className="font-mono text-xs bg-gray-200 px-1 rounded">
+                {id}
+              </span>{" "}
+              ในระบบ หรือข้อมูลอาจถูกลบไปแล้ว
+            </p>
+          </div>
+          <div className="border-t border-gray-100 bg-gray-50 px-6 py-6 dark:border-gray-700 dark:bg-gray-800/50">
+            <Link
+              href="/EmploymentDashboard"
+              className="group flex w-full items-center justify-center rounded-xl bg-gray-900 py-3.5 font-semibold text-white transition-all hover:bg-gray-800 hover:shadow-lg dark:bg-white dark:text-gray-900 dark:hover:bg-gray-200"
+            >
+              <ArrowLeft className="mr-2 h-5 w-5 transition-transform group-hover:-translate-x-1" />
+              กลับไปหน้า Dashboard
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // --------------------------------------------------------
+  // ✅ กรณีพบข้อมูล: แสดงฟอร์มแก้ไข (Success State)
   // --------------------------------------------------------
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-gray-900 transition-colors duration-300 dark:bg-gray-950 dark:text-gray-100">
@@ -171,16 +186,13 @@ export default async function EditSuveryPage(props: EditPageProps) {
 
           {/* Progress Bar (Decorative) */}
           <div className="h-1.5 w-full bg-gray-100 dark:bg-gray-800">
-            <div
-              className="h-full w-full bg-emerald-500"
-              style={{ width: "100%" }}
-            ></div>
+            <div className="h-full w-full bg-emerald-500"></div>
           </div>
         </div>
 
         {/* --- Main Form Content --- */}
+        {/* ส่งข้อมูล suvery ที่ดึงมาจาก DB เข้าไปที่ Form */}
         <div className="rounded-3xl bg-white p-1 shadow-lg dark:bg-gray-900">
-          {/* ส่งข้อมูล suvery prop เข้าไปที่ฟอร์ม */}
           <SuveryEditForm suvery={suvery} />
         </div>
       </div>
