@@ -60,7 +60,7 @@ const StatCard = ({
 
   return (
     <div
-      className={`flex flex-col justify-between rounded-2xl border bg-white p-5 shadow-sm transition-all dark:bg-gray-900 ${
+      className={` flex flex-col justify-between rounded-2xl border bg-white p-5 shadow-sm transition-all dark:bg-gray-900 ${
         isActive
           ? "border-green-500 ring-2 ring-green-500/20 dark:border-green-500"
           : "border-gray-100 dark:border-gray-800"
@@ -141,8 +141,8 @@ export default async function EmploymentDashboard(props: PageProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50/50 pb-20 pt-10 font-sans transition-colors duration-300 dark:bg-gray-950">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <div className="container min-h-screen bg-gray-50/50 pb-20 pt-10 font-sans transition-colors duration-300 dark:bg-gray-950">
+      <div className="">
         {/* --- HEADER --- */}
         <div className="mb-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-center">
           <div>

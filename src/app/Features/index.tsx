@@ -45,7 +45,7 @@ const Features = () => {
         </div>
 
         {/* --- Tabs Section --- */}
-        <div className="mx-auto max-w-7xl">
+        <div className="">
           {/* Main Card: พื้นหลังเข้มใน dark mode */}
           <Card className="rounded-3xl border border-slate-100 bg-white p-2 shadow-xl dark:border-neutral-800 dark:bg-neutral-900">
             <Tabs

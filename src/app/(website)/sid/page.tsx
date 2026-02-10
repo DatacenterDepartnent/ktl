@@ -32,7 +32,7 @@ const StatCard = ({
 export default function Sid() {
   return (
     <section className=" ">
-      <div className="container mx-auto max-w-7xl px-4">
+      <div className="container  px-4">
         {/* --- Header --- */}
         <div className="mb-12 text-center">
           <div className="mb-4 inline-flex items-center justify-center rounded-full bg-blue-50 px-4 py-1.5 text-sm font-semibold text-blue-600 dark:bg-blue-900/20 dark:text-blue-400">

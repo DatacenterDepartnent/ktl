@@ -57,7 +57,7 @@ export default function ShowFacebook() {
         </div>
 
         {/* --- Content Area --- */}
-        <div className="mx-auto max-w-7xl">
+        <div className="">
           <Accordion variant="splitted" className="px-0">
             <AccordionItem
               key="1"

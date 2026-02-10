@@ -28,7 +28,7 @@ export const Personnel1 = () => {
   );
 
   return (
-    <section className=" ">
+    <section className="max:w-7xl mx-auto ">
       <div className="">
         {/* --- 1. Search Section --- */}
         <div className="mb-12 flex flex-col items-center">

@@ -8,6 +8,14 @@
 @source '../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
 @custom-variant dark (&:is(.dark *));
 
+.container {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 80rem; /* หรือ 1280px */
+  padding-top: 48px;
+  padding-bottom: 48px;
+}
+
 /* =================================================================================
    1. Theme Configuration
    ================================================================================= */

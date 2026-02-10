@@ -88,7 +88,7 @@ export default async function HomePage() {
       </section>
 
       {/* --- Latest News Section --- */}
-      <section className="py-16 px-4 md:py-24 max-w-7xl mx-auto md:px-8">
+      <section className="py-16md:py-24 max-w-7xl mx-auto md:px-8">
         <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
           <div>
             <h2 className="text-3xl font-black text-slate-900 flex items-center gap-2">

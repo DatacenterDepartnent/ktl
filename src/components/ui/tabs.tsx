@@ -88,7 +88,7 @@ export default function WelcomePage() {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         viewport={{ once: true }}
-        className="relative z-10 container mx-auto max-w-7xl px-4 lg:px-8"
+        className="relative z-10 container  px-4 lg:px-8"
       >
         <div className="grid gap-12 lg:grid-cols-12 lg:items-start lg:gap-8">
           {/* --- Left Column: Director Spotlight --- */}
