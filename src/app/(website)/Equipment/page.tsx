@@ -2558,7 +2558,7 @@ export default function EquipmentSelect() {
   };
 
   return (
-    <section className="min-h-screen font-sans py-12 px-4 bg-slate-50 dark:bg-black/50">
+    <section className="min-h-screen font-sans py-24 px-4 bg-slate-50 dark:bg-black/50">
       <div className="max-w-7xl mx-auto">
         {/* --- Header --- */}
         <div className="mb-12 text-center">
