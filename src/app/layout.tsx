@@ -10,6 +10,7 @@ import "@ant-design/v5-patch-for-react-19";
 import "../styles/prism-vsc-dark-plus.css";
 import "../styles/index.css";
 import "../styles/globals.css";
+import ScrollUp from "@/components/Common/ScrollUp";
 
 // 1. ตั้งค่าฟอนต์หลักของเว็บ (Prompt) จาก Google Fonts
 // การใช้ next/font ช่วยลด Layout Shift และโหลดฟอนต์ได้รวดเร็ว
@@ -87,6 +88,7 @@ export default function RootLayout({
           <SpeedInsights /> {/* วัดความเร็วเว็บ */}
           <Analytics /> {/* วัดจำนวนคนเข้าชม */}
           {/* Footer: ส่วนท้ายเว็บ (จะแสดงทุกหน้า) */}
+          <ScrollUp />
           <Footer />
         </ThemeProvider>
       </body>

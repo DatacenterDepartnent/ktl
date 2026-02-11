@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Image } from "@heroui/image";
 import { motion } from "framer-motion";
 import { Data } from "./data";
@@ -11,7 +10,7 @@ import {
   IdcardOutlined,
 } from "@ant-design/icons";
 
-export default function EDUAdmin() {
+export default function Executive() {
   return (
     <section className="relative min-h-screen overflow-hidden bg-slate-50 px-4 py-20 font-sans text-slate-800 dark:bg-neutral-950 dark:text-slate-200">
       {/* --- Ambient Background --- */}

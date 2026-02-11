@@ -91,7 +91,7 @@ interface NewsItem {
   images?: string[];
   announcementImages?: string[];
   links?: { label: string; url: string }[];
-  videoEmbeds?: string[]; // <--- เพิ่มตรงนี้
+  videoEmbeds?: string[];
   createdAt: Date | string;
 }
 
@@ -217,6 +217,9 @@ export default async function NewsDetailPage({
               </div>
 
               <div className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white leading-tight tracking-tight">
+                {/* ⚠️ ข้อสังเกต: ตอนนี้คุณ comment ชื่อข่าวไว้ และใช้ Hardcode ว่า "วิทยาลัยเทคนิคกันทรลักษ์" แทน
+                   ถ้าต้องการแสดงชื่อข่าวจริง ให้เอา comment ออกด้านล่างครับ
+                */}
                 {/* {news.title} */}
                 <p className="text-center">วิทยาลัยเทคนิคกันทรลักษ์</p>
               </div>
@@ -255,7 +258,7 @@ export default async function NewsDetailPage({
           </div>
           <hr className="border-slate-200 dark:border-zinc-800" />
 
-          {/* --- 🎥 Video Section (เพิ่มส่วนนี้) --- */}
+          {/* --- 🎥 Video Section --- */}
           {news.videoEmbeds && news.videoEmbeds.length > 0 && (
             <section className="space-y-8">
               <div className="flex items-center gap-3">
@@ -276,6 +279,7 @@ export default async function NewsDetailPage({
             </section>
           )}
 
+          {/* --- Documents / Links Section --- */}
           {news.links && news.links.length > 0 && (
             <section className="mt-12">
               <div className="flex items-center gap-3 mb-6">
@@ -316,7 +320,8 @@ export default async function NewsDetailPage({
               </div>
             </section>
           )}
-          {/* --- Documents / Posters Section --- */}
+
+          {/* --- Posters / Announcements Section --- */}
           {news.announcementImages && news.announcementImages.length > 0 && (
             <section className="space-y-8">
               <div className="flex items-center gap-3">
@@ -350,6 +355,7 @@ export default async function NewsDetailPage({
           )}
 
           {/* --- Gallery Section --- */}
+          {/* ✅ จุดที่แก้ไข: เพิ่ม key={idx} ใน div ที่เป็น Wrapper */}
           {news.images && news.images.length > 0 && (
             <section className="space-y-8">
               <div className="flex items-center gap-3">
@@ -362,29 +368,17 @@ export default async function NewsDetailPage({
                 </h3>
               </div>
               <div
-                className={`${news.images.length < 5 ? "columns-1" : "columns-1 sm:columns-2 lg:columns-3"} gap-4 space-y-4`}
+                className={`${
+                  news.images.length < 5
+                    ? "columns-1"
+                    : "columns-1 sm:columns-2 lg:columns-3"
+                } gap-4 space-y-4`}
               >
-                {/* {news.images.map((img, idx) => (
-                  <a
-                    key={idx}
-                    href={img}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                {news.images.map((img, idx) => (
+                  <div
+                    key={idx} // ✅ ใส่ key ตรงนี้ครับ เพื่อแก้ Warning
                     className="block relative w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm hover:shadow-xl transition-all duration-300 break-inside-avoid cursor-zoom-in"
                   >
-                    <Image
-                      src={img}
-                      alt={`Gallery image ${idx + 1}`}
-                      width={0}
-                      height={0}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      style={{ width: "100%", height: "auto" }}
-                      className="transition-transform duration-700 hover:scale-105"
-                    />
-                  </a>
-                ))} */}
-                {news.images.map((img, idx) => (
-                  <div className="block relative w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm hover:shadow-xl transition-all duration-300 break-inside-avoid cursor-zoom-in">
                     <Image
                       src={img}
                       alt={`Gallery image ${idx + 1}`}

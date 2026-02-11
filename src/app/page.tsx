@@ -1,4 +1,3 @@
-import ScrollUp from "@/components/Common/ScrollUp";
 import Announcement from "./announcement/page";
 import Newsletter from "./newsletter/page";
 import PressRelease from "./pressrelease/page";
@@ -21,10 +20,6 @@ export default function Home() {
     // Container หลัก ใช้ Flex Column เพื่อเรียงเนื้อหาจากบนลงล่าง
     <div className="flex flex-col">
       <main className="grow">
-        {/* 1. ปุ่ม Scroll Up: ปุ่มลูกศรสำหรับกดเพื่อเลื่อนกลับไปบนสุดของหน้า */}
-        <div className="">
-          <ScrollUp />
-        </div>
 
         {/* 2. Scroll Image: ส่วนแสดงรูปภาพสไลด์ หรือ Banner หลักด้านบน */}
         <div className="max-w-7xl mx-auto">
