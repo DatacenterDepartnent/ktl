@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import type { QRCodeProps } from "antd";
 import {
@@ -11,7 +11,9 @@ import {
   ConfigProvider,
   theme,
   notification,
+  Spin,
 } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 
 // --- Icons ---
 const LinkIcon = () => (
@@ -64,10 +66,10 @@ const HomeIcon = () => (
   </svg>
 );
 
-// --- Custom Download Logic (วาดรูปใหม่ให้เหมือน Preview) ---
+// --- Custom Download Logic ---
 const downloadStylizedQRCode = (
   text: string,
-  fileName: string = "KTLTC-QRCode.png",
+  displayTitle: string, // รับชื่อ Title มาแสดง
 ) => {
   const canvas = document
     .getElementById("myqrcode")
@@ -75,14 +77,12 @@ const downloadStylizedQRCode = (
 
   if (!canvas) return;
 
-  // ตั้งค่าขนาดรูปภาพผลลัพธ์
-  const padding = 60; // ขอบขาวรอบๆ QR
-  const bottomSpace = 80; // พื้นที่ด้านล่างสำหรับข้อความ
-  const qrSize = canvas.width; // ขนาด QR Code เดิม
+  const padding = 60;
+  const bottomSpace = 80;
+  const qrSize = canvas.width;
   const width = qrSize + padding * 2;
   const height = qrSize + padding * 2 + bottomSpace;
 
-  // สร้าง Canvas ใหม่ในหน่วยความจำ
   const finalCanvas = document.createElement("canvas");
   finalCanvas.width = width;
   finalCanvas.height = height;
@@ -90,11 +90,9 @@ const downloadStylizedQRCode = (
   const ctx = finalCanvas.getContext("2d");
   if (!ctx) return;
 
-  // 1. วาดพื้นหลังสีขาว (White Background with Rounded Corners)
-  const radius = 40; // ความโค้งมนของมุมการ์ด
+  // 1. White Background
+  const radius = 40;
   ctx.fillStyle = "#FFFFFF";
-
-  // วาดสี่เหลี่ยมมุมมน
   ctx.beginPath();
   ctx.moveTo(radius, 0);
   ctx.lineTo(width - radius, 0);
@@ -108,65 +106,68 @@ const downloadStylizedQRCode = (
   ctx.closePath();
   ctx.fill();
 
-  // 2. วาด QR Code ตรงกลาง
+  // 2. QR Code
   ctx.drawImage(canvas, padding, padding);
 
-  // 3. วาดกรอบมุมสีทอง (Gold Corner Accents)
+  // 3. Gold Corners
   ctx.strokeStyle = "#DAA520";
-  ctx.lineWidth = 8; // ความหนาเส้น
-  ctx.lineCap = "round"; // ปลายเส้นมน
+  ctx.lineWidth = 8;
+  ctx.lineCap = "round";
 
-  const cornerLength = 40; // ความยาวขาของมุม
-  const offset = 30; // ระยะห่างจากขอบรูป
+  const cornerLength = 40;
+  const offset = 30;
 
-  // มุมซ้ายบน
   ctx.beginPath();
   ctx.moveTo(offset, offset + cornerLength);
   ctx.lineTo(offset, offset);
   ctx.lineTo(offset + cornerLength, offset);
   ctx.stroke();
-
-  // มุมขวาบน
   ctx.beginPath();
   ctx.moveTo(width - offset - cornerLength, offset);
   ctx.lineTo(width - offset, offset);
   ctx.lineTo(width - offset, offset + cornerLength);
   ctx.stroke();
-
-  // มุมซ้ายล่าง
-  const bottomY = height - bottomSpace + 20; // ปรับตำแหน่ง Y ให้เหมาะสมกับ layout
+  const bottomY = height - bottomSpace + 20;
   ctx.beginPath();
   ctx.moveTo(offset, bottomY - cornerLength);
   ctx.lineTo(offset, bottomY);
   ctx.lineTo(offset + cornerLength, bottomY);
   ctx.stroke();
-
-  // มุมขวาล่าง
   ctx.beginPath();
   ctx.moveTo(width - offset - cornerLength, bottomY);
   ctx.lineTo(width - offset, bottomY);
   ctx.lineTo(width - offset, bottomY - cornerLength);
   ctx.stroke();
 
-  // 4. วาดข้อความ (Text)
+  // 4. Text
   ctx.textAlign = "center";
-
-  // "SCAN ME" Label
-  ctx.fillStyle = "#9CA3AF"; // สีเทาอ่อน (Gray-400)
+  ctx.fillStyle = "#9CA3AF";
   ctx.font = "bold 20px sans-serif";
   ctx.fillText("SCAN ME", width / 2, height - 50);
 
-  // URL / Text Label
-  ctx.fillStyle = "#6B7280"; // สีเทาเข้มขึ้น (Gray-500)
+  // ใช้ displayTitle ที่ดึงมาได้
+  ctx.fillStyle = "#6B7280";
   ctx.font = "16px sans-serif";
-  let displayText = text.length > 35 ? text.substring(0, 35) + "..." : text; // ตัดคำถ้ายาวไป
-  if (!displayText) displayText = "https://ktltc.vercel.app";
-  ctx.fillText(displayText, width / 2, height - 25);
+  let finalDisplay =
+    displayTitle.length > 35
+      ? displayTitle.substring(0, 35) + "..."
+      : displayTitle;
+  if (!finalDisplay) finalDisplay = "https://ktltc.vercel.app";
+  ctx.fillText(finalDisplay, width / 2, height - 25);
 
-  // 5. สั่งดาวน์โหลด
+  // 5. Download
+  // ลบตัวอักษรพิเศษออกจากการตั้งชื่อไฟล์ ป้องกัน Error ตอนเซฟ
+  const safeFileName = displayTitle
+    .replace(/[^a-zA-Z0-9ก-๙\s-]/g, "")
+    .trim()
+    .substring(0, 30);
+  const finalFileName = safeFileName
+    ? `${safeFileName}.png`
+    : "KTLTC-QRCode.png";
+
   const url = finalCanvas.toDataURL("image/png");
   const a = document.createElement("a");
-  a.download = fileName;
+  a.download = finalFileName;
   a.href = url;
   document.body.appendChild(a);
   a.click();
@@ -174,10 +175,45 @@ const downloadStylizedQRCode = (
 };
 
 export default function CreateQRCode() {
-  const [text, setText] = React.useState("");
-  const [renderType, setRenderType] =
-    React.useState<QRCodeProps["type"]>("canvas");
+  const [text, setText] = useState("");
+  const [linkTitle, setLinkTitle] = useState(""); // เก็บชื่อเว็บที่ดึงมาได้
+  const [isFetchingTitle, setIsFetchingTitle] = useState(false); // สถานะกำลังดึงข้อมูล
+  const [renderType, setRenderType] = useState<QRCodeProps["type"]>("canvas");
+
   const { defaultAlgorithm, darkAlgorithm } = theme;
+
+  // Effect สำหรับดึงชื่อ Title เมื่อผู้ใช้พิมพ์ URL
+  useEffect(() => {
+    // ถ้าข้อความว่าง หรือ ไม่ใช่ URL ให้เคลียร์ข้อมูล
+    if (!text || !text.startsWith("http")) {
+      setLinkTitle(text);
+      setIsFetchingTitle(false);
+      return;
+    }
+
+    // หน่วงเวลา 800ms เผื่อผู้ใช้ยังพิมพ์ไม่เสร็จ จะได้ไม่ยิง API รัวๆ
+    const delayDebounceFn = setTimeout(async () => {
+      setIsFetchingTitle(true);
+      try {
+        const response = await fetch(
+          `/api/get-title?url=${encodeURIComponent(text)}`,
+        );
+        const data = await response.json();
+        if (data.title) {
+          setLinkTitle(data.title);
+        } else {
+          setLinkTitle(text); // ถ้าไม่เจอ title ให้ใช้ url ปกติ
+        }
+      } catch (error) {
+        console.error("Failed to fetch title", error);
+        setLinkTitle(text);
+      } finally {
+        setIsFetchingTitle(false);
+      }
+    }, 800);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [text]);
 
   const handleDownload = () => {
     if (!text) {
@@ -189,11 +225,9 @@ export default function CreateQRCode() {
       return;
     }
 
-    // ถ้าเลือก PNG (Canvas) ให้ใช้ฟังก์ชันวาดรูปสวยๆ ของเรา
     if (renderType === "canvas") {
-      downloadStylizedQRCode(text);
+      downloadStylizedQRCode(text, linkTitle || text); // ส่ง Link Title ไปให้วาดรูปลง Canvas
     } else {
-      // ถ้าเลือก SVG ก็โหลดแบบปกติ (เพราะ SVG แก้ไขยากกว่า)
       const svg = document
         .getElementById("myqrcode")
         ?.querySelector<SVGElement>("svg");
@@ -204,7 +238,11 @@ export default function CreateQRCode() {
         });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
-        a.download = "QRCode.svg";
+        const safeFileName = (linkTitle || text)
+          .replace(/[^a-zA-Z0-9ก-๙\s-]/g, "")
+          .trim()
+          .substring(0, 30);
+        a.download = safeFileName ? `${safeFileName}.svg` : "QRCode.svg";
         a.href = url;
         document.body.appendChild(a);
         a.click();
@@ -225,7 +263,6 @@ export default function CreateQRCode() {
         components: {
           Input: {
             controlHeightLG: 50,
-            // แก้ไข: ใช้สีพื้นหลังที่ชัดเจนขึ้นในโหมด Light แต่ยังคงความโปร่งใสใน Dark
             colorBgContainer: "rgba(255,255,255,0.8)",
             activeBorderColor: "#DAA520",
           },
@@ -242,30 +279,13 @@ export default function CreateQRCode() {
       }}
     >
       <div className="py-24 min-h-screen relative flex items-center justify-center bg-gray-50 dark:bg-slate-950 overflow-hidden font-sans selection:bg-[#DAA520] selection:text-white">
-        {/* Background Decorations */}
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-400/20 dark:bg-blue-600/10 rounded-full blur-[120px]" />
           <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#DAA520]/20 dark:bg-[#DAA520]/10 rounded-full blur-[120px]" />
         </div>
 
-        {/* Main Content */}
         <div className="relative z-10 w-full max-w-4xl px-4 py-12">
-          {/* Breadcrumb */}
-          <nav className="flex justify-center mb-8">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/60 dark:bg-black/40 backdrop-blur-md border border-gray-200 dark:border-gray-800 shadow-sm">
-              <Link
-                href="/"
-                className="flex items-center gap-2 text-sm font-medium text-gray-500 hover:text-[#DAA520] dark:text-gray-400 transition-colors"
-              >
-                <HomeIcon />
-                <span>หน้าหลัก</span>
-              </Link>
-              <span className="text-gray-300 dark:text-gray-600">/</span>
-              <span className="text-sm font-semibold text-[#DAA520]">
-                สร้าง QR Code
-              </span>
-            </div>
-          </nav>
+          <nav className="flex justify-center mb-8">{/* Breadcrumb ... */}</nav>
 
           <div className="grid lg:grid-cols-2 gap-8 items-center">
             {/* Left Column: Controls */}
@@ -275,12 +295,9 @@ export default function CreateQRCode() {
                   สร้าง{" "}
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#DAA520] to-yellow-300">
                     QR Code
-                  </span>
+                  </span>{" "}
                   <br /> ของคุณได้ง่ายๆ
                 </h1>
-                <p className="text-gray-500 dark:text-gray-400 text-lg">
-                  วิทยาลัยเทคนิคกันทรลักษ์
-                </p>
               </div>
 
               <div className="bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl p-6 rounded-3xl border border-white/50 dark:border-white/10 shadow-xl space-y-6">
@@ -288,8 +305,6 @@ export default function CreateQRCode() {
                   <label className="text-sm font-semibold text-gray-700 dark:text-gray-300 ml-1">
                     ข้อความหรือลิงก์
                   </label>
-
-                  {/* แก้ไข Input: เพิ่ม text-gray-900 เพื่อให้ตัวหนังสือสีเข้มในโหมดปกติ */}
                   <Input
                     size="large"
                     allowClear
@@ -302,14 +317,34 @@ export default function CreateQRCode() {
                   />
                 </div>
 
+                {/* แสดงผลการดึง Title ใต้ Input */}
+                <div className="text-sm px-2 flex items-center gap-2">
+                  {isFetchingTitle ? (
+                    <span className="text-blue-500 flex items-center gap-2">
+                      <Spin
+                        indicator={
+                          <LoadingOutlined style={{ fontSize: 14 }} spin />
+                        }
+                      />{" "}
+                      กำลังดึงชื่อลิงก์...
+                    </span>
+                  ) : linkTitle &&
+                    text.startsWith("http") &&
+                    linkTitle !== text ? (
+                    <span className="text-green-600 dark:text-green-400">
+                      ✅ ชื่อเว็บ: {linkTitle}
+                    </span>
+                  ) : null}
+                </div>
+
                 <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-gray-50 dark:bg-black/20 p-4 rounded-2xl">
                   <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
                     รูปแบบไฟล์
                   </span>
                   <Segmented
                     options={[
-                      { label: "PNG (รูปภาพ)", value: "canvas" },
-                      { label: "SVG (เวกเตอร์)", value: "svg" },
+                      { label: "PNG", value: "canvas" },
+                      { label: "SVG", value: "svg" },
                     ]}
                     value={renderType}
                     onChange={setRenderType}
@@ -323,7 +358,8 @@ export default function CreateQRCode() {
                   block
                   icon={<DownloadIcon />}
                   onClick={handleDownload}
-                  className="bg-[#DAA520] hover:bg-[#B8860B] border-none text-lg h-14 rounded-2xl font-bold"
+                  disabled={isFetchingTitle} // ปิดปุ่มตอนกำลังโหลด
+                  className="bg-[#DAA520] hover:bg-[#B8860B] border-none text-lg h-14 rounded-2xl font-bold disabled:opacity-50"
                 >
                   ดาวน์โหลด QR Code
                 </Button>
@@ -334,14 +370,12 @@ export default function CreateQRCode() {
             <div className="order-1 lg:order-2 flex justify-center">
               <div className="relative group">
                 <div className="absolute -inset-4 bg-gradient-to-r from-blue-500 to-[#DAA520] rounded-[2rem] blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
-
-                {/* Visual Preview Container */}
                 <div
                   id="myqrcode"
                   className="relative bg-white p-8 rounded-[2rem] shadow-2xl border border-gray-100 dark:border-gray-800 transform transition-transform duration-500 hover:scale-[1.02] hover:-rotate-1"
                 >
                   <div className="relative">
-                    {/* Visual Corner Accents (Just for UI display) */}
+                    {/* Visual Corner Accents */}
                     <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-[#DAA520] rounded-tl-xl -mt-2 -ml-2" />
                     <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-[#DAA520] rounded-tr-xl -mt-2 -mr-2" />
                     <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-[#DAA520] rounded-bl-xl -mb-2 -ml-2" />
@@ -351,7 +385,7 @@ export default function CreateQRCode() {
                       type={renderType}
                       value={text || "https://ktltc.vercel.app"}
                       size={240}
-                      iconSize={240 / 4}
+                      iconSize={60}
                       color="#000"
                       bgColor="#FFF"
                       style={{ margin: "auto" }}
@@ -361,22 +395,19 @@ export default function CreateQRCode() {
 
                   <div className="mt-6 text-center">
                     <p className="text-xs font-medium text-gray-400 uppercase tracking-widest">
-                      SCAN ME
+                      {isFetchingTitle ? "LOADING..." : "SCAN ME"}
                     </p>
-                    <p className="text-sm text-gray-500 mt-1 truncate max-w-[200px] mx-auto">
-                      {text || "https://ktltc.vercel.app"}
+                    <p className="text-sm text-gray-500 mt-1 truncate max-w-[200px] mx-auto transition-all">
+                      {/* แสดง Title แทน Text ถ้ายาวไปก็จุดๆๆ */}
+                      {isFetchingTitle
+                        ? "ดึงข้อมูล..."
+                        : linkTitle || text || "https://ktltc.vercel.app"}
                     </p>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-
-        <div className="absolute bottom-4 text-center w-full">
-          <p className="text-xs text-gray-400 dark:text-gray-600">
-            © KTLTC QR Generator Service
-          </p>
         </div>
       </div>
     </ConfigProvider>
