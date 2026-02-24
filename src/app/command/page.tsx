@@ -25,6 +25,7 @@ async function getCommands(): Promise<NewsItem[]> {
         $or: [{ category: "Order" }, { categories: { $in: ["Order"] } }],
       })
       .sort({ createdAt: -1 })
+      .limit(3)
       .toArray();
 
     return JSON.parse(JSON.stringify(commands));

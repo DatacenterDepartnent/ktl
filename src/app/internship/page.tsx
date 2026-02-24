@@ -26,6 +26,7 @@ async function getInternshipData(): Promise<NewsItem[]> {
         ],
       })
       .sort({ createdAt: -1 })
+      .limit(3)
       .toArray();
 
     return JSON.parse(JSON.stringify(internshipNews));

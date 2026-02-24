@@ -25,6 +25,7 @@ async function getTenderData(): Promise<NewsItem[]> {
         $or: [{ category: "Bidding" }, { categories: { $in: ["Bidding"] } }],
       })
       .sort({ createdAt: -1 })
+      .limit(3)
       .toArray();
 
     return JSON.parse(JSON.stringify(tenderNews));

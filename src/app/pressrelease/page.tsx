@@ -22,7 +22,7 @@ async function getLatestNews(): Promise<NewsItem[]> {
       .collection("news")
       .find({})
       .sort({ createdAt: -1 })
-      .limit(4)
+      .limit(3)
       .toArray();
     return JSON.parse(JSON.stringify(news));
   } catch {
@@ -69,7 +69,7 @@ export default async function PressRelease() {
 
         {/* --- News Grid (4 การ์ดเรียงกัน) --- */}
         {latestNews.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {latestNews.map((news) => (
               <Link
                 href={`/news/${news._id}`}

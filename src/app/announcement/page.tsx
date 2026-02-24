@@ -31,7 +31,7 @@ async function getAnnouncements(): Promise<NewsItem[]> {
       .collection("news")
       .find(query)
       .sort({ createdAt: -1 })
-      .limit(4)
+      .limit(3)
       .toArray();
 
     return JSON.parse(JSON.stringify(news));
@@ -94,7 +94,7 @@ export default async function AnnouncementPage() {
 
         {/* --- Grid Section --- */}
         {announcements.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
             {announcements.map((news) => {
               const coverImage =
                 news.announcementImages && news.announcementImages.length > 0
