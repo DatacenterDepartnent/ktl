@@ -47,9 +47,9 @@ export default async function NewsletterPage() {
   const newsletters = await getNewsletters();
 
   return (
-    <main className="min-h-screen text-slate-800 dark:text-slate-200">
+    <main className="text-slate-800 dark:text-slate-200 container px-4">
       {/* --- Header Section --- */}
-      <section className="pt-16 pb-10 text-center px-4">
+      <section className="pb-10 text-center px-4">
         <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight mb-3">
           <span className="text-slate-800 dark:text-white">จดหมายข่าว</span>
           <span className="text-yellow-500">ประชาสัมพันธ์</span>
@@ -61,7 +61,7 @@ export default async function NewsletterPage() {
       </section>
 
       {/* --- Newsletter Grid --- */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 pb-20">
+      <section className="">
         {newsletters.length > 0 ? (
           <>
             {/* ✅ ปรับ Grid ให้แสดง 3 คอลัมน์ ตั้งแต่หน้าจอขนาดกลาง (md) ขึ้นไป */}

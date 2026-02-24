@@ -121,7 +121,7 @@ export default function NewsListClient({
   const handleLoadMore = () => setVisibleCount((prev) => prev + 12); // โหลดเพิ่มทีละ 12 (ลงตัวกับ 2, 3, 4)
 
   return (
-    <div className="w-full pb-32">
+    <div className="w-full">
       {/* --- Filter Section --- */}
       <div className="mb-16 bg-white/70 backdrop-blur-xl p-3 md:p-4 rounded-[2.5rem] border border-slate-200/60 top-24 z-20 shadow-xl shadow-slate-200/30 dark:bg-slate-900/80 dark:border-slate-700 dark:shadow-black/40">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">

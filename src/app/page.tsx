@@ -1,17 +1,20 @@
-import Announcement from "./announcement/page";
-import Newsletter from "./newsletter/page";
 import PressRelease from "./pressrelease/page";
+import Newsletter from "./newsletter/page";
+import Announcement from "./announcement/page";
+import TenderPage from "./tender/page";
+import InternshipPage from "./internship/page";
+import CommandPage from "./command/page";
+import ShowYoutube from "./ShowYoutube/page";
+import Features from "./Features";
+import CalendarPage from "@/components/Calendar";
+import WelcomePage from "@/components/WelcomePage";
 import Scrollimage from "@/components/Scrollimage";
+import ShowFacebook from "@/components/ShowFacebook";
+import ScrollVelocity from "@/components/Scrollvelocity";
+import SubQAPage from "./ITA/08/qa/SubQAPage";
 import StudentSupportSystem from "./StudentSupportSystem/page";
 import ExternalQualityAssurance from "./ExternalQualityAssurance";
-import Features from "./Features";
-import WelcomePage from "@/components/WelcomePage";
-import ScrollVelocity from "@/components/Scrollvelocity";
 import BackgroundBeamsWithCollisionDemo from "@/components/BackgroundBeamsWithCollisionDemo";
-import ShowFacebook from "@/components/ShowFacebook";
-import CalendarPage from "@/components/Calendar";
-import ShowYoutube from "./ShowYoutube/page";
-import SubQAPage from "./ITA/08/qa/SubQAPage";
 
 // --- Main Home Component ---
 // หน้าแรกของเว็บไซต์: ทำหน้าที่รวม Component ย่อยๆ มาแสดงผลเรียงกันในแนวตั้ง
@@ -20,7 +23,6 @@ export default function Home() {
     // Container หลัก ใช้ Flex Column เพื่อเรียงเนื้อหาจากบนลงล่าง
     <div className="flex flex-col">
       <main className="grow">
-
         {/* 2. Scroll Image: ส่วนแสดงรูปภาพสไลด์ หรือ Banner หลักด้านบน */}
         <div className="max-w-7xl mx-auto">
           <Scrollimage />
@@ -69,6 +71,21 @@ export default function Home() {
         {/* 11. Announcement: ข่าวประกาศทั่วไป (เช่น ประกาศสอบ, ประกาศหยุดเรียน) */}
         <div className="max-w-7xl mx-auto">
           <Announcement />
+        </div>
+
+        {/* 11. Announcement: ข่าวประกาศทั่วไป (เช่น ประกาศสอบ, ประกาศหยุดเรียน) */}
+        <div className="max-w-7xl mx-auto">
+          <TenderPage />
+        </div>
+
+        {/* 11. Announcement: ข่าวประกาศทั่วไป (เช่น ประกาศสอบ, ประกาศหยุดเรียน) */}
+        <div className="max-w-7xl mx-auto">
+          <CommandPage />
+        </div>
+
+        {/* 11. Announcement: ข่าวประกาศทั่วไป (เช่น ประกาศสอบ, ประกาศหยุดเรียน) */}
+        <div className="max-w-7xl mx-auto">
+          <InternshipPage />
         </div>
 
         {/* 12. Facebook Feed: แสดงโพสต์จากหน้าเพจ Facebook ของวิทยาลัย */}

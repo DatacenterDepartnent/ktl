@@ -43,8 +43,8 @@ export default async function PressRelease() {
   const latestNews = await getLatestNews();
 
   return (
-    <main className="flex-col relative max-w-7xl mx-auto flex items-center justify-between dark:bg-transparent">
-      <div className="container px-4 py-24">
+    <main className="flex-col container px-4 relative max-w-7xl mx-auto flex items-center justify-between dark:bg-transparent">
+      <div className="">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
           <div className="flex gap-4">
             <div className="w-1.5 bg-orange-500 rounded-full h-auto self-stretch"></div>
