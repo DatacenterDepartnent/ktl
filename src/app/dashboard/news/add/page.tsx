@@ -88,7 +88,6 @@ function SortableImage({ id, src, onRemove, isVertical = false }: any) {
     transition,
     isDragging,
   } = useSortable({ id });
-
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -100,11 +99,8 @@ function SortableImage({ id, src, onRemove, isVertical = false }: any) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-zinc-700 group touch-none bg-slate-100 dark:bg-zinc-800 ${
-        isVertical ? "aspect-[3/4]" : "aspect-video"
-      }`}
+      className={`relative rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-zinc-700 group touch-none bg-slate-100 dark:bg-zinc-800 ${isVertical ? "aspect-[3/4]" : "aspect-video"}`}
     >
-      {/* Drag Handle Area */}
       <div
         {...attributes}
         {...listeners}
@@ -122,8 +118,6 @@ function SortableImage({ id, src, onRemove, isVertical = false }: any) {
           </span>
         </div>
       </div>
-
-      {/* Remove Button */}
       <button
         type="button"
         onClick={(e) => {
@@ -138,28 +132,28 @@ function SortableImage({ id, src, onRemove, isVertical = false }: any) {
   );
 }
 
-// --- Main Page Component ---
 export default function AddNewsPage() {
   const router = useRouter();
 
+  // --- States ---
   const [categories, setCategories] = useState<string[]>(["PR"]);
   const [content, setContent] = useState("");
+  // วันที่ลงข้อมูล
+  const [publishDate, setPublishDate] = useState(
+    new Date().toISOString().split("T")[0],
+  );
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-
   const [newsletterFiles, setNewsletterFiles] = useState<File[]>([]);
   const [newsletterPreviews, setNewsletterPreviews] = useState<string[]>([]);
-
   const [links, setLinks] = useState<{ label: string; url: string }[]>([]);
   const [currentLink, setCurrentLink] = useState({ label: "", url: "" });
   const [videoEmbeds, setVideoEmbeds] = useState<string[]>([]);
   const [currentEmbed, setCurrentEmbed] = useState("");
-
   const [isLoading, setIsLoading] = useState(false);
   const [isCompressing, setIsCompressing] = useState(false);
 
-  // DND Sensors
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
     useSensor(KeyboardSensor, {
@@ -175,7 +169,6 @@ export default function AddNewsPage() {
     );
   }, []);
 
-  // --- Handlers ---
   const handleDragEnd = (
     event: DragEndEvent,
     type: "general" | "newsletter",
@@ -244,11 +237,6 @@ export default function AddNewsPage() {
     }
   };
 
-  const removeImage = (index: number) => {
-    setImageFiles((prev) => prev.filter((_, i) => i !== index));
-    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
-  };
-
   const handleNewsletterChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
@@ -267,26 +255,6 @@ export default function AddNewsPage() {
     }
   };
 
-  const removeNewsletter = (index: number) => {
-    setNewsletterFiles((prev) => prev.filter((_, i) => i !== index));
-    setNewsletterPreviews((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const addLink = () => {
-    if (!currentLink.label || !currentLink.url)
-      return alert("กรุณากรอกข้อมูลลิงก์ให้ครบ");
-    setLinks([...links, currentLink]);
-    setCurrentLink({ label: "", url: "" });
-  };
-
-  const addEmbed = () => {
-    if (!currentEmbed.trim()) return;
-    if (!currentEmbed.includes("<iframe"))
-      return alert("กรุณาวางโค้ด Embed ที่ถูกต้อง");
-    setVideoEmbeds([...videoEmbeds, currentEmbed]);
-    setCurrentEmbed("");
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const autoTitle = generateTitleFromContent(content);
@@ -301,21 +269,16 @@ export default function AddNewsPage() {
       const newsletterUploads = await Promise.all(
         newsletterFiles.map((f) => uploadToCloudinary(f, "ktltc_newsletters")),
       );
-      const validImages = generalUploads.filter(
-        (url) => url !== null,
-      ) as string[];
-      const validNewsletter = newsletterUploads.filter(
-        (url) => url !== null,
-      ) as string[];
 
       const payload = {
         title: autoTitle,
         categories,
         content,
-        images: validImages,
-        announcementImages: validNewsletter,
+        images: generalUploads.filter((u) => u !== null),
+        announcementImages: newsletterUploads.filter((u) => u !== null),
         links,
         videoEmbeds,
+        createdAt: new Date(publishDate).toISOString(),
       };
 
       const res = await fetch("/api/news", {
@@ -325,7 +288,7 @@ export default function AddNewsPage() {
       });
 
       if (res.ok) {
-        alert("บันทึกสำเร็จ!");
+        alert("บันทึกข่าวเรียบร้อยแล้ว");
         router.push("/dashboard/news");
         router.refresh();
       } else {
@@ -337,6 +300,16 @@ export default function AddNewsPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // ฟังก์ชันจัดรูปแบบวันที่ วัน/เดือน/ปี (พ.ศ.)
+  const formatThaiDate = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString("th-TH", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
   };
 
   return (
@@ -353,6 +326,14 @@ export default function AddNewsPage() {
           border-radius: 0.75rem;
           border: 1px solid #e2e8f0 !important;
           overflow: hidden;
+        }
+        /* ทำให้ input date แสดงผลแบบ วัน/เดือน/ปี ในเบราว์เซอร์ที่รองรับ */
+        input[type="date"]::-webkit-datetime-edit-text {
+          color: #94a3b8;
+          padding: 0 0.2em;
+        }
+        input[type="date"]::-webkit-inner-spin-button {
+          display: none;
         }
       `}</style>
 
@@ -371,285 +352,371 @@ export default function AddNewsPage() {
                 สร้างข่าวใหม่
               </h1>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                ลากเพื่อเปลี่ยนลำดับรูปภาพได้ทันที
+                ระบุวันที่ลงข้อมูล (วัน/เดือน/ปี)
               </p>
             </div>
           </div>
-          {isCompressing && (
-            <span className="text-blue-600 text-xs font-black animate-pulse bg-blue-50 px-3 py-1 rounded-full border border-blue-100 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800">
-              ⏳ กำลังย่อขนาดรูป...
-            </span>
-          )}
         </div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-10 space-y-8">
-        {/* --- Card 1: Details --- */}
-        <section className="rounded-3xl space-y-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl dark:bg-blue-900/30 dark:text-blue-400">
-              📝
+        {/* --- Card 1: ข้อมูลข่าวสารและวันที่ --- */}
+        <section className="">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl dark:bg-indigo-900/30 dark:text-indigo-400">
+              📅
             </div>
-            <h2 className="text-lg font-bold text-slate-700 dark:text-slate-200">
-              รายละเอียดข่าว
-            </h2>
+            <h2 className="text-lg font-bold">กำหนดวันที่และหมวดหมู่</h2>
           </div>
-          <div className="space-y-6">
-            <div className="space-y-3">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1 dark:text-slate-500">
-                หมวดหมู่
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            {/* ส่วนของวันที่ที่เน้น วัน/เดือน/ปี */}
+            <div className="space-y-4">
+              <label className="text-sm font-bold text-slate-600 dark:text-slate-400 ml-1">
+                วันที่ลงข้อมูล (เดือน / วัน / ปี)
               </label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div className="relative group">
+                <input
+                  type="date"
+                  value={publishDate}
+                  onChange={(e) => setPublishDate(e.target.value)}
+                  className="w-full bg-slate-50 p-4 rounded-2xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all dark:bg-zinc-800 dark:border-zinc-700 dark:text-white text-lg font-medium"
+                />
+                <div className="mt-3 flex items-center gap-3 bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-2xl border border-indigo-100 dark:border-indigo-800">
+                  <span className="text-indigo-600 dark:text-indigo-300 font-bold text-sm">
+                    รูปแบบที่บันทึก:
+                  </span>
+                  <span className="text-indigo-700 dark:text-indigo-200 font-bold tracking-widest">
+                    {formatThaiDate(publishDate)}
+                  </span>
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-400 leading-relaxed px-2">
+                * หากเบราว์เซอร์ของคุณตั้งค่าเป็นภาษาไทย ปฏิทินจะแสดงผลเป็นปี
+                พ.ศ. โดยอัตโนมัติ
+              </p>
+            </div>
+
+            {/* ส่วนหมวดหมู่ */}
+            <div className="space-y-4">
+              <label className="text-sm font-bold text-slate-600 dark:text-slate-400 ml-1">
+                หมวดหมู่ข่าวสาร
+              </label>
+              <div className="grid grid-cols-2 gap-3">
                 {CATEGORIES.map((cat) => (
                   <div
                     key={cat.value}
                     onClick={() => toggleCategory(cat.value)}
-                    className={`p-4 rounded-2xl border-2 cursor-pointer transition-all text-center font-bold text-sm ${categories.includes(cat.value) ? cat.color : "border-slate-100 text-slate-400 hover:border-slate-200 dark:border-zinc-700 dark:text-slate-500 dark:hover:border-zinc-600"}`}
+                    className={`p-3 rounded-xl border-2 cursor-pointer transition-all text-center font-bold text-sm ${categories.includes(cat.value) ? cat.color : "border-slate-50 text-slate-400 dark:border-zinc-800 dark:text-slate-600"}`}
                   >
                     {cat.label}
                   </div>
                 ))}
               </div>
             </div>
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1 dark:text-slate-500">
-                เนื้อหาข่าว (Rich Text)
-              </label>
-              <div className="rounded-2xl shadow-sm border border-slate-200 overflow-hidden dark:border-zinc-700">
-                {SunEditorComponent ? (
-                  <SunEditorComponent
-                    setContents={content}
-                    onChange={setContent}
-                    height="400px"
-                    setOptions={{
-                      font: fontList,
-                      buttonList: [
-                        ["undo", "redo"],
-                        ["font", "fontSize", "formatBlock"],
-                        ["bold", "underline", "italic", "strike"],
-                        ["fontColor", "hiliteColor"],
-                        ["table", "link", "image", "video"],
-                        ["fullScreen", "codeView"],
-                      ],
-                    }}
+          </div>
+
+          <div className="pt-4 border-t border-slate-100 dark:border-zinc-800">
+            <label className="text-sm font-bold text-slate-600 dark:text-slate-400 ml-1 block mb-3">
+              เนื้อหาข่าวสาร
+            </label>
+            <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-zinc-700 shadow-inner">
+              {SunEditorComponent ? (
+                <SunEditorComponent
+                  setContents={content}
+                  onChange={setContent}
+                  height="450px"
+                  setOptions={{
+                    font: fontList,
+                    buttonList: [
+                      ["undo", "redo"],
+                      ["font", "fontSize", "formatBlock"],
+                      ["bold", "underline", "italic", "strike"],
+                      ["fontColor", "hiliteColor"],
+                      ["table", "link", "image", "video"],
+                      ["fullScreen", "codeView"],
+                    ],
+                  }}
+                />
+              ) : (
+                <div className="h-[450px] flex items-center justify-center bg-slate-50 text-slate-400">
+                  กำลังเตรียมพื้นที่เขียนข่าว...
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* --- ส่วนจัดการรูปภาพ --- */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <section className="">
+            <h2 className="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2 text-lg">
+              🖼️ อัลบั้มภาพ (แนวนอน)
+            </h2>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={(e) => handleDragEnd(e, "general")}
+            >
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <SortableContext
+                  items={imagePreviews}
+                  strategy={rectSortingStrategy}
+                >
+                  {imagePreviews.map((src, i) => (
+                    <SortableImage
+                      key={src}
+                      id={src}
+                      src={src}
+                      onRemove={() => {
+                        setImageFiles((prev) =>
+                          prev.filter((_, idx) => idx !== i),
+                        );
+                        setImagePreviews((prev) =>
+                          prev.filter((_, idx) => idx !== i),
+                        );
+                      }}
+                    />
+                  ))}
+                </SortableContext>
+                <label className="aspect-video border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 hover:border-indigo-300 transition-all dark:border-zinc-700 dark:hover:bg-zinc-800 group">
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleImageChange}
                   />
-                ) : (
-                  <div className="h-[400px] flex items-center justify-center bg-slate-50 text-slate-400 dark:bg-zinc-800 dark:text-slate-500">
-                    กำลังโหลด Editor...
+                  <span className="text-3xl text-slate-300 group-hover:text-indigo-400 transition-colors">
+                    +
+                  </span>
+                  <span className="text-[10px] font-bold text-slate-400 mt-1">
+                    เพิ่มรูปภาพ
+                  </span>
+                </label>
+              </div>
+            </DndContext>
+          </section>
+
+          <section className="">
+            <h2 className="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2 text-lg">
+              📜 จดหมายข่าว (แนวตั้ง)
+            </h2>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={(e) => handleDragEnd(e, "newsletter")}
+            >
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                <SortableContext
+                  items={newsletterPreviews}
+                  strategy={rectSortingStrategy}
+                >
+                  {newsletterPreviews.map((src, i) => (
+                    <SortableImage
+                      key={src}
+                      id={src}
+                      src={src}
+                      isVertical
+                      onRemove={() => {
+                        setNewsletterFiles((prev) =>
+                          prev.filter((_, idx) => idx !== i),
+                        );
+                        setNewsletterPreviews((prev) =>
+                          prev.filter((_, idx) => idx !== i),
+                        );
+                      }}
+                    />
+                  ))}
+                </SortableContext>
+                <label className="aspect-[3/4] border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 hover:border-indigo-300 transition-all dark:border-zinc-700 dark:hover:bg-zinc-800 group">
+                  <input
+                    type="file"
+                    multiple
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleNewsletterChange}
+                  />
+                  <span className="text-3xl text-slate-300 group-hover:text-indigo-400 transition-colors">
+                    +
+                  </span>
+                  <span className="text-[10px] font-bold text-slate-400 mt-1">
+                    เพิ่มไฟล์แนวตั้ง
+                  </span>
+                </label>
+              </div>
+            </DndContext>
+          </section>
+        </div>
+
+        {/* --- ส่วนลิงก์และวิดีโอ --- */}
+        <section className="">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-2xl bg-slate-100 text-slate-600 flex items-center justify-center text-xl dark:bg-zinc-800 dark:text-slate-400">
+              🔗
+            </div>
+            <h2 className="font-bold text-lg dark:text-white">
+              ลิงก์แนบและสื่อวิดีโอ
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* --- ส่วนจัดการลิงก์ --- */}
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">
+                  เพิ่มลิงก์ภายนอก / เอกสารดาวน์โหลด
+                </label>
+                <div className="flex flex-col sm:flex-row gap-2 p-2 bg-slate-50 dark:bg-zinc-800/50 rounded-2xl border border-slate-100 dark:border-zinc-700">
+                  <input
+                    placeholder="ชื่อปุ่ม (เช่น ดาวน์โหลด PDF)"
+                    value={currentLink.label}
+                    onChange={(e) =>
+                      setCurrentLink({ ...currentLink, label: e.target.value })
+                    }
+                    className="flex-1 bg-white dark:bg-zinc-800 p-3 rounded-xl border border-slate-200 dark:border-zinc-700 outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm"
+                  />
+                  <input
+                    placeholder="URL (https://...)"
+                    value={currentLink.url}
+                    onChange={(e) =>
+                      setCurrentLink({ ...currentLink, url: e.target.value })
+                    }
+                    className="flex-[1.5] bg-white dark:bg-zinc-800 p-3 rounded-xl border border-slate-200 dark:border-zinc-700 outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (currentLink.label && currentLink.url) {
+                        setLinks([...links, currentLink]);
+                        setCurrentLink({ label: "", url: "" });
+                      }
+                    }}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-xl font-bold transition-all shadow-md shadow-indigo-500/10 active:scale-95"
+                  >
+                    เพิ่ม
+                  </button>
+                </div>
+              </div>
+
+              {/* รายการลิงก์ที่เพิ่มแล้ว */}
+              <div className="grid grid-cols-1 gap-2 max-h-[250px] overflow-y-auto pr-2 scrollbar-thin">
+                {links.length === 0 && (
+                  <div className="text-center py-8 border-2 border-dashed border-slate-100 dark:border-zinc-800 rounded-2xl text-slate-400 text-xs">
+                    ยังไม่มีการเพิ่มลิงก์
                   </div>
                 )}
+                {links.map((l, i) => (
+                  <div
+                    key={i}
+                    className="group flex justify-between items-center p-4 bg-white dark:bg-zinc-800 rounded-xl border border-slate-100 dark:border-zinc-700 hover:border-indigo-200 dark:hover:border-indigo-900 transition-all"
+                  >
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-500 text-xs">
+                        Link
+                      </div>
+                      <div className="overflow-hidden">
+                        <p className="text-sm font-bold text-slate-700 dark:text-slate-200 truncate">
+                          {l.label}
+                        </p>
+                        <p className="text-[10px] text-slate-400 truncate w-full">
+                          {l.url}
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() =>
+                        setLinks(links.filter((_, idx) => idx !== i))
+                      }
+                      className="opacity-0 group-hover:opacity-100 p-2 text-red-400 hover:text-red-600 transition-all"
+                      title="ลบลิงก์"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
               </div>
             </div>
-          </div>
-        </section>
 
-        {/* --- Card 2: General Images (DND) --- */}
-        <section className="rounded-3xl space-y-6">
-          <h2 className="font-bold text-slate-700 flex items-center gap-2 text-lg dark:text-slate-200">
-            🖼️ รูปภาพทั่วไป (แนวนอน) -{" "}
-            <span className="text-sm font-normal text-slate-400">
-              ลากเพื่อเรียงลำดับ
-            </span>
-          </h2>
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={(e) => handleDragEnd(e, "general")}
-          >
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              <SortableContext
-                items={imagePreviews}
-                strategy={rectSortingStrategy}
-              >
-                {imagePreviews.map((src, i) => (
-                  <SortableImage
-                    key={src}
-                    id={src}
-                    src={src}
-                    onRemove={() => removeImage(i)}
+            {/* --- ส่วนจัดการวิดีโอ --- */}
+            <div className="space-y-6">
+              <div className="space-y-3">
+                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">
+                  ฝังวิดีโอจาก YouTube (Embed Code)
+                </label>
+                <div className="space-y-3">
+                  <textarea
+                    placeholder="วางโค้ด <iframe> ที่ได้จาก YouTube (คลิกแชร์ > ฝัง)"
+                    value={currentEmbed}
+                    onChange={(e) => setCurrentEmbed(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-zinc-800/50 p-4 rounded-2xl border border-slate-200 dark:border-zinc-700 h-28 outline-none focus:ring-2 focus:ring-red-500/20 text-sm font-mono"
                   />
-                ))}
-              </SortableContext>
-              <label className="aspect-video border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50 hover:border-blue-400 transition-all dark:border-zinc-600 dark:hover:bg-blue-900/20 dark:hover:border-blue-500">
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleImageChange}
-                />
-                <span className="text-xl text-slate-400">+</span>
-                <span className="text-[10px] font-black text-slate-400 uppercase">
-                  Add More
-                </span>
-              </label>
-            </div>
-          </DndContext>
-        </section>
-
-        {/* --- Card 3: Newsletter (DND) --- */}
-        <section className="rounded-3xl space-y-6">
-          <h2 className="font-bold text-slate-700 flex items-center gap-2 text-lg dark:text-slate-200">
-            📜 จดหมายข่าว (แนวตั้ง) -{" "}
-            <span className="text-sm font-normal text-slate-400">
-              ลากเพื่อเรียงลำดับ
-            </span>
-          </h2>
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={(e) => handleDragEnd(e, "newsletter")}
-          >
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-              <SortableContext
-                items={newsletterPreviews}
-                strategy={rectSortingStrategy}
-              >
-                {newsletterPreviews.map((src, i) => (
-                  <SortableImage
-                    key={src}
-                    id={src}
-                    src={src}
-                    isVertical
-                    onRemove={() => removeNewsletter(i)}
-                  />
-                ))}
-              </SortableContext>
-              <label className="aspect-[3/4] border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-purple-50 hover:border-purple-400 transition-all dark:border-zinc-600 dark:hover:bg-purple-900/20 dark:hover:border-purple-500">
-                <input
-                  type="file"
-                  multiple
-                  accept="image/*"
-                  className="hidden"
-                  onChange={handleNewsletterChange}
-                />
-                <span className="text-xl text-slate-400">+</span>
-                <span className="text-[10px] font-black text-slate-400 uppercase">
-                  Add More
-                </span>
-              </label>
-            </div>
-          </DndContext>
-        </section>
-
-        {/* --- Card 4: Links --- */}
-        <section className="rounded-3xl space-y-6">
-          <h2 className="font-bold text-slate-700 flex items-center gap-2 text-lg dark:text-slate-200">
-            🔗 ลิงก์ภายนอก / เอกสารแนบ
-          </h2>
-          <div className="flex flex-col md:flex-row gap-3">
-            <input
-              placeholder="ชื่อปุ่ม"
-              value={currentLink.label}
-              onChange={(e) =>
-                setCurrentLink({ ...currentLink, label: e.target.value })
-              }
-              className="flex-1 bg-slate-50 p-4 rounded-2xl border border-slate-200 dark:bg-zinc-800 dark:border-zinc-700"
-            />
-            <input
-              placeholder="URL"
-              value={currentLink.url}
-              onChange={(e) =>
-                setCurrentLink({ ...currentLink, url: e.target.value })
-              }
-              className="flex-1 bg-slate-50 p-4 rounded-2xl border border-slate-200 dark:bg-zinc-800 dark:border-zinc-700"
-            />
-            <button
-              type="button"
-              onClick={addLink}
-              className="bg-slate-800 text-white px-8 py-4 rounded-2xl font-bold dark:bg-zinc-700"
-            >
-              + เพิ่มลิงก์
-            </button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-4">
-            {links.map((l, i) => (
-              <div
-                key={i}
-                className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl border dark:bg-zinc-800 dark:border-zinc-700"
-              >
-                <div className="flex flex-col overflow-hidden">
-                  <span className="text-sm font-bold dark:text-slate-200">
-                    {l.label}
-                  </span>
-                  <span className="text-[10px] text-slate-400 truncate">
-                    {l.url}
-                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (currentEmbed.includes("<iframe")) {
+                        setVideoEmbeds([...videoEmbeds, currentEmbed]);
+                        setCurrentEmbed("");
+                      } else {
+                        alert("กรุณาวางโค้ด iframe ที่ถูกต้องจาก YouTube");
+                      }
+                    }}
+                    className="w-full bg-red-50 hover:bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 py-3 rounded-xl font-bold transition-all border border-red-100 dark:border-red-900/50 active:scale-[0.99]"
+                  >
+                    + เพิ่มวิดีโอลงในข่าว
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setLinks(links.filter((_, idx) => idx !== i))}
-                  className="text-red-400 font-bold"
-                >
-                  ✕
-                </button>
               </div>
-            ))}
-          </div>
-        </section>
 
-        {/* --- Card 5: Videos --- */}
-        <section className="rounded-3xl space-y-6">
-          <h2 className="font-bold text-slate-700 flex items-center gap-3 text-lg dark:text-slate-200">
-            <span className="w-10 h-10 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center dark:bg-red-900/30">
-              🎥
-            </span>{" "}
-            วิดีโอ (Embed Code)
-          </h2>
-          <textarea
-            rows={3}
-            placeholder="วางโค้ด Embed ที่นี่..."
-            value={currentEmbed}
-            onChange={(e) => setCurrentEmbed(e.target.value)}
-            className="w-full bg-slate-50 p-4 rounded-2xl border border-slate-200 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
-          />
-          <button
-            type="button"
-            onClick={addEmbed}
-            className="bg-red-600 text-white px-8 py-3 rounded-2xl font-bold self-end"
-          >
-            + เพิ่มวิดีโอ
-          </button>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-            {videoEmbeds.map((code, i) => (
-              <div
-                key={i}
-                className="relative group border border-slate-200 rounded-xl p-2 bg-white dark:bg-zinc-800 dark:border-zinc-700"
-              >
-                <button
-                  type="button"
-                  onClick={() =>
-                    setVideoEmbeds(videoEmbeds.filter((_, idx) => idx !== i))
-                  }
-                  className="absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center shadow-md z-20 hover:scale-110 transition-transform"
-                >
-                  ✕
-                </button>
-                <div
-                  className="aspect-video w-full overflow-hidden rounded-lg bg-black/5 [&>iframe]:w-full [&>iframe]:h-full"
-                  dangerouslySetInnerHTML={{ __html: code }}
-                />
+              {/* Preview รายการวิดีโอ */}
+              <div className="grid grid-cols-2 gap-3 max-h-[250px] overflow-y-auto pr-2 scrollbar-thin">
+                {videoEmbeds.map((code, i) => (
+                  <div
+                    key={i}
+                    className="relative aspect-video rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-700 bg-black group"
+                  >
+                    <div
+                      className="w-full h-full pointer-events-none opacity-60 scale-[0.5]"
+                      dangerouslySetInnerHTML={{ __html: code }}
+                    />
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setVideoEmbeds(
+                            videoEmbeds.filter((_, idx) => idx !== i),
+                          )
+                        }
+                        className="bg-white text-red-600 w-8 h-8 rounded-full flex items-center justify-center font-bold shadow-lg"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         </section>
       </div>
 
-      {/* --- Action Bar --- */}
+      {/* --- Action Bar ด้านล่าง --- */}
       <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/90 backdrop-blur-md border-t border-slate-200 flex justify-center z-40 dark:bg-zinc-900/90 dark:border-zinc-800">
         <div className="max-w-5xl w-full flex gap-4">
           <Link
             href="/dashboard/news"
-            className="px-10 py-4 rounded-full border-2 font-bold text-slate-400 hover:bg-slate-50 dark:border-zinc-700 dark:text-slate-500 dark:hover:bg-zinc-800"
+            className="px-8 py-4 rounded-full border border-slate-200 font-bold text-slate-500 hover:bg-slate-50 transition-colors"
           >
             ยกเลิก
           </Link>
           <button
             onClick={handleSubmit}
             disabled={isLoading || isCompressing}
-            className={`flex-1 py-4 rounded-full font-bold text-white transition-all ${isLoading || isCompressing ? "bg-slate-300 cursor-not-allowed" : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-lg hover:shadow-blue-500/30"}`}
+            className={`flex-1 py-4 rounded-full font-bold text-white transition-all transform active:scale-[0.98] ${isLoading || isCompressing ? "bg-slate-300 cursor-wait" : "bg-indigo-600 hover:bg-indigo-700 hover:shadow-xl shadow-indigo-500/30"}`}
           >
-            {isLoading ? "⏳ กำลังบันทึก..." : "✨ บันทึกข่าวสาร"}
+            {isLoading
+              ? "⏳ กำลังบันทึกข้อมูล..."
+              : "✨ ยืนยันการบันทึกข่าวสาร"}
           </button>
         </div>
       </div>
