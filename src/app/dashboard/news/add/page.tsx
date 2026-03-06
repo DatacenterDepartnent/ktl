@@ -9,6 +9,25 @@ import { uploadToCloudinary } from "@/lib/upload";
 import imageCompression from "browser-image-compression";
 import "suneditor/dist/css/suneditor.min.css";
 
+// --- DND Kit Imports ---
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+
 // --- Config ---
 const CATEGORIES = [
   {
@@ -59,11 +78,70 @@ const fontList = [
   "Tahoma",
 ];
 
+// --- Sub-Component: Sortable Image Item ---
+function SortableImage({ id, src, onRemove, isVertical = false }: any) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    zIndex: isDragging ? 50 : 0,
+    opacity: isDragging ? 0.6 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`relative rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-zinc-700 group touch-none bg-slate-100 dark:bg-zinc-800 ${
+        isVertical ? "aspect-[3/4]" : "aspect-video"
+      }`}
+    >
+      {/* Drag Handle Area */}
+      <div
+        {...attributes}
+        {...listeners}
+        className="w-full h-full cursor-grab active:cursor-grabbing"
+      >
+        <Image
+          src={src}
+          alt="preview"
+          fill
+          className={isVertical ? "object-contain" : "object-cover"}
+        />
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+          <span className="opacity-0 group-hover:opacity-100 text-white text-xs bg-black/40 px-2 py-1 rounded-md">
+            ลากเพื่อย้าย
+          </span>
+        </div>
+      </div>
+
+      {/* Remove Button */}
+      <button
+        type="button"
+        onClick={(e) => {
+          e.stopPropagation();
+          onRemove();
+        }}
+        className="absolute top-1 right-1 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-[10px] font-bold shadow-md z-10 hover:bg-red-600 transition-colors"
+      >
+        ✕
+      </button>
+    </div>
+  );
+}
+
+// --- Main Page Component ---
 export default function AddNewsPage() {
   const router = useRouter();
 
-  // --- States ---
-  // ❌ ลบ Title State ออก
   const [categories, setCategories] = useState<string[]>(["PR"]);
   const [content, setContent] = useState("");
 
@@ -75,15 +153,20 @@ export default function AddNewsPage() {
 
   const [links, setLinks] = useState<{ label: string; url: string }[]>([]);
   const [currentLink, setCurrentLink] = useState({ label: "", url: "" });
-
-  // ✅ State สำหรับ Video Embed
   const [videoEmbeds, setVideoEmbeds] = useState<string[]>([]);
   const [currentEmbed, setCurrentEmbed] = useState("");
 
   const [isLoading, setIsLoading] = useState(false);
   const [isCompressing, setIsCompressing] = useState(false);
 
-  // Editor Loader
+  // DND Sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
   const [SunEditorComponent, setSunEditorComponent] =
     useState<React.ComponentType<any> | null>(null);
   useEffect(() => {
@@ -92,7 +175,27 @@ export default function AddNewsPage() {
     );
   }, []);
 
-  // --- Helper: สร้าง Title จาก Content ---
+  // --- Handlers ---
+  const handleDragEnd = (
+    event: DragEndEvent,
+    type: "general" | "newsletter",
+  ) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      if (type === "general") {
+        const oldIndex = imagePreviews.indexOf(active.id as string);
+        const newIndex = imagePreviews.indexOf(over.id as string);
+        setImagePreviews((items) => arrayMove(items, oldIndex, newIndex));
+        setImageFiles((items) => arrayMove(items, oldIndex, newIndex));
+      } else {
+        const oldIndex = newsletterPreviews.indexOf(active.id as string);
+        const newIndex = newsletterPreviews.indexOf(over.id as string);
+        setNewsletterPreviews((items) => arrayMove(items, oldIndex, newIndex));
+        setNewsletterFiles((items) => arrayMove(items, oldIndex, newIndex));
+      }
+    }
+  };
+
   const generateTitleFromContent = (htmlContent: string) => {
     if (typeof window === "undefined") return "";
     const parser = new DOMParser();
@@ -106,7 +209,6 @@ export default function AddNewsPage() {
       : cleanText;
   };
 
-  // --- Helper: บีบอัดรูป ---
   const compressImage = async (file: File) => {
     const options = {
       maxSizeMB: 0.8,
@@ -116,7 +218,6 @@ export default function AddNewsPage() {
     return await imageCompression(file, options);
   };
 
-  // --- Handlers ---
   const toggleCategory = (value: string) => {
     setCategories((prev) =>
       prev.includes(value)
@@ -142,6 +243,7 @@ export default function AddNewsPage() {
       setIsCompressing(false);
     }
   };
+
   const removeImage = (index: number) => {
     setImageFiles((prev) => prev.filter((_, i) => i !== index));
     setImagePreviews((prev) => prev.filter((_, i) => i !== index));
@@ -164,6 +266,7 @@ export default function AddNewsPage() {
       setIsCompressing(false);
     }
   };
+
   const removeNewsletter = (index: number) => {
     setNewsletterFiles((prev) => prev.filter((_, i) => i !== index));
     setNewsletterPreviews((prev) => prev.filter((_, i) => i !== index));
@@ -175,35 +278,19 @@ export default function AddNewsPage() {
     setLinks([...links, currentLink]);
     setCurrentLink({ label: "", url: "" });
   };
-  const removeLink = (index: number) =>
-    setLinks(links.filter((_, i) => i !== index));
 
-  // ✅ Video Handlers
   const addEmbed = () => {
     if (!currentEmbed.trim()) return;
-    if (!currentEmbed.includes("<iframe")) {
-      alert("กรุณาวางโค้ด Embed ที่ถูกต้อง (ต้องมี <iframe...)");
-      return;
-    }
+    if (!currentEmbed.includes("<iframe"))
+      return alert("กรุณาวางโค้ด Embed ที่ถูกต้อง");
     setVideoEmbeds([...videoEmbeds, currentEmbed]);
     setCurrentEmbed("");
   };
-  const removeEmbed = (index: number) =>
-    setVideoEmbeds(videoEmbeds.filter((_, i) => i !== index));
 
-  // --- Submit Logic ---
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // 1. Generate Title Logic
     const autoTitle = generateTitleFromContent(content);
-    if (!autoTitle) {
-      alert(
-        "กรุณาใส่เนื้อหาข่าวที่เป็นข้อความด้วยครับ (ระบบต้องใช้เพื่อสร้างหัวข้อข่าว)",
-      );
-      return;
-    }
-
+    if (!autoTitle) return alert("กรุณาใส่เนื้อหาข่าวที่เป็นข้อความด้วยครับ");
     if (isLoading || isCompressing) return;
     setIsLoading(true);
 
@@ -214,7 +301,6 @@ export default function AddNewsPage() {
       const newsletterUploads = await Promise.all(
         newsletterFiles.map((f) => uploadToCloudinary(f, "ktltc_newsletters")),
       );
-
       const validImages = generalUploads.filter(
         (url) => url !== null,
       ) as string[];
@@ -223,13 +309,13 @@ export default function AddNewsPage() {
       ) as string[];
 
       const payload = {
-        title: autoTitle, // ✅ ใช้ Title อัตโนมัติ
+        title: autoTitle,
         categories,
         content,
         images: validImages,
         announcementImages: validNewsletter,
         links,
-        videoEmbeds, // ✅ ส่งข้อมูลวิดีโอ
+        videoEmbeds,
       };
 
       const res = await fetch("/api/news", {
@@ -285,7 +371,7 @@ export default function AddNewsPage() {
                 สร้างข่าวใหม่
               </h1>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                กรอกข้อมูลเพื่อประชาสัมพันธ์
+                ลากเพื่อเปลี่ยนลำดับรูปภาพได้ทันที
               </p>
             </div>
           </div>
@@ -298,7 +384,7 @@ export default function AddNewsPage() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 py-10 space-y-8">
-        {/* --- Card 1: ข้อมูลหลัก --- */}
+        {/* --- Card 1: Details --- */}
         <section className="rounded-3xl space-y-6">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center text-xl dark:bg-blue-900/30 dark:text-blue-400">
@@ -308,7 +394,6 @@ export default function AddNewsPage() {
               รายละเอียดข่าว
             </h2>
           </div>
-
           <div className="space-y-6">
             <div className="space-y-3">
               <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1 dark:text-slate-500">
@@ -326,31 +411,28 @@ export default function AddNewsPage() {
                 ))}
               </div>
             </div>
-
             <div className="space-y-2">
               <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1 dark:text-slate-500">
                 เนื้อหาข่าว (Rich Text)
               </label>
               <div className="rounded-2xl shadow-sm border border-slate-200 overflow-hidden dark:border-zinc-700">
                 {SunEditorComponent ? (
-                  <div className="sun-editor-dark-mode-override">
-                    <SunEditorComponent
-                      setContents={content}
-                      onChange={setContent}
-                      height="400px"
-                      setOptions={{
-                        font: fontList,
-                        buttonList: [
-                          ["undo", "redo"],
-                          ["font", "fontSize", "formatBlock"],
-                          ["bold", "underline", "italic", "strike"],
-                          ["fontColor", "hiliteColor"],
-                          ["table", "link", "image", "video"],
-                          ["fullScreen", "codeView"],
-                        ],
-                      }}
-                    />
-                  </div>
+                  <SunEditorComponent
+                    setContents={content}
+                    onChange={setContent}
+                    height="400px"
+                    setOptions={{
+                      font: fontList,
+                      buttonList: [
+                        ["undo", "redo"],
+                        ["font", "fontSize", "formatBlock"],
+                        ["bold", "underline", "italic", "strike"],
+                        ["fontColor", "hiliteColor"],
+                        ["table", "link", "image", "video"],
+                        ["fullScreen", "codeView"],
+                      ],
+                    }}
+                  />
                 ) : (
                   <div className="h-[400px] flex items-center justify-center bg-slate-50 text-slate-400 dark:bg-zinc-800 dark:text-slate-500">
                     กำลังโหลด Editor...
@@ -361,85 +443,93 @@ export default function AddNewsPage() {
           </div>
         </section>
 
-        {/* --- Card 2: รูปภาพทั่วไป --- */}
+        {/* --- Card 2: General Images (DND) --- */}
         <section className="rounded-3xl space-y-6">
           <h2 className="font-bold text-slate-700 flex items-center gap-2 text-lg dark:text-slate-200">
-            🖼️ รูปภาพทั่วไป (แนวนอน)
+            🖼️ รูปภาพทั่วไป (แนวนอน) -{" "}
+            <span className="text-sm font-normal text-slate-400">
+              ลากเพื่อเรียงลำดับ
+            </span>
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {imagePreviews.map((src, i) => (
-              <div
-                key={i}
-                className="relative aspect-video rounded-xl overflow-hidden shadow-sm border border-slate-200 dark:border-zinc-700 group"
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={(e) => handleDragEnd(e, "general")}
+          >
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <SortableContext
+                items={imagePreviews}
+                strategy={rectSortingStrategy}
               >
-                <Image src={src} alt="preview" fill className="object-cover" />
-                <button
-                  onClick={() => removeImage(i)}
-                  className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity font-bold text-xs"
-                >
-                  ลบรูปนี้
-                </button>
-              </div>
-            ))}
-            <label className="aspect-video border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50 hover:border-blue-400 transition-all dark:border-zinc-600 dark:hover:bg-blue-900/20 dark:hover:border-blue-500">
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                className="hidden"
-                onChange={handleImageChange}
-              />
-              <span className="text-xl text-slate-400 dark:text-slate-500">
-                +
-              </span>
-              <span className="text-[10px] font-black text-slate-400 uppercase dark:text-slate-500">
-                Add More
-              </span>
-            </label>
-          </div>
+                {imagePreviews.map((src, i) => (
+                  <SortableImage
+                    key={src}
+                    id={src}
+                    src={src}
+                    onRemove={() => removeImage(i)}
+                  />
+                ))}
+              </SortableContext>
+              <label className="aspect-video border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50 hover:border-blue-400 transition-all dark:border-zinc-600 dark:hover:bg-blue-900/20 dark:hover:border-blue-500">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleImageChange}
+                />
+                <span className="text-xl text-slate-400">+</span>
+                <span className="text-[10px] font-black text-slate-400 uppercase">
+                  Add More
+                </span>
+              </label>
+            </div>
+          </DndContext>
         </section>
 
-        {/* --- Card 3: จดหมายข่าว --- */}
+        {/* --- Card 3: Newsletter (DND) --- */}
         <section className="rounded-3xl space-y-6">
           <h2 className="font-bold text-slate-700 flex items-center gap-2 text-lg dark:text-slate-200">
-            📜 จดหมายข่าว (แนวตั้ง)
+            📜 จดหมายข่าว (แนวตั้ง) -{" "}
+            <span className="text-sm font-normal text-slate-400">
+              ลากเพื่อเรียงลำดับ
+            </span>
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {newsletterPreviews.map((src, i) => (
-              <div
-                key={i}
-                className="relative aspect-[3/4] rounded-xl overflow-hidden shadow-sm bg-slate-100 border border-slate-200 dark:bg-zinc-800 dark:border-zinc-700 group"
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={(e) => handleDragEnd(e, "newsletter")}
+          >
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <SortableContext
+                items={newsletterPreviews}
+                strategy={rectSortingStrategy}
               >
-                <Image
-                  src={src}
-                  alt="newsletter"
-                  fill
-                  className="object-contain"
+                {newsletterPreviews.map((src, i) => (
+                  <SortableImage
+                    key={src}
+                    id={src}
+                    src={src}
+                    isVertical
+                    onRemove={() => removeNewsletter(i)}
+                  />
+                ))}
+              </SortableContext>
+              <label className="aspect-[3/4] border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-purple-50 hover:border-purple-400 transition-all dark:border-zinc-600 dark:hover:bg-purple-900/20 dark:hover:border-purple-500">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleNewsletterChange}
                 />
-                <button
-                  onClick={() => removeNewsletter(i)}
-                  className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white transition-opacity font-bold text-xs"
-                >
-                  ลบรูปนี้
-                </button>
-              </div>
-            ))}
-            <label className="aspect-[3/4] border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-purple-50 hover:border-purple-400 transition-all dark:border-zinc-600 dark:hover:bg-purple-900/20 dark:hover:border-purple-500">
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                className="hidden"
-                onChange={handleNewsletterChange}
-              />
-              <span className="text-xl text-slate-400 dark:text-slate-500">
-                +
-              </span>
-              <span className="text-[10px] font-black text-slate-400 uppercase dark:text-slate-500">
-                Add More
-              </span>
-            </label>
-          </div>
+                <span className="text-xl text-slate-400">+</span>
+                <span className="text-[10px] font-black text-slate-400 uppercase">
+                  Add More
+                </span>
+              </label>
+            </div>
+          </DndContext>
         </section>
 
         {/* --- Card 4: Links --- */}
@@ -449,25 +539,25 @@ export default function AddNewsPage() {
           </h2>
           <div className="flex flex-col md:flex-row gap-3">
             <input
-              placeholder="ชื่อปุ่ม (เช่น ดาวน์โหลด PDF)"
+              placeholder="ชื่อปุ่ม"
               value={currentLink.label}
               onChange={(e) =>
                 setCurrentLink({ ...currentLink, label: e.target.value })
               }
-              className="flex-1 bg-slate-50 p-4 rounded-2xl outline-none border border-slate-200 focus:border-indigo-500 transition-all dark:bg-zinc-800 dark:border-zinc-700 dark:text-white dark:placeholder-zinc-500"
+              className="flex-1 bg-slate-50 p-4 rounded-2xl border border-slate-200 dark:bg-zinc-800 dark:border-zinc-700"
             />
             <input
-              placeholder="URL ลิงก์"
+              placeholder="URL"
               value={currentLink.url}
               onChange={(e) =>
                 setCurrentLink({ ...currentLink, url: e.target.value })
               }
-              className="flex-1 bg-slate-50 p-4 rounded-2xl outline-none border border-slate-200 focus:border-indigo-500 transition-all font-mono text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white dark:placeholder-zinc-500"
+              className="flex-1 bg-slate-50 p-4 rounded-2xl border border-slate-200 dark:bg-zinc-800 dark:border-zinc-700"
             />
             <button
               type="button"
               onClick={addLink}
-              className="bg-slate-800 text-white px-8 py-4 rounded-2xl font-bold hover:bg-black transition-all shadow-lg shadow-slate-200 dark:bg-zinc-700 dark:hover:bg-zinc-600 dark:shadow-none"
+              className="bg-slate-800 text-white px-8 py-4 rounded-2xl font-bold dark:bg-zinc-700"
             >
               + เพิ่มลิงก์
             </button>
@@ -476,20 +566,20 @@ export default function AddNewsPage() {
             {links.map((l, i) => (
               <div
                 key={i}
-                className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl border border-slate-100 shadow-sm hover:border-indigo-200 transition-colors group dark:bg-zinc-800 dark:border-zinc-700 dark:hover:border-indigo-500"
+                className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl border dark:bg-zinc-800 dark:border-zinc-700"
               >
                 <div className="flex flex-col overflow-hidden">
-                  <span className="text-sm font-bold text-slate-700 truncate dark:text-slate-200">
+                  <span className="text-sm font-bold dark:text-slate-200">
                     {l.label}
                   </span>
-                  <span className="text-[10px] text-slate-400 font-mono truncate dark:text-slate-500">
+                  <span className="text-[10px] text-slate-400 truncate">
                     {l.url}
                   </span>
                 </div>
                 <button
                   type="button"
-                  onClick={() => removeLink(i)}
-                  className="text-red-400 hover:text-red-600 w-8 h-8 rounded-full hover:bg-red-50 transition-all flex items-center justify-center font-bold dark:hover:bg-red-900/30"
+                  onClick={() => setLinks(links.filter((_, idx) => idx !== i))}
+                  className="text-red-400 font-bold"
                 >
                   ✕
                 </button>
@@ -498,73 +588,66 @@ export default function AddNewsPage() {
           </div>
         </section>
 
-        {/* --- Card 5: Video Embeds (✅ เพิ่มใหม่ในหน้า Add) --- */}
+        {/* --- Card 5: Videos --- */}
         <section className="rounded-3xl space-y-6">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center text-xl dark:bg-red-900/30 dark:text-red-400">
+          <h2 className="font-bold text-slate-700 flex items-center gap-3 text-lg dark:text-slate-200">
+            <span className="w-10 h-10 rounded-2xl bg-red-100 text-red-600 flex items-center justify-center dark:bg-red-900/30">
               🎥
-            </div>
-            <h2 className="text-lg font-bold text-slate-700 dark:text-slate-200">
-              วิดีโอ (Embed Code)
-            </h2>
-          </div>
-          <div className="flex flex-col gap-3">
-            <textarea
-              rows={3}
-              placeholder='วางโค้ด Embed ที่นี่... เช่น <iframe src="..." ></iframe>'
-              value={currentEmbed}
-              onChange={(e) => setCurrentEmbed(e.target.value)}
-              className="w-full bg-slate-50 p-4 rounded-2xl outline-none border border-slate-200 focus:border-red-500 transition-all font-mono text-sm dark:bg-zinc-800 dark:border-zinc-700 dark:text-white dark:placeholder-zinc-500"
-            />
-            <button
-              type="button"
-              onClick={addEmbed}
-              className="self-end bg-red-600 text-white px-8 py-3 rounded-2xl font-bold hover:bg-red-700 transition-all shadow-lg shadow-red-200 dark:shadow-none"
-            >
-              + เพิ่มวิดีโอ
-            </button>
-          </div>
-          {videoEmbeds.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-              {videoEmbeds.map((code, i) => (
-                <div
-                  key={i}
-                  className="relative group border border-slate-200 rounded-xl p-2 bg-white dark:bg-zinc-800 dark:border-zinc-700"
+            </span>{" "}
+            วิดีโอ (Embed Code)
+          </h2>
+          <textarea
+            rows={3}
+            placeholder="วางโค้ด Embed ที่นี่..."
+            value={currentEmbed}
+            onChange={(e) => setCurrentEmbed(e.target.value)}
+            className="w-full bg-slate-50 p-4 rounded-2xl border border-slate-200 dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
+          />
+          <button
+            type="button"
+            onClick={addEmbed}
+            className="bg-red-600 text-white px-8 py-3 rounded-2xl font-bold self-end"
+          >
+            + เพิ่มวิดีโอ
+          </button>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+            {videoEmbeds.map((code, i) => (
+              <div
+                key={i}
+                className="relative group border border-slate-200 rounded-xl p-2 bg-white dark:bg-zinc-800 dark:border-zinc-700"
+              >
+                <button
+                  type="button"
+                  onClick={() =>
+                    setVideoEmbeds(videoEmbeds.filter((_, idx) => idx !== i))
+                  }
+                  className="absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center shadow-md z-20 hover:scale-110 transition-transform"
                 >
-                  <button
-                    type="button"
-                    onClick={() => removeEmbed(i)}
-                    className="absolute -top-3 -right-3 w-8 h-8 bg-red-500 text-white rounded-full flex items-center justify-center shadow-md z-20 hover:scale-110 transition-transform"
-                  >
-                    ✕
-                  </button>
-                  <div
-                    className="aspect-video w-full overflow-hidden rounded-lg bg-black/5 [&>iframe]:w-full [&>iframe]:h-full"
-                    dangerouslySetInnerHTML={{ __html: code }}
-                  />
-                  <div className="mt-2 text-[10px] text-slate-400 font-mono truncate px-2">
-                    {code}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+                  ✕
+                </button>
+                <div
+                  className="aspect-video w-full overflow-hidden rounded-lg bg-black/5 [&>iframe]:w-full [&>iframe]:h-full"
+                  dangerouslySetInnerHTML={{ __html: code }}
+                />
+              </div>
+            ))}
+          </div>
         </section>
       </div>
 
-      {/* --- Action Bar (Bottom) --- */}
-      <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/90 backdrop-blur-md border-t border-slate-200 flex justify-center z-40 shadow-[0_-10px_40px_-15px_rgba(0,0,0,0.1)] dark:bg-zinc-900/90 dark:border-zinc-800">
+      {/* --- Action Bar --- */}
+      <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/90 backdrop-blur-md border-t border-slate-200 flex justify-center z-40 dark:bg-zinc-900/90 dark:border-zinc-800">
         <div className="max-w-5xl w-full flex gap-4">
           <Link
             href="/dashboard/news"
-            className="px-10 py-4 rounded-full border-2 border-slate-200 font-bold text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all text-center min-w-35 dark:border-zinc-700 dark:text-slate-500 dark:hover:bg-zinc-800 dark:hover:text-slate-300"
+            className="px-10 py-4 rounded-full border-2 font-bold text-slate-400 hover:bg-slate-50 dark:border-zinc-700 dark:text-slate-500 dark:hover:bg-zinc-800"
           >
             ยกเลิก
           </Link>
           <button
             onClick={handleSubmit}
             disabled={isLoading || isCompressing}
-            className={`flex-1 py-4 rounded-full font-bold text-white shadow-xl shadow-blue-500/20 transition-all ${isLoading || isCompressing ? "bg-slate-300 cursor-not-allowed dark:bg-zinc-700" : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:scale-[1.02] active:scale-100 hover:shadow-blue-500/40 dark:shadow-none"}`}
+            className={`flex-1 py-4 rounded-full font-bold text-white transition-all ${isLoading || isCompressing ? "bg-slate-300 cursor-not-allowed" : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:shadow-lg hover:shadow-blue-500/30"}`}
           >
             {isLoading ? "⏳ กำลังบันทึก..." : "✨ บันทึกข่าวสาร"}
           </button>
