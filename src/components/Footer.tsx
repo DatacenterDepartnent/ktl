@@ -90,7 +90,7 @@ export default async function Footer() {
             </div>
 
             <div className="text-slate-400 text-sm leading-relaxed">
-              <p>ช่องทางการติดต่อวิทยาลัยเทคนิคกันทรลักษ์</p>
+              82 หมู่ 1 ตำบล จานใหญ่ อำเภอกันทรลักษ์ ศรีสะเกษ 33110
             </div>
 
             <div className="flex gap-4">

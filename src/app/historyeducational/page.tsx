@@ -121,6 +121,12 @@ export default function HistoryEducational() {
                   ทำให้ได้พื้นที่สาธารณประโยชน์ทำเลทองกว่า 105 ไร่
                   สำหรับการก่อสร้างสถานศึกษาแห่งนี้
                 </p>
+                <p className="mt-4 gap-2 grid leading-loose text-slate-600 dark:text-slate-300">
+                  <strong className="text-blue-600">ตำแหน่งที่ตั้ง</strong>
+                  <strong>
+                    82 หมู่ 1 ตำบล จานใหญ่ อำเภอกันทรลักษ์ ศรีสะเกษ 33110
+                  </strong>
+                </p>
               </motion.div>
             </div>
           </motion.div>
