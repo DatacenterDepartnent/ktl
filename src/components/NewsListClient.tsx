@@ -31,7 +31,6 @@ const MONTHS = [
   { value: "11", label: "ธันวาคม" },
 ];
 
-// URL Redirect ปีเก่า
 const REDIRECT_URLS: Record<string, string> = {
   "2566": "https://ktltcv1.vercel.app/pressrelease/2566",
   "2567": "https://ktltcv1.vercel.app/pressrelease/2567",
@@ -46,13 +45,16 @@ interface NewsItem {
   images?: string[];
   announcementImages?: string[];
   createdAt: string;
+  // ✅ เพิ่ม authorId เพื่อใช้เช็คสิทธิ์การแก้ไข/ลบ
+  authorId?: string;
+  author?: {
+    name: string;
+  };
 }
 
-// ✅ 1. เพิ่มฟังก์ชัน getGridClass ตามที่คุณต้องการ
 function getGridClass(count: number) {
   if (count === 1) return "grid-cols-1";
   if (count === 2) return "grid-cols-1 md:grid-cols-2";
-  // ปรับให้รองรับได้ถึง 4 คอลัมน์ตามจำนวนข่าวที่มี
   return "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
 }
 
@@ -66,7 +68,6 @@ export default function NewsListClient({
   const [selectedYear, setSelectedYear] = useState("All");
   const [visibleCount, setVisibleCount] = useState(12);
 
-  // --- Redirect Logic ---
   useEffect(() => {
     if (REDIRECT_URLS[selectedYear]) {
       const confirmMsg = `คุณเลือกดูข้อมูลปี ${selectedYear}\nระบบจะพาคุณไปยังเว็บไซต์เวอร์ชันเก่า ต้องการดำเนินการต่อหรือไม่?`;
@@ -77,7 +78,6 @@ export default function NewsListClient({
     }
   }, [selectedYear]);
 
-  // --- Filter Logic ---
   const availableYears = useMemo(() => {
     const years = new Set<string>();
     initialNews.forEach((news) => {
@@ -118,14 +118,13 @@ export default function NewsListClient({
   }, [initialNews, selectedCategory, selectedMonth, selectedYear]);
 
   const paginatedNews = filteredNews.slice(0, visibleCount);
-  const handleLoadMore = () => setVisibleCount((prev) => prev + 12); // โหลดเพิ่มทีละ 12 (ลงตัวกับ 2, 3, 4)
+  const handleLoadMore = () => setVisibleCount((prev) => prev + 12);
 
   return (
     <div className="w-full">
       {/* --- Filter Section --- */}
       <div className="mb-16 bg-white/70 backdrop-blur-xl p-3 md:p-4 rounded-[2.5rem] border border-slate-200/60 top-24 z-20 shadow-xl shadow-slate-200/30 dark:bg-slate-900/80 dark:border-slate-700 dark:shadow-black/40">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          {/* Category */}
           <div className="relative group">
             <select
               value={selectedCategory}
@@ -158,7 +157,6 @@ export default function NewsListClient({
             </div>
           </div>
 
-          {/* Year */}
           <div className="relative group">
             <select
               value={selectedYear}
@@ -192,7 +190,6 @@ export default function NewsListClient({
             </div>
           </div>
 
-          {/* Month */}
           <div className="relative group">
             <select
               value={selectedMonth}
@@ -229,7 +226,6 @@ export default function NewsListClient({
 
       {/* --- News Grid --- */}
       {paginatedNews.length > 0 ? (
-        // ✅ 2. ใช้ฟังก์ชัน getGridClass ที่นี่ เพื่อปรับ Column ตามจำนวนข่าวที่แสดง
         <div
           className={`grid gap-8 md:gap-10 ${getGridClass(paginatedNews.length)}`}
         >
@@ -238,13 +234,11 @@ export default function NewsListClient({
               news.announcementImages?.[0] ||
               news.images?.[0] ||
               "/no-image.png";
-
-            const displayCategories =
-              news.categories && news.categories.length > 0
-                ? news.categories
-                : news.category
-                  ? [news.category]
-                  : ["General"];
+            const displayCategories = news.categories?.length
+              ? news.categories
+              : news.category
+                ? [news.category]
+                : ["General"];
 
             return (
               <Link
@@ -252,7 +246,6 @@ export default function NewsListClient({
                 href={`/news/${news._id}`}
                 className="group flex flex-col bg-white dark:bg-zinc-900/50 rounded-3xl overflow-hidden border border-slate-200 dark:border-zinc-800 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
               >
-                {/* Image Container (Aspect 4:3) */}
                 <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 dark:bg-zinc-800">
                   <Image
                     src={coverImage}
@@ -261,8 +254,6 @@ export default function NewsListClient({
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                   />
-
-                  {/* Category Badges */}
                   <div className="absolute top-4 left-4 flex flex-wrap gap-2 max-w-[90%]">
                     {displayCategories.map((cat, index) => (
                       <span
@@ -273,22 +264,30 @@ export default function NewsListClient({
                       </span>
                     ))}
                   </div>
-
-                  {/* Gradient Overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                 </div>
 
-                {/* Content Details */}
                 <div className="px-6 py-8 flex flex-col flex-1">
-                  <div className="flex items-center gap-4 mb-5">
-                    <div className="h-px w-10 bg-blue-600/30 group-hover:w-16 transition-all duration-700 ease-in-out dark:bg-blue-500/50"></div>
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] dark:text-slate-500">
-                      {new Date(news.createdAt).toLocaleDateString("th-TH", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </span>
+                  <div className="flex items-center justify-between mb-5">
+                    <div className="flex items-center gap-3">
+                      <div className="h-px w-8 bg-blue-600/30 group-hover:w-12 transition-all duration-700 dark:bg-blue-500/50"></div>
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] dark:text-slate-500">
+                        {new Date(news.createdAt).toLocaleDateString("th-TH", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })}
+                      </span>
+                    </div>
+
+                    {/* ✅ ส่วนแสดงชื่อผู้เขียนแบบ Badge (Minimal) */}
+                    {news.author?.name && (
+                      <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
+                        <div className="w-1 h-1 rounded-full bg-blue-500 animate-pulse"></div>
+                        <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-tighter">
+                          {news.author.name.split(" ")[0]}
+                        </span>
+                      </div>
+                    )}
                   </div>
 
                   <h3 className="text-xl font-bold text-slate-800 line-clamp-2 leading-[1.35] group-hover:text-blue-600 transition-colors duration-300 dark:text-slate-100 dark:group-hover:text-blue-400">

@@ -1,8 +1,9 @@
+// app/dashboard/news/page.tsx
 import clientPromise from "@/lib/db";
 import Link from "next/link";
-import ManageNewsList from "@/components/ManageNewsList"; // ✅ Import Component ใหม่
+import ManageNewsList from "@/components/ManageNewsList";
 
-export const revalidate = 0;
+export const revalidate = 0; // ป้องกันการค้าง Cache
 
 interface NewsItem {
   _id: string;
@@ -12,6 +13,10 @@ interface NewsItem {
   images?: string[];
   announcementImages?: string[];
   createdAt: string;
+  author?: {
+    name: string;
+    image?: string;
+  };
 }
 
 async function getNews(): Promise<NewsItem[]> {
@@ -21,7 +26,7 @@ async function getNews(): Promise<NewsItem[]> {
     const news = await db
       .collection("news")
       .find({})
-      .sort({ createdAt: -1 })
+      .sort({ createdAt: -1 }) // เรียงใหม่ไปเก่า
       .project({
         title: 1,
         category: 1,
@@ -29,6 +34,7 @@ async function getNews(): Promise<NewsItem[]> {
         images: 1,
         announcementImages: 1,
         createdAt: 1,
+        author: 1, // ดึงข้อมูลผู้เขียน
       })
       .toArray();
 
@@ -44,7 +50,6 @@ export default async function ManageNewsPage() {
 
   return (
     <div className="max-w-7xl mx-auto w-full p-4 text-zinc-800 dark:text-zinc-200">
-      {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-10 gap-4 border-b border-zinc-200 pb-6 dark:border-zinc-800">
         <div>
           <h1 className="text-2xl md:text-3xl font-black text-zinc-900 tracking-tight dark:text-white">
@@ -57,7 +62,7 @@ export default async function ManageNewsPage() {
 
         <Link
           href="/dashboard/news/add"
-          className="w-full md:w-auto flex justify-center items-center gap-2 bg-blue-600 text-white px-4 py-3 md:py-2.5 rounded-xl md:rounded-full font-bold hover:bg-blue-500 shadow-md shadow-blue-200 transition-all active:scale-95 text-sm md:text-base dark:shadow-none dark:hover:bg-blue-500"
+          className="w-full md:w-auto flex justify-center items-center gap-2 bg-blue-600 text-white px-4 py-3 md:py-2.5 rounded-xl md:rounded-full font-bold hover:bg-blue-500 shadow-md transition-all active:scale-95 text-sm md:text-base dark:shadow-none"
         >
           <svg
             className="w-5 h-5"
@@ -76,7 +81,6 @@ export default async function ManageNewsPage() {
         </Link>
       </div>
 
-      {/* ✅ เรียกใช้ Client Component เพื่อแสดงผลและทำ Pagination */}
       <ManageNewsList newsList={newsList} />
     </div>
   );

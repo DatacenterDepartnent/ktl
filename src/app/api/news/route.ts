@@ -1,10 +1,20 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 
+// ฟังก์ชันสร้าง Slug
+function generateSlug(title: string) {
+  return title
+    .toLowerCase()
+    .replace(/[^\u0E00-\u0E7Fa-zA-Z0-9\s]/g, "")
+    .replace(/\s+/g, "-")
+    .trim();
+}
+
 // --- POST: สร้างข่าวใหม่ ---
 export async function POST(request: Request) {
   try {
-    // 1. รับค่า videoEmbeds เข้ามาด้วย
+    const data = await request.json();
+
     const {
       title,
       categories,
@@ -12,17 +22,13 @@ export async function POST(request: Request) {
       images,
       announcementImages,
       links,
-      videoEmbeds, // ✅ เพิ่มตรงนี้
-    } = await request.json();
+      videoEmbeds,
+      userName, // ✅ รับชื่อคนโพสต์จาก Frontend โดยตรง
+      userImage, // ✅ รับรูป (ถ้ามี)
+    } = data;
 
-    // Validation
-    if (
-      !title ||
-      !categories ||
-      !Array.isArray(categories) ||
-      categories.length === 0 ||
-      !content
-    ) {
+    // Validation เบื้องต้น
+    if (!title || !categories || !content) {
       return NextResponse.json(
         { error: "กรุณากรอกข้อมูลให้ครบถ้วน" },
         { status: 400 },
@@ -32,31 +38,33 @@ export async function POST(request: Request) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    // เตรียมข้อมูลบันทึก
     const newNews = {
       title,
+      slug: `${generateSlug(title)}-${Date.now()}`,
       categories,
-      category: categories[0], // เก็บ category แรกเป็นหลัก
+      category: categories[0],
       content,
       images: images || [],
       announcementImages: announcementImages || [],
       links: links || [],
-
-      // ✅ บันทึก Video Embeds (ถ้าไม่มีให้เป็น array ว่าง)
       videoEmbeds: videoEmbeds || [],
 
+      // ✅ บันทึกชื่อคนโพสต์ที่ส่งมาจากหน้า Add News
+      author: {
+        name: userName || "งานศูนย์ข้อมูล",
+        image: userImage || null,
+      },
+
       createdAt: new Date(),
+      updatedAt: new Date(),
       status: "published",
+      views: 0,
     };
 
-    // บันทึกลง Database
     const result = await db.collection("news").insertOne(newNews);
 
     return NextResponse.json(
-      {
-        success: true,
-        id: result.insertedId,
-      },
+      { success: true, id: result.insertedId },
       { status: 201 },
     );
   } catch (error) {
@@ -68,7 +76,7 @@ export async function POST(request: Request) {
   }
 }
 
-// --- GET: ดึงรายการข่าว (Load More) ---
+// --- GET: ดึงรายการข่าว ---
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -78,19 +86,27 @@ export async function GET(request: Request) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    // ดึงข้อมูลข่าวแบบแบ่งหน้า
     const news = await db
       .collection("news")
       .find({})
-      .sort({ createdAt: -1 }) // เรียงจากใหม่ไปเก่า
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
+      .project({
+        title: 1,
+        slug: 1,
+        categories: 1,
+        images: 1,
+        announcementImages: 1,
+        createdAt: 1,
+        author: 1,
+      })
       .toArray();
 
     const total = await db.collection("news").countDocuments();
 
     return NextResponse.json({ news, total });
-  } catch {
+  } catch (error) {
     return NextResponse.json({ error: "Failed to fetch" }, { status: 500 });
   }
 }

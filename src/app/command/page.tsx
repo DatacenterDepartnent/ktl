@@ -2,6 +2,9 @@ import clientPromise from "@/lib/db";
 import NewsListClient from "@/components/NewsListClient";
 import Link from "next/link";
 
+// ✅ 1. บังคับให้หน้าเว็บดึงข้อมูลใหม่เสมอ (ปิด Cache)
+export const revalidate = 0;
+
 // Interface สำหรับข้อมูล
 interface NewsItem {
   _id: string;
@@ -11,6 +14,10 @@ interface NewsItem {
   images?: string[];
   announcementImages?: string[];
   createdAt: string;
+  // ✅ เพิ่ม author เพื่อส่งข้อมูลผู้โพสต์ไปยัง NewsListClient
+  author?: {
+    name: string;
+  };
 }
 
 async function getCommands(): Promise<NewsItem[]> {
@@ -26,6 +33,7 @@ async function getCommands(): Promise<NewsItem[]> {
       })
       .sort({ createdAt: -1 })
       .limit(3)
+      // ✅ ไม่ใช้ .project() เพื่อป้องกันชื่อผู้โพสต์หาย
       .toArray();
 
     return JSON.parse(JSON.stringify(commands));
@@ -39,12 +47,12 @@ export default async function CommandPage() {
   const commands = await getCommands();
 
   return (
-    <main className="bg-slate-50 text-slate-800 dark:bg-transparent dark:text-slate-200 container px-4">
-      <div className="max-w-[1600px] mx-auto">
-        {/* --- Header Section (UX/UI เลียนแบบหน้า Announcement แต่ใช้สีน้ำเงิน) --- */}
-        <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-6 border-b border-slate-200 pb-6 dark:border-slate-800">
+    <main className="bg-slate-50 text-slate-800 dark:bg-transparent dark:text-slate-200 container px-4 mx-auto max-w-7xl">
+      <div className="py-10">
+        {/* --- Header Section (ธีมสี Blue สำหรับงานคำสั่ง/ระเบียบ) --- */}
+        <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-6 border-b border-slate-200 pb-8 dark:border-slate-800">
           <div className="space-y-2 border-l-4 border-blue-600 pl-4">
-            <div className="flex items-center gap-2 text-blue-600 font-bold uppercase tracking-widest text-xs dark:text-blue-400">
+            <div className="flex items-center gap-2 text-blue-600 font-bold uppercase tracking-widest text-[10px] md:text-xs dark:text-blue-400">
               <span className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></span>
               Official Orders & Regulations
             </div>
@@ -56,13 +64,12 @@ export default async function CommandPage() {
             </h1>
             <p className="text-slate-500 text-sm md:text-base max-w-lg dark:text-slate-400 font-medium">
               รวบรวมระเบียบ ประกาศ และคำสั่งอย่างเป็นทางการ
-              ของวิทยาลัยเทคนิคกันทรลักษ์
             </p>
           </div>
 
           <Link
             href="/news?category=Order"
-            className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white rounded-full font-bold text-sm shadow-md shadow-blue-100 hover:bg-blue-700 transition-all hover:shadow-lg active:scale-95 group dark:shadow-none dark:bg-blue-500"
+            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-full font-bold text-sm shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95 group dark:shadow-none dark:bg-blue-500"
           >
             <svg
               className="w-4 h-4"
@@ -81,16 +88,22 @@ export default async function CommandPage() {
           </Link>
         </div>
 
-        {/* --- Grid Content (ซ่อน Filter Box) --- */}
-        <div className="[&_.mb-16.bg-white\/70]:hidden [&_.mb-16.dark\:bg-slate-900\/80]:hidden">
-          <NewsListClient initialNews={commands} />
-        </div>
-
-        {/* --- Empty State --- */}
-        {commands.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-20 rounded-3xl border-2 border-dashed border-slate-200 text-slate-400 dark:border-slate-800 dark:text-slate-600">
-            <p className="text-lg font-semibold">
+        {/* --- Grid Content --- */}
+        {commands.length > 0 ? (
+          <div className="[&_.mb-16.bg-white\/70]:hidden [&_.mb-16.dark\:bg-slate-900\/80]:hidden">
+            <NewsListClient initialNews={commands} />
+          </div>
+        ) : (
+          /* --- Empty State --- */
+          <div className="flex flex-col items-center justify-center py-24 rounded-[3rem] border-2 border-dashed border-slate-200 text-slate-400 dark:border-slate-800 dark:bg-slate-900/20">
+            <div className="w-20 h-20 bg-blue-50 dark:bg-blue-900/10 rounded-full flex items-center justify-center mb-6">
+              <span className="text-4xl opacity-60">📜</span>
+            </div>
+            <p className="text-xl font-bold text-slate-600 dark:text-slate-300">
               ไม่พบข้อมูลคำสั่งวิทยาลัยในขณะนี้
+            </p>
+            <p className="text-sm mt-1">
+              ท่านสามารถติดตามประกาศคำสั่งใหม่ๆ ได้ผ่านทางหน้าเว็บไซต์นี้
             </p>
           </div>
         )}

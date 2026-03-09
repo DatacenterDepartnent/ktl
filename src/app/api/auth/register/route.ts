@@ -1,16 +1,20 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs"; // แนะนำให้ใช้ bcryptjs เพื่อความเสถียรบน Serverless
+import { recordLog } from "@/models/logger"; // นำเข้าฟังก์ชันบันทึก Log
 
 export async function POST(req: Request) {
   try {
-    // 1. รับค่าจากหน้าบ้าน (เพิ่ม phone, lineId)
+    // 1. รับค่าจากหน้าบ้าน
     const { username, password, name, email, phone, lineId } = await req.json();
 
     // 2. ตรวจสอบข้อมูลเบื้องต้น
     if (!username || !password || !name || !email || !phone) {
       return NextResponse.json(
-        { error: "กรุณากรอกข้อมูลให้ครบถ้วน" },
+        {
+          error:
+            "กรุณากรอกข้อมูลพื้นฐานให้ครบถ้วน (ชื่อผู้ใช้, รหัสผ่าน, ชื่อ-นามสกุล, อีเมล, เบอร์โทร)",
+        },
         { status: 400 },
       );
     }
@@ -18,46 +22,62 @@ export async function POST(req: Request) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    // 3. เช็คว่ามี Username หรือ Email นี้อยู่แล้วหรือไม่
+    // 3. ตรวจสอบว่ามี Username หรือ Email หรือเบอร์โทร นี้อยู่แล้วหรือไม่
     const existingUser = await db.collection("users").findOne({
-      $or: [{ username }, { email }],
+      $or: [{ username }, { email }, { phone }],
     });
 
     if (existingUser) {
       return NextResponse.json(
-        { error: "ชื่อผู้ใช้หรืออีเมลนี้ถูกใช้งานแล้ว" },
+        { error: "ชื่อผู้ใช้, อีเมล หรือเบอร์โทรศัพท์นี้ถูกใช้งานในระบบแล้ว" },
         { status: 400 },
       );
     }
 
     // 4. เข้ารหัสรหัสผ่าน (Hash Password)
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedPassword = await bcrypt.hash(password, 12);
 
-    // 5. เตรียมข้อมูลผู้ใช้ใหม่ (เพิ่ม phone, lineId ลงในนี้)
+    // 5. เตรียมข้อมูลผู้ใช้ใหม่ตามโครงสร้างระบบ ktltc
     const newUser = {
       username,
       password: hashedPassword,
       name,
       email,
-      phone, // ✅ เพิ่มเบอร์โทร
-      lineId: lineId || "", // ✅ เพิ่ม Line ID (ถ้าไม่กรอกให้เป็นค่าว่าง)
-      role: "editor", // บังคับให้เป็น Editor ก่อน (รอ Super Admin อนุมัติ)
-      isActive: false, // บังคับให้รอการอนุมัติ
+      phone,
+      lineId: lineId || "",
+      role: "user", // ปรับเป็น 'user' ตาม Schema (ทำหน้าที่เป็น Editor)
+      isActive: false, // บังคับให้รอ Super Admin อนุมัติ (Pending)
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
     // 6. บันทึกลงฐานข้อมูล
-    await db.collection("users").insertOne(newUser);
+    const result = await db.collection("users").insertOne(newUser);
+
+    // 7. บันทึก Activity Log (เพื่อรายงานประจำเดือน)
+    try {
+      await recordLog({
+        userId: result.insertedId,
+        userName: name,
+        action: "REGISTER",
+        details: `สมัครสมาชิกใหม่ รอการอนุมัติ (Username: ${username})`,
+        req: req,
+      });
+    } catch (logError) {
+      console.error("Failed to record register log:", logError);
+    }
 
     return NextResponse.json(
-      { message: "สมัครสมาชิกสำเร็จ กรุณารอการอนุมัติ" },
+      {
+        message:
+          "ส่งคำขอสมัครสมาชิกสำเร็จ กรุณารอผู้ดูแลระบบ (Super Admin) อนุมัติการเข้าใช้งาน",
+      },
       { status: 201 },
     );
   } catch (error) {
     console.error("Register Error:", error);
     return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดจากเซิร์ฟเวอร์" },
+      { error: "เกิดข้อผิดพลาดจากเซิร์ฟเวอร์ ไม่สามารถลงทะเบียนได้ในขณะนี้" },
       { status: 500 },
     );
   }

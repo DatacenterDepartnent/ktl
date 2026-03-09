@@ -1,22 +1,21 @@
 import { NextResponse } from "next/server";
-import clientPromise from "@/lib/db";
-import bcrypt from "bcrypt";
-import { SignJWT } from "jose"; // ใช้สำหรับสร้าง Token
-import { cookies } from "next/headers"; // ใช้สำหรับจัดการ Cookie
+import clientPromise from "@/lib/db"; // หรือใช้ dbConnect จากที่แนะนำไป
+import bcrypt from "bcryptjs"; // แนะนำ bcryptjs เพื่อความสะดวกบน Vercel
+import { SignJWT } from "jose";
+import { cookies } from "next/headers";
+import { recordLog } from "@/models/logger"; // นำเข้าฟังก์ชันบันทึก Log ที่เราสร้างไว้
 
 export async function POST(req: Request) {
   try {
-    // 1. รับข้อมูลจากหน้าบ้าน
     const { username, password } = await req.json();
 
-    // 2. เชื่อมต่อฐานข้อมูล
     const client = await clientPromise;
-    const user = await client
-      .db("ktltc_db")
-      .collection("users")
-      .findOne({ username });
+    const db = client.db("ktltc_db");
 
-    // 3. ตรวจสอบว่ามี User หรือไม่ และรหัสผ่านถูกต้องไหม
+    // 1. ค้นหาผู้ใช้
+    const user = await db.collection("users").findOne({ username });
+
+    // 2. ตรวจสอบรหัสผ่าน
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return NextResponse.json(
         { error: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง" },
@@ -24,44 +23,57 @@ export async function POST(req: Request) {
       );
     }
 
-    // 4. 🔴 ตรวจสอบสถานะการอนุมัติ (Active Check)
+    // 3. ตรวจสอบสถานะการใช้งาน (Active Status)
     if (user.isActive === false) {
       return NextResponse.json(
-        { error: "บัญชีของคุณยังไม่ได้รับการอนุมัติ กรุณาติดต่อผู้ดูแลระบบ" },
-        { status: 403 }, // 403 Forbidden
+        { error: "บัญชีของคุณยังไม่ได้รับการอนุมัติ กรุณาติดต่อ super_admin" },
+        { status: 403 },
       );
     }
 
-    // 5. ✅ Login สำเร็จ -> สร้าง Session (JWT Token)
-
-    // กำหนด Secret Key (ควรเก็บใน .env)
+    // 4. จัดเตรียม Secret Key สำหรับ JWT
     const secret = new TextEncoder().encode(
-      process.env.JWT_SECRET || "default_secret_key_change_me",
+      process.env.JWT_SECRET || "default_secret_key_ktltc_2024",
     );
 
-    // สร้าง Token
+    // 5. สร้าง Token (ฝัง Role: super_admin / admin / user)
     const token = await new SignJWT({
       userId: user._id.toString(),
       username: user.username,
-      role: user.role, // ใส่ Role เข้าไปใน Token ด้วยเพื่อเช็คสิทธิ์ภายหลัง
+      name: user.name,
+      role: user.role, // ข้อมูลนี้สำคัญมากสำหรับ Middleware
     })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
-      .setExpirationTime("1d") // หมดอายุใน 1 วัน
+      .setExpirationTime("1d")
       .sign(secret);
 
-    // ฝัง Token ลงใน Cookie
+    // 6. บันทึก Activity Log (สำหรับรายงานประจำเดือน)
+    // เราบันทึกว่ามีการ Login สำเร็จ พร้อมข้อมูล IP
+    try {
+      await recordLog({
+        userId: user._id,
+        userName: user.name,
+        action: "LOGIN",
+        details: `เข้าสู่ระบบสำเร็จ (Role: ${user.role})`,
+        req: req,
+      });
+    } catch (logError) {
+      console.error("Failed to record log:", logError);
+      // ไม่หยุดการทำงานหลักถ้า Log พัง เพื่อให้ผู้ใช้เข้าสู่ระบบได้ปกติ
+    }
+
     const cookieStore = await cookies();
 
+    // 7. ตั้งค่า Cookie
     cookieStore.set("token", token, {
-      httpOnly: true, // JavaScript เข้าถึงไม่ได้ (ป้องกัน XSS)
-      secure: process.env.NODE_ENV === "production", // ใช้ HTTPS ใน Production
-      sameSite: "strict", // ป้องกัน CSRF
-      path: "/", // ใช้ได้ทุกหน้า
-      maxAge: 60 * 60 * 24, // 1 วัน (หน่วยเป็นวินาที)
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+      maxAge: 60 * 60 * 24, // 1 วัน
     });
 
-    // ส่ง Response กลับไปบอกหน้าบ้าน
     return NextResponse.json({
       message: "เข้าสู่ระบบสำเร็จ",
       user: {
@@ -72,6 +84,9 @@ export async function POST(req: Request) {
     });
   } catch (error) {
     console.error("Login Error:", error);
-    return NextResponse.json({ error: "Server Error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "เกิดข้อผิดพลาดภายในระบบ" },
+      { status: 500 },
+    );
   }
 }

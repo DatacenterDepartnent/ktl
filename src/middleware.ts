@@ -1,66 +1,120 @@
+// // middleware.ts
+// import { NextResponse } from "next/server";
+// import type { NextRequest } from "next/server";
+// import { jwtVerify } from "jose";
+
+// export async function middleware(request: NextRequest) {
+//   const { pathname } = request.nextUrl;
+//   const token = request.cookies.get("token")?.value;
+
+//   const secret = new TextEncoder().encode(
+//     process.env.JWT_SECRET || "default_secret_key_change_me",
+//   );
+
+//   // 1. ถ้าพยายามเข้าหน้า Dashboard
+//   if (pathname.startsWith("/dashboard")) {
+//     if (!token) {
+//       return NextResponse.redirect(new URL("/login", request.url));
+//     }
+//     try {
+//       await jwtVerify(token, secret);
+//       return NextResponse.next();
+//     } catch (err) {
+//       const res = NextResponse.redirect(new URL("/login", request.url));
+//       res.cookies.delete("token");
+//       return res;
+//     }
+//   }
+
+//   // 2. ถ้า Login แล้ว ห้ามเข้าหน้า Login ซ้ำ
+//   if (pathname === "/login") {
+//     if (token) {
+//       try {
+//         await jwtVerify(token, secret);
+//         return NextResponse.redirect(new URL("/dashboard", request.url));
+//       } catch (err) {
+//         return NextResponse.next();
+//       }
+//     }
+//   }
+
+//   return NextResponse.next();
+// }
+
+// export const config = {
+//   // สำคัญมาก: Matcher ต้องครอบคลุมแค่ Dashboard และ Login
+//   matcher: ["/dashboard/:path*", "/login"],
+// };
+
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { jwtVerify } from "jose"; // ต้องติดตั้ง npm install jose
+import { jwtVerify } from "jose";
 
 export async function middleware(request: NextRequest) {
-  // 1. รับ Token จาก Cookies (ชื่อ 'token' ต้องตรงกับตอน Login)
+  const { pathname } = request.nextUrl;
   const token = request.cookies.get("token")?.value;
 
-  // 2. เตรียม Secret Key (ต้องแปลงเป็น Uint8Array สำหรับ jose)
   const secret = new TextEncoder().encode(
     process.env.JWT_SECRET || "default_secret_key_change_me",
   );
 
-  const { pathname } = request.nextUrl;
-
-  // --- LOGIC 1: ป้องกันหน้า Dashboard (คนนอกห้ามเข้า) ---
+  // 1. ตรวจสอบการเข้าถึงหน้า Dashboard
   if (pathname.startsWith("/dashboard")) {
-    // ถ้าไม่มี Token เลย -> ดีดไป Login
     if (!token) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
-    // ถ้ามี Token ต้องเช็คว่าของจริงไหม
     try {
-      await jwtVerify(token, secret);
-      // ถ้าผ่าน: อนุญาตให้ไปต่อ
+      // ถอดรหัส Token เพื่อเอาข้อมูล payload (เช่น role)
+      const { payload } = await jwtVerify(token, secret);
+      const userRole = payload.role as string;
+
+      // --- ส่วนการจัดการสิทธิ์ (RBAC) ---
+
+      // กั้นหน้าจัดการสมาชิก และ การตั้งค่าระบบ (เฉพาะ super_admin เท่านั้น)
+      // ตัวอย่าง: /dashboard/users หรือ /dashboard/settings
+      if (
+        pathname.startsWith("/dashboard/users") ||
+        pathname.startsWith("/dashboard/settings")
+      ) {
+        if (userRole !== "super_admin") {
+          return NextResponse.redirect(new URL("/dashboard", request.url));
+        }
+      }
+
+      // กั้นหน้าจัดการเนื้อหาภาพรวม (admin และ super_admin เท่านั้น)
+      // ถ้าเป็น user ปกติพยายามเข้าหน้าจัดการ User อื่น ให้ดีดออก
+      if (pathname.startsWith("/dashboard/manage-all")) {
+        if (userRole === "user") {
+          return NextResponse.redirect(new URL("/dashboard", request.url));
+        }
+      }
+
       return NextResponse.next();
-    } catch (error) {
-      // ถ้า Token ปลอมหรือหมดอายุ -> ดีดไป Login และลบ Cookie ทิ้ง (ถ้าทำได้)
-      const response = NextResponse.redirect(new URL("/login", request.url));
-      response.cookies.delete("token");
-      return response;
+    } catch (err) {
+      const res = NextResponse.redirect(new URL("/login", request.url));
+      res.cookies.delete("token");
+      return res;
     }
   }
 
-  // --- LOGIC 2: คนที่ Login แล้ว ห้ามเข้าหน้า Login ซ้ำ ---
-  if (pathname === "/login") {
+  // 2. ถ้า Login แล้ว ห้ามเข้าหน้า Login หรือ Register ซ้ำ
+  if (pathname === "/login" || pathname === "/register") {
     if (token) {
       try {
         await jwtVerify(token, secret);
-        // ถ้า Token ยังดีอยู่ -> ดีดไป Dashboard เลย
         return NextResponse.redirect(new URL("/dashboard", request.url));
-      } catch (error) {
-        // ถ้า Token เสีย -> ปล่อยให้อยู่หน้า Login ต่อไปเพื่อ Login ใหม่
+      } catch (err) {
+        // ถ้า Token หมดอายุ ให้ปล่อยให้เข้าหน้า Login ได้ตามปกติ
         return NextResponse.next();
       }
     }
   }
 
-  // เส้นทางอื่นๆ ปล่อยผ่านปกติ
   return NextResponse.next();
 }
 
-// กำหนดขอบเขตการทำงาน (Matcher) เพื่อประสิทธิภาพ
 export const config = {
-  matcher: [
-    /*
-     * Match all paths EXCEPT:
-     * 1. /api (API routes)
-     * 2. /_next (Next.js internals)
-     * 3. /static (static files)
-     * 4. .*\\..* (files with extensions like .jpg, .css, .js)
-     */
-    "/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)",
-  ],
+  // เพิ่มการดักจับหน้า Register ด้วยเพื่อความปลอดภัย
+  matcher: ["/dashboard/:path*", "/login", "/register"],
 };

@@ -64,7 +64,7 @@ const CATEGORIES = [
     value: "Order",
     label: "คำสั่งวิทยาลัย",
     color:
-      "bg-indigo-50 text-indigo-600 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:border-indigo-800",
+      "bg-indigo-50 text-indigo-600 border-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-400 dark:border-indigo-800",
   },
 ];
 
@@ -110,10 +110,11 @@ function SortableImage({ id, src, onRemove, isVertical = false }: any) {
           src={src}
           alt="preview"
           fill
+          unoptimized
           className={isVertical ? "object-contain" : "object-cover"}
         />
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-          <span className="opacity-0 group-hover:opacity-100 text-white text-xs bg-black/40 px-2 py-1 rounded-md">
+          <span className="opacity-0 group-hover:opacity-100 text-white text-xs bg-black/40 px-2 py-1 rounded-md pointer-events-none">
             ลากเพื่อย้าย
           </span>
         </div>
@@ -121,6 +122,7 @@ function SortableImage({ id, src, onRemove, isVertical = false }: any) {
       <button
         type="button"
         onClick={(e) => {
+          e.preventDefault();
           e.stopPropagation();
           onRemove();
         }}
@@ -138,10 +140,10 @@ export default function AddNewsPage() {
   // --- States ---
   const [categories, setCategories] = useState<string[]>(["PR"]);
   const [content, setContent] = useState("");
-  // วันที่ลงข้อมูล
   const [publishDate, setPublishDate] = useState(
     new Date().toISOString().split("T")[0],
   );
+  const [currentUser, setCurrentUser] = useState<any>({ name: "siripan" }); // ✅ Default เป็นชื่อคุณเลย
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
@@ -163,10 +165,29 @@ export default function AddNewsPage() {
 
   const [SunEditorComponent, setSunEditorComponent] =
     useState<React.ComponentType<any> | null>(null);
+
   useEffect(() => {
+    // พยายามดึงชื่อคนจริง ถ้าไม่มีก็ใช้ siripan
+    const fetchUser = async () => {
+      try {
+        const res = await fetch("/api/auth/me");
+        if (res.ok) {
+          const userData = await res.json();
+          setCurrentUser(userData);
+        }
+      } catch (err) {
+        console.log("Auth not ready, using default name.");
+      }
+    };
+    fetchUser();
+
     import("suneditor-react").then((mod) =>
       setSunEditorComponent(() => mod.default),
     );
+    return () => {
+      imagePreviews.forEach((url) => URL.revokeObjectURL(url));
+      newsletterPreviews.forEach((url) => URL.revokeObjectURL(url));
+    };
   }, []);
 
   const handleDragEnd = (
@@ -196,9 +217,8 @@ export default function AddNewsPage() {
     const text = doc.body.textContent || "";
     const cleanText = text.replace(/\s+/g, " ").trim();
     if (!cleanText) return "";
-    const limit = 100;
-    return cleanText.length > limit
-      ? cleanText.substring(0, limit) + "..."
+    return cleanText.length > 100
+      ? cleanText.substring(0, 100) + "..."
       : cleanText;
   };
 
@@ -208,7 +228,11 @@ export default function AddNewsPage() {
       maxWidthOrHeight: 1920,
       useWebWorker: true,
     };
-    return await imageCompression(file, options);
+    try {
+      return await imageCompression(file, options);
+    } catch (error) {
+      return file;
+    }
   };
 
   const toggleCategory = (value: string) => {
@@ -228,12 +252,11 @@ export default function AddNewsPage() {
       const compressedFiles = await Promise.all(
         originalFiles.map((file) => compressImage(file)),
       );
+      const newPreviews = compressedFiles.map((f) => URL.createObjectURL(f));
       setImageFiles((prev) => [...prev, ...compressedFiles]);
-      setImagePreviews((prev) => [
-        ...prev,
-        ...compressedFiles.map((f) => URL.createObjectURL(f)),
-      ]);
+      setImagePreviews((prev) => [...prev, ...newPreviews]);
       setIsCompressing(false);
+      e.target.value = "";
     }
   };
 
@@ -246,22 +269,22 @@ export default function AddNewsPage() {
       const compressedFiles = await Promise.all(
         originalFiles.map((file) => compressImage(file)),
       );
+      const newPreviews = compressedFiles.map((f) => URL.createObjectURL(f));
       setNewsletterFiles((prev) => [...prev, ...compressedFiles]);
-      setNewsletterPreviews((prev) => [
-        ...prev,
-        ...compressedFiles.map((f) => URL.createObjectURL(f)),
-      ]);
+      setNewsletterPreviews((prev) => [...prev, ...newPreviews]);
       setIsCompressing(false);
+      e.target.value = "";
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const autoTitle = generateTitleFromContent(content);
-    if (!autoTitle) return alert("กรุณาใส่เนื้อหาข่าวที่เป็นข้อความด้วยครับ");
+    if (!content || content === "<p><br></p>")
+      return alert("กรุณาใส่เนื้อหาข่าวด้วยครับ");
     if (isLoading || isCompressing) return;
-    setIsLoading(true);
 
+    setIsLoading(true);
     try {
       const generalUploads = await Promise.all(
         imageFiles.map((f) => uploadToCloudinary(f, "ktltc_news")),
@@ -279,6 +302,8 @@ export default function AddNewsPage() {
         links,
         videoEmbeds,
         createdAt: new Date(publishDate).toISOString(),
+        userName: currentUser.name, // ✅ ส่งชื่อไปให้ API
+        userImage: currentUser.image || null,
       };
 
       const res = await fetch("/api/news", {
@@ -295,17 +320,15 @@ export default function AddNewsPage() {
         alert("เกิดข้อผิดพลาดในการบันทึก");
       }
     } catch (error) {
-      console.error(error);
       alert("เชื่อมต่อ Server ไม่ได้");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // ฟังก์ชันจัดรูปแบบวันที่ วัน/เดือน/ปี (พ.ศ.)
   const formatThaiDate = (dateStr: string) => {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString("th-TH", {
+    if (!dateStr) return "-";
+    return new Date(dateStr).toLocaleDateString("th-TH", {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -321,93 +344,61 @@ export default function AddNewsPage() {
         }
         .sun-editor-editable {
           font-family: "Sarabun", sans-serif !important;
-        }
-        .sun-editor {
-          border-radius: 0.75rem;
-          border: 1px solid #e2e8f0 !important;
-          overflow: hidden;
-        }
-        /* ทำให้ input date แสดงผลแบบ วัน/เดือน/ปี ในเบราว์เซอร์ที่รองรับ */
-        input[type="date"]::-webkit-datetime-edit-text {
-          color: #94a3b8;
-          padding: 0 0.2em;
-        }
-        input[type="date"]::-webkit-inner-spin-button {
-          display: none;
+          font-size: 16px !important;
         }
       `}</style>
 
-      {/* --- Top Bar --- */}
+      {/* Top Bar */}
       <div className="border-b border-slate-200 sticky top-0 z-20 shadow-sm backdrop-blur-md bg-white/80 dark:bg-black/80 dark:border-zinc-800">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link
               href="/dashboard/news"
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800 transition-all dark:bg-zinc-800 dark:text-slate-400 dark:hover:bg-zinc-700 dark:hover:text-slate-200"
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 dark:bg-zinc-800"
             >
-              ←
+              {" "}
+              ←{" "}
             </Link>
             <div>
-              <h1 className="text-xl font-bold text-slate-800 dark:text-white">
+              <h1 className="text-xl font-bold dark:text-white">
                 สร้างข่าวใหม่
               </h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                ระบุวันที่ลงข้อมูล (วัน/เดือน/ปี)
+              <p className="text-xs text-slate-500">
+                ผู้เขียน:{" "}
+                <span className="font-bold text-indigo-600 dark:text-indigo-400">
+                  {currentUser.name}
+                </span>
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-10 space-y-8">
-        {/* --- Card 1: ข้อมูลข่าวสารและวันที่ --- */}
-        <section className="">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl dark:bg-indigo-900/30 dark:text-indigo-400">
-              📅
-            </div>
-            <h2 className="text-lg font-bold">กำหนดวันที่และหมวดหมู่</h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
-            {/* ส่วนของวันที่ที่เน้น วัน/เดือน/ปี */}
+      <div className="max-w-7xl mx-auto px-4 py-10 space-y-12">
+        {/* Date & Categories */}
+        <section className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-4">
-              <label className="text-sm font-bold text-slate-600 dark:text-slate-400 ml-1">
-                วันที่ลงข้อมูล (เดือน / วัน / ปี)
+              <label className="text-sm font-bold text-slate-600 dark:text-slate-400">
+                วันที่ลงข้อมูล
               </label>
-              <div className="relative group">
-                <input
-                  type="date"
-                  value={publishDate}
-                  onChange={(e) => setPublishDate(e.target.value)}
-                  className="w-full bg-slate-50 p-4 rounded-2xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all dark:bg-zinc-800 dark:border-zinc-700 dark:text-white text-lg font-medium"
-                />
-                <div className="mt-3 flex items-center gap-3 bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-2xl border border-indigo-100 dark:border-indigo-800">
-                  <span className="text-indigo-600 dark:text-indigo-300 font-bold text-sm">
-                    รูปแบบที่บันทึก:
-                  </span>
-                  <span className="text-indigo-700 dark:text-indigo-200 font-bold tracking-widest">
-                    {formatThaiDate(publishDate)}
-                  </span>
-                </div>
-              </div>
-              <p className="text-[11px] text-slate-400 leading-relaxed px-2">
-                * หากเบราว์เซอร์ของคุณตั้งค่าเป็นภาษาไทย ปฏิทินจะแสดงผลเป็นปี
-                พ.ศ. โดยอัตโนมัติ
-              </p>
+              <input
+                type="date"
+                value={publishDate}
+                onChange={(e) => setPublishDate(e.target.value)}
+                className="w-full bg-slate-50 p-4 rounded-2xl border border-slate-200 dark:bg-zinc-800 dark:border-zinc-700 outline-none focus:ring-2 focus:ring-indigo-500"
+              />
             </div>
-
-            {/* ส่วนหมวดหมู่ */}
             <div className="space-y-4">
-              <label className="text-sm font-bold text-slate-600 dark:text-slate-400 ml-1">
-                หมวดหมู่ข่าวสาร
+              <label className="text-sm font-bold text-slate-600 dark:text-slate-400">
+                หมวดหมู่
               </label>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                 {CATEGORIES.map((cat) => (
                   <div
                     key={cat.value}
                     onClick={() => toggleCategory(cat.value)}
-                    className={`p-3 rounded-xl border-2 cursor-pointer transition-all text-center font-bold text-sm ${categories.includes(cat.value) ? cat.color : "border-slate-50 text-slate-400 dark:border-zinc-800 dark:text-slate-600"}`}
+                    className={`p-3 rounded-xl border-2 cursor-pointer transition-all text-center font-bold text-xs ${categories.includes(cat.value) ? cat.color : "border-slate-100 text-slate-400 dark:border-zinc-800"}`}
                   >
                     {cat.label}
                   </div>
@@ -416,11 +407,12 @@ export default function AddNewsPage() {
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-100 dark:border-zinc-800">
-            <label className="text-sm font-bold text-slate-600 dark:text-slate-400 ml-1 block mb-3">
+          {/* Editor */}
+          <div className="pt-6">
+            <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-3">
               เนื้อหาข่าวสาร
             </label>
-            <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-zinc-700 shadow-inner">
+            <div className="rounded-2xl overflow-hidden border border-slate-200 dark:border-zinc-700 bg-white">
               {SunEditorComponent ? (
                 <SunEditorComponent
                   setContents={content}
@@ -433,13 +425,14 @@ export default function AddNewsPage() {
                       ["font", "fontSize", "formatBlock"],
                       ["bold", "underline", "italic", "strike"],
                       ["fontColor", "hiliteColor"],
+                      ["align", "list", "lineHeight"],
                       ["table", "link", "image", "video"],
                       ["fullScreen", "codeView"],
                     ],
                   }}
                 />
               ) : (
-                <div className="h-[450px] flex items-center justify-center bg-slate-50 text-slate-400">
+                <div className="h-[450px] flex items-center justify-center bg-slate-50">
                   กำลังเตรียมพื้นที่เขียนข่าว...
                 </div>
               )}
@@ -447,18 +440,18 @@ export default function AddNewsPage() {
           </div>
         </section>
 
-        {/* --- ส่วนจัดการรูปภาพ --- */}
+        {/* Images Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <section className="">
-            <h2 className="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2 text-lg">
-              🖼️ อัลบั้มภาพ (แนวนอน)
+          <section className="space-y-4">
+            <h2 className="font-bold text-lg flex items-center gap-2">
+              🖼️ อัลบั้มภาพ
             </h2>
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
               onDragEnd={(e) => handleDragEnd(e, "general")}
             >
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 border-2 border-dashed border-slate-200 p-4 rounded-3xl dark:border-zinc-800">
                 <SortableContext
                   items={imagePreviews}
                   strategy={rectSortingStrategy}
@@ -479,7 +472,7 @@ export default function AddNewsPage() {
                     />
                   ))}
                 </SortableContext>
-                <label className="aspect-video border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 hover:border-indigo-300 transition-all dark:border-zinc-700 dark:hover:bg-zinc-800 group">
+                <label className="aspect-video border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:border-zinc-700">
                   <input
                     type="file"
                     multiple
@@ -487,27 +480,26 @@ export default function AddNewsPage() {
                     className="hidden"
                     onChange={handleImageChange}
                   />
-                  <span className="text-3xl text-slate-300 group-hover:text-indigo-400 transition-colors">
-                    +
-                  </span>
-                  <span className="text-[10px] font-bold text-slate-400 mt-1">
-                    เพิ่มรูปภาพ
-                  </span>
+                  {isCompressing ? (
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
+                  ) : (
+                    <span className="text-slate-400 text-xs">+ เพิ่มรูป</span>
+                  )}
                 </label>
               </div>
             </DndContext>
           </section>
 
-          <section className="">
-            <h2 className="font-bold text-slate-700 dark:text-slate-200 flex items-center gap-2 text-lg">
-              📜 จดหมายข่าว (แนวตั้ง)
+          <section className="space-y-4">
+            <h2 className="font-bold text-lg flex items-center gap-2">
+              📜 จดหมายข่าว (A4)
             </h2>
             <DndContext
               sensors={sensors}
               collisionDetection={closestCenter}
               onDragEnd={(e) => handleDragEnd(e, "newsletter")}
             >
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 border-2 border-dashed border-slate-200 p-4 rounded-3xl dark:border-zinc-800">
                 <SortableContext
                   items={newsletterPreviews}
                   strategy={rectSortingStrategy}
@@ -529,7 +521,7 @@ export default function AddNewsPage() {
                     />
                   ))}
                 </SortableContext>
-                <label className="aspect-[3/4] border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 hover:border-indigo-300 transition-all dark:border-zinc-700 dark:hover:bg-zinc-800 group">
+                <label className="aspect-[3/4] border-2 border-dashed border-slate-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:border-zinc-700">
                   <input
                     type="file"
                     multiple
@@ -537,99 +529,66 @@ export default function AddNewsPage() {
                     className="hidden"
                     onChange={handleNewsletterChange}
                   />
-                  <span className="text-3xl text-slate-300 group-hover:text-indigo-400 transition-colors">
-                    +
-                  </span>
-                  <span className="text-[10px] font-bold text-slate-400 mt-1">
-                    เพิ่มไฟล์แนวตั้ง
-                  </span>
+                  {isCompressing ? (
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div>
+                  ) : (
+                    <span className="text-slate-400 text-xs">+ เพิ่ม A4</span>
+                  )}
                 </label>
               </div>
             </DndContext>
           </section>
         </div>
 
-        {/* --- ส่วนลิงก์และวิดีโอ --- */}
-        <section className="">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-2xl bg-slate-100 text-slate-600 flex items-center justify-center text-xl dark:bg-zinc-800 dark:text-slate-400">
-              🔗
-            </div>
-            <h2 className="font-bold text-lg dark:text-white">
-              ลิงก์แนบและสื่อวิดีโอ
-            </h2>
-          </div>
-
+        {/* Links & Video */}
+        <section className="bg-white dark:bg-zinc-900/50 p-8 rounded-[2rem] border border-slate-100 dark:border-zinc-800 space-y-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-            {/* --- ส่วนจัดการลิงก์ --- */}
-            <div className="space-y-6">
-              <div className="space-y-3">
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">
-                  เพิ่มลิงก์ภายนอก / เอกสารดาวน์โหลด
-                </label>
-                <div className="flex flex-col sm:flex-row gap-2 p-2 bg-slate-50 dark:bg-zinc-800/50 rounded-2xl border border-slate-100 dark:border-zinc-700">
-                  <input
-                    placeholder="ชื่อปุ่ม (เช่น ดาวน์โหลด PDF)"
-                    value={currentLink.label}
-                    onChange={(e) =>
-                      setCurrentLink({ ...currentLink, label: e.target.value })
+            <div className="space-y-4">
+              <label className="text-xs font-bold text-slate-400 uppercase">
+                ลิงก์แนบ
+              </label>
+              <div className="flex gap-2">
+                <input
+                  placeholder="ชื่อปุ่ม"
+                  value={currentLink.label}
+                  onChange={(e) =>
+                    setCurrentLink({ ...currentLink, label: e.target.value })
+                  }
+                  className="flex-1 bg-slate-50 p-3 rounded-xl dark:bg-zinc-800 border-none"
+                />
+                <input
+                  placeholder="URL"
+                  value={currentLink.url}
+                  onChange={(e) =>
+                    setCurrentLink({ ...currentLink, url: e.target.value })
+                  }
+                  className="flex-1 bg-slate-50 p-3 rounded-xl dark:bg-zinc-800 border-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (currentLink.label && currentLink.url) {
+                      setLinks([...links, currentLink]);
+                      setCurrentLink({ label: "", url: "" });
                     }
-                    className="flex-1 bg-white dark:bg-zinc-800 p-3 rounded-xl border border-slate-200 dark:border-zinc-700 outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm"
-                  />
-                  <input
-                    placeholder="URL (https://...)"
-                    value={currentLink.url}
-                    onChange={(e) =>
-                      setCurrentLink({ ...currentLink, url: e.target.value })
-                    }
-                    className="flex-[1.5] bg-white dark:bg-zinc-800 p-3 rounded-xl border border-slate-200 dark:border-zinc-700 outline-none focus:ring-2 focus:ring-indigo-500/20 text-sm"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (currentLink.label && currentLink.url) {
-                        setLinks([...links, currentLink]);
-                        setCurrentLink({ label: "", url: "" });
-                      }
-                    }}
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-3 rounded-xl font-bold transition-all shadow-md shadow-indigo-500/10 active:scale-95"
-                  >
-                    เพิ่ม
-                  </button>
-                </div>
+                  }}
+                  className="bg-indigo-600 text-white px-4 rounded-xl"
+                >
+                  เพิ่ม
+                </button>
               </div>
-
-              {/* รายการลิงก์ที่เพิ่มแล้ว */}
-              <div className="grid grid-cols-1 gap-2 max-h-[250px] overflow-y-auto pr-2 scrollbar-thin">
-                {links.length === 0 && (
-                  <div className="text-center py-8 border-2 border-dashed border-slate-100 dark:border-zinc-800 rounded-2xl text-slate-400 text-xs">
-                    ยังไม่มีการเพิ่มลิงก์
-                  </div>
-                )}
+              <div className="space-y-2">
                 {links.map((l, i) => (
                   <div
                     key={i}
-                    className="group flex justify-between items-center p-4 bg-white dark:bg-zinc-800 rounded-xl border border-slate-100 dark:border-zinc-700 hover:border-indigo-200 dark:hover:border-indigo-900 transition-all"
+                    className="flex justify-between p-3 bg-slate-50 dark:bg-zinc-800 rounded-lg text-sm"
                   >
-                    <div className="flex items-center gap-3 overflow-hidden">
-                      <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-500 text-xs">
-                        Link
-                      </div>
-                      <div className="overflow-hidden">
-                        <p className="text-sm font-bold text-slate-700 dark:text-slate-200 truncate">
-                          {l.label}
-                        </p>
-                        <p className="text-[10px] text-slate-400 truncate w-full">
-                          {l.url}
-                        </p>
-                      </div>
-                    </div>
+                    <span>{l.label}</span>
                     <button
                       onClick={() =>
                         setLinks(links.filter((_, idx) => idx !== i))
                       }
-                      className="opacity-0 group-hover:opacity-100 p-2 text-red-400 hover:text-red-600 transition-all"
-                      title="ลบลิงก์"
+                      className="text-red-500"
                     >
                       ✕
                     </button>
@@ -638,60 +597,48 @@ export default function AddNewsPage() {
               </div>
             </div>
 
-            {/* --- ส่วนจัดการวิดีโอ --- */}
-            <div className="space-y-6">
-              <div className="space-y-3">
-                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ml-1">
-                  ฝังวิดีโอจาก YouTube (Embed Code)
-                </label>
-                <div className="space-y-3">
-                  <textarea
-                    placeholder="วางโค้ด <iframe> ที่ได้จาก YouTube (คลิกแชร์ > ฝัง)"
-                    value={currentEmbed}
-                    onChange={(e) => setCurrentEmbed(e.target.value)}
-                    className="w-full bg-slate-50 dark:bg-zinc-800/50 p-4 rounded-2xl border border-slate-200 dark:border-zinc-700 h-28 outline-none focus:ring-2 focus:ring-red-500/20 text-sm font-mono"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (currentEmbed.includes("<iframe")) {
-                        setVideoEmbeds([...videoEmbeds, currentEmbed]);
-                        setCurrentEmbed("");
-                      } else {
-                        alert("กรุณาวางโค้ด iframe ที่ถูกต้องจาก YouTube");
-                      }
-                    }}
-                    className="w-full bg-red-50 hover:bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400 py-3 rounded-xl font-bold transition-all border border-red-100 dark:border-red-900/50 active:scale-[0.99]"
-                  >
-                    + เพิ่มวิดีโอลงในข่าว
-                  </button>
-                </div>
-              </div>
-
-              {/* Preview รายการวิดีโอ */}
-              <div className="grid grid-cols-2 gap-3 max-h-[250px] overflow-y-auto pr-2 scrollbar-thin">
+            <div className="space-y-4">
+              <label className="text-xs font-bold text-slate-400 uppercase">
+                YouTube Embed
+              </label>
+              <textarea
+                placeholder="วาง <iframe> โค้ดที่นี่"
+                value={currentEmbed}
+                onChange={(e) => setCurrentEmbed(e.target.value)}
+                className="w-full bg-slate-50 p-4 rounded-2xl dark:bg-zinc-800 h-24 border-none"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  if (currentEmbed.includes("<iframe")) {
+                    setVideoEmbeds([...videoEmbeds, currentEmbed]);
+                    setCurrentEmbed("");
+                  }
+                }}
+                className="w-full bg-red-600 text-white py-3 rounded-xl"
+              >
+                + เพิ่มวิดีโอ
+              </button>
+              <div className="grid grid-cols-2 gap-2">
                 {videoEmbeds.map((code, i) => (
                   <div
                     key={i}
-                    className="relative aspect-video rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-700 bg-black group"
+                    className="relative aspect-video bg-black rounded-lg overflow-hidden group"
                   >
                     <div
-                      className="w-full h-full pointer-events-none opacity-60 scale-[0.5]"
+                      className="scale-[0.5] origin-center w-full h-full flex items-center justify-center opacity-50"
                       dangerouslySetInnerHTML={{ __html: code }}
                     />
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setVideoEmbeds(
-                            videoEmbeds.filter((_, idx) => idx !== i),
-                          )
-                        }
-                        className="bg-white text-red-600 w-8 h-8 rounded-full flex items-center justify-center font-bold shadow-lg"
-                      >
-                        ✕
-                      </button>
-                    </div>
+                    <button
+                      onClick={() =>
+                        setVideoEmbeds(
+                          videoEmbeds.filter((_, idx) => idx !== i),
+                        )
+                      }
+                      className="absolute inset-0 m-auto w-8 h-8 bg-white text-red-600 rounded-full opacity-0 group-hover:opacity-100"
+                    >
+                      ✕
+                    </button>
                   </div>
                 ))}
               </div>
@@ -700,23 +647,25 @@ export default function AddNewsPage() {
         </section>
       </div>
 
-      {/* --- Action Bar ด้านล่าง --- */}
+      {/* Action Bar */}
       <div className="fixed bottom-0 left-0 right-0 p-6 bg-white/90 backdrop-blur-md border-t border-slate-200 flex justify-center z-40 dark:bg-zinc-900/90 dark:border-zinc-800">
         <div className="max-w-5xl w-full flex gap-4">
           <Link
             href="/dashboard/news"
-            className="px-8 py-4 rounded-full border border-slate-200 font-bold text-slate-500 hover:bg-slate-50 transition-colors"
+            className="px-8 py-4 rounded-full border border-slate-200 font-bold text-slate-500"
           >
             ยกเลิก
           </Link>
           <button
             onClick={handleSubmit}
             disabled={isLoading || isCompressing}
-            className={`flex-1 py-4 rounded-full font-bold text-white transition-all transform active:scale-[0.98] ${isLoading || isCompressing ? "bg-slate-300 cursor-wait" : "bg-indigo-600 hover:bg-indigo-700 hover:shadow-xl shadow-indigo-500/30"}`}
+            className={`flex-1 py-4 rounded-full font-bold text-white ${isLoading || isCompressing ? "bg-slate-300" : "bg-indigo-600 hover:bg-indigo-700 shadow-lg shadow-indigo-500/30"}`}
           >
             {isLoading
-              ? "⏳ กำลังบันทึกข้อมูล..."
-              : "✨ ยืนยันการบันทึกข่าวสาร"}
+              ? "⏳ กำลังบันทึก..."
+              : isCompressing
+                ? "⚙️ กำลังประมวลผลรูป..."
+                : "✨ ยืนยันการบันทึกข่าวสาร"}
           </button>
         </div>
       </div>

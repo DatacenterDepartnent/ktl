@@ -4,7 +4,23 @@ import Link from "next/link";
 import Image from "next/image";
 import { FootTitle } from "@/components/FootTitle";
 
-// --- Icons ---
+// --- Icons (เพิ่ม Icon User สำหรับผู้โพสต์) ---
+const IconUser = () => (
+  <svg
+    width="16"
+    height="16"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+    <circle cx="12" cy="7" r="4" />
+  </svg>
+);
+
 const IconChevronLeft = () => (
   <svg
     width="20"
@@ -81,7 +97,7 @@ const IconExternalLink = () => (
   </svg>
 );
 
-// ✅ เพิ่ม videoEmbeds ใน Interface
+// ✅ 1. เพิ่ม authorName ใน Interface
 interface NewsItem {
   _id: string;
   title: string;
@@ -93,9 +109,27 @@ interface NewsItem {
   links?: { label: string; url: string }[];
   videoEmbeds?: string[];
   createdAt: Date | string;
+  author?: {
+    name: string;
+    image?: string;
+  };
 }
 
-// 1. Fetch current news detail
+// ฟังก์ชันสำหรับ SEO Metadata
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const news = await getNewsDetail(id);
+  return {
+    title: news
+      ? `${news.title} | วิทยาลัยเทคนิคกันทรลักษ์`
+      : "ไม่พบข้อมูลข่าวสาร",
+  };
+}
+
 async function getNewsDetail(id: string): Promise<NewsItem | null> {
   try {
     const client = await clientPromise;
@@ -109,7 +143,6 @@ async function getNewsDetail(id: string): Promise<NewsItem | null> {
   }
 }
 
-// 2. Fetch adjacent news
 async function getAdjacentNews(currentNews: NewsItem) {
   try {
     const client = await clientPromise;
@@ -171,7 +204,7 @@ export default async function NewsDetailPage({
         </h1>
         <Link
           href="/news"
-          className="px-6 py-2.5 bg-blue-600 text-white rounded-full font-medium shadow-lg hover:bg-blue-700 transition-all hover:scale-105 active:scale-95"
+          className="px-6 py-2.5 bg-blue-600 text-white rounded-full font-medium shadow-lg hover:bg-blue-700 transition-all active:scale-95"
         >
           กลับสู่หน้าหลัก
         </Link>
@@ -190,9 +223,8 @@ export default async function NewsDetailPage({
     <div className="min-h-screen bg-slate-50/50 dark:bg-zinc-950 text-slate-800 dark:text-slate-200 font-sans selection:bg-blue-100 dark:selection:bg-blue-900/30">
       <main className="pb-16 md:pb-24">
         {/* --- Hero / Header Section --- */}
-        <div className="bg-white dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800 pt-12 pb-6 px-4">
+        <div className="bg-white dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800 pt-12 pb-8 px-4">
           <div className="max-w-4xl mx-auto space-y-8">
-            {/* Breadcrumb */}
             <Link
               href="/news"
               className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition-colors group"
@@ -203,7 +235,6 @@ export default async function NewsDetailPage({
               ย้อนกลับหน้าข่าวสาร
             </Link>
 
-            {/* Title & Meta */}
             <div className="space-y-6">
               <div className="flex flex-wrap gap-2">
                 {displayCategories.map((cat, i) => (
@@ -216,54 +247,63 @@ export default async function NewsDetailPage({
                 ))}
               </div>
 
-              <div className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white leading-tight tracking-tight">
-                {/* ⚠️ ข้อสังเกต: ตอนนี้คุณ comment ชื่อข่าวไว้ และใช้ Hardcode ว่า "วิทยาลัยเทคนิคกันทรลักษ์" แทน
-                   ถ้าต้องการแสดงชื่อข่าวจริง ให้เอา comment ออกด้านล่างครับ
-                */}
+              {/* ✅ แสดงชื่อข่าวจริง (เอา Comment ออกแล้ว) */}
+              <h1 className="text-3xl text-center md:text-4xl lg:text-5xl font-extrabold text-slate-900 dark:text-white leading-tight tracking-tight">
                 {/* {news.title} */}
-                <p className="text-center">วิทยาลัยเทคนิคกันทรลักษ์</p>
-              </div>
+                <p>วิทยาลัยเทคนิคกันทรลักษ์</p>
+              </h1>
 
-              <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-zinc-800 pt-6">
+              {/* ✅ ส่วนข้อมูล Meta: วันที่ + ผู้โพสต์ */}
+              <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-zinc-800 pt-6">
                 <div className="flex items-center gap-2">
-                  <span className=" rounded-full bg-blue-500"></span>
-                  เผยแพร่เมื่อ:
+                  <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                  <span className="font-medium">เผยแพร่เมื่อ:</span>
+                  <time className="text-slate-700 dark:text-slate-300">
+                    {new Date(news.createdAt).toLocaleDateString("th-TH", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </time>
                 </div>
-                <time className="font-medium text-slate-700 dark:text-slate-300">
-                  {new Date(news.createdAt).toLocaleDateString("th-TH", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </time>
+
+                {/* แสดงชื่อผู้โพสต์ข่าว */}
+                <div className="flex items-center gap-2">
+                  <div className="p-1 rounded-md bg-slate-100 dark:bg-zinc-800 text-slate-400">
+                    <IconUser />
+                  </div>
+                  <span className="font-medium">ผู้เขียน:</span>
+                  <span className="text-slate-700 dark:text-slate-300">
+                    {news.author?.name || "งานศูนย์ข้อมูล"}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 mt-6 space-y-4">
+        <div className="max-w-4xl mx-auto px-4 mt-10 space-y-12">
           {/* --- Content Body --- */}
           <article
             className="prose prose-lg prose-slate dark:prose-invert max-w-none 
-            prose-headings:font-bold prose-headings:tracking-tight 
-            prose-p:leading-relaxed prose-p:text-slate-600 dark:prose-p:text-slate-300
-            prose-img:rounded-2xl prose-img:shadow-lg prose-img:my-8
+            prose-headings:font-bold prose-p:leading-relaxed prose-p:text-slate-600 dark:prose-p:text-slate-300
+            prose-img:rounded-3xl prose-img:shadow-2xl prose-img:my-10
             prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:no-underline hover:prose-a:underline
             prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:bg-slate-50 dark:prose-blockquote:bg-zinc-900 prose-blockquote:px-6 prose-blockquote:py-4 prose-blockquote:rounded-r-lg prose-blockquote:not-italic"
             dangerouslySetInnerHTML={{ __html: news.content || "" }}
           />
 
-          <div className="">
+          <div className="py-4">
             <FootTitle />
           </div>
           <hr className="border-slate-200 dark:border-zinc-800" />
 
           {/* --- 🎥 Video Section --- */}
           {news.videoEmbeds && news.videoEmbeds.length > 0 && (
-            <section className="space-y-8">
+            <section className="space-y-6">
               <div className="flex items-center gap-3">
-                <div className="h-8 w-1.5 bg-red-600 rounded-full"></div>
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
+                <div className="h-6 w-1.5 bg-red-600 rounded-full"></div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                   วิดีโอประกอบ
                 </h3>
               </div>
@@ -281,16 +321,15 @@ export default async function NewsDetailPage({
 
           {/* --- Documents / Links Section --- */}
           {news.links && news.links.length > 0 && (
-            <section className="mt-12">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2.5 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/30">
+            <section className="space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-500/30">
                   <IconDownload />
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                   เอกสารและลิงก์ที่เกี่ยวข้อง
                 </h3>
               </div>
-
               <div className="grid gap-4 md:grid-cols-2">
                 {news.links.map((link, idx) => (
                   <a
@@ -298,21 +337,18 @@ export default async function NewsDetailPage({
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group relative flex items-center p-5 bg-white dark:bg-zinc-900/80 border border-slate-100 dark:border-zinc-800 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+                    className="group relative flex items-center p-5 bg-white dark:bg-zinc-900/80 border border-slate-100 dark:border-zinc-800 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
                   >
-                    {/* Decorative Gradient on Hover */}
                     <div className="absolute inset-y-0 left-0 w-1 bg-blue-500 scale-y-0 group-hover:scale-y-100 transition-transform duration-300 origin-bottom"></div>
-
                     <div className="flex-1 min-w-0 mr-4">
-                      <h4 className="font-semibold text-slate-700 dark:text-slate-200 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate text-base">
+                      <h4 className="font-semibold text-slate-700 dark:text-slate-200 group-hover:text-blue-600 truncate">
                         {link.label}
                       </h4>
-                      <p className="text-xs text-slate-400 font-mono truncate mt-1 group-hover:text-slate-500 transition-colors">
+                      <p className="text-xs text-slate-400 truncate mt-1 font-mono">
                         {link.url}
                       </p>
                     </div>
-
-                    <div className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-50 dark:bg-zinc-800 text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 transform group-hover:rotate-45">
+                    <div className="w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 dark:bg-zinc-800 text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-all transform group-hover:rotate-45">
                       <IconExternalLink />
                     </div>
                   </a>
@@ -321,72 +357,61 @@ export default async function NewsDetailPage({
             </section>
           )}
 
-          {/* --- Posters / Announcements Section --- */}
+          {/* --- Posters Section --- */}
           {news.announcementImages && news.announcementImages.length > 0 && (
-            <section className="space-y-8">
+            <section className="space-y-6">
               <div className="flex items-center gap-3">
-                <div className="h-8 w-1.5 bg-amber-500 rounded-full"></div>
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
+                <div className="h-6 w-1.5 bg-amber-500 rounded-full"></div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">
                   จดหมายข่าวประชาสัมพันธ์
                 </h3>
               </div>
               <div className="flex flex-col gap-10">
                 {news.announcementImages.map((img, idx) => (
-                  <a
+                  <div
                     key={idx}
-                    href={img}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block relative w-full rounded-2xl overflow-hidden shadow-2xl bg-white dark:bg-zinc-900 ring-1 ring-slate-900/5 dark:ring-white/10 cursor-zoom-in hover:opacity-95 transition-opacity"
+                    className="relative w-full rounded-3xl overflow-hidden shadow-2xl border border-slate-200 dark:border-zinc-800"
                   >
                     <Image
                       src={img}
-                      alt={`Announcement ${idx + 1}`}
-                      width={0}
-                      height={0}
-                      sizes="100vw"
-                      style={{ width: "100%", height: "auto" }}
+                      alt="Announcement"
+                      width={1200}
+                      height={1600}
+                      className="w-full h-auto"
                       priority={idx === 0}
                     />
-                  </a>
+                  </div>
                 ))}
               </div>
             </section>
           )}
 
           {/* --- Gallery Section --- */}
-          {/* ✅ จุดที่แก้ไข: เพิ่ม key={idx} ใน div ที่เป็น Wrapper */}
           {news.images && news.images.length > 0 && (
-            <section className="space-y-8">
+            <section className="space-y-6">
               <div className="flex items-center gap-3">
-                <div className="h-8 w-1.5 bg-blue-600 rounded-full"></div>
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-white">
-                  ประมวลภาพกิจกรรม
-                  <span className="text-slate-400 font-normal text-lg ml-2">
+                <div className="h-6 w-1.5 bg-blue-600 rounded-full"></div>
+                <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                  ประมวลภาพกิจกรรม{" "}
+                  <span className="text-slate-400 font-normal ml-2">
                     ({news.images.length})
                   </span>
                 </h3>
               </div>
               <div
-                className={`${
-                  news.images.length < 5
-                    ? "columns-1"
-                    : "columns-1 sm:columns-2 lg:columns-3"
-                } gap-4 space-y-4`}
+                className={`${news.images.length < 5 ? "columns-1" : "columns-1 sm:columns-2 lg:columns-3"} gap-4 space-y-4`}
               >
                 {news.images.map((img, idx) => (
                   <div
-                    key={idx} // ✅ ใส่ key ตรงนี้ครับ เพื่อแก้ Warning
-                    className="block relative w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm hover:shadow-xl transition-all duration-300 break-inside-avoid cursor-zoom-in"
+                    key={idx}
+                    className="break-inside-avoid relative w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-sm hover:shadow-xl transition-all duration-300 group"
                   >
                     <Image
                       src={img}
-                      alt={`Gallery image ${idx + 1}`}
-                      width={0}
-                      height={0}
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      style={{ width: "100%", height: "auto" }}
-                      className="transition-transform duration-700 hover:scale-105"
+                      alt={`Gallery ${idx + 1}`}
+                      width={800}
+                      height={600}
+                      className="w-full h-auto group-hover:scale-105 transition-transform duration-700"
                     />
                   </div>
                 ))}
@@ -400,35 +425,32 @@ export default async function NewsDetailPage({
               {prev ? (
                 <Link
                   href={`/news/${prev._id}`}
-                  className="group flex flex-col p-6 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl hover:border-blue-400 dark:hover:border-blue-600 hover:shadow-lg transition-all duration-300"
+                  className="group p-6 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl hover:border-blue-400 hover:shadow-lg transition-all"
                 >
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                    <IconChevronLeft />
-                    <span>ข่าวก่อนหน้า</span>
+                  <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 group-hover:text-blue-600">
+                    <IconChevronLeft /> ข่าวก่อนหน้า
                   </div>
-                  <h4 className="font-semibold text-slate-700 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white line-clamp-2 leading-relaxed">
+                  <h4 className="font-semibold text-slate-700 dark:text-slate-200 line-clamp-2 leading-relaxed">
                     {prev.title}
                   </h4>
                 </Link>
               ) : (
-                <div className="hidden md:block"></div>
+                <div className="hidden md:block" />
               )}
-
               {next ? (
                 <Link
                   href={`/news/${next._id}`}
-                  className="group flex flex-col items-end text-right p-6 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl hover:border-blue-400 dark:hover:border-blue-600 hover:shadow-lg transition-all duration-300"
+                  className="group p-6 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl hover:border-blue-400 hover:shadow-lg transition-all text-right"
                 >
-                  <div className="flex items-center gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                    <span>ข่าวถัดไป</span>
-                    <IconChevronRight />
+                  <div className="flex items-center justify-end gap-2 text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 group-hover:text-blue-600">
+                    ข่าวถัดไป <IconChevronRight />
                   </div>
-                  <h4 className="font-semibold text-slate-700 dark:text-slate-200 group-hover:text-slate-900 dark:group-hover:text-white line-clamp-2 leading-relaxed">
+                  <h4 className="font-semibold text-slate-700 dark:text-slate-200 line-clamp-2 leading-relaxed">
                     {next.title}
                   </h4>
                 </Link>
               ) : (
-                <div className="hidden md:block"></div>
+                <div className="hidden md:block" />
               )}
             </div>
           </nav>
