@@ -35,6 +35,7 @@ import {
   FiYoutube,
   FiCheckCircle,
   FiPlus,
+  FiTrash2,
 } from "react-icons/fi";
 
 // --- Config ---
@@ -56,6 +57,24 @@ const fontList = [
   "Arial",
   "Tahoma",
 ];
+
+// ✅ Helper สำหรับบันทึก Log
+async function recordActivity(data: {
+  userName: string;
+  action: string;
+  details: string;
+  link?: string;
+}) {
+  try {
+    await fetch("/api/admin/logs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+  } catch (error) {
+    console.error("Audit Log Error:", error);
+  }
+}
 
 // --- Sub-Component: Sortable Image Item ---
 function SortableImage({ id, src, onRemove, isVertical = false }: any) {
@@ -184,7 +203,6 @@ export default function AddNewsPage() {
     }
   };
 
-  // ✅ แก้ไข: รวมฟังก์ชันจัดการไฟล์ให้ชื่อตรงกับที่เรียกใน JSX
   const handleFileChange = async (
     e: React.ChangeEvent<HTMLInputElement>,
     type: "general" | "newsletter",
@@ -240,12 +258,16 @@ export default function AddNewsPage() {
       const newsletterUploads = await Promise.all(
         newsletterFiles.map((f) => uploadToCloudinary(f, "ktltc_newsletters")),
       );
+
+      const newsTitle =
+        content
+          .replace(/<[^>]*>/g, "")
+          .replace(/&nbsp;/g, " ")
+          .substring(0, 100)
+          .trim() + "...";
+
       const payload = {
-        title:
-          content
-            .replace(/<[^>]*>/g, "")
-            .substring(0, 100)
-            .trim() + "...",
+        title: newsTitle,
         categories,
         content,
         images: generalUploads.filter((u) => u !== null),
@@ -256,17 +278,30 @@ export default function AddNewsPage() {
         userName: currentUser.name,
         userImage: currentUser.image || null,
       };
+
       const res = await fetch("/api/news", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+
       if (res.ok) {
+        const result = await res.json();
+        // ✅ แก้ไข: เช็คหลายรูปแบบเพื่อให้แน่ใจว่า ID ไม่เป็น undefined
+        const newsId = result.insertedId || result.id || result._id;
+
+        await recordActivity({
+          userName: currentUser.name,
+          action: "CREATE_POST",
+          details: `เพิ่มข่าวประชาสัมพันธ์หัวข้อ: "${newsTitle}"`,
+          link: newsId ? `/news/${newsId}` : undefined, // ถ้าไม่มี ID จะไม่ใส่ path เพื่อกัน Error undefined
+        });
+
         router.push("/dashboard/news");
         router.refresh();
       }
     } catch (error) {
-      alert("เกิดข้อผิดพลาด");
+      alert("เกิดข้อผิดพลาดในการบันทึก");
     } finally {
       setIsLoading(false);
     }
@@ -282,6 +317,7 @@ export default function AddNewsPage() {
         }
       `}</style>
 
+      {/* Header */}
       <div className="border-b border-slate-200 sticky top-0 z-20 shadow-sm backdrop-blur-md bg-white/80 dark:bg-black/80 dark:border-zinc-800">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -289,8 +325,7 @@ export default function AddNewsPage() {
               href="/dashboard/news"
               className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 dark:bg-zinc-800"
             >
-              {" "}
-              ←{" "}
+              <FiArrowLeft />
             </Link>
             <div>
               <h1 className="text-xl font-bold dark:text-white">
@@ -308,7 +343,7 @@ export default function AddNewsPage() {
       </div>
 
       <main className="max-w-7xl mx-auto px-6 py-10 space-y-12">
-        {/* 1. วันที่ และ หมวดหมู่ */}
+        {/* Date & Categories */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-8 items-end">
           <div className="space-y-3">
             <label className="text-[11px] font-black uppercase text-slate-400 tracking-widest flex items-center gap-2">
@@ -323,7 +358,7 @@ export default function AddNewsPage() {
           </div>
           <div className="space-y-3">
             <label className="text-[11px] font-black uppercase text-slate-400 tracking-widest">
-              เลือกหมวดหมู่ (สามารถเลือกได้มากกว่า 1 หมวด)
+              เลือกหมวดหมู่
             </label>
             <div className="flex flex-wrap gap-2">
               {CATEGORIES.map((cat) => (
@@ -348,9 +383,8 @@ export default function AddNewsPage() {
           </div>
         </section>
 
-        {/* 2. เนื้อหาข่าวสาร */}
+        {/* Content Editor */}
         <section className="space-y-4">
-          {/* ✅ แก้ไข: ลบ text-slate-400 ออกเพื่อให้เหลือแค่สีเดียวตามที่ Tailwind แจ้งเตือน */}
           <label className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2 italic text-indigo-600">
             <FiFileText /> เนื้อหาข่าวสาร
           </label>
@@ -386,13 +420,13 @@ export default function AddNewsPage() {
           </div>
         </section>
 
-        {/* 3. อัลบั้มรูปภาพ */}
+        {/* Image Album */}
         <section className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-extrabold flex items-center gap-2">
               <FiImage className="text-indigo-500" /> อัลบั้มรูปภาพ
             </h2>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            <span className="text-[10px] font-bold text-slate-400">
               {imagePreviews.length} รูปภาพ
             </span>
           </div>
@@ -412,6 +446,7 @@ export default function AddNewsPage() {
                     id={src}
                     src={src}
                     onRemove={() => {
+                      URL.revokeObjectURL(src);
                       setImageFiles((prev) =>
                         prev.filter((_, idx) => idx !== i),
                       );
@@ -422,7 +457,7 @@ export default function AddNewsPage() {
                   />
                 ))}
               </SortableContext>
-              <label className="aspect-video border-2 border-dashed border-slate-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-indigo-50/30 transition-all group bg-white dark:bg-zinc-900">
+              <label className="aspect-video border-2 border-dashed border-slate-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-indigo-50/30 transition-all bg-white dark:bg-zinc-900 group">
                 <input
                   type="file"
                   multiple
@@ -435,14 +470,14 @@ export default function AddNewsPage() {
                   className="text-slate-300 group-hover:text-indigo-500"
                 />
                 <span className="text-[10px] font-bold text-slate-400 mt-2">
-                  เพิ่มรูปภาพประกอบ
+                  เพิ่มรูปภาพ
                 </span>
               </label>
             </div>
           </DndContext>
         </section>
 
-        {/* 4. จดหมายข่าว (แนวตั้ง) */}
+        {/* Newsletter Album */}
         <section className="space-y-6">
           <h2 className="font-extrabold flex items-center gap-2 text-lg">
             <FiFileText className="text-purple-500" /> จดหมายข่าว (A4)
@@ -463,6 +498,7 @@ export default function AddNewsPage() {
                     src={src}
                     isVertical
                     onRemove={() => {
+                      URL.revokeObjectURL(src);
                       setNewsletterFiles((prev) =>
                         prev.filter((_, idx) => idx !== i),
                       );
@@ -473,7 +509,7 @@ export default function AddNewsPage() {
                   />
                 ))}
               </SortableContext>
-              <label className="aspect-[3/4] border-2 border-dashed border-slate-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-purple-50 transition-all group bg-white dark:bg-zinc-900">
+              <label className="aspect-[3/4] border-2 border-dashed border-slate-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-purple-50 transition-all bg-white dark:bg-zinc-900 group">
                 <input
                   type="file"
                   multiple
@@ -482,7 +518,7 @@ export default function AddNewsPage() {
                   onChange={(e) => handleFileChange(e, "newsletter")}
                 />
                 <FiPlus className="text-slate-300 group-hover:text-purple-500" />
-                <span className="text-[10px] font-bold text-slate-400 mt-2 text-center px-2">
+                <span className="text-[10px] font-bold text-slate-400 mt-2">
                   เพิ่มแผ่นจดหมาย
                 </span>
               </label>
@@ -490,14 +526,38 @@ export default function AddNewsPage() {
           </DndContext>
         </section>
 
-        {/* 5. ลิงก์ที่เกี่ยวข้อง */}
+        {/* Links Section */}
         <section className="space-y-4">
-          <h3 className="text-lg font-black flex items-center gap-2">
-            <FiLink className="text-blue-500" /> ลิงก์ที่เกี่ยวข้อง
+          <h3 className="text-lg font-black flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <FiLink className="text-blue-500" /> ลิงก์ที่เกี่ยวข้อง
+            </div>
           </h3>
+          {links.length > 0 && (
+            <div className="flex flex-wrap gap-2 p-4 rounded-2xl bg-slate-50 dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800">
+              {links.map((l, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-2 bg-white dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-zinc-700 shadow-sm"
+                >
+                  <span className="text-xs font-bold text-blue-600">
+                    {l.label}
+                  </span>
+                  <button
+                    onClick={() =>
+                      setLinks(links.filter((_, idx) => idx !== i))
+                    }
+                    className="text-red-500 hover:scale-110 transition-transform"
+                  >
+                    <FiTrash2 size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <input
-              placeholder="ชื่อปุ่ม (เช่น อ่านเพิ่มเติม)"
+              placeholder="ชื่อปุ่ม"
               value={currentLink.label}
               onChange={(e) =>
                 setCurrentLink({ ...currentLink, label: e.target.value })
@@ -505,7 +565,7 @@ export default function AddNewsPage() {
               className="w-full bg-white dark:bg-zinc-900 p-4 rounded-xl border border-slate-200 dark:border-zinc-800 text-xs outline-none"
             />
             <input
-              placeholder="https://..."
+              placeholder="URL ลิงก์"
               value={currentLink.url}
               onChange={(e) =>
                 setCurrentLink({ ...currentLink, url: e.target.value })
@@ -527,13 +587,44 @@ export default function AddNewsPage() {
           </button>
         </section>
 
-        {/* 6. วิดีโอ YouTube */}
+        {/* YouTube Section */}
         <section className="space-y-4">
           <h3 className="text-lg font-black flex items-center gap-2">
             <FiYoutube className="text-red-500" /> วิดีโอ YouTube
           </h3>
+          {videoEmbeds.length > 0 && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800">
+              {videoEmbeds.map((v, i) => (
+                <div
+                  key={i}
+                  className="relative aspect-video bg-black rounded-lg overflow-hidden group"
+                >
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() =>
+                        setVideoEmbeds(
+                          videoEmbeds.filter((_, idx) => idx !== i),
+                        )
+                      }
+                      className="bg-red-600 text-white p-2 rounded-full"
+                    >
+                      <FiTrash2 size={16} />
+                    </button>
+                  </div>
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: v
+                        .replace(/width="\d+"/, 'width="100%"')
+                        .replace(/height="\d+"/, 'height="100%"'),
+                    }}
+                    className="w-full h-full pointer-events-none"
+                  />
+                </div>
+              ))}
+            </div>
+          )}
           <textarea
-            placeholder="วาง <iframe> code"
+            placeholder="วาง <iframe> code จาก YouTube"
             value={currentEmbed}
             onChange={(e) => setCurrentEmbed(e.target.value)}
             className="w-full bg-white dark:bg-zinc-900 p-4 rounded-2xl text-xs border border-slate-200 dark:border-zinc-800 h-28 outline-none"
@@ -552,15 +643,15 @@ export default function AddNewsPage() {
           </button>
         </section>
 
-        {/* 7. ยืนยันและเผยแพร่ */}
+        {/* Submit Button */}
         <section className="pt-10 border-t border-slate-200 dark:border-zinc-800">
           <button
             onClick={handleSubmit}
             disabled={isLoading || isCompressing}
-            className={`w-full py-6 rounded-[2.5rem] font-black text-xl transition-all flex items-center justify-center gap-4 ${isLoading || isCompressing ? "bg-slate-200 text-slate-400" : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl"}`}
+            className={`w-full py-6 rounded-[2.5rem] font-black text-xl transition-all flex items-center justify-center gap-4 ${isLoading || isCompressing ? "bg-slate-200 text-slate-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-xl active:scale-[0.98]"}`}
           >
             {isLoading ? (
-              "กำลังบันทึก..."
+              <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin" />
             ) : (
               <>
                 <FiCheckCircle size={28} /> ยืนยันและเผยแพร่ข่าวสาร
@@ -570,6 +661,7 @@ export default function AddNewsPage() {
         </section>
       </main>
 
+      {/* Floating Status */}
       {isCompressing && (
         <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[60] bg-indigo-600 text-white px-8 py-4 rounded-full shadow-2xl flex items-center gap-4 animate-bounce">
           <span className="text-sm font-black italic">

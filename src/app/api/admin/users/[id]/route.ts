@@ -1,62 +1,92 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
+import bcrypt from "bcryptjs"; // อย่าลืม npm install bcryptjs
+import { auth } from "@/lib/auth";
+
+export async function GET(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const session = await auth();
+    if (!session || (session.user as any).role !== "super_admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await params;
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
+    const user = await db
+      .collection("users")
+      .findOne({ _id: new ObjectId(id) }, { projection: { password: 0 } });
+
+    if (!user)
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    return NextResponse.json(user);
+  } catch (error) {
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
+}
 
 export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = await params;
-
-    // ตรวจสอบความถูกต้องของ ID ก่อนทำงาน (ช่วยลด Error)
-    if (!ObjectId.isValid(id)) {
-      return NextResponse.json({ error: "Invalid ID format" }, { status: 400 });
+    const session = await auth();
+    if (!session || (session.user as any).role !== "super_admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await params;
     const body = await req.json();
+    const {
+      logAction,
+      logDetails,
+      adminId,
+      adminName,
+      password,
+      ...updateData
+    } = body;
+
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    const { logAction, logDetails, adminId, adminName, ...updateData } = body;
+    // เตรียมข้อมูลสำหรับอัปเดต
+    const updatePayload: any = { ...updateData, updatedAt: new Date() };
 
-    // --- 1. ดึงข้อมูล User เป้าหมายแบบจำกัด Field (เพื่อความรวดเร็ว) ---
-    const targetUser = await db.collection("users").findOne(
-      { _id: new ObjectId(id) },
-      { projection: { name: 1 } }, // ดึงเฉพาะชื่อ ลดภาระฐานข้อมูล
-    );
+    // ถ้ามีการส่งรหัสผ่านใหม่มา ให้เข้ารหัสก่อน
+    if (password && password.length >= 6) {
+      updatePayload.password = await bcrypt.hash(password, 10);
+    }
 
-    const targetName = targetUser?.name || "Unknown User";
-
-    // --- 2. อัปเดตข้อมูล User ---
-    const updateResult = await db
+    const result = await db
       .collection("users")
-      .updateOne(
-        { _id: new ObjectId(id) },
-        { $set: { ...updateData, updatedAt: new Date() } },
-      );
+      .updateOne({ _id: new ObjectId(id) }, { $set: updatePayload });
 
-    if (updateResult.matchedCount === 0) {
+    if (result.matchedCount === 0) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // --- 3. บันทึก Log แบบละเอียด (ใส่ชื่อแทน ID) ---
+    // บันทึก Log
     if (logAction) {
       await db.collection("logs").insertOne({
-        userId:
-          adminId && ObjectId.isValid(adminId) ? new ObjectId(adminId) : null,
-        userName: adminName || "System",
+        adminId: adminId ? new ObjectId(adminId) : null,
+        adminName: adminName || "System",
         action: logAction,
-        // รวมรายละเอียดและชื่อผู้ถูกกระทำเพื่อให้ Admin อ่านง่ายในหน้า Log
-        details: `${logDetails} (${targetName})`,
+        details: password ? `${logDetails} (มีการเปลี่ยนรหัสผ่าน)` : logDetails,
         targetId: new ObjectId(id),
         timestamp: new Date(),
-        // ดึง IP จริงของผู้ใช้
         ip: req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1",
       });
     }
 
-    return NextResponse.json({ success: true, targetName });
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Update Error:", error);
     return NextResponse.json({ error: "Update failed" }, { status: 500 });

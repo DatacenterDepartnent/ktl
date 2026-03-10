@@ -28,7 +28,7 @@ async function getNews(): Promise<NewsItem[]> {
       .find({})
       .sort({ createdAt: -1 }) // เรียงใหม่ไปเก่า
       .project({
-        title: 1,
+        title: 1, // ✅ ตรวจสอบว่าดึง title แน่นอน
         category: 1,
         categories: 1,
         images: 1,
@@ -38,6 +38,7 @@ async function getNews(): Promise<NewsItem[]> {
       })
       .toArray();
 
+    // แปลง _id เป็น string และจัดการข้อมูลให้พร้อมส่งไปยัง Client Component
     return JSON.parse(JSON.stringify(news));
   } catch (error) {
     console.error("Database Error:", error);
@@ -81,6 +82,7 @@ export default async function ManageNewsPage() {
         </Link>
       </div>
 
+      {/* ✅ ตัวแปร newsList ที่มี title จะถูกส่งเข้าไปใน Component นี้ */}
       <ManageNewsList newsList={newsList} />
     </div>
   );

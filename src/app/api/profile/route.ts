@@ -23,9 +23,10 @@ export async function GET() {
   try {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    const user = await db
-      .collection("users")
-      .findOne({ _id: new ObjectId(userId) }, { projection: { password: 0 } });
+    const user = await db.collection("users").findOne(
+      { _id: new ObjectId(userId) },
+      { projection: { password: 0 } }, // ✅ ดีมากครับ ช่วยลด Data Payload
+    );
 
     if (!user)
       return NextResponse.json({ error: "User not found" }, { status: 404 });
@@ -39,7 +40,8 @@ export async function GET() {
 export async function PATCH(req: Request) {
   const session = await auth();
   const userId = (session?.user as any)?.id;
-  const userName = session?.user?.name;
+  // ดึงชื่อจาก session หรือ fallback ไปที่ name ใน body
+  const sessionUserName = session?.user?.name;
 
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -60,17 +62,19 @@ export async function PATCH(req: Request) {
       updatedAt: new Date(),
     };
 
-    // ตัวแปรสำหรับเก็บรายละเอียด Log
     let logDetail = "อัปเดตข้อมูลส่วนตัว";
 
-    // ✅ 1. ตรวจสอบและอัปโหลดรูปไปที่ Cloudinary
+    // ✅ 1. ตรวจสอบและอัปโหลดรูป (ปรับให้เร็วขึ้นด้วย Eager Transformation)
     if (image && image.startsWith("data:image")) {
       try {
         const uploadResponse = await cloudinary.uploader.upload(image, {
           folder: "user_profiles",
+          transformation: [
+            { width: 200, height: 200, crop: "fill", gravity: "face" },
+          ], // ✅ ลดขนาดรูปตั้งแต่ตอนอัปโหลด ช่วย FCP/LCP
         });
         updateData.image = uploadResponse.secure_url;
-        logDetail = "อัปเดตโปรไฟล์และเปลี่ยนรูปภาพใหม่"; // ปรับรายละเอียด Log หากมีการเปลี่ยนรูป
+        logDetail = "อัปเดตโปรไฟล์และเปลี่ยนรูปภาพใหม่";
       } catch (uploadError) {
         console.error("Cloudinary upload error:", uploadError);
       }
@@ -88,15 +92,16 @@ export async function PATCH(req: Request) {
       .collection("users")
       .updateOne({ _id: new ObjectId(userId) }, { $set: updateData });
 
-    // ✅ 4. เพิ่มการบันทึก Log กิจกรรม (เพื่อให้ไปโชว์ในหน้า Admin)
+    // ✅ 4. บันทึก Log กิจกรรม (ใช้ชื่อที่อัปเดตใหม่เพื่อให้หน้า Log แสดงผลถูกต้อง)
     try {
       await db.collection("logs").insertOne({
         userId: new ObjectId(userId),
-        userName: userName || name || "User",
+        userName: name || sessionUserName || "User", // ✅ ใช้ name ล่าสุดที่เพิ่งแก้
         action: "UPDATE_PROFILE",
         details: logDetail,
         timestamp: new Date(),
-        ip: req.headers.get("x-forwarded-for") || "127.0.0.1",
+        // ปรับการดึง IP ให้แม่นยำขึ้น
+        ip: req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1",
       });
     } catch (logError) {
       console.error("Failed to record profile update log:", logError);

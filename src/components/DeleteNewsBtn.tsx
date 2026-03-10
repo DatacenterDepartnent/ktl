@@ -1,25 +1,56 @@
-"use client"; // 👈 บรรทัดนี้สำคัญที่สุด! ถ้าไม่มี หน้านั้นจะเปิดไม่ได้เลย
+"use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { HiOutlineTrash } from "react-icons/hi";
 
-export default function DeleteNewsBtn({ id }: { id: string }) {
+// ✅ 1. ต้องรับ title มาจากหน้า List
+export default function DeleteNewsBtn({
+  id,
+  title,
+}: {
+  id: string;
+  title: string;
+}) {
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
+  const [currentUser, setCurrentUser] = useState("เจ้าหน้าที่");
+
+  // ดึงชื่อคนลบมาเตรียมไว้
+  useEffect(() => {
+    fetch("/api/profile")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.name) setCurrentUser(data.name);
+        else if (data.user?.name) setCurrentUser(data.user.name);
+      })
+      .catch(() => {});
+  }, []);
 
   const handleDelete = async () => {
-    if (!confirm("🚨 คุณแน่ใจหรือไม่ว่าต้องการลบข่าวนี้?")) return;
+    // ตรวจสอบว่า title มีค่าไหมก่อนลบ
+    if (!confirm(`ยืนยันการลบข่าว: "${title || "ไม่มีหัวข้อ"}"?`)) return;
 
     setIsDeleting(true);
     try {
       const res = await fetch(`/api/news/${id}`, { method: "DELETE" });
+
       if (res.ok) {
+        // ✅ 2. ส่งข้อมูลไป Log (ต้องสะกดให้ตรงกับ API Route)
+        await fetch("/api/admin/logs", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userName: currentUser, // ตรงกับ userName ใน API
+            action: "DELETE_POST", // ตรงกับ action ใน API
+            details: `ลบข่าวประชาสัมพันธ์หัวข้อ: "${title}"`, // ตรงกับ details ใน API
+            link: null, // ลบไปแล้วไม่ต้องมี link
+          }),
+        });
+
         router.refresh();
-      } else {
-        alert("ลบไม่สำเร็จ");
       }
     } catch (error) {
-      console.error(error);
       alert("เกิดข้อผิดพลาด");
     } finally {
       setIsDeleting(false);
@@ -30,7 +61,7 @@ export default function DeleteNewsBtn({ id }: { id: string }) {
     <button
       onClick={handleDelete}
       disabled={isDeleting}
-      className="text-sm font-bold text-red-500 hover:text-red-700 transition-colors disabled:opacity-50"
+      className="text-red-500 hover:text-red-700"
     >
       {isDeleting ? "กำลังลบ..." : "ลบข้อมูล"}
     </button>

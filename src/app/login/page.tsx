@@ -3,7 +3,27 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signIn } from "next-auth/react"; // ✅ นำเข้า signIn จาก NextAuth
+import { signIn } from "next-auth/react";
+
+/**
+ * ฟังก์ชัน Helper สำหรับบันทึก Log กิจกรรม
+ * ส่งข้อมูลไปที่ API: /api/admin/logs (ฟังก์ชัน POST ที่เราเพิ่มเข้าไป)
+ */
+async function recordActivity(data: {
+  userName: string;
+  action: string;
+  details: string;
+}) {
+  try {
+    await fetch("/api/admin/logs", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data),
+    });
+  } catch (error) {
+    console.error("Audit Log Error:", error);
+  }
+}
 
 export default function LoginPage() {
   const router = useRouter();
@@ -19,19 +39,29 @@ export default function LoginPage() {
     setError("");
 
     try {
-      // ✅ เปลี่ยนจาก fetch เป็น signIn ของ NextAuth
-      // "credentials" คือชื่อ provider ที่เราตั้งไว้ใน auth.ts
+      // ✅ ใช้ signIn ของ NextAuth
       const result = await signIn("credentials", {
         username,
         password,
-        redirect: false, // ปิด auto redirect เพื่อให้เราจัดการเอง
+        redirect: false,
       });
 
       if (result?.error) {
-        // NextAuth จะส่ง error กลับมาถ้า login ไม่สำเร็จ
+        // ❌ กรณี Login ไม่สำเร็จ: บันทึก Log แจ้งเตือนความพยายามที่ผิดพลาด
+        await recordActivity({
+          userName: username || "Unknown User",
+          action: "LOGIN_FAILED",
+          details: "พยายามเข้าสู่ระบบด้วยรหัสผ่านที่ผิด",
+        });
         setError("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
       } else {
-        // ✅ ถ้าสำเร็จ สั่งให้ Refresh และไปหน้า Dashboard
+        // ✅ กรณี Login สำเร็จ: บันทึก Log เข้าสู่ระบบ
+        await recordActivity({
+          userName: username,
+          action: "LOGIN",
+          details: "เข้าสู่ระบบจัดการเนื้อหา (CMS) สำเร็จ",
+        });
+
         router.refresh();
         router.push("/dashboard");
       }

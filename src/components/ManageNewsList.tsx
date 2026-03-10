@@ -195,7 +195,8 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
 
                   <div className="h-6 w-[1px] bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
 
-                  <DeleteNewsBtn id={news._id} />
+                  {/* ✅ แก้ไขตรงนี้: เพิ่ม prop title เพื่อให้ปุ่มลบนำไปบันทึก Log ได้ */}
+                  <DeleteNewsBtn id={news._id} title={news.title} />
                 </div>
               </div>
             </div>
