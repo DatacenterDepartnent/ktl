@@ -10,6 +10,7 @@ import "@ant-design/v5-patch-for-react-19";
 import "../styles/prism-vsc-dark-plus.css";
 import "../styles/index.css";
 import "../styles/globals.css";
+import { SessionProvider } from "next-auth/react";
 import ScrollUp from "@/components/Common/ScrollUp";
 
 // 1. ตั้งค่าฟอนต์หลักของเว็บ (Prompt) จาก Google Fonts
@@ -73,24 +74,26 @@ export default function RootLayout({
 
       {/* body: เรียกใช้ฟอนต์ Prompt และกำหนดสีพื้นหลัง/ตัวหนังสือพื้นฐาน */}
       <body className={`${prompt.className} ${prompt.variable} antialiased`}>
-        {/* ThemeProvider: ตัวจัดการ Dark Mode / Light Mode */}
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system" // เริ่มต้นตามการตั้งค่าของเครื่องผู้ใช้
-          enableSystem
-          disableTransitionOnChange
-        >
-          {/* Navbar: เมนูด้านบน (จะแสดงทุกหน้า) */}
-          <Navbar />
-          {/* children: เนื้อหาของหน้าที่เราเปิดอยู่ (เช่น หน้า Home, หน้า News) */}
-          {children}
-          {/* เครื่องมือเก็บสถิติของ Vercel */}
-          <SpeedInsights /> {/* วัดความเร็วเว็บ */}
-          <Analytics /> {/* วัดจำนวนคนเข้าชม */}
-          {/* Footer: ส่วนท้ายเว็บ (จะแสดงทุกหน้า) */}
-          <ScrollUp />
-          <Footer />
-        </ThemeProvider>
+        <SessionProvider>
+          {/* ThemeProvider: ตัวจัดการ Dark Mode / Light Mode */}
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system" // เริ่มต้นตามการตั้งค่าของเครื่องผู้ใช้
+            enableSystem
+            disableTransitionOnChange
+          >
+            {/* Navbar: เมนูด้านบน (จะแสดงทุกหน้า) */}
+            <Navbar />
+            {/* children: เนื้อหาของหน้าที่เราเปิดอยู่ (เช่น หน้า Home, หน้า News) */}
+            {children}
+            {/* เครื่องมือเก็บสถิติของ Vercel */}
+            <SpeedInsights /> {/* วัดความเร็วเว็บ */}
+            <Analytics /> {/* วัดจำนวนคนเข้าชม */}
+            {/* Footer: ส่วนท้ายเว็บ (จะแสดงทุกหน้า) */}
+            <ScrollUp />
+            <Footer />
+          </ThemeProvider>
+        </SessionProvider>
       </body>
     </html>
   );

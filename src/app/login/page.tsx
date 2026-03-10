@@ -3,15 +3,13 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { signIn } from "next-auth/react"; // ✅ นำเข้า signIn จาก NextAuth
 
 export default function LoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
-  // ✅ 1. เพิ่ม State สำหรับตรวจสอบว่าจะโชว์รหัสหรือไม่
   const [showPassword, setShowPassword] = useState(false);
-
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -21,19 +19,23 @@ export default function LoginPage() {
     setError("");
 
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        body: JSON.stringify({ username, password }),
+      // ✅ เปลี่ยนจาก fetch เป็น signIn ของ NextAuth
+      // "credentials" คือชื่อ provider ที่เราตั้งไว้ใน auth.ts
+      const result = await signIn("credentials", {
+        username,
+        password,
+        redirect: false, // ปิด auto redirect เพื่อให้เราจัดการเอง
       });
 
-      if (res.ok) {
+      if (result?.error) {
+        // NextAuth จะส่ง error กลับมาถ้า login ไม่สำเร็จ
+        setError("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+      } else {
+        // ✅ ถ้าสำเร็จ สั่งให้ Refresh และไปหน้า Dashboard
         router.refresh();
         router.push("/dashboard");
-      } else {
-        const data = await res.json();
-        setError(data.error || "เข้าสู่ระบบล้มเหลว");
       }
-    } catch {
+    } catch (err) {
       setError("เกิดข้อผิดพลาดในการเชื่อมต่อ");
     } finally {
       setLoading(false);
@@ -75,6 +77,7 @@ export default function LoginPage() {
               className="w-full bg-slate-50 border border-slate-200 text-slate-800 p-4 rounded-2xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder:text-slate-400 dark:bg-zinc-950/80 dark:border-zinc-800 dark:text-white dark:placeholder:text-zinc-700"
               placeholder="กรอกชื่อผู้ใช้งาน"
               autoComplete="username"
+              required
             />
           </div>
 
@@ -83,27 +86,23 @@ export default function LoginPage() {
               Password
             </label>
 
-            {/* ✅ 2. สร้าง Wrapper เป็น relative เพื่อวางไอคอน */}
             <div className="relative">
               <input
-                // ✅ 3. สลับ type ระหว่าง text กับ password
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                // ✅ 4. เพิ่ม pr-12 (padding-right) เพื่อไม่ให้ข้อความทับไอคอน
                 className="w-full bg-slate-50 border border-slate-200 text-slate-800 p-4 pr-12 rounded-2xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder:text-slate-400 dark:bg-zinc-950/80 dark:border-zinc-800 dark:text-white dark:placeholder:text-zinc-700"
                 placeholder="กรอกรหัสผ่าน"
                 autoComplete="current-password"
+                required
               />
 
-              {/* ✅ 5. ปุ่มกดรูปดวงตา */}
               <button
-                type="button" // ต้องใส่ type="button" เพื่อไม่ให้มันกด Submit Form
+                type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 transition-colors dark:text-zinc-500 dark:hover:text-blue-400"
               >
                 {showPassword ? (
-                  // Icon: Eye Slash (ซ่อน)
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"
@@ -119,7 +118,6 @@ export default function LoginPage() {
                     />
                   </svg>
                 ) : (
-                  // Icon: Eye (แสดง)
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     fill="none"

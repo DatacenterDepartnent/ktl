@@ -3,12 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import clientPromise from "@/lib/db";
 import bcrypt from "bcryptjs";
 
-export const {
-  handlers, // ✅ ดึง handlers ออกมาตรงๆ เพื่อให้ Route นำไปใช้
-  auth,
-  signIn,
-  signOut,
-} = NextAuth({
+export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -39,9 +34,12 @@ export const {
           throw new Error("รหัสผ่านไม่ถูกต้อง");
         }
 
+        // ✅ ส่งข้อมูลออกไปให้ครบถ้วนเพื่อให้ JWT นำไปใช้ต่อได้
         return {
           id: user._id.toString(),
           name: user.name,
+          username: user.username, // เพิ่ม username
+          email: user.email || null, // เพิ่ม email (ถ้ามี)
           image: user.image || null,
           role: user.role || "user",
         };
@@ -50,20 +48,23 @@ export const {
   ],
   callbacks: {
     async jwt({ token, user }) {
+      // ครั้งแรกที่ Login ข้อมูลจาก authorize จะส่งมาที่ user
       if (user) {
         token.id = user.id;
-        token.name = user.name;
-        token.picture = (user as any).image;
         token.role = (user as any).role;
+        token.username = (user as any).username; // ✅ เก็บ username ลง Token
+        token.email = user.email; // ✅ เก็บ email ลง Token
+        token.name = (user as any).name;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
         (session.user as any).id = token.id;
-        session.user.name = token.name;
-        session.user.image = token.picture as string;
-        (session.user as any).role = token.role as string;
+        (session.user as any).role = token.role;
+        (session.user as any).username = token.username; // ✅ ส่ง username ให้หน้าบ้าน/API
+        session.user.email = token.email as string; // ✅ ส่ง email ให้หน้าบ้าน/API
+        session.user.name = token.name as string;
       }
       return session;
     },

@@ -47,26 +47,32 @@
 // };
 
 // src/middleware.ts
-import { auth } from "@/lib/auth";
+import NextAuth from "next-auth";
+import { authConfig } from "./auth.config";
 import { NextResponse } from "next/server";
+
+const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
   const { nextUrl } = req;
-  const isLoggedIn = !!req.auth; // ตรวจสอบว่ามี session หรือไม่
+  const isLoggedIn = !!req.auth;
   const userRole = (req.auth?.user as any)?.role;
 
   const isDashboardPage = nextUrl.pathname.startsWith("/dashboard");
   const isAuthPage =
     nextUrl.pathname === "/login" || nextUrl.pathname === "/register";
 
-  // 1. ถ้าพยายามเข้าหน้า Dashboard แต่ยังไม่ Login ให้ไปหน้า Login
-  if (isDashboardPage && !isLoggedIn) {
-    return NextResponse.redirect(new URL("/login", nextUrl));
+  // 1. จัดการหน้า Login/Register (ถ้าเข้าแล้วให้ไป Dashboard)
+  if (isAuthPage) {
+    if (isLoggedIn) {
+      return NextResponse.redirect(new URL("/dashboard", nextUrl));
+    }
+    return NextResponse.next();
   }
 
-  // 2. ถ้า Login แล้ว ห้ามเข้าหน้า Login/Register ซ้ำ
-  if (isAuthPage && isLoggedIn) {
-    return NextResponse.redirect(new URL("/dashboard", nextUrl));
+  // 2. ถ้าไม่ได้ Login แต่จะเข้า Dashboard (ปกติ callback authorized จะช่วยเช็ค แต่ดักซ้ำเพื่อความชัวร์)
+  if (isDashboardPage && !isLoggedIn) {
+    return NextResponse.redirect(new URL("/login", nextUrl));
   }
 
   // 3. การจัดการสิทธิ์ (RBAC)
@@ -81,7 +87,7 @@ export default auth((req) => {
       }
     }
 
-    // กั้นหน้าจัดการเนื้อหาภาพรวม (admin และ super_admin เท่านั้น)
+    // กั้นหน้าจัดการเนื้อหาภาพรวม (ถ้าเป็น user ทั่วไปให้ดีดออก)
     if (nextUrl.pathname.startsWith("/dashboard/manage-all")) {
       if (userRole === "user") {
         return NextResponse.redirect(new URL("/dashboard", nextUrl));
@@ -93,6 +99,5 @@ export default auth((req) => {
 });
 
 export const config = {
-  // ดักจับทุกหน้ายกเว้นหน้า static และหน้าแรก
   matcher: ["/dashboard/:path*", "/login", "/register"],
 };
