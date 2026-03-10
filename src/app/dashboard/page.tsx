@@ -3,6 +3,8 @@ import Link from "next/link";
 import { v2 as cloudinary } from "cloudinary";
 import { auth } from "@/lib/auth"; // ดึง auth() จากไฟล์ v5 ของคุณ
 
+export const dynamic = "force-dynamic"; // บังคับให้เป็น Dynamic ตลอดเวลา
+
 // --- Cloudinary Config ---
 cloudinary.config({
   cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,

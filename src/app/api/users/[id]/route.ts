@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
-import bcrypt from "bcrypt"; // ✅ อย่าลืม: npm install bcrypt @types/bcrypt
+import bcrypt from "bcryptjs";
 
 export async function PATCH(
   req: Request,
