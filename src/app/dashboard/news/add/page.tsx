@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -143,7 +142,12 @@ export default function AddNewsPage() {
   const [publishDate, setPublishDate] = useState(
     new Date().toISOString().split("T")[0],
   );
-  const [currentUser, setCurrentUser] = useState<any>({ name: "siripan" }); // ✅ Default เป็นชื่อคุณเลย
+
+  // 🔗 เชื่อมโยง: ข้อมูลผู้ใช้เริ่มต้น
+  const [currentUser, setCurrentUser] = useState<any>({
+    name: "กำลังดึงข้อมูลผู้เขียน...",
+    image: null,
+  });
 
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
@@ -167,23 +171,41 @@ export default function AddNewsPage() {
     useState<React.ComponentType<any> | null>(null);
 
   useEffect(() => {
-    // พยายามดึงชื่อคนจริง ถ้าไม่มีก็ใช้ siripan
     const fetchUser = async () => {
       try {
-        const res = await fetch("/api/auth/me");
+        const res = await fetch("/api/profile");
         if (res.ok) {
           const userData = await res.json();
-          setCurrentUser(userData);
+          // Log ดูค่าที่ได้จาก API จริงๆ ว่าหน้าตาเป็นอย่างไร
+          console.log("User Data from API:", userData);
+
+          // ตรวจสอบว่า API ส่งชื่อมาใน field ไหน (เช่น userData.name หรือ userData.user.name)
+          setCurrentUser({
+            name:
+              userData.name ||
+              userData.user?.name ||
+              "งานศูนย์ข้อมูล วิทยาลัยเทคนิคกันทรลักษ์",
+            image: userData.image || userData.user?.image || null,
+          });
+        } else {
+          throw new Error("Unauthorized");
         }
       } catch (err) {
-        console.log("Auth not ready, using default name.");
+        console.log("Fetch failed, using fallback name.");
+        setCurrentUser({
+          name: "งานศูนย์ข้อมูล วิทยาลัยเทคนิคกันทรลักษ์",
+          image: null,
+        });
       }
     };
+
     fetchUser();
 
+    // ส่วนของ SunEditor และ Cleanup คงเดิมไว้ครับ
     import("suneditor-react").then((mod) =>
       setSunEditorComponent(() => mod.default),
     );
+
     return () => {
       imagePreviews.forEach((url) => URL.revokeObjectURL(url));
       newsletterPreviews.forEach((url) => URL.revokeObjectURL(url));
@@ -280,12 +302,14 @@ export default function AddNewsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const autoTitle = generateTitleFromContent(content);
+
     if (!content || content === "<p><br></p>")
       return alert("กรุณาใส่เนื้อหาข่าวด้วยครับ");
     if (isLoading || isCompressing) return;
 
     setIsLoading(true);
     try {
+      // 1. Upload Images
       const generalUploads = await Promise.all(
         imageFiles.map((f) => uploadToCloudinary(f, "ktltc_news")),
       );
@@ -293,6 +317,7 @@ export default function AddNewsPage() {
         newsletterFiles.map((f) => uploadToCloudinary(f, "ktltc_newsletters")),
       );
 
+      // 2. Prepare Data (🔗 เชื่อมโยง: ใช้ชื่อจาก currentUser)
       const payload = {
         title: autoTitle,
         categories,
@@ -302,7 +327,7 @@ export default function AddNewsPage() {
         links,
         videoEmbeds,
         createdAt: new Date(publishDate).toISOString(),
-        userName: currentUser.name, // ✅ ส่งชื่อไปให้ API
+        userName: currentUser.name, // ✅ ส่งชื่อจาก API /auth/me
         userImage: currentUser.image || null,
       };
 
@@ -317,22 +342,15 @@ export default function AddNewsPage() {
         router.push("/dashboard/news");
         router.refresh();
       } else {
-        alert("เกิดข้อผิดพลาดในการบันทึก");
+        const err = await res.json();
+        alert(err.error || "เกิดข้อผิดพลาดในการบันทึก");
       }
     } catch (error) {
+      console.error("Submit Error:", error);
       alert("เชื่อมต่อ Server ไม่ได้");
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const formatThaiDate = (dateStr: string) => {
-    if (!dateStr) return "-";
-    return new Date(dateStr).toLocaleDateString("th-TH", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    });
   };
 
   return (
@@ -400,14 +418,14 @@ export default function AddNewsPage() {
                     onClick={() => toggleCategory(cat.value)}
                     className={`p-3 rounded-xl border-2 cursor-pointer transition-all text-center font-bold text-xs ${categories.includes(cat.value) ? cat.color : "border-slate-100 text-slate-400 dark:border-zinc-800"}`}
                   >
-                    {cat.label}
+                    {" "}
+                    {cat.label}{" "}
                   </div>
                 ))}
               </div>
             </div>
           </div>
 
-          {/* Editor */}
           <div className="pt-6">
             <label className="text-sm font-bold text-slate-600 dark:text-slate-400 block mb-3">
               เนื้อหาข่าวสาร
@@ -440,8 +458,9 @@ export default function AddNewsPage() {
           </div>
         </section>
 
-        {/* Images Section */}
+        {/* Images & Video Sections... (ส่วนที่เหลือคงเดิมตามดีไซน์ของคุณ) */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* อัลบั้มภาพ */}
           <section className="space-y-4">
             <h2 className="font-bold text-lg flex items-center gap-2">
               🖼️ อัลบั้มภาพ
@@ -490,6 +509,7 @@ export default function AddNewsPage() {
             </DndContext>
           </section>
 
+          {/* จดหมายข่าว */}
           <section className="space-y-4">
             <h2 className="font-bold text-lg flex items-center gap-2">
               📜 จดหมายข่าว (A4)
@@ -540,7 +560,7 @@ export default function AddNewsPage() {
           </section>
         </div>
 
-        {/* Links & Video */}
+        {/* Links & Video Embed */}
         <section className="bg-white dark:bg-zinc-900/50 p-8 rounded-[2rem] border border-slate-100 dark:border-zinc-800 space-y-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div className="space-y-4">
@@ -619,29 +639,6 @@ export default function AddNewsPage() {
               >
                 + เพิ่มวิดีโอ
               </button>
-              <div className="grid grid-cols-2 gap-2">
-                {videoEmbeds.map((code, i) => (
-                  <div
-                    key={i}
-                    className="relative aspect-video bg-black rounded-lg overflow-hidden group"
-                  >
-                    <div
-                      className="scale-[0.5] origin-center w-full h-full flex items-center justify-center opacity-50"
-                      dangerouslySetInnerHTML={{ __html: code }}
-                    />
-                    <button
-                      onClick={() =>
-                        setVideoEmbeds(
-                          videoEmbeds.filter((_, idx) => idx !== i),
-                        )
-                      }
-                      className="absolute inset-0 m-auto w-8 h-8 bg-white text-red-600 rounded-full opacity-0 group-hover:opacity-100"
-                    >
-                      ✕
-                    </button>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         </section>
@@ -654,7 +651,8 @@ export default function AddNewsPage() {
             href="/dashboard/news"
             className="px-8 py-4 rounded-full border border-slate-200 font-bold text-slate-500"
           >
-            ยกเลิก
+            {" "}
+            ยกเลิก{" "}
           </Link>
           <button
             onClick={handleSubmit}

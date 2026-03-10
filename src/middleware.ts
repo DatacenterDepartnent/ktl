@@ -46,75 +46,53 @@
 //   matcher: ["/dashboard/:path*", "/login"],
 // };
 
+// src/middleware.ts
+import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
 
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const token = request.cookies.get("token")?.value;
+export default auth((req) => {
+  const { nextUrl } = req;
+  const isLoggedIn = !!req.auth; // ตรวจสอบว่ามี session หรือไม่
+  const userRole = (req.auth?.user as any)?.role;
 
-  const secret = new TextEncoder().encode(
-    process.env.JWT_SECRET || "default_secret_key_change_me",
-  );
+  const isDashboardPage = nextUrl.pathname.startsWith("/dashboard");
+  const isAuthPage =
+    nextUrl.pathname === "/login" || nextUrl.pathname === "/register";
 
-  // 1. ตรวจสอบการเข้าถึงหน้า Dashboard
-  if (pathname.startsWith("/dashboard")) {
-    if (!token) {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
-
-    try {
-      // ถอดรหัส Token เพื่อเอาข้อมูล payload (เช่น role)
-      const { payload } = await jwtVerify(token, secret);
-      const userRole = payload.role as string;
-
-      // --- ส่วนการจัดการสิทธิ์ (RBAC) ---
-
-      // กั้นหน้าจัดการสมาชิก และ การตั้งค่าระบบ (เฉพาะ super_admin เท่านั้น)
-      // ตัวอย่าง: /dashboard/users หรือ /dashboard/settings
-      if (
-        pathname.startsWith("/dashboard/users") ||
-        pathname.startsWith("/dashboard/settings")
-      ) {
-        if (userRole !== "super_admin") {
-          return NextResponse.redirect(new URL("/dashboard", request.url));
-        }
-      }
-
-      // กั้นหน้าจัดการเนื้อหาภาพรวม (admin และ super_admin เท่านั้น)
-      // ถ้าเป็น user ปกติพยายามเข้าหน้าจัดการ User อื่น ให้ดีดออก
-      if (pathname.startsWith("/dashboard/manage-all")) {
-        if (userRole === "user") {
-          return NextResponse.redirect(new URL("/dashboard", request.url));
-        }
-      }
-
-      return NextResponse.next();
-    } catch (err) {
-      const res = NextResponse.redirect(new URL("/login", request.url));
-      res.cookies.delete("token");
-      return res;
-    }
+  // 1. ถ้าพยายามเข้าหน้า Dashboard แต่ยังไม่ Login ให้ไปหน้า Login
+  if (isDashboardPage && !isLoggedIn) {
+    return NextResponse.redirect(new URL("/login", nextUrl));
   }
 
-  // 2. ถ้า Login แล้ว ห้ามเข้าหน้า Login หรือ Register ซ้ำ
-  if (pathname === "/login" || pathname === "/register") {
-    if (token) {
-      try {
-        await jwtVerify(token, secret);
-        return NextResponse.redirect(new URL("/dashboard", request.url));
-      } catch (err) {
-        // ถ้า Token หมดอายุ ให้ปล่อยให้เข้าหน้า Login ได้ตามปกติ
-        return NextResponse.next();
+  // 2. ถ้า Login แล้ว ห้ามเข้าหน้า Login/Register ซ้ำ
+  if (isAuthPage && isLoggedIn) {
+    return NextResponse.redirect(new URL("/dashboard", nextUrl));
+  }
+
+  // 3. การจัดการสิทธิ์ (RBAC)
+  if (isDashboardPage && isLoggedIn) {
+    // กั้นหน้าเฉพาะ super_admin
+    if (
+      nextUrl.pathname.startsWith("/dashboard/users") ||
+      nextUrl.pathname.startsWith("/dashboard/settings")
+    ) {
+      if (userRole !== "super_admin") {
+        return NextResponse.redirect(new URL("/dashboard", nextUrl));
+      }
+    }
+
+    // กั้นหน้าจัดการเนื้อหาภาพรวม (admin และ super_admin เท่านั้น)
+    if (nextUrl.pathname.startsWith("/dashboard/manage-all")) {
+      if (userRole === "user") {
+        return NextResponse.redirect(new URL("/dashboard", nextUrl));
       }
     }
   }
 
   return NextResponse.next();
-}
+});
 
 export const config = {
-  // เพิ่มการดักจับหน้า Register ด้วยเพื่อความปลอดภัย
+  // ดักจับทุกหน้ายกเว้นหน้า static และหน้าแรก
   matcher: ["/dashboard/:path*", "/login", "/register"],
 };

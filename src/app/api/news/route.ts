@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
+import { auth } from "@/lib/auth";
 
 // ฟังก์ชันสร้าง Slug
 function generateSlug(title: string) {
@@ -13,6 +14,7 @@ function generateSlug(title: string) {
 // --- POST: สร้างข่าวใหม่ ---
 export async function POST(request: Request) {
   try {
+    const session = await auth(); // เช็ค session ที่นี่เลย
     const data = await request.json();
 
     const {
@@ -51,8 +53,9 @@ export async function POST(request: Request) {
 
       // ✅ บันทึกชื่อคนโพสต์ที่ส่งมาจากหน้า Add News
       author: {
-        name: userName || "งานศูนย์ข้อมูล",
-        image: userImage || null,
+        // ถ้ามี session ให้ใช้ชื่อจากระบบ ถ้าไม่มีค่อยใช้ที่ส่งมา หรือ default
+        name: session?.user?.name || data.userName || "งานศูนย์ข้อมูล",
+        image: session?.user?.image || data.userImage || null,
       },
 
       createdAt: new Date(),

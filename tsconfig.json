@@ -28,7 +28,10 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
-, "next.config.mjs", "src/lib/auth.ts"  ],
+    "**/*.mts",
+    "next.config.mjs",
+    "src/lib/auth.ts",
+    "src/app/api/auth/[...nextauth]/rout"
+  ],
   "exclude": ["node_modules"]
 }
