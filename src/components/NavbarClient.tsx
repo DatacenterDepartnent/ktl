@@ -130,66 +130,79 @@ export default function NavbarClient({
           <div className="hidden xl:flex items-center gap-4">
             {username ? (
               <div
-                className="relative"
+                className="relative shrink-0"
                 onMouseEnter={() => setIsUserDropdownOpen(true)}
                 onMouseLeave={() => setIsUserDropdownOpen(false)}
               >
-                <button className="flex items-center gap-3 hover:bg-zinc-100 dark:hover:bg-zinc-800 px-3 py-1.5 rounded-full transition-colors cursor-pointer border border-transparent hover:border-zinc-200 dark:hover:border-zinc-700">
-                  <div className="text-right hidden sm:block">
-                    <div className="text-[10px] font-bold tracking-widest uppercase text-zinc-400">
-                      {role?.replace("_", " ") || "Member"}
-                    </div>
-                    <div className="text-xs font-bold text-zinc-700 dark:text-zinc-200">
-                      {username}
+                {/* ปุ่ม User บน Navbar */}
+                <button className="group flex items-center gap-3 p-1.5 pr-4 rounded-full bg-zinc-100/80 dark:bg-zinc-800/50 hover:bg-white dark:hover:bg-zinc-800 transition-all border border-zinc-200/50 dark:border-zinc-700/50 shadow-sm hover:shadow-md">
+                  {/* Avatar พร้อมวงแหวน Gradient */}
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-blue-500 blur-sm opacity-20 group-hover:opacity-40 transition-opacity rounded-full" />
+                    <div className="relative w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-[13px] font-black shadow-inner">
+                      {username.charAt(0).toUpperCase()}
                     </div>
                   </div>
-                  <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20">
-                    {username.charAt(0).toUpperCase()}
+
+                  {/* User Info - แสดงชื่อจริงเด่นๆ */}
+                  <div className="text-left hidden sm:block">
+                    <p className="text-[9px] font-black uppercase tracking-[0.1em] text-blue-600 dark:text-blue-400 mb-0.5 leading-none">
+                      {role?.replace("_", " ") || "Member"}
+                    </p>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-[14px] font-bold text-zinc-800 dark:text-zinc-100 leading-none">
+                        {/* ดึงเฉพาะชื่อแรกมาแสดง */}
+                        {username.split(" ")[0]}
+                      </p>
+                      <svg
+                        className="w-3.5 h-3.5 text-zinc-400 group-hover:text-blue-500 transition-colors"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2.5}
+                          d="M19 9l-7 7-7-7"
+                        />
+                      </svg>
+                    </div>
                   </div>
                 </button>
 
-                {/* Dropdown Menu */}
+                {/* Dropdown Menu - แสดงชื่อเต็มที่นี่ */}
                 {isUserDropdownOpen && (
-                  <div className="absolute right-0 top-full pt-2 w-64 animate-in fade-in zoom-in-95 duration-200">
-                    <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl shadow-2xl overflow-hidden">
-                      {/* Header */}
-                      <div className="px-5 py-3 border-b border-zinc-100 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-800/50">
-                        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                          Signed in as
+                  <div className="absolute right-0 top-full pt-3 w-64 animate-in fade-in slide-in-from-top-2 duration-300">
+                    <div className="bg-white/95 dark:bg-zinc-900/95 backdrop-blur-xl border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl overflow-hidden p-2">
+                      {/* Header แสดงชื่อ-นามสกุลเต็ม */}
+                      <div className="px-4 py-4 mb-2 rounded-xl bg-gradient-to-br from-zinc-50 to-white dark:from-zinc-800/50 dark:to-zinc-800/30 border border-zinc-100 dark:border-zinc-700/50">
+                        <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest mb-1">
+                          Authenticated as
                         </p>
-                        <p className="text-sm font-bold text-slate-800 dark:text-white truncate">
+                        <p className="text-[15px] font-black text-zinc-900 dark:text-white leading-tight">
                           {username}
+                        </p>
+                        <p className="text-[11px] text-blue-600 dark:text-blue-400 font-bold mt-1">
+                          @{role?.toLowerCase().replace("_", "")}
                         </p>
                       </div>
 
-                      <div className="p-2 space-y-1">
-                        {/* Super Admin Console */}
-                        {role === "super_admin" && (
-                          <Link
-                            href="/dashboard/super-admin"
-                            className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-yellow-600 hover:bg-yellow-50 dark:text-yellow-400 dark:hover:bg-yellow-900/20 rounded-lg transition-colors"
-                          >
-                            <span>⚡</span> Super Admin Console
-                          </Link>
-                        )}
-                        {/* Dashboard */}
+                      <div className="space-y-1">
                         <Link
                           href="/dashboard"
-                          className="flex items-center gap-3 px-3 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                          className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-zinc-600 dark:text-zinc-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-all"
                         >
-                          <span>🚀</span> ไปที่ Dashboard
+                          <span className="text-lg">🚀</span> ไปที่ Dashboard
                         </Link>
-
-                        {/* Edit Profile */}
                         <Link
                           href="/dashboard/profile"
-                          className="flex items-center gap-3 px-3 py-2.5 text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                          className="flex items-center gap-3 px-3 py-2.5 text-[13px] font-bold text-zinc-600 dark:text-zinc-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-all"
                         >
-                          <span>👤</span> จัดการโปรไฟล์
+                          <span className="text-lg">👤</span> จัดการโปรไฟล์
                         </Link>
 
-                        {/* Logout */}
-                        <div className="border-t border-zinc-100 dark:border-zinc-800 mt-2 pt-2">
+                        <div className="pt-2 mt-2 border-t border-zinc-100 dark:border-zinc-800">
                           <LogoutBtn />
                         </div>
                       </div>

@@ -1,39 +1,55 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function LogoutBtn() {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleLogout = async () => {
-    // ถามยืนยันก่อน
     if (!confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) return;
 
+    setIsLoading(true);
     try {
-      // เรียก API เพื่อลบ Cookie ฝั่ง Server
-      const res = await fetch("/api/auth/logout", {
-        method: "POST",
-      });
-
+      const res = await fetch("/api/auth/logout", { method: "POST" });
       if (res.ok) {
-        // 1. รีเฟรชเพื่อล้าง Cache ข้อมูลเก่า
         router.refresh();
-
-        // 2. ✅ ดีดกลับไปหน้า Login (ไม่ใช่หน้าแรก) เพื่อให้ User รู้ว่าออกแล้วจริงๆ
         router.push("/login");
       }
     } catch (error) {
       console.error("Logout error:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <button
-      onClick={handleLogout}
-      className="flex items-center gap-2 bg-red-600/10 hover:bg-red-600 text-red-600 hover:text-white px-4 py-2 rounded-xl transition-all font-bold border border-red-600/20 active:scale-95 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800 dark:hover:bg-red-600 dark:hover:text-white"
-    >
-      <span className="text-lg">🚪</span>
-      <span>ออกจากระบบ</span>
-    </button>
+    <div className="flex justify-center w-full px-2">
+      {" "}
+      {/* Wrapper เพื่อจัดกึ่งกลาง */}
+      <button
+        onClick={handleLogout}
+        disabled={isLoading}
+        className="group flex items-center justify-center gap-2 w-full max-w-[200px] py-2.5 rounded-xl
+                   bg-white dark:bg-zinc-900 
+                   text-red-500 hover:text-white
+                   border border-red-200 dark:border-red-900/30
+                   hover:bg-red-500 hover:border-red-500
+                   transition-all duration-300 font-bold active:scale-95 disabled:opacity-50
+                   shadow-sm hover:shadow-red-500/20 hover:shadow-lg"
+      >
+        <span className="text-lg transition-transform group-hover:scale-110">
+          {isLoading ? (
+            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
+          ) : (
+            "🚪"
+          )}
+        </span>
+        <span className="text-sm">
+          {isLoading ? "กำลังออก..." : "ออกจากระบบ"}
+        </span>
+      </button>
+    </div>
   );
 }
