@@ -1,10 +1,9 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { signOut } from "next-auth/react"; // ✅ ต้องใช้ตัวนี้เท่านั้น
 
 export default function LogoutBtn() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogout = async () => {
@@ -12,13 +11,15 @@ export default function LogoutBtn() {
 
     setIsLoading(true);
     try {
-      const res = await fetch("/api/auth/logout", { method: "POST" });
-      if (res.ok) {
-        router.refresh();
-        router.push("/login");
-      }
+      // ✅ signOut จะทำหน้าที่เรียก API, ล้าง Cookie และ Redirect ให้เองในคำสั่งเดียว
+      await signOut({
+        callbackUrl: "/login", // ออกแล้วให้ไปที่หน้า login
+        redirect: true,
+      });
     } catch (error) {
       console.error("Logout error:", error);
+      // ถ้า Error จริงๆ ให้ใช้ Hard Reload ไปหน้า login
+      window.location.href = "/login";
     } finally {
       setIsLoading(false);
     }
@@ -26,8 +27,6 @@ export default function LogoutBtn() {
 
   return (
     <div className="flex justify-center w-full px-2">
-      {" "}
-      {/* Wrapper เพื่อจัดกึ่งกลาง */}
       <button
         onClick={handleLogout}
         disabled={isLoading}

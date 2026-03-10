@@ -12,32 +12,35 @@ export async function PATCH(
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    // รับข้อมูล adminId และ adminName จาก Frontend
     const { logAction, logDetails, adminId, adminName, ...updateData } = body;
 
-    const updatePayload: any = {
-      ...updateData,
-      updatedAt: new Date(),
-    };
+    // --- เพิ่มส่วนนี้: ดึงชื่อของผู้ที่ถูกแก้ไขมาเก็บใน Log ---
+    const targetUser = await db
+      .collection("users")
+      .findOne({ _id: new ObjectId(id) });
+    const targetName = targetUser?.name || "Unknown User";
 
-    // 1. อัปเดตข้อมูล User เป้าหมาย
+    // 1. อัปเดตข้อมูล User
     await db
       .collection("users")
-      .updateOne({ _id: new ObjectId(id) }, { $set: updatePayload });
+      .updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { ...updateData, updatedAt: new Date() } },
+      );
 
-    // 2. บันทึก Log โดยใช้ชื่อของ Admin (ผู้เปลี่ยน)
+    // 2. บันทึก Log แบบละเอียด
     if (logAction) {
       await db.collection("logs").insertOne({
-        userId: adminId ? new ObjectId(adminId) : null, // ID ของ nutmontree
-        userName: adminName || "System", // ชื่อ nutmontree
+        userId: adminId ? new ObjectId(adminId) : null, // ID Admin
+        userName: adminName || "System", // ชื่อ Admin
         action: logAction,
-        details: logDetails, // "เปลี่ยนสิทธิ์ Datacenter..."
-        targetId: new ObjectId(id), // ID ของ Datacenter
+        // ปรับรายละเอียดให้มีชื่อคนโดนแก้ด้วย
+        details: `${logDetails} (${targetName})`,
+        targetId: new ObjectId(id),
         timestamp: new Date(),
         ip: req.headers.get("x-forwarded-for") || "127.0.0.1",
       });
     }
-
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: "Update failed" }, { status: 500 });

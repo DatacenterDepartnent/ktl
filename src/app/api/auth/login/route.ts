@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
-import clientPromise from "@/lib/db"; // หรือใช้ dbConnect จากที่แนะนำไป
-import bcrypt from "bcryptjs"; // แนะนำ bcryptjs เพื่อความสะดวกบน Vercel
+import clientPromise from "@/lib/db";
+import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
 import { cookies } from "next/headers";
-import { recordLog } from "@/models/logger"; // นำเข้าฟังก์ชันบันทึก Log ที่เราสร้างไว้
+import { ObjectId } from "mongodb";
 
 export async function POST(req: Request) {
   try {
@@ -23,55 +23,56 @@ export async function POST(req: Request) {
       );
     }
 
-    // 3. ตรวจสอบสถานะการใช้งาน (Active Status)
+    // 3. ตรวจสอบสถานะการใช้งาน
     if (user.isActive === false) {
       return NextResponse.json(
-        { error: "บัญชีของคุณยังไม่ได้รับการอนุมัติ กรุณาติดต่อ super_admin" },
+        { error: "บัญชีของคุณยังไม่ได้รับการอนุมัติ" },
         { status: 403 },
       );
     }
 
-    // 4. จัดเตรียม Secret Key สำหรับ JWT
+    // 4. เตรียม JWT Secret
     const secret = new TextEncoder().encode(
       process.env.JWT_SECRET || "default_secret_key_ktltc_2024",
     );
 
-    // 5. สร้าง Token (ฝัง Role: super_admin / admin / user)
+    // 5. สร้าง Token
     const token = await new SignJWT({
       userId: user._id.toString(),
       username: user.username,
       name: user.name,
-      role: user.role, // ข้อมูลนี้สำคัญมากสำหรับ Middleware
+      role: user.role,
     })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
       .setExpirationTime("1d")
       .sign(secret);
 
-    // 6. บันทึก Activity Log (สำหรับรายงานประจำเดือน)
-    // เราบันทึกว่ามีการ Login สำเร็จ พร้อมข้อมูล IP
+    // ✅ 6. บันทึก Activity Log ลง Database โดยตรง (สำคัญมากเพื่อให้ชื่อ siripan ขึ้น)
     try {
-      await recordLog({
-        userId: user._id,
-        userName: user.name,
-        action: "LOGIN",
-        details: `เข้าสู่ระบบสำเร็จ (Role: ${user.role})`,
-        req: req,
+      const ip =
+        req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1";
+
+      await db.collection("logs").insertOne({
+        userId: user._id, // ID ของ siripan
+        userName: user.name, // ชื่อจริงของผู้ใช้
+        action: "LOGIN", // กิจกรรม
+        details: `เข้าสู่ระบบสำเร็จ (สิทธิ์: ${user.role})`,
+        timestamp: new Date(),
+        ip: ip,
       });
     } catch (logError) {
-      console.error("Failed to record log:", logError);
-      // ไม่หยุดการทำงานหลักถ้า Log พัง เพื่อให้ผู้ใช้เข้าสู่ระบบได้ปกติ
+      console.error("Direct Log Error:", logError);
     }
 
-    const cookieStore = await cookies();
-
     // 7. ตั้งค่า Cookie
+    const cookieStore = await cookies();
     cookieStore.set("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
       path: "/",
-      maxAge: 60 * 60 * 24, // 1 วัน
+      maxAge: 60 * 60 * 24,
     });
 
     return NextResponse.json({
@@ -85,7 +86,7 @@ export async function POST(req: Request) {
   } catch (error) {
     console.error("Login Error:", error);
     return NextResponse.json(
-      { error: "เกิดข้อผิดพลาดภายในระบบ" },
+      { error: "Internal Server Error" },
       { status: 500 },
     );
   }

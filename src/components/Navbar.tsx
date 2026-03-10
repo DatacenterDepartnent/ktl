@@ -1,7 +1,8 @@
 import clientPromise from "@/lib/db";
 import { NavItem } from "@/types/nav";
 import NavbarClient from "./NavbarClient";
-import { auth } from "@/lib/auth"; // ✅ Import auth จากที่คุณตั้งค่าไว้
+import { auth } from "@/lib/auth";
+import { ObjectId } from "mongodb";
 
 export type MenuItem = NavItem & {
   children?: MenuItem[];
@@ -34,17 +35,42 @@ async function getNavItems() {
 }
 
 export default async function Navbar() {
-  // 1. ดึงเมนูจาก DB
   const menuTree = await getNavItems();
-
-  // 2. ดึง Session จาก NextAuth (ทำงานฝั่ง Server)
   const session = await auth();
 
-  // เตรียมค่าส่งไปให้ NavbarClient
-  // ใช้ session.user.name หรือ (session.user as any).username ตามที่คุณเก็บ
-  const username = session?.user?.name || (session?.user as any)?.username;
-  const role = (session?.user as any)?.role;
+  let userImage = "";
+  let username = session?.user?.name || (session?.user as any)?.username || "";
+  let role = ""; // เริ่มต้นเป็นค่าว่าง
 
-  // 3. ส่งข้อมูลไปที่ NavbarClient
-  return <NavbarClient menuTree={menuTree} username={username} role={role} />;
+  if (session?.user) {
+    try {
+      const userId = (session.user as any).id || (session as any).userId;
+
+      if (userId && ObjectId.isValid(userId)) {
+        const client = await clientPromise;
+        const db = client.db("ktltc_db");
+        const userData = await db
+          .collection("users")
+          .findOne({ _id: new ObjectId(userId) });
+
+        if (userData) {
+          userImage = userData.image || "";
+          username = userData.name || userData.username || username;
+          // ✅ บังคับเป็นตัวพิมพ์เล็กเพื่อให้ตรงกับ "super_admin" ใน DB
+          role = (userData.role || "").trim().toLowerCase();
+        }
+      }
+    } catch (error) {
+      console.error("Fetch latest user data error:", error);
+    }
+  }
+
+  return (
+    <NavbarClient
+      menuTree={menuTree}
+      username={username}
+      role={role}
+      image={userImage}
+    />
+  );
 }
