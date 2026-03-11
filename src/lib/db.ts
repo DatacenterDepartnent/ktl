@@ -59,4 +59,5 @@ if (process.env.NODE_ENV === "development") {
   createIndexes(clientPromise);
 }
 
+
 export default clientPromise;

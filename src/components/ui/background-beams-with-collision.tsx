@@ -257,3 +257,23 @@
 //     </div>
 //   );
 // };
+// src/components/ui/background-beams-with-collision.tsx
+
+import React from "react";
+// ... imports อื่นๆ
+
+// ตรวจสอบว่ามีคำว่า export const หรือ export function หรือไม่
+export const BackgroundBeamsWithCollision = ({
+  children,
+  className,
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
+  return (
+    <div className={className}>
+      {/* ... โค้ดภายใน ... */}
+      {children}
+    </div>
+  );
+};

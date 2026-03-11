@@ -3,34 +3,51 @@ import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 import { auth } from "@/lib/auth";
 
-// GET: ดึงข้อมูลแบนเนอร์ทีละ 1 รายการ
+// ฟังก์ชันช่วยบันทึก Log
+async function createActivityLog(
+  db: any,
+  req: NextRequest,
+  { action, details }: { action: string; details: string },
+) {
+  try {
+    const session = await auth();
+    await db.collection("logs").insertOne({
+      userName: session?.user?.name || "Admin",
+      action,
+      details,
+      module: "BANNERS",
+      timestamp: new Date(), // ✅ ใช้ฟิลด์นี้เพื่อให้หน้า Super Admin ดึงข้อมูลได้
+      ip: req.headers.get("x-forwarded-for") || "127.0.0.1",
+    });
+  } catch (err) {
+    console.error("Log recording failed:", err);
+  }
+}
+
+// GET: ดึงข้อมูลแบนเนอร์ (คงเดิม)
 export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    // 1. await params เพียงครั้งเดียวใน try-catch เพื่อความปลอดภัย
     const { id } = await params;
-
     const client = await clientPromise;
     const db = client.db("ktltc_db");
     const banner = await db
       .collection("banners")
       .findOne({ _id: new ObjectId(id) });
-
     if (!banner)
       return NextResponse.json({ error: "Not Found" }, { status: 404 });
-
     return NextResponse.json(banner);
   } catch (error) {
     return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }
 
-// PATCH: อัปเดตข้อมูลแบนเนอร์
+// PATCH: อัปเดตข้อมูลแบนเนอร์ + บันทึก Log
 export async function PATCH(
-  req: NextRequest, // ปรับเป็น NextRequest เพื่อความสม่ำเสมอ
-  { params }: { params: Promise<{ id: string }> }, // ✅ แก้ไข: ต้องเป็น Promise เหมือน GET/DELETE
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const session = await auth();
@@ -41,7 +58,6 @@ export async function PATCH(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // 2. await params ก่อนนำ id มาใช้
     const { id } = await params;
     const body = await req.json();
     const { _id, ...updateData } = body;
@@ -49,6 +65,14 @@ export async function PATCH(
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
+    // 1. ดึงข้อมูลเดิมก่อนอัปเดตเพื่อตรวจสอบชื่อ
+    const oldBanner = await db
+      .collection("banners")
+      .findOne({ _id: new ObjectId(id) });
+    if (!oldBanner)
+      return NextResponse.json({ error: "Banner not found" }, { status: 404 });
+
+    // 2. อัปเดตข้อมูล
     const result = await db
       .collection("banners")
       .updateOne(
@@ -56,17 +80,22 @@ export async function PATCH(
         { $set: { ...updateData, updatedAt: new Date() } },
       );
 
-    if (result.matchedCount === 0) {
-      return NextResponse.json({ error: "Banner not found" }, { status: 404 });
+    if (result.matchedCount > 0) {
+      // 3. บันทึก Log
+      await createActivityLog(db, req, {
+        action: "UPDATE_BANNER",
+        details: `แก้ไขแบนเนอร์: ${oldBanner.title} ${updateData.title && updateData.title !== oldBanner.title ? `เป็น ${updateData.title}` : ""}`,
+      });
+      return NextResponse.json({ success: true });
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ error: "Update Failed" }, { status: 400 });
   } catch (error) {
     return NextResponse.json({ error: "Update Failed" }, { status: 500 });
   }
 }
 
-// DELETE: ลบแบนเนอร์
+// DELETE: ลบแบนเนอร์ + บันทึก Log
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -76,21 +105,32 @@ export async function DELETE(
     if (!session)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-    // 3. await params
     const { id } = await params;
-
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
+    // 1. ดึงข้อมูลก่อนลบเพื่อเอาชื่อมาใส่ Log
+    const bannerToDelete = await db
+      .collection("banners")
+      .findOne({ _id: new ObjectId(id) });
+    if (!bannerToDelete)
+      return NextResponse.json({ error: "Banner not found" }, { status: 404 });
+
+    // 2. ลบข้อมูล
     const result = await db
       .collection("banners")
       .deleteOne({ _id: new ObjectId(id) });
 
-    if (result.deletedCount === 0) {
-      return NextResponse.json({ error: "Banner not found" }, { status: 404 });
+    if (result.deletedCount === 1) {
+      // 3. บันทึก Log
+      await createActivityLog(db, req, {
+        action: "DELETE_BANNER",
+        details: `ลบแบนเนอร์: ${bannerToDelete.title}`,
+      });
+      return NextResponse.json({ success: true });
     }
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ error: "Delete Failed" }, { status: 400 });
   } catch (error) {
     console.error("Delete Error:", error);
     return NextResponse.json({ error: "Delete Failed" }, { status: 500 });

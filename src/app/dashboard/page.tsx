@@ -221,16 +221,20 @@ export default async function DashboardPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
           <ActionCard href="/dashboard/news" title="จัดการข่าวสาร" icon="📰" />
           <ActionCard
-            href="/dashboard/banners"
-            title="จัดการแบนเนอร์"
-            icon="🖼️"
-          />
+            href="/dashboard/manage-home"
+            title="จัดการการแสดงผลหน้าแรก"
+            icon="🖥️"
+          ></ActionCard>
           <ActionCard
             href="/dashboard/navbar"
             title="จัดการเมนูเว็บ"
             icon="🔗"
           />
-          <ActionCard href="/dashboard/pages" title="จัดการเนื้อหาเมนู" icon="📝" />
+          <ActionCard
+            href="/dashboard/pages"
+            title="จัดการเนื้อหาเมนู"
+            icon="📝"
+          />
           <ActionCard href="/" title="หน้าเว็บจริง" icon="🌏" external />
         </div>
       </div>
