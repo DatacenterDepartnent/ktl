@@ -5,28 +5,22 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 const EditTicketForm = ({ ticket }) => {
-  const EDITMODE = ticket._id === "new" ? false : true;
+  // ตรวจสอบโหมดการทำงาน
+  const EDITMODE = ticket?._id && ticket._id !== "new";
   const router = useRouter();
 
-  const startingTicketData = {
-    title: "",
-    description: "",
-    category: "",
-  };
-
-  if (EDITMODE) {
-    startingTicketData["title"] = ticket.title;
-    startingTicketData["description"] = ticket.description;
-    startingTicketData["category"] = ticket.category;
-  }
-
-  const [formData, setFormData] = useState(startingTicketData);
+  // กำหนดค่าเริ่มต้น
+  const [formData, setFormData] = useState({
+    title: ticket?.title || "",
+    description: ticket?.description || "",
+    category: ticket?.category || "",
+  });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((preState) => ({
-      ...preState,
+    setFormData((prevState) => ({
+      ...prevState,
       [name]: value,
     }));
   };
@@ -36,34 +30,34 @@ const EditTicketForm = ({ ticket }) => {
     setIsSubmitting(true);
 
     try {
-      if (EDITMODE) {
-        const res = await fetch(`/api/Tickets/${ticket._id}`, {
-          method: "PUT",
-          headers: { "Content-type": "application/json" },
-          body: JSON.stringify({ formData }),
-        });
-        if (!res.ok) throw new Error("Failed to update ticket");
-      } else {
-        const res = await fetch("/api/Tickets", {
-          method: "POST",
-          headers: { "Content-type": "application/json" },
-          body: JSON.stringify({ formData }),
-        });
-        if (!res.ok) throw new Error("Failed to create ticket");
+      const url = EDITMODE ? `/api/Tickets/${ticket._id}` : "/api/Tickets";
+      const method = EDITMODE ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method: method,
+        headers: { "Content-Type": "application/json" },
+        // ✅ ปรับการส่ง body ให้ API อ่านง่ายขึ้น
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) {
+        const errorData = await res.json();
+        throw new Error(errorData.message || "Something went wrong");
       }
 
+      // ✅ บังคับ refresh ข้อมูลและกลับหน้าหลัก
       router.refresh();
       router.push("/ITA/08/qa");
     } catch (error) {
-      console.error(error);
-      alert("เกิดข้อผิดพลาด กรุณาลองใหม่อีกครั้ง");
+      console.error("Submit Error:", error);
+      alert(`เกิดข้อผิดพลาด: ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-linear-to-b from-gray-50 to-blue-100 px-4 py-12">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-gray-50 to-blue-100 px-4 py-12">
       <div className="w-full max-w-lg rounded-3xl border border-gray-100 bg-white p-8 shadow-xl">
         {/* Header */}
         <div className="mb-8 text-center">
@@ -76,13 +70,12 @@ const EditTicketForm = ({ ticket }) => {
           <div className="mx-auto mt-3 h-1 w-16 rounded-full bg-blue-500"></div>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Title */}
           <div>
             <label
               htmlFor="title"
-              className="text-gray-5000 mb-1 block font-medium"
+              className="mb-1 block font-medium text-gray-700"
             >
               หัวเรื่อง
             </label>
@@ -94,7 +87,7 @@ const EditTicketForm = ({ ticket }) => {
               onChange={handleChange}
               value={formData.title}
               required
-              className="w-full rounded-xl border border-gray-300 px-4 py-2 transition outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+              className="w-full rounded-xl border border-gray-300 px-4 py-2 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
             />
           </div>
 
@@ -102,7 +95,7 @@ const EditTicketForm = ({ ticket }) => {
           <div>
             <label
               htmlFor="description"
-              className="text-gray-5000 mb-1 block font-medium"
+              className="mb-1 block font-medium text-gray-700"
             >
               คำอธิบาย
             </label>
@@ -114,15 +107,15 @@ const EditTicketForm = ({ ticket }) => {
               value={formData.description}
               required
               rows="5"
-              className="w-full resize-none rounded-xl border border-gray-300 px-4 py-2 transition outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+              className="w-full resize-none rounded-xl border border-gray-300 px-4 py-2 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
             />
           </div>
 
-          {/* Category */}
+          {/* Category (ใช้เป็นชื่อผู้โพสต์ตามที่คุณออกแบบ) */}
           <div>
             <label
               htmlFor="category"
-              className="text-gray-5000 mb-1 block font-medium"
+              className="mb-1 block font-medium text-gray-700"
             >
               ชื่อผู้โพสต์
             </label>
@@ -133,7 +126,7 @@ const EditTicketForm = ({ ticket }) => {
               onChange={handleChange}
               value={formData.category}
               required
-              className="w-full rounded-xl border border-gray-300 px-4 py-2 transition outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
+              className="w-full rounded-xl border border-gray-300 px-4 py-2 outline-none transition focus:border-blue-400 focus:ring-2 focus:ring-blue-200"
             />
           </div>
 
@@ -149,10 +142,10 @@ const EditTicketForm = ({ ticket }) => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`rounded-full px-6 py-2 font-semibold text-white shadow-md transition-transform duration-200 ${
+              className={`rounded-full px-6 py-2 font-semibold text-white shadow-md transition-all duration-200 ${
                 isSubmitting
                   ? "cursor-not-allowed bg-blue-300"
-                  : "bg-blue-500 hover:scale-105 hover:bg-blue-600"
+                  : "bg-blue-500 hover:scale-105 hover:bg-blue-600 active:scale-95"
               }`}
             >
               {isSubmitting

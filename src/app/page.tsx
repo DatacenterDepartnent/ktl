@@ -12,12 +12,28 @@ import Announcement from "./announcement/page";
 import TenderPage from "./tender/page";
 import CommandPage from "./command/page";
 import InternshipPage from "./internship/page";
-import ShowFacebook from "@/components/ShowFacebook";
-import ShowYoutube from "./ShowYoutube/page";
+import ShowFacebook from "@/components/ShowFacebook"; // Component เดิม (ถ้ามี)
+import ShowYoutube from "./ShowYoutube/page"; // Component เดิม (ถ้ามี)
 import CalendarPage from "@/components/Calendar";
 import SubQAPage from "./ITA/08/qa/SubQAPage";
+import SocialFeedDisplay from "@/components/home/SocialFeedDisplay"; // ✅ นำเข้าตัวใหม่
 
-// ดึงข้อมูลการตั้งค่าและข้อมูลโปสเตอร์ทั้งหมดที่ Active
+// ✅ 1. ฟังก์ชันดึง Social Feeds จาก API
+async function getFeeds() {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/admin/feeds`,
+      { cache: "no-store" },
+    );
+    if (!res.ok) return [];
+    return res.json();
+  } catch (error) {
+    console.error("Fetch Feeds Error:", error);
+    return [];
+  }
+}
+
+// ✅ 2. ดึงข้อมูล Home Data (คงเดิมของคุณไว้)
 async function getHomeData() {
   try {
     const client = await clientPromise;
@@ -26,7 +42,6 @@ async function getHomeData() {
     const [visibilityData, siteData, postersData] = await Promise.all([
       db.collection("home_settings").find().toArray(),
       db.collection("site_settings").find().toArray(),
-      // แก้ไข: เอา .limit(1) ออก เพื่อดึงทุกอันที่เปิดใช้งาน
       db
         .collection("posters")
         .find({ isActive: true })
@@ -44,7 +59,6 @@ async function getHomeData() {
       return acc;
     }, {});
 
-    // เปลี่ยนชื่อตัวแปรให้เป็นพหูพจน์เพื่อให้เข้าใจง่าย (เป็น Array แล้ว)
     const activePosters = postersData || [];
 
     return { isShow, settings, activePosters };
@@ -55,7 +69,10 @@ async function getHomeData() {
 }
 
 export default async function Home() {
-  const { isShow, settings, activePosters } = await getHomeData();
+  // ดึงข้อมูลทั้งสองส่วนพร้อมกัน
+  const [homeData, feeds] = await Promise.all([getHomeData(), getFeeds()]);
+
+  const { isShow, settings, activePosters } = homeData;
 
   return (
     <div className="flex flex-col">
@@ -82,8 +99,8 @@ export default async function Home() {
           />
         )}
 
-        <div className="max-w-7xl mx-auto w-full">
-          {/* ส่วนประชาสัมพันธ์หลัก (Posters) - แก้ไขให้วนลูปแสดงผล */}
+        <div className="max-w-7xl mx-auto w-full px-4">
+          {/* ส่วนประชาสัมพันธ์หลัก (Posters) */}
           {isShow.background_effect !== false && activePosters.length > 0 && (
             <div className="flex flex-col gap-10 my-10">
               {activePosters.map((poster: any) => (
@@ -102,23 +119,23 @@ export default async function Home() {
           {isShow.tender !== false && <TenderPage />}
           {isShow.command !== false && <CommandPage />}
           {isShow.internship !== false && <InternshipPage />}
+          {isShow.internship !== false && <ShowFacebook />}
+          {/* {isShow.internship !== false && <ShowYoutube />} */}
 
-          {/* Social Media & Calendar */}
-          {isShow.facebook_feed !== false && (
-            <div className="px-4">
-              <ShowFacebook />
+          {/* --- ✅ ส่วน Social Feed ใหม่ที่เชื่อมกับ Dashboard --- */}
+          {isShow.social_feed !== false && feeds.length > 0 && (
+            <div className="py-12">
+              <SocialFeedDisplay feeds={feeds} />
             </div>
           )}
-          {isShow.youtube_feed !== false && (
-            <div className="py-6 px-4">
-              <ShowYoutube />
-            </div>
-          )}
+
+          {/* ปฏิทินกิจกรรม */}
           {isShow.calendar !== false && (
             <div className="py-6">
               <CalendarPage />
             </div>
           )}
+
           {isShow.sub_qa !== false && <SubQAPage />}
         </div>
       </main>

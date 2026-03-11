@@ -25,7 +25,7 @@ export default function ShowFacebook() {
   };
 
   return (
-    <section className="rounded-3xl px-2 bg-slate-50/50 py-12 font-sans dark:bg-neutral-950">
+    <section className="rounded-3xl px-2 py-12 font-sans ">
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
