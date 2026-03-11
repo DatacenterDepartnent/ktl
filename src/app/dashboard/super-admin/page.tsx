@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
+// --- Interfaces ---
 interface User {
   _id: string;
   username: string;
@@ -37,6 +38,8 @@ interface ActivityLog {
 
 export default function SuperAdminPage() {
   const router = useRouter();
+
+  // States
   const [users, setUsers] = useState<User[]>([]);
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
@@ -46,6 +49,12 @@ export default function SuperAdminPage() {
     name: string;
   } | null>(null);
 
+  // 💡 State สำหรับกรอง Log รายบุคคล
+  const [selectedUserFilter, setSelectedUserFilter] = useState<string | null>(
+    null,
+  );
+
+  // --- Data Fetching ---
   const fetchAdminProfile = async () => {
     try {
       const res = await fetch("/api/profile");
@@ -86,6 +95,25 @@ export default function SuperAdminPage() {
     fetchData();
   }, []);
 
+  // --- Filter Logic ---
+  // กรอง Log ตาม user ที่เลือก (ถ้าไม่เลือกให้แสดงทั้งหมด)
+  const filteredLogs = selectedUserFilter
+    ? logs.filter((log) => log.userName === selectedUserFilter)
+    : logs;
+
+  const handleSelectUserLog = (userName: string) => {
+    if (selectedUserFilter === userName) {
+      setSelectedUserFilter(null); // กดซ้ำเพื่อยกเลิกการกรอง
+    } else {
+      setSelectedUserFilter(userName);
+      // เลื่อนหน้าจอไปที่ส่วน Log อัตโนมัติ
+      document
+        .getElementById("audit-log-section")
+        ?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  // --- Handlers ---
   const handleEditUser = (userId: string) => {
     router.push(`/dashboard/users/edit/${userId}`);
   };
@@ -103,7 +131,7 @@ export default function SuperAdminPage() {
         body: JSON.stringify({
           role: newRole,
           logAction: "CHANGE_ROLE",
-          logDetails: `เปลี่ยนสิทธิ์สมาชิกระดับ: ${targetName} → ${newRole.toUpperCase()}`,
+          logDetails: `เปลี่ยนสิทธิ์สมาชิระดับ: ${targetName} → ${newRole.toUpperCase()}`,
           adminId: adminProfile._id,
           adminName: adminProfile.name,
         }),
@@ -262,6 +290,9 @@ export default function SuperAdminPage() {
               <span className="h-2 w-2 bg-emerald-500 rounded-full"></span>
               Operator_Active: {adminProfile?.name || "Initializing..."}
             </p>
+            <p className="text-[9px] text-blue-500 font-bold uppercase mt-1">
+              💡 Tip: คลิกที่ชื่อเพื่อดู Log เฉพาะบุคคล
+            </p>
           </div>
           <button
             onClick={fetchData}
@@ -290,7 +321,7 @@ export default function SuperAdminPage() {
               {users.map((user, index) => (
                 <tr
                   key={user._id}
-                  className="hover:bg-blue-50/30 transition-all group"
+                  className={`hover:bg-blue-50/30 transition-all group ${selectedUserFilter === user.name ? "bg-blue-50/60" : ""}`}
                 >
                   <td className="p-8 text-center">
                     <div className="flex flex-col items-center gap-1">
@@ -316,9 +347,13 @@ export default function SuperAdminPage() {
                     </div>
                   </td>
                   <td className="p-8">
-                    <div className="font-black text-slate-900 text-lg uppercase tracking-tight">
+                    {/* 💡 คลิกชื่อเพื่อ Filter Log */}
+                    <button
+                      onClick={() => handleSelectUserLog(user.name)}
+                      className={`font-black text-lg uppercase tracking-tight text-left hover:text-blue-600 transition-colors ${selectedUserFilter === user.name ? "text-blue-600 underline" : "text-slate-900"}`}
+                    >
                       {user.name}
-                    </div>
+                    </button>
                     <div className="text-[10px] font-black text-blue-600 bg-blue-50 w-fit px-3 py-1 rounded-full mt-2 lowercase italic">
                       @{user.username}
                     </div>
@@ -382,18 +417,34 @@ export default function SuperAdminPage() {
       </div>
 
       {/* Activity Logs (Dark Theme) */}
-      <div className="bg-slate-900 rounded-[3rem] shadow-2xl overflow-hidden border border-slate-800">
-        <div className="p-10 border-b border-white/5 flex justify-between items-center bg-slate-900/50">
+      <div
+        id="audit-log-section"
+        className="bg-slate-900 rounded-[3rem] shadow-2xl overflow-hidden border border-slate-800"
+      >
+        <div className="p-10 border-b border-white/5 flex flex-col md:flex-row justify-between items-center bg-slate-900/50 gap-4">
           <div>
             <h2 className="text-2xl font-black text-white italic uppercase tracking-tighter flex items-center gap-3">
               <span className="h-3 w-3 bg-rose-500 rounded-full animate-ping"></span>
               Audit_Control_Log
+              {selectedUserFilter && (
+                <span className="text-blue-400 ml-2">
+                  / viewing: {selectedUserFilter}
+                </span>
+              )}
             </h2>
             <p className="text-[10px] font-bold text-slate-500 mt-1 uppercase tracking-widest">
               Monitoring all system protocols & management activities
             </p>
           </div>
           <div className="flex gap-3">
+            {selectedUserFilter && (
+              <button
+                onClick={() => setSelectedUserFilter(null)}
+                className="text-[10px] font-black bg-blue-500/10 text-blue-400 px-6 py-3 rounded-2xl hover:bg-blue-500 hover:text-white transition-all border border-blue-500/20 uppercase tracking-widest"
+              >
+                Clear_Filter [x]
+              </button>
+            )}
             <button
               onClick={handleClearLogs}
               className="text-[10px] font-black bg-rose-500/10 text-rose-500 px-6 py-3 rounded-2xl hover:bg-rose-500 hover:text-white transition-all border border-rose-500/20 uppercase tracking-widest"
@@ -404,110 +455,109 @@ export default function SuperAdminPage() {
         </div>
 
         <div className="p-10 max-h-[800px] overflow-y-auto space-y-8 custom-scrollbar">
-          {logs.length === 0 && (
+          {filteredLogs.length === 0 ? (
             <p className="text-center text-slate-600 font-black italic uppercase py-20 tracking-widest">
-              No_Activity_Detected_In_Database
+              {selectedUserFilter
+                ? `No activity found for ${selectedUserFilter}`
+                : "No_Activity_Detected_In_Database"}
             </p>
-          )}
+          ) : (
+            filteredLogs.map((log) => {
+              const getActionStyle = (action: string) => {
+                if (action.includes("DELETE"))
+                  return "bg-rose-500/20 text-rose-400 border-rose-500/30";
+                if (
+                  action.includes("CREATE") ||
+                  action.includes("APPROVE") ||
+                  action.includes("REPLY")
+                )
+                  return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
+                if (
+                  action.includes("UPDATE") ||
+                  action.includes("CHANGE") ||
+                  action.includes("TOGGLE")
+                )
+                  return "bg-amber-500/20 text-amber-400 border-amber-500/30";
+                return "bg-blue-500/20 text-blue-400 border-blue-500/30";
+              };
 
-          {logs.map((log) => {
-            // Logic สำหรับเลือกสี Badge ตาม Action
-            const getActionStyle = (action: string) => {
-              if (action.includes("DELETE"))
-                return "bg-rose-500/20 text-rose-400 border-rose-500/30";
-              if (action.includes("CREATE") || action.includes("APPROVE"))
-                return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
-              if (
-                action.includes("UPDATE") ||
-                action.includes("CHANGE") ||
-                action.includes("TOGGLE")
-              )
-                return "bg-amber-500/20 text-amber-400 border-amber-500/30";
-              return "bg-blue-500/20 text-blue-400 border-blue-500/30";
-            };
-
-            return (
-              <div
-                key={log._id}
-                className="group border-l-2 border-white/5 pl-8 hover:border-blue-500 transition-all duration-500 relative"
-              >
-                {/* Timeline Dot */}
-                <div className="absolute -left-[5px] top-0 h-2 w-2 bg-slate-700 rounded-full group-hover:bg-blue-500 transition-colors"></div>
-
-                <div className="flex flex-col md:flex-row md:items-start gap-6">
-                  {/* Timestamp Block */}
-                  <div className="text-center bg-white/5 p-4 rounded-[1.5rem] min-w-[100px] border border-white/10 shadow-inner">
-                    <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">
-                      Clock
-                    </p>
-                    <p className="text-sm font-black text-white italic tabular-nums leading-none">
-                      {new Date(log.timestamp).toLocaleTimeString("th-TH", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                      })}
-                    </p>
-                  </div>
-
-                  <div className="flex-1 space-y-2">
-                    <div className="flex flex-wrap items-center gap-3">
-                      {/* User Identity */}
-                      <span className="font-black text-white text-lg hover:text-blue-400 transition-colors cursor-default uppercase italic tracking-tight">
-                        {log.userName || "System_Kernel"}
-                      </span>
-
-                      {/* Action Badge */}
-                      <span
-                        className={`text-[9px] font-black px-3 py-1 rounded-lg uppercase tracking-[0.15em] border ${getActionStyle(log.action)}`}
-                      >
-                        {log.action}
-                      </span>
+              return (
+                <div
+                  key={log._id}
+                  className="group border-l-2 border-white/5 pl-8 hover:border-blue-500 transition-all duration-500 relative"
+                >
+                  <div className="absolute -left-[5px] top-0 h-2 w-2 bg-slate-700 rounded-full group-hover:bg-blue-500 transition-colors"></div>
+                  <div className="flex flex-col md:flex-row md:items-start gap-6">
+                    <div className="text-center bg-white/5 p-4 rounded-[1.5rem] min-w-[100px] border border-white/10 shadow-inner">
+                      <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">
+                        Clock
+                      </p>
+                      <p className="text-sm font-black text-white italic tabular-nums leading-none">
+                        {new Date(log.timestamp).toLocaleTimeString("th-TH", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                          second: "2-digit",
+                        })}
+                      </p>
                     </div>
 
-                    {/* Activity Details */}
-                    <div className="text-sm font-bold leading-relaxed">
-                      {log.link ? (
-                        <a
-                          href={log.link}
-                          className="text-emerald-400 hover:text-white flex items-center gap-2 group/link transition-all"
+                    <div className="flex-1 space-y-2">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <span className="font-black text-white text-lg hover:text-blue-400 transition-colors cursor-default uppercase italic tracking-tight">
+                          {log.userName || "System_Kernel"}
+                        </span>
+                        <span
+                          className={`text-[9px] font-black px-3 py-1 rounded-lg uppercase tracking-[0.15em] border ${getActionStyle(log.action)}`}
                         >
-                          <span className="border-b border-emerald-400/30 group-hover/link:border-white">
-                            {log.details}
-                          </span>
-                          <span className="text-[8px] px-2 py-0.5 rounded bg-white/5 font-black uppercase tracking-tighter italic border border-white/10 group-hover/link:bg-emerald-500 group-hover/link:text-black">
-                            Go_To_Source ↗
-                          </span>
-                        </a>
-                      ) : (
-                        <p className="text-slate-400 font-medium">
-                          {log.details}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* Meta Info */}
-                    <div className="flex flex-wrap items-center gap-4 pt-2">
-                      <div className="flex items-center gap-2">
-                        <span className="h-1 w-1 bg-slate-700 rounded-full"></span>
-                        <p className="text-[9px] text-slate-600 font-black uppercase tracking-widest">
-                          STAMP:{" "}
-                          {new Date(log.timestamp).toLocaleDateString("th-TH")}
-                        </p>
+                          {log.action}
+                        </span>
                       </div>
-                      {log.ip && (
+
+                      <div className="text-sm font-bold leading-relaxed">
+                        {log.link ? (
+                          <a
+                            href={log.link}
+                            className="text-emerald-400 hover:text-white flex items-center gap-2 group/link transition-all"
+                          >
+                            <span className="border-b border-emerald-400/30 group-hover/link:border-white">
+                              {log.details}
+                            </span>
+                            <span className="text-[8px] px-2 py-0.5 rounded bg-white/5 font-black uppercase tracking-tighter italic border border-white/10 group-hover/link:bg-emerald-500 group-hover/link:text-black">
+                              Go_To_Source ↗
+                            </span>
+                          </a>
+                        ) : (
+                          <p className="text-slate-400 font-medium">
+                            {log.details}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="flex flex-wrap items-center gap-4 pt-2">
                         <div className="flex items-center gap-2">
                           <span className="h-1 w-1 bg-slate-700 rounded-full"></span>
                           <p className="text-[9px] text-slate-600 font-black uppercase tracking-widest">
-                            IP_ADDR: {log.ip}
+                            STAMP:{" "}
+                            {new Date(log.timestamp).toLocaleDateString(
+                              "th-TH",
+                            )}
                           </p>
                         </div>
-                      )}
+                        {log.ip && (
+                          <div className="flex items-center gap-2">
+                            <span className="h-1 w-1 bg-slate-700 rounded-full"></span>
+                            <p className="text-[9px] text-slate-600 font-black uppercase tracking-widest">
+                              IP_ADDR: {log.ip}
+                            </p>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
       </div>
     </div>
