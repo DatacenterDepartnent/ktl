@@ -4,9 +4,8 @@ const nextConfig = {
   staticPageGenerationTimeout: 1000,
 
   images: {
-    // 🔥 ไม้ตาย: ปิดการ Optimize และการเช็ค Hostname ทั้งหมด
-    // รูปจะแสดงผลได้ทันที 100% ไม่ว่า URL จะมาจากไหน
-    unoptimized: true,
+    unoptimized: false, // แนะนำให้เปิดไว้เพื่อให้เว็บโหลดเร็ว (LCP ดีขึ้น)
+    qualities: [75, 85], // เพิ่มบรรทัดนี้เพื่อลบ Warning ใน Log
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {

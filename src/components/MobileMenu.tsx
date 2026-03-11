@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image"; // ✅ เพิ่ม import Image
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { NavItem } from "@/types/nav";
 import ThemeToggle from "./ThemeToggle";
@@ -10,14 +10,15 @@ import { useSession, signOut } from "next-auth/react";
 
 type MenuItem = NavItem & {
   children?: MenuItem[];
+  _id: string; // ให้แน่ใจว่ามี _id สำหรับใช้เป็น key
 };
 
 export default function MobileMenu({
   menuTree = [],
-  image, // ✅ รับ Prop image เพิ่มเข้ามา
+  image,
 }: {
   menuTree?: MenuItem[];
-  image?: string; // ✅ กำหนด Type
+  image?: string;
 }) {
   const [isOpen, setIsOpen] = useState(false);
   const [openSubMenuId, setOpenSubMenuId] = useState<string | null>(null);
@@ -55,7 +56,7 @@ export default function MobileMenu({
 
   return (
     <div className="xl:hidden">
-      {/* ปุ่ม Hamburger (เหมือนเดิม) */}
+      {/* ปุ่ม Hamburger */}
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`p-2 rounded-lg transition-colors focus:outline-none ${
@@ -99,7 +100,6 @@ export default function MobileMenu({
         <div className="fixed top-16 left-0 w-full h-[calc(100vh-4rem)] z-[9999]">
           <div className="w-full h-full bg-white dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-800 overflow-y-auto pb-24 animate-in slide-in-from-top-2 duration-200">
             <div className="flex flex-col p-4 space-y-3">
-              {/* ... ส่วนเมนูหลัก (ข้ามไปส่วน User Profile ด้านล่าง) ... */}
               <Link
                 href="/"
                 onClick={closeMenu}
@@ -108,21 +108,76 @@ export default function MobileMenu({
                 หน้าแรก
               </Link>
 
-              {safeMenuTree.map((item) => (
-                <div
-                  key={item._id}
-                  className={`flex flex-col rounded-xl border overflow-hidden transition-colors ${openSubMenuId === item._id ? "bg-blue-50/30 border-blue-100 dark:bg-blue-900/10 dark:border-blue-900/30" : "bg-zinc-50 border-zinc-100 dark:bg-zinc-900 dark:border-zinc-800"}`}
-                >
-                  {/* Logic เมนูวนลูปคงเดิม */}
-                  <Link
-                    href={item.path}
-                    onClick={closeMenu}
-                    className="p-4 font-bold text-base"
+              {/* ✅ ส่วนที่แก้ไข: จัดการแสดงผลเมนูย่อย */}
+              {safeMenuTree.map((item) => {
+                const hasChildren = item.children && item.children.length > 0;
+                const isSubMenuOpen = openSubMenuId === item._id;
+
+                return (
+                  <div
+                    key={item._id}
+                    className={`flex flex-col rounded-xl border overflow-hidden transition-colors ${
+                      isSubMenuOpen
+                        ? "bg-blue-50/30 border-blue-100 dark:bg-blue-900/10 dark:border-blue-900/30"
+                        : "bg-zinc-50 border-zinc-100 dark:bg-zinc-900 dark:border-zinc-800"
+                    }`}
                   >
-                    {item.label}
-                  </Link>
-                </div>
-              ))}
+                    {hasChildren ? (
+                      // 📌 กรณีมีเมนูย่อย (แสดงปุ่มกดเพื่อ Dropdown)
+                      <>
+                        <button
+                          onClick={() => toggleSubMenu(item._id)}
+                          className="flex items-center justify-between p-4 font-bold text-base w-full text-left"
+                        >
+                          <span>{item.label}</span>
+                          <svg
+                            className={`w-5 h-5 transition-transform duration-200 ${
+                              isSubMenuOpen
+                                ? "rotate-180 text-blue-600 dark:text-blue-400"
+                                : "text-zinc-500 dark:text-zinc-400"
+                            }`}
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 9l-7 7-7-7"
+                            />
+                          </svg>
+                        </button>
+
+                        {/* 📌 รายการเมนูย่อยที่จะแสดงเมื่อกด */}
+                        {isSubMenuOpen && (
+                          <div className="flex flex-col bg-white/50 dark:bg-black/20 border-t border-zinc-100 dark:border-zinc-800/50">
+                            {item.children!.map((subItem) => (
+                              <Link
+                                key={subItem._id}
+                                href={subItem.path}
+                                onClick={closeMenu}
+                                className="p-3 pl-8 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
+                              >
+                                {subItem.label}
+                              </Link>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    ) : (
+                      // 📌 กรณีไม่มีเมนูย่อย (สามารถคลิกลิงก์ได้เลย)
+                      <Link
+                        href={item.path}
+                        onClick={closeMenu}
+                        className="p-4 font-bold text-base block w-full"
+                      >
+                        {item.label}
+                      </Link>
+                    )}
+                  </div>
+                );
+              })}
 
               <div className="flex items-center justify-between p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 mt-2">
                 <span className="font-bold text-zinc-700 dark:text-zinc-200">
@@ -131,8 +186,8 @@ export default function MobileMenu({
                 <ThemeToggle />
               </div>
 
-              {/* ✅ ส่วนจัดการสมาชิก - แก้ไขให้แสดงรูปภาพจริง */}
-              <div className="pt-4 pb-8 space-y-3 border-t border-zinc-100 dark:border-zinc-800 mt-4">
+              {/* ส่วนจัดการสมาชิก */}
+              {/* <div className="pt-4 pb-8 space-y-3 border-t border-zinc-100 dark:border-zinc-800 mt-4">
                 {status === "loading" ? (
                   <div className="text-center py-4 text-zinc-500">
                     กำลังโหลด...
@@ -140,7 +195,6 @@ export default function MobileMenu({
                 ) : user ? (
                   <div className="flex flex-col space-y-3">
                     <div className="flex items-center gap-3 px-4 mb-2">
-                      {/* 📸 ส่วนของรูปภาพโปรไฟล์ */}
                       <div className="relative w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white border-2 border-white dark:border-zinc-800 shadow-md shrink-0">
                         {image ? (
                           <Image
@@ -166,7 +220,6 @@ export default function MobileMenu({
                       </div>
                     </div>
 
-                    {/* เมนูต่าง ๆ */}
                     <Link
                       href="/dashboard"
                       onClick={closeMenu}
@@ -175,7 +228,7 @@ export default function MobileMenu({
                       🚀 ไปที่ Dashboard
                     </Link>
 
-                    {(userRole === "super_admin" || userRole === "admin") && (
+                    {userRole === "super_admin" && (
                       <Link
                         href="/dashboard/super-admin"
                         onClick={closeMenu}
@@ -209,7 +262,7 @@ export default function MobileMenu({
                     เข้าสู่ระบบ / Admin
                   </Link>
                 )}
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

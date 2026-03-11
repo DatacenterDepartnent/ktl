@@ -318,26 +318,69 @@ export default function AddNewsPage() {
       `}</style>
 
       {/* Header */}
-      <div className="border-b border-slate-200 sticky top-0 z-20 shadow-sm backdrop-blur-md bg-white/80 dark:bg-black/80 dark:border-zinc-800">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div className="sticky top-0 z-[100] w-full border-b border-slate-200 bg-white/80 shadow-sm backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-2">
+          {/* ฝั่งซ้าย: ปุ่มย้อนกลับและข้อมูลผู้เขียน */}
           <div className="flex items-center gap-4">
             <Link
               href="/dashboard/news"
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 dark:bg-zinc-800"
+              className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-colors hover:bg-slate-200 dark:bg-zinc-800"
             >
               <FiArrowLeft />
             </Link>
             <div>
-              <h1 className="text-xl font-bold dark:text-white">
-                ย้อนกลับไปดูข่าวสารทั้งหมด
+              <h1 className="mb-1 text-xl font-bold leading-none dark:text-white">
+                ย้อนกลับ
               </h1>
-              <p className="text-xs text-slate-500">
-                ผู้ใช้:{" "}
+              <p className="text-[10px] uppercase tracking-tighter text-slate-500">
+                ผู้เขียน:{" "}
                 <span className="font-bold text-indigo-600 dark:text-indigo-400">
                   {currentUser.name}
                 </span>
               </p>
             </div>
+          </div>
+
+          {/* ฝั่งขวา: ปุ่มยืนยัน (เผยแพร่ข่าว) */}
+          <div className="flex items-center gap-3">
+            {/* Desktop Version */}
+            <button
+              onClick={handleSubmit}
+              disabled={isLoading || isCompressing}
+              className={`hidden items-center gap-2 rounded-full px-6 py-2.5 text-sm font-bold transition-all sm:flex ${
+                isLoading || isCompressing
+                  ? "bg-slate-200 text-slate-400 cursor-not-allowed"
+                  : "bg-indigo-600 text-white shadow-lg shadow-indigo-500/20 hover:bg-indigo-700 active:scale-95"
+              }`}
+            >
+              {isLoading ? (
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              ) : (
+                <>
+                  <FiCheckCircle /> เผยแพร่ข่าว
+                </>
+              )}
+            </button>
+
+            {/* Mobile Version - ปรับให้ความกว้างยืดหยุ่น (px-4) แทนการ Fix width */}
+            <button
+              onClick={handleSubmit}
+              disabled={isLoading || isCompressing}
+              className={`flex h-10 items-center justify-center gap-2 rounded-full px-4 text-white shadow-lg transition-all sm:hidden ${
+                isLoading || isCompressing
+                  ? "bg-slate-200 text-slate-400"
+                  : "bg-indigo-600 active:scale-95"
+              }`}
+            >
+              {isLoading ? (
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+              ) : (
+                <>
+                  <FiCheckCircle size={18} />
+                  <span className="text-xs font-bold">เผยแพร่</span>
+                </>
+              )}
+            </button>
           </div>
         </div>
       </div>

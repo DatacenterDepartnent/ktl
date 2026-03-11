@@ -1,20 +1,19 @@
 import clientPromise from "@/lib/db";
 import Link from "next/link";
 import { v2 as cloudinary } from "cloudinary";
-import { auth } from "@/lib/auth"; // ดึง auth() จากไฟล์ v5 ของคุณ
+import { auth } from "@/lib/auth";
 
-export const dynamic = "force-dynamic"; // บังคับให้เป็น Dynamic ตลอดเวลา
+export const dynamic = "force-dynamic";
 
 // --- Cloudinary Config ---
 cloudinary.config({
-  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME, // แก้เป็น CLOU...
   api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 async function getDashboardData() {
   try {
-    // 1. ดึง Session จริง (UX: ตามที่คุณระบุ)
     const session = await auth();
     if (!session) return null;
 
@@ -24,13 +23,15 @@ async function getDashboardData() {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    // 2. ดึงสถิติจริงจาก MongoDB
+    // 1. ดึงสถิติจริงจาก MongoDB
     const totalNews = await db.collection("news").countDocuments();
     const totalNav = await db
       .collection("navbar")
       .countDocuments({ parentId: null });
     const totalPages = await db.collection("pages").countDocuments();
+    const totalBanners = await db.collection("banners").countDocuments(); // ดึงจำนวน Banner
 
+    // 2. คำนวณสถิติรูปภาพรวม (News + Announcement)
     const imageStats = await db
       .collection("news")
       .aggregate([
@@ -62,15 +63,18 @@ async function getDashboardData() {
 
     const totalImagesCount =
       imageStats.length > 0 ? imageStats[0].totalImages : 0;
+
+    // 3. ดึงขนาด Database
     const dbStats = await db.stats();
     const dbSizeMB = (dbStats.storageSize / (1024 * 1024)).toFixed(2);
 
+    // 4. ดึงการใช้งาน Cloudinary
     let cloudUsageMB = "0.00";
     try {
       const cloudResult = await cloudinary.api.usage();
       cloudUsageMB = (cloudResult.storage.usage / (1024 * 1024)).toFixed(2);
     } catch (err) {
-      console.error(err);
+      console.error("Cloudinary Usage Error:", err);
     }
 
     return {
@@ -79,6 +83,7 @@ async function getDashboardData() {
         totalNews,
         totalNav,
         totalPages,
+        totalBanners,
         totalImagesCount,
         dbSizeMB,
         cloudUsageMB,
@@ -106,7 +111,7 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-zinc-950 transition-colors duration-500">
       <div className="max-w-7xl mx-auto w-full px-4 py-12">
-        {/* --- 1. UX/UI HEADER (Real Session Data) --- */}
+        {/* --- 1. HEADER SECTION --- */}
         <div className="mb-12 border-b border-zinc-200 dark:border-zinc-800 pb-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-2">
@@ -124,7 +129,6 @@ export default async function DashboardPage() {
               </p>
             </div>
 
-            {/* Profile Section ดึงจาก Session จริง */}
             <div className="flex items-center gap-4 bg-white dark:bg-zinc-900 p-2 pr-6 rounded-full border border-zinc-200 dark:border-zinc-800 shadow-sm">
               <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md uppercase">
                 {user.username?.charAt(0) || "U"}
@@ -141,14 +145,21 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        {/* --- 2. STATS GRID (UX/UI: Bento Style) --- */}
+        {/* --- 2. STATS GRID (Bento Style) --- */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {/* Main Content Stats */}
           <div className="lg:col-span-2 grid grid-cols-2 gap-4">
             <StatCard
               label="ข่าวสาร"
               value={stats.totalNews}
               icon="📰"
               color="blue"
+            />
+            <StatCard
+              label="แบนเนอร์"
+              value={stats.totalBanners}
+              icon="🖼️"
+              color="pink"
             />
             <StatCard
               label="เมนู"
@@ -162,16 +173,11 @@ export default async function DashboardPage() {
               icon="📝"
               color="amber"
             />
-            <StatCard
-              label="รูปภาพ"
-              value={stats.totalImagesCount}
-              icon="🖼️"
-              color="pink"
-            />
           </div>
 
+          {/* Infrastructure Stats */}
           <UsageCard
-            title="Database"
+            title="Database MongoDB"
             value={stats.dbSizeMB}
             max={512}
             unit="MB"
@@ -188,16 +194,43 @@ export default async function DashboardPage() {
           />
         </div>
 
-        {/* --- 3. QUICK ACTIONS (UX/UI: Rounded [2rem]) --- */}
-        <h2 className="text-xs font-black uppercase tracking-[0.3em] text-zinc-400 dark:text-zinc-600 mb-8 flex items-center gap-4">
-          Quick Management{" "}
+        {/* Total Images */}
+        <div className="mt-12 p-6 rounded-[2rem] bg-zinc-100 dark:bg-zinc-900/50 flex items-center justify-between border border-zinc-200 dark:border-zinc-800">
+          <div className="flex items-center gap-4">
+            <span className="text-2xl">📸</span>
+            <div>
+              <p className="text-xs font-black text-zinc-400 uppercase tracking-widest">
+                Total Media Files
+              </p>
+              <p className="text-xl font-black text-zinc-800 dark:text-zinc-200">
+                {stats.totalImagesCount} Images
+              </p>
+            </div>
+          </div>
+          <p className="text-[10px] text-zinc-400 font-medium italic">
+            ข้อมูลถูกซิงค์จาก Cloudinary และ MongoDB
+          </p>
+        </div>
+
+        {/* --- 3. QUICK ACTIONS --- */}
+        <h2 className="pt-10 text-xs font-black uppercase tracking-[0.3em] text-zinc-400 dark:text-zinc-600 mb-8 flex items-center gap-4">
+          การจัดการอย่างรวดเร็ว{" "}
           <span className="h-px bg-zinc-200 dark:bg-zinc-800 flex-1" />
         </h2>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <ActionCard href="/dashboard/news" title="ข่าวสาร" icon="📰" />
-          <ActionCard href="/dashboard/navbar" title="เมนูเว็บ" icon="🔗" />
-          <ActionCard href="/dashboard/pages" title="เนื้อหา" icon="📝" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+          <ActionCard
+            href="/dashboard/banners"
+            title="จัดการแบนเนอร์"
+            icon="🖼️"
+          />
+          <ActionCard href="/dashboard/news" title="จัดการข่าวสาร" icon="📰" />
+          <ActionCard
+            href="/dashboard/navbar"
+            title="จัดการเมนูเว็บ"
+            icon="🔗"
+          />
+          <ActionCard href="/dashboard/pages" title="จัดการเนื้อหา" icon="📝" />
           <ActionCard href="/" title="หน้าเว็บจริง" icon="🌏" external />
         </div>
       </div>
@@ -205,7 +238,7 @@ export default async function DashboardPage() {
   );
 }
 
-// --- Reusable Sub-Components (UX/UI ฉบับที่คุณส่งมา) ---
+// --- Reusable Sub-Components ---
 
 function StatCard({ label, value, icon, color }: any) {
   const colors: any = {
@@ -283,7 +316,7 @@ function ActionCard({ href, title, icon, external }: any) {
       <h3 className="text-lg font-black text-zinc-800 dark:text-zinc-100 uppercase tracking-tight">
         {title}
       </h3>
-      <p className="text-zinc-400 text-xs mt-1 font-bold">
+      <p className="text-zinc-400 text-[10px] mt-1 font-bold uppercase tracking-tighter">
         Manage system data →
       </p>
     </Link>

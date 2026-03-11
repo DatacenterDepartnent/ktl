@@ -8,13 +8,13 @@ import ShowYoutube from "./ShowYoutube/page";
 import Features from "./Features";
 import CalendarPage from "@/components/Calendar";
 import WelcomePage from "@/components/WelcomePage";
-import Scrollimage from "@/components/Scrollimage";
 import ShowFacebook from "@/components/ShowFacebook";
 import ScrollVelocity from "@/components/Scrollvelocity";
 import SubQAPage from "./ITA/08/qa/SubQAPage";
 import StudentSupportSystem from "./StudentSupportSystem/page";
 import ExternalQualityAssurance from "./ExternalQualityAssurance";
 import BackgroundBeamsWithCollisionDemo from "@/components/BackgroundBeamsWithCollisionDemo";
+import HomeBannerSwiper from "@/components/HomeBannerSwiper";
 
 // --- Main Home Component ---
 // หน้าแรกของเว็บไซต์: ทำหน้าที่รวม Component ย่อยๆ มาแสดงผลเรียงกันในแนวตั้ง
@@ -24,8 +24,8 @@ export default function Home() {
     <div className="flex flex-col">
       <main className="grow">
         {/* 2. Scroll Image: ส่วนแสดงรูปภาพสไลด์ หรือ Banner หลักด้านบน */}
-        <div className="max-w-7xl mx-auto">
-          <Scrollimage />
+        <div>
+          <HomeBannerSwiper />
         </div>
 
         {/* 3. Student Support: ระบบดูแลช่วยเหลือผู้เรียน */}

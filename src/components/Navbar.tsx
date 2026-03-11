@@ -4,7 +4,9 @@ import NavbarClient from "./NavbarClient";
 import { auth } from "@/lib/auth";
 import { ObjectId } from "mongodb";
 
+// ปรับ Type ให้ _id เป็น string เสมอเพื่อให้เข้ากับ NavbarClient
 export type MenuItem = NavItem & {
+  _id: string;
   children?: MenuItem[];
 };
 
@@ -17,7 +19,11 @@ async function getNavItems() {
       .find({})
       .sort({ order: 1 })
       .toArray();
-    const allItems = JSON.parse(JSON.stringify(items)) as NavItem[];
+
+    // บังคับ Type cast ให้ _id เป็น string และกรองข้อมูล
+    const allItems = JSON.parse(JSON.stringify(items)) as (NavItem & {
+      _id: string;
+    })[];
 
     const parents = allItems.filter((item) => !item.parentId);
     const menuTree = parents.map((parent) => {
@@ -40,10 +46,11 @@ export default async function Navbar() {
 
   let userImage = "";
   let username = session?.user?.name || (session?.user as any)?.username || "";
-  let role = ""; // เริ่มต้นเป็นค่าว่าง
+  let role = "";
 
   if (session?.user) {
     try {
+      // ดึง userId จากหลายแหล่งที่อาจเป็นไปได้ใน Session
       const userId = (session.user as any).id || (session as any).userId;
 
       if (userId && ObjectId.isValid(userId)) {
@@ -56,8 +63,8 @@ export default async function Navbar() {
         if (userData) {
           userImage = userData.image || "";
           username = userData.name || userData.username || username;
-          // ✅ บังคับเป็นตัวพิมพ์เล็กเพื่อให้ตรงกับ "super_admin" ใน DB
-          role = (userData.role || "").trim().toLowerCase();
+          // ล้างค่าว่างและทำให้เป็นตัวพิมพ์เล็กเพื่อความแม่นยำในการเช็ค Role
+          role = (userData.role || "member").trim().toLowerCase();
         }
       }
     } catch (error) {
