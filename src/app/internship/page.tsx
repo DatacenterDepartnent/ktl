@@ -51,13 +51,14 @@ export default async function InternshipPage() {
     <main className="bg-slate-50 text-slate-800 dark:bg-transparent dark:text-slate-200 container px-4 mx-auto max-w-7xl">
       <div className="py-10">
         {/* --- Header Section (ธีม Emerald เพื่อสื่อถึงความสดใหม่และการเรียนรู้) --- */}
-        <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-6 border-b border-slate-200 pb-8 dark:border-slate-800">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6 border-b border-slate-200 pb-8 dark:border-slate-800 w-full">
+          {/* ส่วนข้อความ (ชิดซ้ายสุด) */}
           <div className="space-y-2 border-l-4 border-emerald-500 pl-4">
             <div className="flex items-center gap-2 text-emerald-600 font-bold uppercase tracking-widest text-[10px] md:text-xs dark:text-emerald-400">
               <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></span>
               Experience & Training
             </div>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight dark:text-white">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight dark:text-white leading-tight">
               นักศึกษาออก{" "}
               <span className="text-emerald-600 dark:text-emerald-500">
                 ฝึกประสบการณ์
@@ -68,12 +69,13 @@ export default async function InternshipPage() {
             </p>
           </div>
 
+          {/* ส่วนปุ่ม (ชิดขวาสุด) */}
           <Link
             href="/news?category=Internship"
-            className="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-full font-bold text-sm shadow-lg shadow-emerald-100 hover:bg-emerald-700 transition-all active:scale-95 group dark:shadow-none dark:bg-emerald-500"
+            className="flex items-center gap-2 px-6 py-3 bg-emerald-600 text-white rounded-full font-bold text-sm shadow-lg shadow-emerald-100 hover:bg-emerald-700 transition-all active:scale-95 group dark:shadow-none dark:bg-emerald-500 whitespace-nowrap"
           >
             <svg
-              className="w-4 h-4"
+              className="w-4 h-4 transition-transform group-hover:rotate-12"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -85,7 +87,7 @@ export default async function InternshipPage() {
                 d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
               />
             </svg>
-            ดูทั้งหมด
+            <span>ดูทั้งหมด</span>
           </Link>
         </div>
 

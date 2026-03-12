@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
-// --- Interfaces ---
 interface User {
   _id: string;
   username: string;
@@ -33,13 +32,10 @@ interface ActivityLog {
   timestamp: string;
   duration: number;
   ip: string;
-  isOnline: boolean;
 }
 
 export default function SuperAdminPage() {
   const router = useRouter();
-
-  // States
   const [users, setUsers] = useState<User[]>([]);
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
@@ -49,12 +45,7 @@ export default function SuperAdminPage() {
     name: string;
   } | null>(null);
 
-  // 💡 State สำหรับกรอง Log รายบุคคล
-  const [selectedUserFilter, setSelectedUserFilter] = useState<string | null>(
-    null,
-  );
-
-  // --- Data Fetching ---
+  // 1. ดึงข้อมูล Profile Admin
   const fetchAdminProfile = async () => {
     try {
       const res = await fetch("/api/profile");
@@ -64,6 +55,7 @@ export default function SuperAdminPage() {
     }
   };
 
+  // 2. ดึงข้อมูลทั้งหมด
   const fetchData = async () => {
     try {
       setLoading(true);
@@ -95,46 +87,19 @@ export default function SuperAdminPage() {
     fetchData();
   }, []);
 
-  // --- Filter Logic ---
-  // กรอง Log ตาม user ที่เลือก (ถ้าไม่เลือกให้แสดงทั้งหมด)
-  const filteredLogs = selectedUserFilter
-    ? logs.filter((log) => log.userName === selectedUserFilter)
-    : logs;
-
-  const handleSelectUserLog = (userName: string) => {
-    if (selectedUserFilter === userName) {
-      setSelectedUserFilter(null); // กดซ้ำเพื่อยกเลิกการกรอง
-    } else {
-      setSelectedUserFilter(userName);
-      // เลื่อนหน้าจอไปที่ส่วน Log อัตโนมัติ
-      document
-        .getElementById("audit-log-section")
-        ?.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  // --- Handlers ---
-  const handleEditUser = (userId: string) => {
-    router.push(`/dashboard/users/edit/${userId}`);
-  };
+  // --- Functions สำหรับจัดการ User ---
 
   const changeRole = async (
     targetId: string,
     newRole: string,
     targetName: string,
   ) => {
-    if (!adminProfile) return toast.error("ACCESS_DENIED: ไม่พบข้อมูลผู้ดูแล");
+    if (!adminProfile) return toast.error("ACCESS_DENIED");
     try {
       const res = await fetch(`/api/users/${targetId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          role: newRole,
-          logAction: "CHANGE_ROLE",
-          logDetails: `เปลี่ยนสิทธิ์สมาชิระดับ: ${targetName} → ${newRole.toUpperCase()}`,
-          adminId: adminProfile._id,
-          adminName: adminProfile.name,
-        }),
+        body: JSON.stringify({ role: newRole }), // ส่งแค่ข้อมูลที่แก้ Log ให้ API จัดการเอง
       });
       if (res.ok) {
         toast.success(`UPDATED: เปลี่ยนสิทธิ์ ${targetName} สำเร็จ`);
@@ -151,21 +116,14 @@ export default function SuperAdminPage() {
     targetName: string,
   ) => {
     if (!adminProfile) return;
-    const newStatus = !currentStatus;
     try {
       const res = await fetch(`/api/users/${targetId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          isActive: newStatus,
-          logAction: newStatus ? "APPROVE_USER" : "SUSPEND_USER",
-          logDetails: `${newStatus ? "อนุมัติ" : "ระงับ"} การเข้าใช้งานของ: ${targetName}`,
-          adminId: adminProfile._id,
-          adminName: adminProfile.name,
-        }),
+        body: JSON.stringify({ isActive: !currentStatus }),
       });
       if (res.ok) {
-        toast.success(newStatus ? "USER_ACTIVATED" : "USER_SUSPENDED");
+        toast.success(!currentStatus ? "USER_ACTIVATED" : "USER_SUSPENDED");
         fetchData();
       }
     } catch (error) {
@@ -178,19 +136,12 @@ export default function SuperAdminPage() {
     currentOrder: number,
     direction: "up" | "down",
   ) => {
-    if (!adminProfile) return;
     const newOrder = direction === "up" ? currentOrder - 1 : currentOrder + 1;
     try {
       const res = await fetch(`/api/users/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderIndex: newOrder,
-          logAction: "REORDER_USER",
-          logDetails: `ปรับลำดับการแสดงผลผู้ใช้ ID: ${id}`,
-          adminId: adminProfile._id,
-          adminName: adminProfile.name,
-        }),
+        body: JSON.stringify({ orderIndex: newOrder }),
       });
       if (res.ok) fetchData();
     } catch (error) {
@@ -199,8 +150,7 @@ export default function SuperAdminPage() {
   };
 
   const handleClearLogs = async () => {
-    if (!confirm("⚠️ คำเตือน: คุณต้องการล้างประวัติกิจกรรมทั้งหมดใช่หรือไม่?"))
-      return;
+    if (!confirm("⚠️ ต้องการล้างประวัติกิจกรรมทั้งหมดใช่หรือไม่?")) return;
     try {
       const res = await fetch("/api/admin/logs", { method: "DELETE" });
       if (res.ok) {
@@ -211,6 +161,8 @@ export default function SuperAdminPage() {
       toast.error("CLEAR_FAILED");
     }
   };
+
+  // --- Style Helpers ---
 
   const getRoleStyle = (role: string) => {
     switch (role) {
@@ -223,20 +175,64 @@ export default function SuperAdminPage() {
     }
   };
 
+  // ✅ แก้ไขใหม่: ใช้สีทึบ (Solid) และสว่างพิเศษเพื่อให้ตัดกับพื้นหลังสีดำ
+  const getActionStyle = (action: string) => {
+    const act = action.toUpperCase();
+
+    // 🔵 ตอบคำถาม (REPLY_QUESTION) - ใช้สี Cyan สว่างแบบนีออน
+    if (act.includes("REPLY") || act.includes("ANSWER")) {
+      return "bg-cyan-500 text-black border-cyan-300 ring-2 ring-cyan-500/50 shadow-[0_0_15px_rgba(6,182,212,0.5)] font-black";
+    }
+
+    // 🟢 คำถามจาก Guest (GUEST_QUESTION) - ใช้สีน้ำเงินสว่าง
+    if (act.includes("GUEST")) {
+      return "bg-blue-600 text-white border-blue-400 ring-2 ring-blue-600/50 shadow-[0_0_15px_rgba(37,99,235,0.5)] font-black";
+    }
+
+    // 🔴 อันตราย/ลบ (DELETE) - แดงสด
+    if (
+      act.includes("DELETE") ||
+      act.includes("WIPE") ||
+      act.includes("SUSPEND")
+    ) {
+      return "bg-rose-600 text-white border-rose-400 ring-2 ring-rose-600/50 shadow-[0_0_15px_rgba(225,29,72,0.5)] font-black";
+    }
+
+    // 🟢 สร้าง/เพิ่ม (CREATE/POST) - เขียวสว่าง
+    if (
+      act.includes("CREATE") ||
+      act.includes("POST") ||
+      act.includes("ADD") ||
+      act.includes("APPROVE")
+    ) {
+      return "bg-emerald-500 text-black border-emerald-300 ring-2 ring-emerald-500/50 font-black";
+    }
+
+    // 🟠 แก้ไข (UPDATE/EDIT) - ส้มสว่าง
+    if (
+      act.includes("UPDATE") ||
+      act.includes("EDIT") ||
+      act.includes("CHANGE")
+    ) {
+      return "bg-amber-500 text-black border-amber-300 ring-2 ring-amber-500/50 font-black";
+    }
+
+    // 🟣 ล็อกอิน (LOGIN)
+    if (act.includes("LOGIN") || act.includes("AUTH")) {
+      return "bg-indigo-600 text-white border-indigo-400 font-black";
+    }
+
+    return "bg-slate-700 text-slate-100 border-slate-500 font-black";
+  };
   if (loading)
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-50">
-        <div className="text-center">
-          <div className="h-10 w-10 border-4 border-slate-900 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="animate-pulse font-black text-slate-400 uppercase italic tracking-tighter">
-            KTLTC_SYSTEM_AUTHENTICATING...
-          </p>
-        </div>
+      <div className="flex items-center justify-center min-h-screen bg-slate-50 font-black text-slate-400 italic">
+        LOADING_SYSTEM_DATA...
       </div>
     );
 
   return (
-    <div className="max-w-[1600px] mx-auto p-4 md:p-12 bg-slate-50 min-h-screen font-sans">
+    <div className="max-w-[1600px] mx-auto p-4 md:p-12 bg-slate-50 min-h-screen">
       <Toaster position="top-right" />
 
       {/* Stats Summary */}
@@ -265,9 +261,9 @@ export default function SuperAdminPage() {
         ].map((item, idx) => (
           <div
             key={idx}
-            className="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 transform transition-hover hover:-translate-y-1"
+            className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100"
           >
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
               {item.label}
             </p>
             <p
@@ -281,37 +277,24 @@ export default function SuperAdminPage() {
 
       {/* Users Management Table */}
       <div className="bg-white rounded-[3rem] shadow-2xl border border-slate-100 overflow-hidden mb-16">
-        <div className="p-10 border-b border-slate-50 flex flex-col md:flex-row justify-between items-center gap-4 bg-white/50 backdrop-blur-md">
-          <div>
-            <h1 className="text-3xl font-black text-slate-900 italic uppercase tracking-tighter">
-              Member_Management
-            </h1>
-            <p className="text-[10px] font-bold text-slate-400 mt-1 uppercase tracking-widest flex items-center gap-2">
-              <span className="h-2 w-2 bg-emerald-500 rounded-full"></span>
-              Operator_Active: {adminProfile?.name || "Initializing..."}
-            </p>
-            <p className="text-[9px] text-blue-500 font-bold uppercase mt-1">
-              💡 Tip: คลิกที่ชื่อเพื่อดู Log เฉพาะบุคคล
-            </p>
-          </div>
+        <div className="p-10 border-b border-slate-50 flex justify-between items-center bg-white/50 backdrop-blur-md">
+          <h1 className="text-3xl font-black text-slate-900 italic uppercase tracking-tighter">
+            Member_Management
+          </h1>
           <button
             onClick={fetchData}
-            className="group bg-slate-900 text-white text-[11px] font-black px-8 py-4 rounded-2xl hover:bg-blue-600 transition-all flex items-center gap-2 uppercase italic tracking-widest"
+            className="bg-slate-900 text-white text-[11px] font-black px-8 py-4 rounded-2xl hover:bg-blue-600 transition-all uppercase italic"
           >
-            <span>Refresh_Database</span>
-            <span className="group-hover:rotate-180 transition-transform duration-500">
-              ↻
-            </span>
+            Refresh_Database
           </button>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left">
-            <thead>
-              <tr className="bg-slate-50/50 text-slate-400 text-[10px] uppercase font-black tracking-[0.2em]">
-                <th className="p-8 text-center">Order</th>
+            <thead className="bg-slate-50/50 text-slate-400 text-[10px] uppercase font-black tracking-widest">
+              <tr>
+                <th className="p-8 text-center w-20">Order</th>
                 <th className="p-8">User_Identity</th>
-                <th className="p-8">Connectivity</th>
                 <th className="p-8 text-center">Auth_Level</th>
                 <th className="p-8 text-center">Protocol_Status</th>
                 <th className="p-8 text-right">Actions</th>
@@ -321,54 +304,35 @@ export default function SuperAdminPage() {
               {users.map((user, index) => (
                 <tr
                   key={user._id}
-                  className={`hover:bg-blue-50/30 transition-all group ${selectedUserFilter === user.name ? "bg-blue-50/60" : ""}`}
+                  className="hover:bg-blue-50/30 transition-all group"
                 >
                   <td className="p-8 text-center">
-                    <div className="flex flex-col items-center gap-1">
+                    <div className="flex flex-col items-center gap-1 font-black text-slate-900 italic text-xl">
                       <button
                         onClick={() =>
                           moveOrder(user._id, user.orderIndex || 0, "up")
                         }
-                        className="text-slate-200 hover:text-blue-500 transition-all"
+                        className="text-slate-200 hover:text-blue-500 text-xs"
                       >
                         ▲
                       </button>
-                      <span className="font-black text-slate-900 text-xl italic">
-                        {index + 1}
-                      </span>
+                      {index + 1}
                       <button
                         onClick={() =>
                           moveOrder(user._id, user.orderIndex || 0, "down")
                         }
-                        className="text-slate-200 hover:text-rose-500 transition-all"
+                        className="text-slate-200 hover:text-rose-500 text-xs"
                       >
                         ▼
                       </button>
                     </div>
                   </td>
                   <td className="p-8">
-                    {/* 💡 คลิกชื่อเพื่อ Filter Log */}
-                    <button
-                      onClick={() => handleSelectUserLog(user.name)}
-                      className={`font-black text-lg uppercase tracking-tight text-left hover:text-blue-600 transition-colors ${selectedUserFilter === user.name ? "text-blue-600 underline" : "text-slate-900"}`}
-                    >
+                    <div className="font-black text-slate-900 text-lg uppercase">
                       {user.name}
-                    </button>
-                    <div className="text-[10px] font-black text-blue-600 bg-blue-50 w-fit px-3 py-1 rounded-full mt-2 lowercase italic">
+                    </div>
+                    <div className="text-[10px] font-black text-blue-600 lowercase italic">
                       @{user.username}
-                    </div>
-                  </td>
-                  <td className="p-8">
-                    <div className="text-xs font-bold text-slate-500 mb-2">
-                      {user.email}
-                    </div>
-                    <div className="flex gap-2">
-                      <span className="text-[9px] font-black text-slate-400 bg-slate-100 px-2 py-1 rounded-md uppercase">
-                        📞 {user.phone || "-"}
-                      </span>
-                      <span className="text-[9px] font-black text-emerald-500 bg-emerald-50 px-2 py-1 rounded-md lowercase italic border border-emerald-100">
-                        L: {user.lineId || "-"}
-                      </span>
                     </div>
                   </td>
                   <td className="p-8 text-center">
@@ -377,9 +341,9 @@ export default function SuperAdminPage() {
                       onChange={(e) =>
                         changeRole(user._id, e.target.value, user.name)
                       }
-                      className={`text-[10px] font-black border-2 rounded-xl px-4 py-2 outline-none transition-all uppercase cursor-pointer ${getRoleStyle(user.role)}`}
+                      className={`text-[10px] font-black border-2 rounded-xl px-4 py-2 outline-none uppercase ${getRoleStyle(user.role)}`}
                     >
-                      <option value="editor">EDITOR (USER)</option>
+                      <option value="editor">EDITOR</option>
                       <option value="admin">ADMINISTRATOR</option>
                       <option value="super_admin">SUPER_ADMIN</option>
                     </select>
@@ -392,19 +356,16 @@ export default function SuperAdminPage() {
                       className={`h-7 w-14 rounded-full transition-all relative ${user.isActive ? "bg-emerald-500" : "bg-slate-300"}`}
                     >
                       <div
-                        className={`h-5 w-5 bg-white rounded-full absolute top-1 transition-all ${user.isActive ? "right-1 shadow-lg shadow-emerald-900/20" : "left-1"}`}
+                        className={`h-5 w-5 bg-white rounded-full absolute top-1 transition-all ${user.isActive ? "right-1" : "left-1"}`}
                       />
                     </button>
-                    <p
-                      className={`text-[9px] font-black mt-2 uppercase italic tracking-widest ${user.isActive ? "text-emerald-500" : "text-slate-400"}`}
-                    >
-                      {user.isActive ? "Access_Granted" : "Halted"}
-                    </p>
                   </td>
                   <td className="p-8 text-right">
                     <button
-                      onClick={() => handleEditUser(user._id)}
-                      className="text-[10px] font-black bg-slate-100 text-slate-500 px-6 py-3 rounded-2xl hover:bg-slate-900 hover:text-white transition-all uppercase italic tracking-widest border border-transparent hover:border-blue-500"
+                      onClick={() =>
+                        router.push(`/dashboard/users/edit/${user._id}`)
+                      }
+                      className="text-[10px] font-black bg-slate-100 text-slate-500 px-6 py-3 rounded-2xl hover:bg-slate-900 hover:text-white transition-all uppercase italic border border-transparent hover:border-blue-500"
                     >
                       Edit_User
                     </button>
@@ -417,146 +378,77 @@ export default function SuperAdminPage() {
       </div>
 
       {/* Activity Logs (Dark Theme) */}
-      <div
-        id="audit-log-section"
-        className="bg-slate-900 rounded-[3rem] shadow-2xl overflow-hidden border border-slate-800"
-      >
-        <div className="p-10 border-b border-white/5 flex flex-col md:flex-row justify-between items-center bg-slate-900/50 gap-4">
-          <div>
-            <h2 className="text-2xl font-black text-white italic uppercase tracking-tighter flex items-center gap-3">
-              <span className="h-3 w-3 bg-rose-500 rounded-full animate-ping"></span>
-              Audit_Control_Log
-              {selectedUserFilter && (
-                <span className="text-blue-400 ml-2">
-                  / viewing: {selectedUserFilter}
-                </span>
-              )}
-            </h2>
-            <p className="text-[10px] font-bold text-slate-500 mt-1 uppercase tracking-widest">
-              Monitoring all system protocols & management activities
-            </p>
-          </div>
-          <div className="flex gap-3">
-            {selectedUserFilter && (
-              <button
-                onClick={() => setSelectedUserFilter(null)}
-                className="text-[10px] font-black bg-blue-500/10 text-blue-400 px-6 py-3 rounded-2xl hover:bg-blue-500 hover:text-white transition-all border border-blue-500/20 uppercase tracking-widest"
-              >
-                Clear_Filter [x]
-              </button>
-            )}
-            <button
-              onClick={handleClearLogs}
-              className="text-[10px] font-black bg-rose-500/10 text-rose-500 px-6 py-3 rounded-2xl hover:bg-rose-500 hover:text-white transition-all border border-rose-500/20 uppercase tracking-widest"
-            >
-              Wipe_Logs
-            </button>
-          </div>
+      <div className="bg-slate-900 rounded-[3rem] shadow-2xl overflow-hidden border border-slate-800">
+        <div className="p-10 border-b border-white/5 flex justify-between items-center">
+          <h2 className="text-2xl font-black text-white italic uppercase tracking-tighter flex items-center gap-3">
+            <span className="h-3 w-3 bg-rose-500 rounded-full animate-ping"></span>
+            Audit_Control_Log
+          </h2>
+          <button
+            onClick={handleClearLogs}
+            className="text-[10px] font-black bg-rose-500/10 text-rose-500 px-6 py-3 rounded-2xl hover:bg-rose-500 hover:text-white border border-rose-500/20 uppercase tracking-widest"
+          >
+            Wipe_Logs
+          </button>
         </div>
 
         <div className="p-10 max-h-[800px] overflow-y-auto space-y-8 custom-scrollbar">
-          {filteredLogs.length === 0 ? (
+          {logs.length === 0 ? (
             <p className="text-center text-slate-600 font-black italic uppercase py-20 tracking-widest">
-              {selectedUserFilter
-                ? `No activity found for ${selectedUserFilter}`
-                : "No_Activity_Detected_In_Database"}
+              No_Activity_Detected
             </p>
           ) : (
-            filteredLogs.map((log) => {
-              const getActionStyle = (action: string) => {
-                if (action.includes("DELETE"))
-                  return "bg-rose-500/20 text-rose-400 border-rose-500/30";
-                if (
-                  action.includes("CREATE") ||
-                  action.includes("APPROVE") ||
-                  action.includes("REPLY")
-                )
-                  return "bg-emerald-500/20 text-emerald-400 border-emerald-500/30";
-                if (
-                  action.includes("UPDATE") ||
-                  action.includes("CHANGE") ||
-                  action.includes("TOGGLE")
-                )
-                  return "bg-amber-500/20 text-amber-400 border-amber-500/30";
-                return "bg-blue-500/20 text-blue-400 border-blue-500/30";
-              };
-
-              return (
+            logs.map((log) => (
+              <div
+                key={log._id}
+                className="group border-l-2 border-white/5 pl-8 hover:border-blue-500 transition-all relative"
+              >
                 <div
-                  key={log._id}
-                  className="group border-l-2 border-white/5 pl-8 hover:border-blue-500 transition-all duration-500 relative"
-                >
-                  <div className="absolute -left-[5px] top-0 h-2 w-2 bg-slate-700 rounded-full group-hover:bg-blue-500 transition-colors"></div>
-                  <div className="flex flex-col md:flex-row md:items-start gap-6">
-                    <div className="text-center bg-white/5 p-4 rounded-[1.5rem] min-w-[100px] border border-white/10 shadow-inner">
-                      <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">
-                        Clock
-                      </p>
-                      <p className="text-sm font-black text-white italic tabular-nums leading-none">
-                        {new Date(log.timestamp).toLocaleTimeString("th-TH", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                          second: "2-digit",
-                        })}
-                      </p>
+                  className={`absolute -left-[5px] top-0 h-2 w-2 rounded-full ${log.action.includes("DELETE") ? "bg-rose-500 shadow-[0_0_8px_rose]" : "bg-slate-700 group-hover:bg-blue-500"}`}
+                ></div>
+                <div className="flex flex-col md:flex-row md:items-start gap-6">
+                  <div className="text-center bg-white/5 p-4 rounded-[1.5rem] min-w-[100px] border border-white/10">
+                    <p className="text-sm font-black text-white italic tabular-nums leading-none">
+                      {new Date(log.timestamp).toLocaleTimeString("th-TH")}
+                    </p>
+                  </div>
+                  <div className="flex-1 space-y-2">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <span className="font-black text-white text-lg uppercase italic tracking-tight">
+                        {log.userName || "System"}
+                      </span>
+                      <span
+                        className={`text-[9px] font-black px-3 py-1 rounded-lg uppercase tracking-widest border ${getActionStyle(log.action)}`}
+                      >
+                        {log.action}
+                      </span>
                     </div>
-
-                    <div className="flex-1 space-y-2">
-                      <div className="flex flex-wrap items-center gap-3">
-                        <span className="font-black text-white text-lg hover:text-blue-400 transition-colors cursor-default uppercase italic tracking-tight">
-                          {log.userName || "System_Kernel"}
-                        </span>
-                        <span
-                          className={`text-[9px] font-black px-3 py-1 rounded-lg uppercase tracking-[0.15em] border ${getActionStyle(log.action)}`}
+                    <div className="text-sm font-bold leading-relaxed text-slate-400">
+                      {log.link ? (
+                        <a
+                          href={log.link}
+                          className="text-emerald-400 hover:text-white flex items-center gap-2 group/link transition-all"
                         >
-                          {log.action}
-                        </span>
-                      </div>
-
-                      <div className="text-sm font-bold leading-relaxed">
-                        {log.link ? (
-                          <a
-                            href={log.link}
-                            className="text-emerald-400 hover:text-white flex items-center gap-2 group/link transition-all"
-                          >
-                            <span className="border-b border-emerald-400/30 group-hover/link:border-white">
-                              {log.details}
-                            </span>
-                            <span className="text-[8px] px-2 py-0.5 rounded bg-white/5 font-black uppercase tracking-tighter italic border border-white/10 group-hover/link:bg-emerald-500 group-hover/link:text-black">
-                              Go_To_Source ↗
-                            </span>
-                          </a>
-                        ) : (
-                          <p className="text-slate-400 font-medium">
+                          <span className="border-b border-emerald-400/30">
                             {log.details}
-                          </p>
-                        )}
-                      </div>
-
-                      <div className="flex flex-wrap items-center gap-4 pt-2">
-                        <div className="flex items-center gap-2">
-                          <span className="h-1 w-1 bg-slate-700 rounded-full"></span>
-                          <p className="text-[9px] text-slate-600 font-black uppercase tracking-widest">
-                            STAMP:{" "}
-                            {new Date(log.timestamp).toLocaleDateString(
-                              "th-TH",
-                            )}
-                          </p>
-                        </div>
-                        {log.ip && (
-                          <div className="flex items-center gap-2">
-                            <span className="h-1 w-1 bg-slate-700 rounded-full"></span>
-                            <p className="text-[9px] text-slate-600 font-black uppercase tracking-widest">
-                              IP_ADDR: {log.ip}
-                            </p>
-                          </div>
-                        )}
-                      </div>
+                          </span>
+                          <span className="text-[8px] px-2 py-0.5 rounded bg-white/5 font-black italic border border-white/10 group-hover/link:bg-emerald-500 group-hover/link:text-black">
+                            GO ↗
+                          </span>
+                        </a>
+                      ) : (
+                        <p>{log.details}</p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-4 pt-2">
+                      <p className="text-[9px] text-slate-600 font-black uppercase tracking-widest">
+                        IP: {log.ip || "UNKNOWN"}
+                      </p>
                     </div>
                   </div>
                 </div>
-              );
-            })
+              </div>
+            ))
           )}
         </div>
       </div>

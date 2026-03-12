@@ -29,9 +29,14 @@ async function getDashboardData() {
       .collection("navbar")
       .countDocuments({ parentId: null });
     const totalPages = await db.collection("pages").countDocuments();
-    const totalBanners = await db.collection("banners").countDocuments(); // ดึงจำนวน Banner
+    const totalBanners = await db.collection("banners").countDocuments();
 
-    // 2. คำนวณสถิติรูปภาพรวม (News + Announcement)
+    // ✅ เพิ่มส่วนนี้: ดึงจำนวนคำถามที่ยังไม่ได้ตอบ (status: "pending")
+    const totalPendingQA = await db.collection("questions").countDocuments({
+      status: "pending",
+    });
+
+    // 2. คำนวณสถิติรูปภาพ (เหมือนเดิมของคุณ)
     const imageStats = await db
       .collection("news")
       .aggregate([
@@ -64,17 +69,15 @@ async function getDashboardData() {
     const totalImagesCount =
       imageStats.length > 0 ? imageStats[0].totalImages : 0;
 
-    // 3. ดึงขนาด Database
+    // 3. ดึงขนาด DB และ Cloudinary (เหมือนเดิม)
     const dbStats = await db.stats();
     const dbSizeMB = (dbStats.storageSize / (1024 * 1024)).toFixed(2);
-
-    // 4. ดึงการใช้งาน Cloudinary
     let cloudUsageMB = "0.00";
     try {
       const cloudResult = await cloudinary.api.usage();
       cloudUsageMB = (cloudResult.storage.usage / (1024 * 1024)).toFixed(2);
     } catch (err) {
-      console.error("Cloudinary Usage Error:", err);
+      console.error("Cloudinary Error:", err);
     }
 
     return {
@@ -87,6 +90,7 @@ async function getDashboardData() {
         totalImagesCount,
         dbSizeMB,
         cloudUsageMB,
+        totalPendingQA, // ✅ ส่งค่าที่ดึงได้กลับไป (Error จะหายไป)
       },
     };
   } catch (error) {
@@ -230,6 +234,14 @@ export default async function DashboardPage() {
             title="จัดการเมนูเว็บ"
             icon="🔗"
           />
+          {/* ✅ เพิ่มปุ่มจัดการ Q&A */}
+          <ActionCard
+            href="/dashboard/questions"
+            title="จัดการ Q&A"
+            icon="💬"
+            badge={stats.totalPendingQA > 0 ? stats.totalPendingQA : null}
+          />
+
           <ActionCard
             href="/dashboard/pages"
             title="จัดการเนื้อหาเมนู"

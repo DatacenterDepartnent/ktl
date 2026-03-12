@@ -12,7 +12,7 @@ export default function BackgroundBeamsWithCollisionDemo({
   const hasContent = data.title || data.description;
 
   return (
-    <BackgroundBeamsWithCollision className="relative w-full max-w-4xl mx-auto rounded-3xl my-2 border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-lg bg-zinc-100 dark:bg-zinc-900">
+    <BackgroundBeamsWithCollision className="relative w-full max-w-4xl mx-auto rounded-3xl my-2  ">
       {/* Container สำหรับรูปภาพ - ใช้เป็น Relative เพื่อให้ความสูงยืดตามภาพได้ */}
       <div className="relative w-full z-0">
         <img
@@ -29,15 +29,15 @@ export default function BackgroundBeamsWithCollisionDemo({
 
       {/* ส่วนข้อความ (จะแสดงทับด้านล่างของรูปภาพ) */}
       {hasContent && (
-        <div className="absolute bottom-0 left-0 right-0 z-20 p-6 md:p-10 text-white">
+        <div className=" ">
           <div className="space-y-2">
             {data.title && (
-              <h2 className="text-2xl md:text-4xl font-black leading-tight text-white drop-shadow-md">
+              <h2 className="text-2xl pt-6 md:text-4xl font-black leading-tight drop-shadow-md ">
                 {data.title}
               </h2>
             )}
             {data.description && (
-              <p className="text-base md:text-lg text-zinc-100 font-medium italic leading-relaxed drop-shadow-sm line-clamp-2">
+              <p className="text-base md:text-lg font-medium italic leading-relaxed drop-shadow-sm line-clamp-2">
                 {data.description}
               </p>
             )}

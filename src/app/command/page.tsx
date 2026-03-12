@@ -50,13 +50,14 @@ export default async function CommandPage() {
     <main className="bg-slate-50 text-slate-800 dark:bg-transparent dark:text-slate-200 container px-4 mx-auto max-w-7xl">
       <div className="py-10">
         {/* --- Header Section (ธีมสี Blue สำหรับงานคำสั่ง/ระเบียบ) --- */}
-        <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-6 border-b border-slate-200 pb-8 dark:border-slate-800">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6 border-b border-slate-200 pb-8 dark:border-slate-800 w-full">
+          {/* ฝั่งซ้าย (Start) - ชุดข้อความและหัวข้อ */}
           <div className="space-y-2 border-l-4 border-blue-600 pl-4">
             <div className="flex items-center gap-2 text-blue-600 font-bold uppercase tracking-widest text-[10px] md:text-xs dark:text-blue-400">
               <span className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></span>
               Official Orders & Regulations
             </div>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight dark:text-white">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight dark:text-white leading-tight">
               คำสั่ง{" "}
               <span className="text-blue-600 dark:text-blue-500">
                 วิทยาลัยฯ
@@ -67,12 +68,13 @@ export default async function CommandPage() {
             </p>
           </div>
 
+          {/* ฝั่งขวา (End) - ปุ่มดูทั้งหมด */}
           <Link
             href="/news?category=Order"
-            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-full font-bold text-sm shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95 group dark:shadow-none dark:bg-blue-500"
+            className="flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-full font-bold text-sm shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all active:scale-95 group dark:shadow-none dark:bg-blue-500 whitespace-nowrap"
           >
             <svg
-              className="w-4 h-4"
+              className="w-4 h-4 transition-transform group-hover:scale-110"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -84,7 +86,7 @@ export default async function CommandPage() {
                 d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"
               />
             </svg>
-            ดูคำสั่งทั้งหมด
+            <span>ดูคำสั่งทั้งหมด</span>
           </Link>
         </div>
 

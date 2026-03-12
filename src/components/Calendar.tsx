@@ -108,13 +108,12 @@ export default function CalendarPage() {
 
             {/* --- ส่วนแสดงรายละเอียด (Event Detail Side Panel) --- */}
             {/* เพิ่มส่วนนี้เพื่อให้ดูเป็น Dashboard ที่สมบูรณ์ */}
-            <div className="w-full max-w-md ">
+            {/* <div className="w-full max-w-md ">
               <div className="h-full rounded-3xl py-4 bg-white px-4 shadow-lg ring-1 ring-slate-100 dark:bg-neutral-900 dark:ring-neutral-800">
                 <h3 className="mb-4 text-xl font-bold text-slate-800 dark:text-slate-100">
                   กิจกรรมเดือนนี้
                 </h3>
 
-                {/* Mockup รายการกิจกรรม */}
                 <div className="space-y-4 ">
                   <div className="flex gap-4 rounded-r-xl border-l-4 border-indigo-500 bg-slate-50 p-4 dark:bg-neutral-800">
                     <div>
@@ -134,7 +133,7 @@ export default function CalendarPage() {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </motion.div>
       </section>

@@ -74,7 +74,10 @@ export default function RootLayout({
 
       {/* body: เรียกใช้ฟอนต์ Prompt และกำหนดสีพื้นหลัง/ตัวหนังสือพื้นฐาน */}
       <body className={`${prompt.className} ${prompt.variable} antialiased`}>
-        <SessionProvider>
+        <SessionProvider
+          refetchInterval={0} // ✅ ปิดการยิงไปที่ /api/auth/session เป็นระยะๆ
+          refetchOnWindowFocus={false} // ✅ ปิดการยิง heartbeat ทุกครั้งที่สลับหน้าต่างกลับมา
+        >
           {/* ThemeProvider: ตัวจัดการ Dark Mode / Light Mode */}
           <ThemeProvider
             attribute="class"

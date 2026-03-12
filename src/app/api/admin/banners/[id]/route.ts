@@ -3,7 +3,7 @@ import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 import { auth } from "@/lib/auth";
 
-// ฟังก์ชันช่วยบันทึก Log
+// ✅ ฟังก์ชันช่วยบันทึก Log - ปรับให้ดึง Session ข้างในนี้เลย ลดความซ้ำซ้อน
 async function createActivityLog(
   db: any,
   req: NextRequest,
@@ -11,12 +11,15 @@ async function createActivityLog(
 ) {
   try {
     const session = await auth();
+    // ถ้าดึง session ไม่ได้ ให้ลงชื่อเป็น System_Kernel
+    const operatorName = session?.user?.name || "System_Kernel";
+
     await db.collection("logs").insertOne({
-      userName: session?.user?.name || "Admin",
+      userName: operatorName,
       action,
       details,
-      module: "BANNERS",
-      timestamp: new Date(), // ✅ ใช้ฟิลด์นี้เพื่อให้หน้า Super Admin ดึงข้อมูลได้
+      module: "ADMIN_BANNERS",
+      timestamp: new Date(),
       ip: req.headers.get("x-forwarded-for") || "127.0.0.1",
     });
   } catch (err) {
@@ -44,7 +47,7 @@ export async function GET(
   }
 }
 
-// PATCH: อัปเดตข้อมูลแบนเนอร์ + บันทึก Log
+// PATCH: อัปเดตข้อมูลแบนเนอร์ + บันทึก Log แบบละเอียด
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -65,7 +68,7 @@ export async function PATCH(
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    // 1. ดึงข้อมูลเดิมก่อนอัปเดตเพื่อตรวจสอบชื่อ
+    // 1. ดึงข้อมูลเดิมก่อนอัปเดต เพื่อเอาชื่อมาบันทึก Log
     const oldBanner = await db
       .collection("banners")
       .findOne({ _id: new ObjectId(id) });
@@ -81,10 +84,10 @@ export async function PATCH(
       );
 
     if (result.matchedCount > 0) {
-      // 3. บันทึก Log
+      // 3. บันทึก Log - ระบุเลยว่าแก้จากอะไรเป็นอะไร หรือแก้ของใคร
       await createActivityLog(db, req, {
         action: "UPDATE_BANNER",
-        details: `แก้ไขแบนเนอร์: ${oldBanner.title} ${updateData.title && updateData.title !== oldBanner.title ? `เป็น ${updateData.title}` : ""}`,
+        details: `แก้ไขแบนเนอร์: "${oldBanner.title}" ${updateData.title && updateData.title !== oldBanner.title ? `เป็น "${updateData.title}"` : "(คงชื่อเดิม)"}`,
       });
       return NextResponse.json({ success: true });
     }
@@ -95,7 +98,7 @@ export async function PATCH(
   }
 }
 
-// DELETE: ลบแบนเนอร์ + บันทึก Log
+// DELETE: ลบแบนเนอร์ + บันทึก Log (ที่มึงบอกว่าไม่มี กูใส่ให้แล้ว)
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -109,10 +112,11 @@ export async function DELETE(
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    // 1. ดึงข้อมูลก่อนลบเพื่อเอาชื่อมาใส่ Log
+    // 1. ดึงข้อมูลก่อนลบ (ต้องทำ ไม่งั้น Log จะไม่รู้ว่าลบแบนเนอร์ชื่ออะไร)
     const bannerToDelete = await db
       .collection("banners")
       .findOne({ _id: new ObjectId(id) });
+
     if (!bannerToDelete)
       return NextResponse.json({ error: "Banner not found" }, { status: 404 });
 
@@ -122,10 +126,10 @@ export async function DELETE(
       .deleteOne({ _id: new ObjectId(id) });
 
     if (result.deletedCount === 1) {
-      // 3. บันทึก Log
+      // 3. บันทึก Log การลบ - ใส่ชื่อแบนเนอร์ลงไปในรายละเอียดด้วย
       await createActivityLog(db, req, {
         action: "DELETE_BANNER",
-        details: `ลบแบนเนอร์: ${bannerToDelete.title}`,
+        details: `ลบแบนเนอร์: "${bannerToDelete.title}" (ID: ${id})`,
       });
       return NextResponse.json({ success: true });
     }

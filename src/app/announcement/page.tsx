@@ -65,13 +65,14 @@ export default async function AnnouncementPage() {
     <main className="bg-slate-50 text-slate-800 dark:bg-transparent dark:text-slate-200 container px-4 mx-auto max-w-7xl">
       <div className="py-10">
         {/* --- Header Section --- */}
-        <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-6 border-b border-slate-200 pb-8 dark:border-slate-800">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6 border-b border-slate-200 pb-8 dark:border-slate-800 w-full">
+          {/* ส่วนข้อความ (ชิดซ้าย/Start) */}
           <div className="space-y-2 border-l-4 border-red-500 pl-4">
             <div className="flex items-center gap-2 text-red-500 font-bold uppercase tracking-widest text-[10px] md:text-xs">
               <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
               Official Announcements
             </div>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight dark:text-white">
+            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 tracking-tight dark:text-white leading-tight">
               ข่าวประกาศ <span className="text-red-500">ประชาสัมพันธ์</span>
             </h1>
             <p className="text-slate-500 text-sm md:text-base max-w-lg dark:text-slate-400">
@@ -79,9 +80,10 @@ export default async function AnnouncementPage() {
             </p>
           </div>
 
+          {/* ส่วนปุ่ม (ชิดขวา/End) */}
           <Link
             href="/news?category=Announcement"
-            className="flex items-center gap-2 px-6 py-3 bg-red-500 text-white rounded-full font-bold text-sm shadow-lg shadow-red-200 hover:bg-red-600 transition-all active:scale-95 group dark:shadow-none"
+            className="flex items-center gap-2 px-6 py-3 bg-red-500 text-white rounded-full font-bold text-sm shadow-lg shadow-red-200 hover:bg-red-600 transition-all active:scale-95 group dark:shadow-none whitespace-nowrap"
           >
             ดูประกาศทั้งหมด
           </Link>

@@ -12,13 +12,16 @@ import Announcement from "./announcement/page";
 import TenderPage from "./tender/page";
 import CommandPage from "./command/page";
 import InternshipPage from "./internship/page";
-import ShowFacebook from "@/components/ShowFacebook"; // Component เดิม (ถ้ามี)
-import ShowYoutube from "./ShowYoutube/page"; // Component เดิม (ถ้ามี)
+import ShowFacebook from "@/components/ShowFacebook";
+import ShowYoutube from "./ShowYoutube/page";
 import CalendarPage from "@/components/Calendar";
-import SubQAPage from "./ITA/08/qa/SubQAPage";
-import SocialFeedDisplay from "@/components/home/SocialFeedDisplay"; // ✅ นำเข้าตัวใหม่
+import SocialFeedDisplay from "@/components/home/SocialFeedDisplay";
+// ✅ 1. Import หน้า Q&A มาใช้งาน (หรือจะสร้าง Component แยกก็ได้)
+import QAPage from "./q-and-a/page";
 
-// ✅ 1. ฟังก์ชันดึง Social Feeds จาก API
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 async function getFeeds() {
   try {
     const res = await fetch(
@@ -33,7 +36,6 @@ async function getFeeds() {
   }
 }
 
-// ✅ 2. ดึงข้อมูล Home Data (คงเดิมของคุณไว้)
 async function getHomeData() {
   try {
     const client = await clientPromise;
@@ -69,15 +71,12 @@ async function getHomeData() {
 }
 
 export default async function Home() {
-  // ดึงข้อมูลทั้งสองส่วนพร้อมกัน
   const [homeData, feeds] = await Promise.all([getHomeData(), getFeeds()]);
-
   const { isShow, settings, activePosters } = homeData;
 
   return (
     <div className="flex flex-col">
       <main className="grow">
-        {/* Banner Section */}
         {isShow.banner !== false && <HomeBannerSwiper />}
 
         <div className="max-w-7xl mx-auto w-full">
@@ -91,7 +90,6 @@ export default async function Home() {
           )}
         </div>
 
-        {/* Marquee Section */}
         {isShow.scroll_velocity !== false && (
           <ScrollVelocity
             text1={settings.marquee_text_1}
@@ -99,10 +97,9 @@ export default async function Home() {
           />
         )}
 
-        <div className="max-w-7xl mx-auto w-full px-4">
-          {/* ส่วนประชาสัมพันธ์หลัก (Posters) */}
+        <div className="max-w-7xl mx-auto w-full">
           {isShow.background_effect !== false && activePosters.length > 0 && (
-            <div className="flex flex-col gap-10 my-10">
+            <div className="flex flex-col gap-10 my-10 px-4">
               {activePosters.map((poster: any) => (
                 <BackgroundBeamsWithCollisionDemo
                   key={poster._id.toString()}
@@ -112,7 +109,6 @@ export default async function Home() {
             </div>
           )}
 
-          {/* ข่าวสารและส่วนอื่นๆ */}
           {isShow.press_release !== false && <PressRelease />}
           {isShow.newsletter !== false && <Newsletter />}
           {isShow.announcement !== false && <Announcement />}
@@ -120,23 +116,27 @@ export default async function Home() {
           {isShow.command !== false && <CommandPage />}
           {isShow.internship !== false && <InternshipPage />}
           {isShow.internship !== false && <ShowFacebook />}
-          {/* {isShow.internship !== false && <ShowYoutube />} */}
 
-          {/* --- ✅ ส่วน Social Feed ใหม่ที่เชื่อมกับ Dashboard --- */}
           {isShow.social_feed !== false && feeds.length > 0 && (
             <div className="py-12">
               <SocialFeedDisplay feeds={feeds} />
             </div>
           )}
 
-          {/* ปฏิทินกิจกรรม */}
+          {/* --- ✅ ส่วน Q&A ใหม่ที่เพิ่มเข้าไป --- */}
+          {isShow.q_and_a !== false && (
+            <div className="">
+              <QAPage />
+            </div>
+          )}
+
           {isShow.calendar !== false && (
-            <div className="py-6">
+            <div className="py-12">
               <CalendarPage />
             </div>
           )}
 
-          {isShow.sub_qa !== false && <SubQAPage />}
+          {/* {isShow.sub_qa !== false && <SubQAPage />} */}
         </div>
       </main>
     </div>
