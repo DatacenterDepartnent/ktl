@@ -232,7 +232,7 @@ export default function SuperAdminPage() {
     );
 
   return (
-    <div className="max-w-[1600px] mx-auto p-4 md:p-12 bg-slate-50 min-h-screen">
+    <div className="max-w-[1600px] mx-auto p-2 bg-slate-50 min-h-screen">
       <Toaster position="top-right" />
 
       {/* Stats Summary */}
@@ -261,7 +261,7 @@ export default function SuperAdminPage() {
         ].map((item, idx) => (
           <div
             key={idx}
-            className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100"
+            className="bg-white p-6 rounded-[2.5rem] shadow-xl border border-slate-100"
           >
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
               {item.label}
@@ -277,7 +277,7 @@ export default function SuperAdminPage() {
 
       {/* Users Management Table */}
       <div className="bg-white rounded-[3rem] shadow-2xl border border-slate-100 overflow-hidden mb-16">
-        <div className="p-10 border-b border-slate-50 flex justify-between items-center bg-white/50 backdrop-blur-md">
+        <div className="p-6 border-b border-slate-50 flex justify-between items-center bg-white/50 backdrop-blur-md">
           <h1 className="text-3xl font-black text-slate-900 italic uppercase tracking-tighter">
             Member_Management
           </h1>
@@ -293,11 +293,11 @@ export default function SuperAdminPage() {
           <table className="w-full text-left">
             <thead className="bg-slate-50/50 text-slate-400 text-[10px] uppercase font-black tracking-widest">
               <tr>
-                <th className="p-8 text-center w-20">Order</th>
-                <th className="p-8">User_Identity</th>
-                <th className="p-8 text-center">Auth_Level</th>
-                <th className="p-8 text-center">Protocol_Status</th>
-                <th className="p-8 text-right">Actions</th>
+                <th className="p-6 text-center w-20">Order</th>
+                <th className="p-6">User_Identity</th>
+                <th className="p-6 text-center">Auth_Level</th>
+                <th className="p-6 text-center">Protocol_Status</th>
+                <th className="p-6 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
@@ -306,7 +306,7 @@ export default function SuperAdminPage() {
                   key={user._id}
                   className="hover:bg-blue-50/30 transition-all group"
                 >
-                  <td className="p-8 text-center">
+                  <td className="p-6 text-center">
                     <div className="flex flex-col items-center gap-1 font-black text-slate-900 italic text-xl">
                       <button
                         onClick={() =>
@@ -327,7 +327,7 @@ export default function SuperAdminPage() {
                       </button>
                     </div>
                   </td>
-                  <td className="p-8">
+                  <td className="p-6">
                     <div className="font-black text-slate-900 text-lg uppercase">
                       {user.name}
                     </div>
@@ -335,7 +335,7 @@ export default function SuperAdminPage() {
                       @{user.username}
                     </div>
                   </td>
-                  <td className="p-8 text-center">
+                  <td className="p-6 text-center">
                     <select
                       value={user.role}
                       onChange={(e) =>
@@ -348,7 +348,7 @@ export default function SuperAdminPage() {
                       <option value="super_admin">SUPER_ADMIN</option>
                     </select>
                   </td>
-                  <td className="p-8 text-center">
+                  <td className="p-6 text-center">
                     <button
                       onClick={() =>
                         toggleStatus(user._id, user.isActive, user.name)
@@ -360,7 +360,7 @@ export default function SuperAdminPage() {
                       />
                     </button>
                   </td>
-                  <td className="p-8 text-right">
+                  <td className="p-6 text-right">
                     <button
                       onClick={() =>
                         router.push(`/dashboard/users/edit/${user._id}`)
@@ -379,7 +379,7 @@ export default function SuperAdminPage() {
 
       {/* Activity Logs (Dark Theme) */}
       <div className="bg-slate-900 rounded-[3rem] shadow-2xl overflow-hidden border border-slate-800">
-        <div className="p-10 border-b border-white/5 flex justify-between items-center">
+        <div className="p-6 border-b border-white/5 flex justify-between items-center">
           <h2 className="text-2xl font-black text-white italic uppercase tracking-tighter flex items-center gap-3">
             <span className="h-3 w-3 bg-rose-500 rounded-full animate-ping"></span>
             Audit_Control_Log
@@ -392,7 +392,7 @@ export default function SuperAdminPage() {
           </button>
         </div>
 
-        <div className="p-10 max-h-[800px] overflow-y-auto space-y-8 custom-scrollbar">
+        <div className="p-6 max-h-[800px] overflow-y-auto space-y-8 custom-scrollbar">
           {logs.length === 0 ? (
             <p className="text-center text-slate-600 font-black italic uppercase py-20 tracking-widest">
               No_Activity_Detected
@@ -401,7 +401,7 @@ export default function SuperAdminPage() {
             logs.map((log) => (
               <div
                 key={log._id}
-                className="group border-l-2 border-white/5 pl-8 hover:border-blue-500 transition-all relative"
+                className="group border-l-2 border-white/5 pl-6 hover:border-blue-500 transition-all relative"
               >
                 <div
                   className={`absolute -left-[5px] top-0 h-2 w-2 rounded-full ${log.action.includes("DELETE") ? "bg-rose-500 shadow-[0_0_8px_rose]" : "bg-slate-700 group-hover:bg-blue-500"}`}

@@ -109,17 +109,17 @@ export default function AddBannerPage() {
         </div>
       </nav>
 
-      <div className="max-w-5xl mx-auto px-6 mt-10">
+      <div className="max-w-5xl mx-auto px-2 mt-10">
         <form
           onSubmit={handleSubmit}
           className="grid grid-cols-1 lg:grid-cols-12 gap-8"
         >
           <div className="lg:col-span-7 space-y-6">
-            <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 p-8">
+            <div className="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-2">
               <div className="flex items-center gap-2 mb-6 text-blue-600">
                 <FiImage className="w-5 h-5" />
                 <h3 className="font-black uppercase tracking-wider text-sm italic">
-                  Banner Image Preview
+                  ภาพตัวอย่างแบนเนอร์
                 </h3>
               </div>
 
@@ -167,7 +167,7 @@ export default function AddBannerPage() {
           </div>
 
           <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-200">
+            <div className="bg-white rounded-[2rem] p-4 shadow-sm border border-slate-200">
               <div className="space-y-6">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">

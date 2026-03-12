@@ -127,20 +127,20 @@ export default function QuestionsPage() {
 
   if (loading)
     return (
-      <div className="flex items-center justify-center min-h-screen font-black italic text-slate-400 animate-pulse">
-        BOOTING_SYSTEM...
+      <div className="flex items-center justify-center min-h-screen font-black italic  animate-pulse">
+        กำลังบูตระบบ...
       </div>
     );
 
   return (
-    <div className="max-w-6xl mx-auto p-4 md:p-12 bg-white min-h-screen">
+    <div className="max-w-[1600px] mx-auto p-2 py-12">
       <Toaster position="top-right" />
 
       {/* Header */}
       <div className="flex justify-between items-end mb-12 border-b-4 border-slate-900 pb-6">
         <div>
-          <h1 className="text-5xl font-black text-slate-900 italic uppercase tracking-tighter">
-            Q&A_Vault
+          <h1 className="text-5xl font-black  italic uppercase tracking-tighter">
+            Q&A
           </h1>
           <p className="text-slate-400 font-bold uppercase text-[10px] tracking-[0.3em] mt-2">
             ศูนย์จัดการคำถามและแก้ไขคำตอบ
@@ -148,10 +148,10 @@ export default function QuestionsPage() {
         </div>
         <div className="text-right hidden md:block">
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-            Database_Status
+            สถานะฐานข้อมูล
           </p>
           <p className="text-xl font-black text-emerald-500 italic">
-            ONLINE_CONNECTED
+            เชื่อมต่อออนไลน์
           </p>
         </div>
       </div>
@@ -160,7 +160,7 @@ export default function QuestionsPage() {
         {questions.length === 0 ? (
           <div className="py-20 text-center border-4 border-dashed border-slate-100 rounded-[3rem]">
             <p className="text-slate-300 font-black italic uppercase tracking-widest text-2xl">
-              No_Tickets_In_Vault
+              ไม่มีตั๋วอยู่ในตู้นิรภัย
             </p>
           </div>
         ) : (
@@ -168,7 +168,7 @@ export default function QuestionsPage() {
             <div
               key={q._id}
               id={q._id}
-              className={`group relative p-8 md:p-10 rounded-[3rem] border-2 transition-all duration-500 ${
+              className={`group relative p-6 rounded-[3rem] border-2 transition-all duration-500 ${
                 q.status === "answered"
                   ? "border-slate-100 bg-slate-50 opacity-90"
                   : "border-cyan-200 bg-white shadow-xl shadow-cyan-500/5"
@@ -208,12 +208,12 @@ export default function QuestionsPage() {
 
               <div className="space-y-4">
                 <p className="text-sm font-black text-slate-400 uppercase italic">
-                  From: {q.guestName}
+                  จาก: {q.guestName}
                 </p>
-                <h2 className="text-2xl md:text-3xl font-black text-slate-900 tracking-tight leading-none uppercase italic">
+                <h2 className="text-2xl md:text-3xl font-black  tracking-tight leading-none uppercase italic">
                   {q.subject}
                 </h2>
-                <div className="bg-slate-900 text-slate-100 p-6 rounded-2xl font-medium leading-relaxed shadow-lg">
+                <div className="bg-slate-900 text-slate-100 p-4 rounded-2xl font-medium leading-relaxed shadow-lg">
                   {q.content}
                 </div>
               </div>
@@ -246,9 +246,9 @@ export default function QuestionsPage() {
                       setSelectedQuestion(q);
                       setAnswerText("");
                     }}
-                    className="w-full py-6 bg-slate-900 text-white rounded-[1.5rem] font-black italic uppercase text-lg tracking-widest hover:bg-cyan-500 hover:scale-[1.01] transition-all group-hover:bg-cyan-600 shadow-xl"
+                    className="w-full py-4 bg-slate-900 text-white rounded-[1.5rem] font-black italic uppercase text-md tracking-widest hover:bg-cyan-500 hover:scale-[1.01] transition-all group-hover:bg-cyan-600 shadow-xl"
                   >
-                    Answer_This_Question ↗
+                    ตอบคำถามนี้ ↗
                   </button>
                 )}
               </div>
@@ -260,19 +260,19 @@ export default function QuestionsPage() {
       {/* 🔴 Edit/Reply Modal */}
       {selectedQuestion && (
         <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4 z-[100] animate-in fade-in duration-300">
-          <div className="bg-white w-full max-w-2xl rounded-[3rem] p-8 md:p-12 shadow-2xl relative animate-in slide-in-from-bottom-5 border-4 border-slate-900">
+          <div className="bg-white w-full max-w-2xl rounded-[2rem] py-6 px-4 shadow-2xl relative animate-in slide-in-from-bottom-5 border-4 border-slate-900">
             <button
               onClick={() => setSelectedQuestion(null)}
-              className="absolute top-8 right-8 text-slate-300 hover:text-slate-900 font-black"
+              className="absolute top-8 right-8 text-slate-300 hover: font-black"
             >
-              CLOSE [X]
+              ปิด [X]
             </button>
             <p className="text-cyan-500 font-black text-[10px] uppercase tracking-[0.4em] mb-2 italic">
               {selectedQuestion.answer
                 ? "Mode: Editing_Response"
                 : "Mode: Replying_to_Guest"}
             </p>
-            <h2 className="text-3xl font-black text-slate-900 uppercase mb-8 leading-none italic">
+            <h2 className="text-3xl font-black  uppercase mb-8 leading-none italic">
               คุณ {selectedQuestion.guestName}
             </h2>
             <div className="mb-8 p-6 bg-slate-50 rounded-2xl border border-slate-100 italic text-slate-500 max-h-32 overflow-y-auto">
@@ -289,7 +289,7 @@ export default function QuestionsPage() {
                 onClick={() => setSelectedQuestion(null)}
                 className="py-5 bg-slate-100 text-slate-400 rounded-2xl font-black uppercase italic hover:bg-slate-200 transition-all"
               >
-                Discard
+                ยกเลิก [X]
               </button>
               <button
                 onClick={handleReply}

@@ -555,7 +555,7 @@ export default function ITA() {
         <div className="mx-auto mb-24 max-w-5xl space-y-8">
           {/* 1. What is ITA Card (Card แนวนอน เน้น Logo และเนื้อหา) */}
           <Card className="group overflow-hidden rounded-[2.5rem] border border-white/60 bg-white/80 shadow-xl shadow-blue-900/5 backdrop-blur-xl transition-all hover:shadow-2xl hover:shadow-blue-900/10 dark:border-slate-700 dark:bg-slate-800/80">
-            <CardBody className="relative flex flex-col items-center justify-between gap-8 p-8 md:flex-row md:p-12">
+            <CardBody className="relative flex flex-col items-center justify-between gap-8 p-8 md:flex-row ">
               {/* Background Decor */}
 
               {/* Logo Section */}

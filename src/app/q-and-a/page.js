@@ -213,7 +213,7 @@ export default function QAPage() {
                 {questions.map((q) => (
                   <div
                     key={q._id}
-                    className="group bg-white rounded-[2.5rem] p-8 border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/30 transition-all duration-300"
+                    className="group bg-white rounded-[2rem] p-4 border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/30 transition-all duration-300"
                   >
                     <div className="flex flex-wrap justify-between items-center gap-4 mb-6 border-b border-slate-50 pb-6">
                       <span
@@ -240,7 +240,7 @@ export default function QAPage() {
                         <span className="w-1.5 h-1.5 bg-slate-300 rounded-full"></span>
                         ผู้ส่ง: {q.guestName || "ผู้ใช้งานทั่วไป"}
                       </p>
-                      <div className="bg-slate-900 text-slate-100 p-6 rounded-2xl font-medium leading-relaxed shadow-inner shadow-black/10">
+                      <div className="bg-slate-900 text-slate-100 p-4 rounded-2xl font-medium leading-relaxed shadow-inner shadow-black/10">
                         {q.content}
                       </div>
                     </div>

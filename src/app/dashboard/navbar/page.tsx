@@ -95,7 +95,7 @@ export default function ManageNavbar() {
   const parentOptions = navItems.filter((item) => !item.parentId);
 
   return (
-    <div className="max-w-[1600px] mx-auto p-4 md:p-8 text-zinc-800 dark:text-zinc-200">
+    <div className="max-w-[1600px] mx-auto p-2 text-zinc-800 dark:text-zinc-200">
       <div className="">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-6 border-b border-zinc-200 gap-4 dark:border-zinc-800">
@@ -237,7 +237,7 @@ export default function ManageNavbar() {
             {parentOptions.map((parent) => (
               <div
                 key={parent._id}
-                className={`border rounded-2xl p-4 md:p-5 transition-all duration-300 ${
+                className={`border rounded-2xl p-2 transition-all duration-300 ${
                   editId === parent._id
                     ? "bg-yellow-50 border-yellow-300 ring-2 ring-yellow-200 shadow-md dark:bg-yellow-900/20 dark:border-yellow-700 dark:ring-yellow-900"
                     : "border-zinc-200 hover:shadow-md dark:border-zinc-800 dark:bg-zinc-900/50 dark:hover:border-zinc-700"

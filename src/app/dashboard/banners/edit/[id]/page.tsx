@@ -126,7 +126,7 @@ export default function EditBannerPage() {
     <div className="min-h-screen bg-[#f8fafc] pb-20 font-sans">
       <Toaster position="top-center" />
 
-      <nav className="bg-white border-b border-slate-200 sticky top-0 z-10 px-6 py-4">
+      <nav className="bg-white border-b border-slate-200 sticky top-0 z-10 px-2 py-4">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
             <button
@@ -145,18 +145,18 @@ export default function EditBannerPage() {
         </div>
       </nav>
 
-      <div className="max-w-5xl mx-auto px-6 mt-10">
+      <div className="max-w-5xl mx-auto px-2 mt-10">
         <form
           onSubmit={handleSubmit}
           className="grid grid-cols-1 lg:grid-cols-12 gap-8"
         >
           <div className="lg:col-span-7 space-y-6">
-            <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 p-8">
+            <div className="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-4">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2 text-blue-600">
                   <FiImage className="w-5 h-5" />
                   <h3 className="font-black uppercase tracking-wider text-sm italic">
-                    Banner Preview
+                    ตัวอย่างแบนเนอร์
                   </h3>
                 </div>
                 {selectedFile && (
@@ -201,7 +201,7 @@ export default function EditBannerPage() {
           </div>
 
           <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-200">
+            <div className="bg-white rounded-[2rem] p-4 shadow-sm border border-slate-200">
               <div className="space-y-6">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">

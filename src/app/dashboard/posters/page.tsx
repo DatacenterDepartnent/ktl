@@ -132,11 +132,11 @@ export default function ManagePostersPage() {
     );
 
   return (
-    <div className="max-w-[1600px] mx-auto p-6 space-y-10 animate-in fade-in duration-700">
+    <div className="max-w-[1600px] mx-auto p-2 space-y-10 animate-in fade-in duration-700">
       <Toaster position="bottom-right" />
 
       {/* Header Section */}
-      <header className="relative flex flex-col md:flex-row md:items-end justify-between gap-6 overflow-hidden p-8 rounded-[3rem] bg-zinc-900 text-white shadow-2xl">
+      <header className="relative flex flex-col md:flex-row md:items-end justify-between gap-6 overflow-hidden p-6 rounded-[3rem] bg-zinc-900 text-white shadow-2xl">
         <div className="z-10">
           <h1 className="text-4xl font-black uppercase tracking-tighter flex items-center gap-3">
             <span className="bg-blue-600 px-3 py-1 rounded-2xl rotate-3 inline-block text-white">
@@ -168,7 +168,7 @@ export default function ManagePostersPage() {
         {posters.map((poster, index) => (
           <div
             key={poster._id}
-            className="group bg-white dark:bg-zinc-900 rounded-[2.5rem] p-4 border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500"
+            className="group bg-white dark:bg-zinc-900 rounded-[2rem] p-2 border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500"
           >
             <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden mb-5">
               <Image

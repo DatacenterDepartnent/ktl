@@ -65,7 +65,7 @@ export default function ManageMarqueePage() {
     );
 
   return (
-    <div className="max-w-4xl mx-auto p-6 space-y-8 animate-in fade-in duration-500">
+    <div className="max-w-[1600px] mx-auto p-2 space-y-8 animate-in fade-in duration-500">
       <Toaster position="bottom-right" />
 
       {/* Navigation & Header */}
@@ -78,7 +78,7 @@ export default function ManageMarqueePage() {
         </button>
         <div>
           <h1 className="text-3xl font-black uppercase tracking-tighter italic">
-            Edit <span className="text-amber-500">Marquee Text</span>
+            แก้ไข <span className="text-amber-500">ข้อความมาร์ค</span>
           </h1>
           <p className="text-zinc-500 text-sm font-medium">
             จัดการข้อความวิ่งและบันทึกประวัติการแก้ไขเข้าสู่ระบบ Audit Log
@@ -86,11 +86,11 @@ export default function ManageMarqueePage() {
         </div>
       </div>
 
-      <section className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-10 border border-zinc-200 dark:border-zinc-800 shadow-2xl shadow-amber-500/5">
+      <section className="bg-white dark:bg-zinc-900 rounded-[2rem] py-6 px-4 border border-zinc-200 dark:border-zinc-800 shadow-2xl shadow-amber-500/5">
         <div className="space-y-10">
           {[
-            { key: "marquee_text_1", label: "Marquee Text 1 (Right to Left)" },
-            { key: "marquee_text_2", label: "Marquee Text 2 (Left to Right)" },
+            { key: "marquee_text_1", label: "ข้อความมาร์ค 1 (ขวาไปซ้าย)" },
+            { key: "marquee_text_2", label: "ข้อความมาร์ค 2 (ซ้ายไปขวา)" },
           ].map((item, index) => {
             const setting = siteSettings.find((s: any) => s.key === item.key);
             return (

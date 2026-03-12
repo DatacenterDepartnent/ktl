@@ -50,7 +50,7 @@ export default async function ManageNewsPage() {
   const newsList = await getNews();
 
   return (
-    <div className="max-w-[1600px] mx-auto w-full p-4 text-zinc-800 dark:text-zinc-200">
+    <div className="max-w-[1600px] mx-auto w-full p-2 text-zinc-800 dark:text-zinc-200">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 md:mb-10 gap-4 border-b border-zinc-200 pb-6 dark:border-zinc-800">
         <div>
           <h1 className="text-2xl md:text-3xl font-black text-zinc-900 tracking-tight dark:text-white">

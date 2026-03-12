@@ -161,7 +161,7 @@ export default function FeedManagementPage() {
           <div className="lg:col-span-1">
             <form
               onSubmit={handleSubmit}
-              className="bg-white p-8 rounded-[2.5rem] shadow-xl border border-slate-100 sticky top-10"
+              className="bg-white p-6 rounded-[2rem] shadow-xl border border-slate-100 sticky top-10"
             >
               <h2 className="font-black uppercase text-xs tracking-widest text-slate-400 mb-6 flex items-center gap-2">
                 <FiPlus className="text-blue-600" strokeWidth={3} /> Add Content

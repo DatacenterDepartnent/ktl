@@ -141,22 +141,23 @@ export default function BannerManagementPage() {
       <div className="min-h-[60vh] flex flex-col items-center justify-center gap-4">
         <FiLoader className="w-10 h-10 animate-spin text-blue-600" />
         <p className="font-black text-slate-400 uppercase tracking-widest animate-pulse">
-          Fetching Banners...
+          กำลังดึงข้อมูลแบนเนอร์...
         </p>
       </div>
     );
   }
 
   return (
-    <div className="p-6 md:p-10 bg-slate-50 min-h-screen animate-in fade-in duration-500">
+    <div className="p-2 py-12 min-h-screen animate-in fade-in duration-500">
       <Toaster position="bottom-right" />
 
       {/* --- Header --- */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 border-b pb-8 border-slate-200 gap-4">
         <div>
           <h1 className="text-4xl font-black text-slate-900 italic uppercase tracking-tighter flex items-center gap-3">
-            <FiImage className="text-blue-600 not-italic" />
-            Banner <span className="text-blue-600">Slides</span>
+            <FiImage className="text-blue-600 dark:text-white not-italic" />
+            <span className="text-dark dark:text-white">Banner</span>
+            <span className="text-blue-600">Slides</span>
           </h1>
           <p className="text-sm text-slate-500 mt-1 font-medium italic flex items-center gap-2">
             {isSavingOrder ? (
@@ -170,9 +171,9 @@ export default function BannerManagementPage() {
         </div>
         <Link
           href="/dashboard/banners/add"
-          className="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-blue-600 transition-all shadow-xl shadow-slate-200 active:scale-95 text-xs uppercase tracking-widest"
+          className="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black flex items-center justify-center gap-2 hover:bg-blue-600 transition-all shadow-xl active:scale-95 text-xs uppercase tracking-widest"
         >
-          <FiPlus strokeWidth={3} /> Add New Banner
+          <FiPlus strokeWidth={3} /> เพิ่มแบนเนอร์ใหม่
         </Link>
       </div>
 
@@ -280,7 +281,7 @@ function SortableItem({ banner, handleDelete, isDeleting }: any) {
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-[10px] font-black bg-slate-100 text-slate-500 px-2 py-1 rounded-lg uppercase">
-              Order: {banner.order}
+              ลำดับ: {banner.order}
             </span>
           </div>
           <h3 className="font-black text-slate-800 text-xl truncate group-hover:text-blue-600 transition-colors">
@@ -288,7 +289,7 @@ function SortableItem({ banner, handleDelete, isDeleting }: any) {
           </h3>
           {banner.linkUrl && (
             <p className="text-[11px] text-blue-500 bg-blue-50 px-3 py-1 rounded-full mt-3 truncate w-fit font-bold">
-              Link: {banner.linkUrl}
+              ลิงก์: {banner.linkUrl}
             </p>
           )}
         </div>
@@ -298,7 +299,7 @@ function SortableItem({ banner, handleDelete, isDeleting }: any) {
             href={`/dashboard/banners/edit/${banner._id}`}
             className="flex-1 bg-slate-50 text-slate-600 py-3 rounded-xl font-bold text-xs flex items-center justify-center gap-2 hover:bg-blue-50 hover:text-blue-600 transition-all border border-transparent hover:border-blue-100"
           >
-            <FiEdit2 size={14} /> EDIT
+            <FiEdit2 size={14} /> แก้ไข
           </Link>
           <button
             onClick={() => handleDelete(banner._id, banner.title)}
