@@ -53,7 +53,7 @@ export default async function PressRelease() {
   const latestNews = await getLatestNews();
 
   return (
-    <main className="flex-col container px-4 relative max-w-7xl mx-auto flex items-center justify-between dark:bg-transparent">
+    <main className="flex-col   relative max-w-[1600px] mx-auto flex items-center justify-between dark:bg-transparent">
       <div className="w-full">
         {" "}
         {/* เพิ่ม w-full เพื่อความแน่นอนของ Layout */}

@@ -156,7 +156,7 @@ export default function BudgetPage() {
 
   return (
     <div className="min-h-screen bg-transparent py-10 px-4 sm:px-6 lg:px-8 font-sans selection:bg-blue-500 selection:text-white">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-[1600px] mx-auto">
         {/* --- Header --- */}
         <div className="text-center mb-10">
           <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white sm:text-4xl">

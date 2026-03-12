@@ -48,7 +48,7 @@ export default async function InternshipPage() {
   const internshipData = await getInternshipData();
 
   return (
-    <main className="bg-slate-50 text-slate-800 dark:bg-transparent dark:text-slate-200 container px-4 mx-auto max-w-7xl">
+    <main className="bg-slate-50 text-slate-800 dark:bg-transparent dark:text-slate-200 mx-auto max-w-[1600px]">
       <div className="py-10">
         {/* --- Header Section (ธีม Emerald เพื่อสื่อถึงความสดใหม่และการเรียนรู้) --- */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6 border-b border-slate-200 pb-8 dark:border-slate-800 w-full">

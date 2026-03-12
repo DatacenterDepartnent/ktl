@@ -8,7 +8,7 @@ import { FileTextOutlined, SafetyCertificateOutlined } from "@ant-design/icons";
 const ExternalQualityAssurance = () => {
   return (
     <section className="py-16 dark:bg-transparent">
-      <div className="container mx-auto px-4 lg:px-20">
+      <div className="container mx-auto px-2 lg:px-20">
         {/* --- Header Section --- */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}

@@ -28,9 +28,8 @@ export default function HomeBannerSwiper() {
 
   if (!mounted || loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 my-8">
-        {/* Skeleton ที่มีสัดส่วนเท่ากับแบนเนอร์จริง */}
-        <div className="w-full aspect-[21/9] bg-slate-200 animate-pulse rounded-[2.5rem]" />
+      <div className="w-full max-w-[1920px] mx-auto my-4 px-0 md:px-4">
+        <div className="w-full aspect-[1920/820] bg-slate-200 animate-pulse rounded-lg md:rounded-[2.5rem]" />
       </div>
     );
   }
@@ -38,7 +37,8 @@ export default function HomeBannerSwiper() {
   if (banners.length === 0) return null;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 my-8 relative z-0 group">
+    // ปรับให้กว้างเต็มจอ (w-full) และจำกัดความกว้างสูงสุดตามขนาดรูป (max-w-[1920px])
+    <div className="max-w-[1600px] mx-auto px-2 my-2 relative z-0 group">
       <Swiper
         modules={[Navigation, Pagination, Autoplay, EffectFade]}
         effect="fade"
@@ -50,22 +50,23 @@ export default function HomeBannerSwiper() {
         pagination={{ clickable: true, dynamicBullets: true }}
         autoplay={{ delay: 5000, disableOnInteraction: false }}
         loop={banners.length > 1}
-        // กำหนด Class ให้บังคับสัดส่วนภาพเต็ม 21:9
-        className="rounded-[1.5rem] md:rounded-[2.5rem] overflow-hidden shadow-2xl  aspect-[21/9] w-full"
+        // เอา aspect-[21/9] ออก เพื่อให้ความสูงยืดตามรูปภาพจริง
+        className="rounded-4xl overflow-hidden shadow-2xl w-full h-auto"
       >
         {banners.map((banner: any, index: number) => (
           <SwiperSlide key={banner._id}>
-            <div className="relative w-full h-full ">
+            <div className="relative w-full h-auto">
               {banner.linkUrl ? (
                 <a
                   href={banner.linkUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  className="block w-full"
                 >
                   <BannerImage
                     src={banner.imageUrl}
                     alt={banner.title}
-                    isFirst={index === 0} // โหลดรูปแรกด้วย Priority สูงสุด
+                    isFirst={index === 0}
                   />
                 </a>
               ) : (
@@ -80,15 +81,19 @@ export default function HomeBannerSwiper() {
         ))}
 
         {/* Navigation Buttons */}
-        <div className="swiper-button-prev !text-white !w-10 !h-10 !bg-black/20 hover:!bg-black/50 !rounded-full !after:text-[14px] opacity-0 group-hover:opacity-100 transition-all duration-300 ml-6"></div>
-        <div className="swiper-button-next !text-white !w-10 !h-10 !bg-black/20 hover:!bg-black/50 !rounded-full !after:text-[14px] opacity-0 group-hover:opacity-100 transition-all duration-300 mr-6"></div>
+        <div className="swiper-button-prev !text-white !w-12 !h-12 !bg-black/20 hover:!bg-black/50 !rounded-full !after:text-[18px] opacity-0 group-hover:opacity-100 transition-all duration-300 ml-6"></div>
+        <div className="swiper-button-next !text-white !w-12 !h-12 !bg-black/20 hover:!bg-black/50 !rounded-full !after:text-[18px] opacity-0 group-hover:opacity-100 transition-all duration-300 mr-6"></div>
       </Swiper>
 
       <style jsx global>{`
         .swiper-pagination-bullet-active {
           background-color: #e11d48 !important;
-          width: 20px !important;
+          width: 24px !important;
           border-radius: 5px !important;
+        }
+        /* แก้ไขให้ Swiper ปรับความสูงตาม Slide ที่แสดงอยู่ */
+        .swiper {
+          height: auto !important;
         }
       `}</style>
     </div>
@@ -105,17 +110,20 @@ function BannerImage({
   isFirst: boolean;
 }) {
   return (
-    <>
-      <Image
+    <div className="relative w-full h-auto flex items-center justify-center bg-slate-50">
+      {/* ใช้แท็ก img ปกติร่วมกับ Tailwind เพื่อให้ h-auto ทำงานได้สมบูรณ์ที่สุดในแง่ของ Responsive 
+         หรือถ้าจะใช้ Next.js <Image /> ต้องระบุ width/height หรือใช้สัดส่วนคงที่
+      */}
+      <img
         src={src}
         alt={alt}
-        fill // สำคัญ: ทำให้รูปขยายเต็ม Container
-        priority // สำคัญ: ทำให้โหลดเร็วขึ้นในหน้าแรก
-        className="object-cover object-center" // สำคัญ: ทำให้รูปไม่เบี้ยวและเต็มกรอบ
-        sizes="(max-width: 1280px) 100vw, 1280px"
-        quality={85} // ปรับสมดุลความชัดกับขนาดไฟล์ (80-90 กำลังดี)
+        // w-full h-auto ทำให้รูปกว้างเต็มและสูงตามสัดส่วนจริง ไม่โดนบีบ ไม่โดนซูม
+        className="w-full h-auto block object-contain mx-auto"
+        loading={isFirst ? "eager" : "lazy"}
       />
-      <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
-    </>
+
+      {/* Gradient Overlay */}
+      <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
+    </div>
   );
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react"; // ✅ เพิ่ม useState, useEffect
 import Link from "next/link";
 import { Card, Tabs, Tab } from "@heroui/react";
 import { motion } from "framer-motion";
@@ -12,9 +13,21 @@ import {
 } from "@ant-design/icons";
 
 const Features = () => {
+  // ✅ 1. เพิ่ม State เพื่อเช็คว่า Component โหลดที่ Client หรือยัง
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // ✅ 2. ถ้ายังไม่โหลด (SSR) ให้ส่ง Placeholder เปล่าๆ ไปก่อน เพื่อป้องกัน Hydration Error
+  if (!isMounted) {
+    return <div className="py-16 min-h-[400px]" />;
+  }
+
   return (
-    <section className="relative px-4 overflow-hidden rounded-3xl py-16 font-sans dark:bg-transparent">
-      {/* Background Blobs: ปรับสีให้จางลงใน dark mode */}
+    <section className="relative px-2 overflow-hidden rounded-3xl py-16 font-sans dark:bg-transparent">
+      {/* Background Blobs */}
       <div className="absolute top-0 right-0 -mt-20 -mr-20 h-96 w-96 rounded-full bg-blue-100/50 blur-3xl dark:bg-blue-900/10" />
       <div className="absolute bottom-0 left-0 -mb-20 -ml-20 h-80 w-80 rounded-full bg-indigo-100/50 blur-3xl dark:bg-indigo-900/10" />
 
@@ -28,15 +41,12 @@ const Features = () => {
         {/* --- Header --- */}
         <div className="mb-12 text-center">
           <Link href="/GECC" className="group inline-block">
-            {/* Badge: คงสีเดิมไว้เพราะอ่านง่ายทั้งสองโหมด */}
             <span className="mb-2 inline-block rounded-full bg-blue-600 px-3 py-1 text-xs font-bold tracking-wider text-white uppercase shadow-md transition-transform group-hover:scale-105">
               GECC Center
             </span>
-            {/* Heading: สีขาวใน dark mode */}
             <h2 className="mt-3 text-3xl font-extrabold text-slate-800 transition-colors group-hover:text-blue-600 md:text-4xl dark:text-slate-100 dark:group-hover:text-blue-400">
               ศูนย์ราชการสะดวก
             </h2>
-            {/* Description: สีเทาอ่อนใน dark mode */}
             <p className="mx-auto mt-4 max-w-2xl text-slate-500 dark:text-slate-400">
               ศูนย์กลางการให้บริการข้อมูลและอำนวยความสะดวกแบบครบวงจร
               เพื่อประชาชนและผู้รับบริการ
@@ -46,7 +56,6 @@ const Features = () => {
 
         {/* --- Tabs Section --- */}
         <div className="">
-          {/* Main Card: พื้นหลังเข้มใน dark mode */}
           <Card className="rounded-3xl border border-slate-100 bg-white p-2 shadow-xl dark:border-neutral-800 dark:bg-neutral-900">
             <Tabs
               aria-label="GECC Services"
@@ -54,12 +63,12 @@ const Features = () => {
               variant="solid"
               classNames={{
                 tabList:
-                  "gap-2 w-full relative rounded-2xl bg-slate-100 p-2 dark:bg-neutral-800", // พื้นหลัง Tab List เข้ม
+                  "gap-2 w-full relative rounded-2xl bg-slate-100 p-2 dark:bg-neutral-800",
                 cursor:
-                  "w-full bg-white dark:bg-neutral-700 shadow-sm rounded-xl", // ตัวเลื่อน (Cursor) สีเข้มขึ้น
-                tab: "max-w-full h-12 text-slate-500 dark:text-slate-400 font-medium", // ข้อความปกติ
+                  "w-full bg-white dark:bg-neutral-700 shadow-sm rounded-xl",
+                tab: "max-w-full h-12 text-slate-500 dark:text-slate-400 font-medium",
                 tabContent:
-                  "group-data-[selected=true]:text-blue-600 dark:group-data-[selected=true]:text-white font-bold text-base", // ข้อความตอนเลือก (สีขาวใน dark mode)
+                  "group-data-[selected=true]:text-blue-600 dark:group-data-[selected=true]:text-white font-bold text-base",
               }}
             >
               {/* Tab 1: บริการ */}
@@ -203,18 +212,15 @@ const ServiceCard = ({
     <Link
       href={href}
       target={isExternal ? "_blank" : "_self"}
-      rel={isExternal ? "noopener noreferrer" : undefined} // ✅ Security Fix
+      rel={isExternal ? "noopener noreferrer" : undefined}
       className="group relative flex flex-col items-center justify-center rounded-2xl border border-slate-100 bg-slate-50/50 p-6 text-center transition-all duration-300 hover:-translate-y-1 hover:border-blue-200 hover:bg-blue-50 hover:shadow-lg dark:border-neutral-800 dark:bg-neutral-800 dark:hover:bg-neutral-700 dark:hover:border-neutral-600"
     >
-      {/* Icon Wrapper: พื้นหลังเข้มใน dark mode */}
       <div className="mb-4 rounded-full bg-white p-4 shadow-sm ring-1 ring-slate-100 transition-transform group-hover:scale-110 dark:bg-neutral-900 dark:ring-neutral-700">
         {icon}
       </div>
-      {/* Title: สีขาวใน dark mode */}
       <h3 className="text-lg font-bold text-slate-700 group-hover:text-blue-600 dark:text-slate-200 dark:group-hover:text-blue-400">
         {title}
       </h3>
-      {/* Desc: สีเทาอ่อนใน dark mode */}
       <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{desc}</p>
     </Link>
   );

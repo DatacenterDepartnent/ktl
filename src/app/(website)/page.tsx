@@ -59,7 +59,7 @@ export default async function HomePage() {
           <div className="w-full h-full bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
         </div>
 
-        <div className="relative z-20 max-w-7xl mx-auto space-y-6">
+        <div className="relative z-20 max-w-[1600px] mx-auto space-y-6">
           <span className="inline-block px-4 py-1.5 rounded-full bg-blue-600/20 text-blue-300 border border-blue-500/30 text-sm font-bold tracking-wide uppercase">
             Welcome to KTLTC
           </span>
@@ -88,7 +88,7 @@ export default async function HomePage() {
       </section>
 
       {/* --- Latest News Section --- */}
-      <section className="py-16md:py-24 max-w-7xl mx-auto md:px-8">
+      <section className="py-16md:py-24 max-w-[1600px] mx-auto md:px-8">
         <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
           <div>
             <h2 className="text-3xl font-black text-slate-900 flex items-center gap-2">

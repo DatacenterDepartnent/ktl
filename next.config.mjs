@@ -1,11 +1,20 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // ปิด Timeout เพื่อป้องกัน error จุกจิก
+  // 1. เพิ่มการตั้งค่าเพื่อปลดล็อก Body Size (แก้ Error: Body exceeded 1 MB limit)
+  experimental: {
+    serverActions: {
+      bodySizeLimit: "10mb", // อนุญาตให้อัปโหลดไฟล์ได้สูงสุด 10MB
+    },
+  },
+
+  // 2. บอกให้ Next.js ปฏิบัติกับ sharp เป็น external package (ป้องกันปัญหาตอน build/run)
+  serverExternalPackages: ["sharp"],
+
   staticPageGenerationTimeout: 1000,
 
   images: {
-    unoptimized: false, // แนะนำให้เปิดไว้เพื่อให้เว็บโหลดเร็ว (LCP ดีขึ้น)
-    qualities: [75, 85], // เพิ่มบรรทัดนี้เพื่อลบ Warning ใน Log
+    unoptimized: false,
+    qualities: [75, 85],
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
@@ -16,7 +25,6 @@ const nextConfig = {
     ],
   },
 
-  // การตั้งค่าอื่นๆ คงไว้
   compress: true,
   transpilePackages: ["@heroui/react", "antd"],
 };

@@ -52,7 +52,7 @@ export default async function AllNewsPage() {
     <main className="min-h-screen bg-slate-50/50 dark:bg-zinc-950 text-slate-900 dark:text-slate-200 font-sans selection:bg-blue-100 dark:selection:bg-blue-900/30">
       {/* --- Hero / Header Section --- */}
       <div className="relative z-10 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border-b border-slate-200/60 dark:border-zinc-800 pt-32 pb-12 md:pt-40 md:pb-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
             {/* Title & Description */}
             <div className="space-y-4 max-w-3xl">
@@ -99,7 +99,7 @@ export default async function AllNewsPage() {
         {/* Background decorative elements */}
         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-zinc-800 to-transparent"></div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           {/* Stats / Filter Bar */}
           <div className="mb-12 flex items-center justify-between gap-6">
             <div className="flex items-center gap-4 w-full">

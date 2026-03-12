@@ -87,7 +87,7 @@ export default function QAPage() {
         <div className="absolute bottom-[-5%] right-[-5%] w-[30%] h-[30%] rounded-full bg-indigo-100/40 blur-[100px]"></div>
       </div>
 
-      <div className="relative z-10 container mx-auto max-w-7xl px-4 py-10 md:py-16">
+      <div className="relative z-10   mx-auto max-w-[1600px] py-10 md:py-16">
         {/* ส่วนหัว (Header) */}
         <header className="mb-12">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-8 bg-white border border-slate-100 rounded-[2.5rem] shadow-sm">
@@ -123,12 +123,12 @@ export default function QAPage() {
           {/* ส่วนแบบฟอร์ม (Form Side) */}
           <aside className="lg:col-span-5">
             <div className="sticky top-10">
-              <div className="bg-white rounded-[2.5rem] p-8 md:p-10 shadow-xl shadow-slate-200/40 border border-slate-50">
+              <div className="">
                 <div className="flex items-center gap-3 mb-8">
                   <div className="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center text-white">
                     <FiEdit3 size={18} />
                   </div>
-                  <h2 className="text-xl font-black text-slate-800 italic uppercase">
+                  <h2 className="text-xl font-black text-slate-800 dark:text-white italic uppercase">
                     สร้างคำร้องใหม่
                   </h2>
                 </div>
@@ -184,7 +184,7 @@ export default function QAPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-[0.1em] hover:bg-cyan-600 transition-all shadow-lg shadow-slate-200 disabled:bg-slate-300 flex items-center justify-center gap-3 active:scale-[0.98]"
+                    className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-[0.1em] hover:bg-cyan-600 transition-all shadow-md shadow-slate-200 disabled:bg-slate-300 flex items-center justify-center gap-3 active:scale-[0.98]"
                   >
                     {isSubmitting ? "กำลังส่งข้อมูล..." : "ส่งข้อมูลเข้าระบบ ↗"}
                   </button>
@@ -197,7 +197,7 @@ export default function QAPage() {
           <main className="lg:col-span-7 space-y-6">
             <div className="flex items-center gap-4 mb-2 px-2">
               <FiClock className="text-cyan-500 text-xl" />
-              <h2 className="text-xl font-black text-slate-800 dark:test-white uppercase italic">
+              <h2 className="text-xl font-black text-slate-800 dark:text-white uppercase italic">
                 รายการล่าสุด
               </h2>
             </div>

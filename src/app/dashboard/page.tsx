@@ -114,7 +114,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-zinc-950 transition-colors duration-500">
-      <div className="max-w-7xl mx-auto w-full px-4 py-12">
+      <div className="max-w-[1600px] mx-auto w-full px-2 py-12">
         {/* --- 1. HEADER SECTION --- */}
         <div className="mb-12 border-b border-zinc-200 dark:border-zinc-800 pb-10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">

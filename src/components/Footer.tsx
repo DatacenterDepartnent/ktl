@@ -66,7 +66,7 @@ export default async function Footer() {
     <footer className="bg-linear-to-b from-[#0f172a] to-[#020617] text-slate-300 pt-16 pb-8 border-t border-slate-800">
       <VisitorTracker />
 
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
+      <div className="max-w-[1600px] mx-auto px-2">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 mb-12">
           {/* Column 1: โลโก้และข้อมูลติดต่อ */}
           <div className="lg:col-span-1 space-y-6">

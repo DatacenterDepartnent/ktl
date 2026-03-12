@@ -404,7 +404,7 @@ export default function EditNewsPage({
         )}
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 py-10 space-y-8">
+      <div className="max-w-[1600px] mx-auto px-4 py-10 space-y-8">
         {/* --- Card 1: Content --- */}
         <section className="rounded-3xl space-y-6">
           <div className="flex items-center gap-3 mb-2">

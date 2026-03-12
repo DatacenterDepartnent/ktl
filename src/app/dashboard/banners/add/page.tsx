@@ -8,18 +8,17 @@ import {
   FiArrowLeft,
   FiUploadCloud,
   FiSave,
-  FiCheckCircle,
   FiLink,
   FiHash,
   FiImage,
   FiLoader,
   FiX,
+  FiCheckCircle,
 } from "react-icons/fi";
 
 export default function AddBannerPage() {
   const router = useRouter();
 
-  // State สำหรับข้อมูลฟอร์ม
   const [formData, setFormData] = useState({
     title: "",
     linkUrl: "",
@@ -27,21 +26,18 @@ export default function AddBannerPage() {
     isActive: true,
   });
 
-  // State สำหรับจัดการไฟล์ภาพ
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
 
-  // ฟังก์ชันเลือกรูปภาพและทำ Preview
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        // จำกัด 5MB
         return toast.error("ขนาดไฟล์ต้องไม่เกิน 5MB");
       }
       setSelectedFile(file);
-      setPreviewUrl(URL.createObjectURL(file)); // สร้าง URL จำลองเพื่อดูรูป
+      setPreviewUrl(URL.createObjectURL(file));
     }
   };
 
@@ -51,25 +47,32 @@ export default function AddBannerPage() {
 
     setUploading(true);
     try {
-      // 1. อัปโหลดรูปภาพก่อน
       const uploadFormData = new FormData();
       uploadFormData.append("file", selectedFile);
 
       const uploadRes = await fetch("/api/admin/upload", {
         method: "POST",
         body: uploadFormData,
+        // ไม่ต้องใส่ headers นะครับ ปล่อยให้เบราว์เซอร์จัดการ Boundary เอง
       });
 
       if (!uploadRes.ok) throw new Error("Upload failed");
       const { imageUrl } = await uploadRes.json();
 
-      // 2. บันทึกข้อมูลแบนเนอร์ลง Database
+      // Logic: ใช้ชื่อไฟล์ถ้าไม่ได้ระบุหัวข้อ
+      let finalTitle = formData.title.trim();
+      if (!finalTitle) {
+        const fileName = selectedFile.name.split(".").slice(0, -1).join(".");
+        finalTitle = fileName || `Banner-${new Date().getTime()}`;
+      }
+
       const res = await fetch("/api/banners", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          imageUrl: imageUrl, // ใช้ URL ที่ได้จาก API Upload
+          title: finalTitle,
+          imageUrl: imageUrl,
         }),
       });
 
@@ -87,10 +90,9 @@ export default function AddBannerPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] pb-20">
+    <div className="min-h-screen bg-[#f8fafc] pb-20 font-sans">
       <Toaster position="top-center" />
 
-      {/* Top Bar */}
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-10 px-6 py-4">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -101,7 +103,7 @@ export default function AddBannerPage() {
               <FiArrowLeft className="text-slate-600" />
             </button>
             <h2 className="font-bold text-slate-800 italic uppercase">
-              
+              เพิ่มแบนเนอร์ใหม่
             </h2>
           </div>
         </div>
@@ -112,13 +114,12 @@ export default function AddBannerPage() {
           onSubmit={handleSubmit}
           className="grid grid-cols-1 lg:grid-cols-12 gap-8"
         >
-          {/* ส่วนซ้าย: อัปโหลดรูปภาพ */}
           <div className="lg:col-span-7 space-y-6">
             <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 p-8">
               <div className="flex items-center gap-2 mb-6 text-blue-600">
                 <FiImage className="w-5 h-5" />
                 <h3 className="font-black uppercase tracking-wider text-sm italic">
-                  Banner Image
+                  Banner Image Preview
                 </h3>
               </div>
 
@@ -131,7 +132,7 @@ export default function AddBannerPage() {
                         คลิกเพื่ออัปโหลดรูปภาพ
                       </p>
                       <p className="text-[10px] text-slate-400 mt-1 uppercase italic tracking-widest">
-                        แนะนำขนาด 1920 x 820 px (ไฟล์ไม่เกิน 5MB)
+                        แนะนำ 1920 x 820 px
                       </p>
                     </div>
                     <input
@@ -142,12 +143,12 @@ export default function AddBannerPage() {
                     />
                   </label>
                 ) : (
-                  <div className="relative aspect-[21/9] rounded-[2rem] overflow-hidden border-4 border-white shadow-xl group">
+                  <div className="relative aspect-[21/9] rounded-[2rem] overflow-hidden border-4 border-white shadow-xl group bg-slate-900">
                     <Image
                       src={previewUrl}
                       alt="Preview"
                       fill
-                      className="object-cover"
+                      className="object-contain"
                     />
                     <button
                       type="button"
@@ -155,47 +156,37 @@ export default function AddBannerPage() {
                         setPreviewUrl(null);
                         setSelectedFile(null);
                       }}
-                      className="absolute top-4 right-4 bg-rose-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-4 right-4 bg-rose-500 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity z-20"
                     >
                       <FiX />
                     </button>
                   </div>
                 )}
               </div>
-              <p className="mt-4 text-[10px] text-slate-400 italic">
-                ** รูปภาพที่อัปโหลดจะถูกปรับขนาดให้แสดงผลเป็นสัดส่วน Wide-screen
-                อัตโนมัติ
-              </p>
             </div>
           </div>
 
-          {/* ส่วนขวา: ข้อมูลแบนเนอร์ */}
           <div className="lg:col-span-5 space-y-6">
             <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-200">
               <div className="space-y-6">
-                {/* Title */}
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                    หัวข้อแบนเนอร์
+                    หัวข้อแบนเนอร์ (ว่างไว้จะใช้ชื่อไฟล์)
                   </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      required
-                      value={formData.title}
-                      onChange={(e) =>
-                        setFormData({ ...formData, title: e.target.value })
-                      }
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 focus:ring-2 focus:ring-blue-500/20 outline-none transition-all font-bold"
-                      placeholder="เช่น ประกาศรับสมัครนักศึกษา..."
-                    />
-                  </div>
+                  <input
+                    type="text"
+                    value={formData.title}
+                    onChange={(e) =>
+                      setFormData({ ...formData, title: e.target.value })
+                    }
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-slate-800 outline-none transition-all font-bold"
+                    placeholder="เช่น โปรโมชั่นใหม่..."
+                  />
                 </div>
 
-                {/* Link URL */}
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
-                    ลิงก์ปลายทาง (ถ้ามี)
+                    ลิงก์ปลายทาง
                   </label>
                   <div className="relative">
                     <FiLink className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -205,14 +196,13 @@ export default function AddBannerPage() {
                       onChange={(e) =>
                         setFormData({ ...formData, linkUrl: e.target.value })
                       }
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 pl-12 text-slate-800 outline-none focus:border-blue-500 transition-all text-sm"
+                      className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 pl-12 text-slate-800 outline-none text-sm"
                       placeholder="https://..."
                     />
                   </div>
                 </div>
 
-                {/* Order & Status */}
-                <div className="grid grid-cols-2 gap-4 pt-4 border-t border-slate-100">
+                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
                       ลำดับสไลด์
@@ -225,7 +215,7 @@ export default function AddBannerPage() {
                         onChange={(e) =>
                           setFormData({
                             ...formData,
-                            order: parseInt(e.target.value),
+                            order: parseInt(e.target.value) || 0,
                           })
                         }
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 pl-12 font-bold outline-none"
@@ -244,28 +234,29 @@ export default function AddBannerPage() {
                           isActive: !formData.isActive,
                         })
                       }
-                      className={`w-full p-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${formData.isActive ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-slate-100 text-slate-400"}`}
+                      className={`w-full p-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${
+                        formData.isActive
+                          ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
+                          : "bg-slate-100 text-slate-400"
+                      }`}
                     >
-                      <FiCheckCircle />{" "}
+                      <FiCheckCircle />
                       {formData.isActive ? "แสดงผล" : "ปิดไว้"}
                     </button>
                   </div>
                 </div>
 
-                {/* Submit Button */}
                 <button
                   type="submit"
                   disabled={uploading}
-                  className="w-full bg-slate-900 text-white font-black py-5 rounded-[1.5rem] hover:bg-blue-600 transition-all shadow-xl shadow-slate-200 flex items-center justify-center gap-3 uppercase tracking-tighter disabled:bg-slate-300"
+                  className="w-full bg-slate-900 text-white font-black py-5 rounded-[1.5rem] hover:bg-blue-600 transition-all shadow-xl flex items-center justify-center gap-3 uppercase disabled:bg-slate-300"
                 >
                   {uploading ? (
-                    <FiLoader className="animate-spin text-xl" />
+                    <FiLoader className="animate-spin" />
                   ) : (
-                    <>
-                      <FiSave className="text-xl" />
-                      สร้างแบนเนอร์เลย
-                    </>
+                    <FiSave />
                   )}
+                  {uploading ? "กำลังบันทึก..." : "สร้างแบนเนอร์เลย"}
                 </button>
               </div>
             </div>

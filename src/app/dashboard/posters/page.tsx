@@ -132,7 +132,7 @@ export default function ManagePostersPage() {
     );
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-10 animate-in fade-in duration-700">
+    <div className="max-w-[1600px] mx-auto p-6 space-y-10 animate-in fade-in duration-700">
       <Toaster position="bottom-right" />
 
       {/* Header Section */}

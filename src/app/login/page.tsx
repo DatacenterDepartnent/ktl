@@ -73,7 +73,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto w-full min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-slate-50 dark:bg-black">
+    <div className="max-w-[1600px] mx-auto w-full min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-slate-50 dark:bg-black">
       {/* Background Effects */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-200/40 rounded-full blur-[120px] dark:bg-blue-600/20" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-200/40 rounded-full blur-[120px] dark:bg-purple-600/20" />

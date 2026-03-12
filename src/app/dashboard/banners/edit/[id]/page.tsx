@@ -1,3 +1,4 @@
+// src\app\dashboard\banners\edit\[id]\page.tsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -6,15 +7,12 @@ import { toast, Toaster } from "react-hot-toast";
 import Image from "next/image";
 import {
   FiArrowLeft,
-  FiUploadCloud,
   FiSave,
-  FiCheckCircle,
   FiLink,
-  FiHash,
   FiImage,
   FiLoader,
-  FiX,
   FiRefreshCw,
+  FiHash,
 } from "react-icons/fi";
 
 export default function EditBannerPage() {
@@ -27,7 +25,7 @@ export default function EditBannerPage() {
     linkUrl: "",
     order: 0,
     isActive: true,
-    imageUrl: "", // เก็บ URL รูปเดิม
+    imageUrl: "",
   });
 
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -35,7 +33,6 @@ export default function EditBannerPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  // 1. ดึงข้อมูลแบนเนอร์เดิมมาแสดง
   useEffect(() => {
     const fetchBanner = async () => {
       try {
@@ -49,7 +46,7 @@ export default function EditBannerPage() {
             isActive: data.isActive ?? true,
             imageUrl: data.imageUrl || "",
           });
-          setPreviewUrl(data.imageUrl); // แสดงรูปเดิมเป็น Preview
+          setPreviewUrl(data.imageUrl);
         } else {
           toast.error("ไม่พบข้อมูลแบนเนอร์");
           router.push("/dashboard/banners");
@@ -75,12 +72,12 @@ export default function EditBannerPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     setSaving(true);
 
     try {
       let finalImageUrl = formData.imageUrl;
 
-      // 2. ถ้ามีการเลือกรูปใหม่ ให้อัปโหลดก่อน
       if (selectedFile) {
         const uploadFormData = new FormData();
         uploadFormData.append("file", selectedFile);
@@ -93,7 +90,6 @@ export default function EditBannerPage() {
         finalImageUrl = uploadData.imageUrl;
       }
 
-      // 3. อัปเดตข้อมูลแบนเนอร์ (PATCH)
       const res = await fetch(`/api/banners/${bannerId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -154,7 +150,6 @@ export default function EditBannerPage() {
           onSubmit={handleSubmit}
           className="grid grid-cols-1 lg:grid-cols-12 gap-8"
         >
-          {/* ส่วนรูปภาพ */}
           <div className="lg:col-span-7 space-y-6">
             <div className="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 p-8">
               <div className="flex items-center justify-between mb-6">
@@ -171,16 +166,17 @@ export default function EditBannerPage() {
                 )}
               </div>
 
-              <div className="relative aspect-[21/9] rounded-[2rem] overflow-hidden border-4 border-white shadow-xl group bg-slate-100">
+              <div className="relative aspect-[21/9] rounded-[2rem] overflow-hidden border-4 border-white shadow-xl group bg-slate-900">
                 {previewUrl ? (
                   <>
                     <Image
                       src={previewUrl}
                       alt="Preview"
                       fill
-                      className="object-cover"
+                      className="object-contain"
+                      priority
                     />
-                    <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                    <label className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-10">
                       <div className="bg-white text-slate-900 px-4 py-2 rounded-xl font-bold flex items-center gap-2 shadow-lg">
                         <FiRefreshCw /> เปลี่ยนรูปภาพใหม่
                       </div>
@@ -198,10 +194,12 @@ export default function EditBannerPage() {
                   </div>
                 )}
               </div>
+              <p className="mt-4 text-[11px] text-slate-400 italic text-center">
+                * ภาพจะแสดงผลแบบ Contain เพื่อป้องกันเนื้อหาถูกตัด
+              </p>
             </div>
           </div>
 
-          {/* ส่วนข้อมูลฟอร์ม */}
           <div className="lg:col-span-5 space-y-6">
             <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-200">
               <div className="space-y-6">
@@ -249,7 +247,7 @@ export default function EditBannerPage() {
                       onChange={(e) =>
                         setFormData({
                           ...formData,
-                          order: parseInt(e.target.value),
+                          order: parseInt(e.target.value) || 0,
                         })
                       }
                       className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 font-bold outline-none"
@@ -267,7 +265,11 @@ export default function EditBannerPage() {
                           isActive: !formData.isActive,
                         })
                       }
-                      className={`w-full p-4 rounded-xl font-bold flex items-center justify-center gap-2 transition-all ${formData.isActive ? "bg-emerald-50 text-emerald-600 border border-emerald-100" : "bg-slate-100 text-slate-400"}`}
+                      className={`w-full p-4 rounded-xl font-bold transition-all ${
+                        formData.isActive
+                          ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
+                          : "bg-slate-100 text-slate-400"
+                      }`}
                     >
                       {formData.isActive ? "แสดงผล" : "ปิดไว้"}
                     </button>
@@ -277,7 +279,7 @@ export default function EditBannerPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="w-full bg-slate-900 text-white font-black py-5 rounded-[1.5rem] hover:bg-emerald-600 transition-all shadow-xl flex items-center justify-center gap-3 uppercase tracking-tighter disabled:bg-slate-300"
+                  className="w-full bg-slate-900 text-white font-black py-5 rounded-[1.5rem] hover:bg-blue-600 transition-all shadow-xl flex items-center justify-center gap-3 uppercase disabled:bg-slate-300"
                 >
                   {saving ? <FiLoader className="animate-spin" /> : <FiSave />}
                   {saving ? "กำลังอัปเดต..." : "บันทึกการเปลี่ยนแปลง"}

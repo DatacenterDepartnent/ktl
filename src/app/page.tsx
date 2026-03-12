@@ -1,58 +1,35 @@
+import Features from "./Features";
+import dynamic from "next/dynamic";
 import clientPromise from "@/lib/db";
+import TenderPage from "./tender/page";
+import CommandPage from "./command/page";
+import Newsletter from "./newsletter/page";
+import PressRelease from "./pressrelease/page";
+import Announcement from "./announcement/page";
+import InternshipPage from "./internship/page";
+import WelcomePage from "@/components/WelcomePage";
+import ScrollVelocity from "@/components/Scrollvelocity";
 import HomeBannerSwiper from "@/components/HomeBannerSwiper";
 import StudentSupportSystem from "./StudentSupportSystem/page";
 import ExternalQualityAssurance from "./ExternalQualityAssurance";
-import Features from "./Features";
-import WelcomePage from "@/components/WelcomePage";
-import ScrollVelocity from "@/components/Scrollvelocity";
-import BackgroundBeamsWithCollisionDemo from "@/components/BackgroundBeamsWithCollisionDemo";
-import PressRelease from "./pressrelease/page";
-import Newsletter from "./newsletter/page";
-import Announcement from "./announcement/page";
-import TenderPage from "./tender/page";
-import CommandPage from "./command/page";
-import InternshipPage from "./internship/page";
-import ShowFacebook from "@/components/ShowFacebook";
-import SocialFeedDisplay from "@/components/home/SocialFeedDisplay";
-import CalendarPage from "@/components/Calendar";
-import QAPage from "./q-and-a/page";
 
-// ✅ ตั้งค่าให้ดึงข้อมูลใหม่เสมอ ไม่ทำ Static เพื่อให้ข้อมูลหน้าบ้านตรงกับ DB ตลอดเวลา
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+// ✅ 1. เอา "use client" ออก และเปลี่ยนการเรียกใช้ dynamic ให้เหมาะสม
+const BackgroundBeamsWithCollisionDemo = dynamic(
+  () => import("@/components/BackgroundBeamsWithCollisionDemo"),
+);
+const SocialFeedDisplay = dynamic(
+  () => import("@/components/home/SocialFeedDisplay"),
+);
+const ShowFacebook = dynamic(() => import("@/components/ShowFacebook"));
+const CalendarPage = dynamic(() => import("@/components/Calendar"));
+const QAPage = dynamic(() => import("./q-and-a/page"));
 
-/**
- * ดึงข้อมูล Social Feeds (YouTube/Facebook) จาก DB โดยตรง
- */
-async function getFeeds() {
-  try {
-    const client = await clientPromise;
-    const db = client.db("ktltc_db");
-
-    // ดึงข้อมูลและเรียงลำดับจากใหม่ไปเก่า
-    const feeds = await db
-      .collection("feeds")
-      .find({})
-      .sort({ createdAt: -1 })
-      .toArray();
-
-    // ต้องทำการ Serialize ข้อมูลจาก MongoDB Object เป็น Plain JSON ก่อนส่งให้ Client Component
-    return JSON.parse(JSON.stringify(feeds));
-  } catch (error) {
-    console.error("Direct DB Fetch Feeds Error:", error);
-    return [];
-  }
-}
-
-/**
- * ดึงข้อมูลการตั้งค่าการแสดงผลและข้อมูลเบื้องต้นจาก DB
- */
+// ดึงข้อมูลผ่าน Server Side เหมือนเดิม (รันบนเครื่องเซิร์ฟเวอร์เท่านั้น ปลอดภัยกว่า)
 async function getHomeData() {
   try {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-
-    const [visibilityData, siteData, postersData] = await Promise.all([
+    const [visibilityData, siteData, postersData, feeds] = await Promise.all([
       db.collection("home_settings").find().toArray(),
       db.collection("site_settings").find().toArray(),
       db
@@ -60,6 +37,7 @@ async function getHomeData() {
         .find({ isActive: true })
         .sort({ createdAt: -1 })
         .toArray(),
+      db.collection("feeds").find({}).sort({ createdAt: -1 }).toArray(),
     ]);
 
     const isShow = visibilityData.reduce((acc: any, item: any) => {
@@ -72,48 +50,52 @@ async function getHomeData() {
       return acc;
     }, {});
 
-    const activePosters = postersData || [];
-
-    return { isShow, settings, activePosters };
+    return {
+      isShow,
+      settings,
+      activePosters: JSON.parse(JSON.stringify(postersData)),
+      feeds: JSON.parse(JSON.stringify(feeds)),
+    };
   } catch (error) {
-    console.error("Fetch Home Data Error:", error);
-    return { isShow: {}, settings: {}, activePosters: [] };
+    console.error("Fetch Data Error:", error);
+    return { isShow: {}, settings: {}, activePosters: [], feeds: [] };
   }
 }
 
 export default async function Home() {
-  // ✅ ดึงข้อมูลแบบขนาน (Parallel) เพื่อความรวดเร็ว
-  const [homeData, feeds] = await Promise.all([getHomeData(), getFeeds()]);
-
-  const { isShow, settings, activePosters } = homeData;
+  const { isShow, settings, activePosters, feeds } = await getHomeData();
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col min-h-screen">
       <main className="grow">
-        {/* Banner Section */}
-        {isShow.banner !== false && <HomeBannerSwiper />}
+        {isShow.banner !== false && (
+          <section className="w-full mb-8">
+            <HomeBannerSwiper />
+          </section>
+        )}
 
-        <div className="max-w-7xl mx-auto w-full">
+        {/* ✅ Container คุมความกว้างเนื้อหา */}
+        <div className="max-w-[1600px] mx-auto w-full">
           {isShow.student_support !== false && <StudentSupportSystem />}
           {isShow.qa_ita !== false && <ExternalQualityAssurance />}
           {isShow.features !== false && <Features />}
+
           {isShow.welcome !== false && (
             <div className="py-6">
               <WelcomePage />
             </div>
           )}
+
+          {/* ✅ Marquee กว้างเต็มจอ */}
+          {isShow.scroll_velocity !== false && (
+            <ScrollVelocity
+              text1={settings.marquee_text_1}
+              text2={settings.marquee_text_2}
+            />
+          )}
         </div>
 
-        {/* Marquee Section */}
-        {isShow.scroll_velocity !== false && (
-          <ScrollVelocity
-            text1={settings.marquee_text_1 || "วิทยาลัยเทคนิคกันทรลักษ์"}
-            text2={settings.marquee_text_2 || "Kantharalak Technical College"}
-          />
-        )}
-
-        <div className="max-w-7xl mx-auto w-full px-4">
-          {/* Posters / Background Effect */}
+        <div className="max-w-[1600px] mx-auto w-full px-2">
           {isShow.background_effect !== false && activePosters.length > 0 && (
             <div className="flex flex-col gap-10 my-10">
               {activePosters.map((poster: any) => (
@@ -125,7 +107,6 @@ export default async function Home() {
             </div>
           )}
 
-          {/* ข้อมูลข่าวสาร (เรียงตามที่จัดไว้เดิม) */}
           {isShow.press_release !== false && <PressRelease />}
           {isShow.newsletter !== false && <Newsletter />}
           {isShow.announcement !== false && <Announcement />}
@@ -133,25 +114,19 @@ export default async function Home() {
           {isShow.command !== false && <CommandPage />}
           {isShow.internship !== false && <InternshipPage />}
 
-          {/* Facebook Widget */}
-          {isShow.internship !== false && <ShowFacebook />}
+          <ShowFacebook />
 
-          {/* ✅ Social Feed Display (YouTube/Facebook) */}
-          {/* ปรับให้ส่งข้อมูล feeds เข้าไปเลย โดยให้ Component ภายในจัดการสถานะว่างเอง */}
-          {isShow.social_feed !== false && (
+          {isShow.social_feed !== false && feeds.length > 0 && (
             <div className="py-12">
               <SocialFeedDisplay feeds={feeds} />
             </div>
           )}
 
-          {/* Q&A Section */}
           {isShow.q_and_a !== false && (
             <div className="py-6">
               <QAPage />
             </div>
           )}
-
-          {/* Calendar Section */}
           {isShow.calendar !== false && (
             <div className="py-12">
               <CalendarPage />

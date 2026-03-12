@@ -114,7 +114,7 @@ export default function UsersPage() {
     );
 
   return (
-    <div className="max-w-7xl mx-auto p-6 md:p-10">
+    <div className="max-w-[1600px] mx-auto p-6 md:p-10">
       <Toaster position="top-right" />
 
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">

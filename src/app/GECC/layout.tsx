@@ -2,7 +2,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <section>
       {/* <div className="px-2 py-2 md:px-8 md:py-8 ">{children}</div> */}
-      <div className="max-w-7xl mx-auto">{children}</div>
+      <div className="max-w-[1600px] mx-auto">{children}</div>
     </section>
   );
 }

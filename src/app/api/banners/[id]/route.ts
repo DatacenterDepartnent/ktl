@@ -1,4 +1,4 @@
-// src/app/api/banners/[id]/route.ts
+// src\app\api\banners\[id]\route.ts
 import { NextRequest, NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
@@ -111,6 +111,34 @@ export async function DELETE(
     }
     return NextResponse.json({ error: "Delete Failed" }, { status: 400 });
   } catch (error) {
+    return NextResponse.json({ error: "Server Error" }, { status: 500 });
+  }
+}
+
+// ✅ เพิ่มฟังก์ชัน GET เพื่อให้หน้า Edit ดึงข้อมูลรายตัวได้
+export async function GET(
+  req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const { id } = await params;
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
+    const banner = await db.collection("banners").findOne({
+      _id: new ObjectId(id),
+    });
+
+    if (!banner) {
+      return NextResponse.json(
+        { error: "ไม่พบข้อมูลแบนเนอร์" },
+        { status: 404 },
+      );
+    }
+
+    return NextResponse.json(banner);
+  } catch (error) {
+    console.error("GET_BANNER_ERROR:", error);
     return NextResponse.json({ error: "Server Error" }, { status: 500 });
   }
 }

@@ -319,7 +319,7 @@ export default function AddNewsPage() {
 
       {/* Header */}
       <div className="sticky top-0 z-[100] w-full border-b border-slate-200 bg-white/80 shadow-sm backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-2">
+        <div className="mx-auto flex max-w-[1600px] items-center justify-between px-6 py-2">
           {/* ฝั่งซ้าย: ปุ่มย้อนกลับและข้อมูลผู้เขียน */}
           <div className="flex items-center gap-4">
             <Link
@@ -385,7 +385,7 @@ export default function AddNewsPage() {
         </div>
       </div>
 
-      <main className="max-w-7xl mx-auto px-6 py-10 space-y-12">
+      <main className="max-w-[1600px] mx-auto px-6 py-10 space-y-12">
         {/* Date & Categories */}
         <section className="grid grid-cols-1 md:grid-cols-2 gap-8 items-end">
           <div className="space-y-3">

@@ -30,7 +30,7 @@ export default function Planning() {
 
   return (
     <section className=" bg-slate-50 font-sans text-slate-800 dark:bg-neutral-950 dark:text-slate-200">
-      <div className="container mx-auto max-w-7xl px-4">
+      <div className="container mx-auto max-w-[1600px] px-4">
         {/* --- Header Section --- */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}

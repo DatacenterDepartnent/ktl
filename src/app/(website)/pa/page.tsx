@@ -193,7 +193,7 @@ export default function PaPage() {
         whileInView="visible"
         viewport={{ once: true }}
         variants={containerVar}
-        className="py-12 max-w-7xl mx-auto"
+        className="py-12 max-w-[1600px] mx-auto"
       >
         <Accordion
           variant="splitted"

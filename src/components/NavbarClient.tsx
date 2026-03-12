@@ -64,6 +64,7 @@ export default function NavbarClient({
             alt="KTL Logo"
             width={38}
             height={38}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // ✅ เพิ่มบรรทัดนี้
             priority
           />
           <span className="text-zinc-900 dark:text-white font-black text-xl tracking-tighter uppercase italic ">
@@ -140,6 +141,7 @@ export default function NavbarClient({
                       src={image}
                       alt={username}
                       fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" // ✅ เพิ่มบรรทัดนี้
                       className="object-cover"
                     />
                   ) : (

@@ -31,7 +31,7 @@ export default function SocialFeedDisplay({
 
   return (
     <section className="py-12 px-4">
-      <div className="max-w-7xl mx-auto bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[3rem] p-8 md:p-16 shadow-2xl shadow-zinc-200/50 dark:shadow-none">
+      <div className="max-w-[1600px] mx-auto bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[3rem] p-8 md:p-16 shadow-2xl shadow-zinc-200/50 dark:shadow-none">
         {/* Header */}
         <div className="flex flex-col items-center text-center mb-12">
           <div className="w-20 h-20 bg-red-50 dark:bg-red-900/20 rounded-[2rem] flex items-center justify-center mb-6 shadow-lg shadow-red-100">

@@ -53,7 +53,7 @@ export default async function NewsletterPage() {
   const newsletters = await getNewsletters();
 
   return (
-    <main className="text-slate-800 dark:text-slate-200 container px-4 mx-auto max-w-7xl">
+    <main className="text-slate-800 dark:text-slate-200 mx-auto max-w-[1600px]">
       {/* --- Header Section --- */}
       <section className="py-12 text-center">
         <h4 className="text-yellow-500 font-bold text-xs tracking-widest uppercase mb-2">
