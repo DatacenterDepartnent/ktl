@@ -78,7 +78,7 @@ export default function QAPage() {
     );
 
   return (
-    <div className=" bg-[#fcfcfd] text-slate-900 font-sans selection:bg-cyan-100">
+    <div className=" bg-[#fcfcfd] text-slate-900 font-sans selection:bg-cyan-100 px-2">
       <Toaster position="top-right" />
 
       {/* พื้นหลังตกแต่ง (Background Decor) */}

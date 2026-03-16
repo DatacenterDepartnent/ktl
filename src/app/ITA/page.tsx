@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import {
   Accordion,
@@ -11,15 +11,13 @@ import {
   CardBody,
   CardHeader,
 } from "@heroui/react";
-import { Breadcrumb } from "antd";
 import { Image } from "@heroui/react";
 import {
-  HomeOutlined,
-  UserOutlined,
   FilePdfOutlined,
   AppstoreOutlined,
   RightOutlined,
   SafetyCertificateOutlined,
+  CalendarOutlined,
 } from "@ant-design/icons";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -62,17 +60,13 @@ import O35 from "./035/page";
 import O36 from "./036/page";
 import O37 from "./037/page";
 
-// --- DATA CONSTANTS (Added per request) ---
-
-// ชื่อข่าว
+// --- DATA CONSTANTS ---
 export const DataPressrelease = {
   Item: [{ title: `ข่าวประชาสัมพันธ์` }, { title: `วิทยาลัยเทคนิคกันทรลักษ์` }],
 };
 
-// วันที่ลงข้อมูล
 export const DataDate = [{ date: `10 พฤศจิกายน 2568` }];
 
-// คำอธิบายข่าว
 export const Description = [
   { description: `วิทยาลัยเทคนิคกันทรลักษ์` },
   {
@@ -89,7 +83,6 @@ export const Description = [
   },
 ];
 
-// ลิงค์
 export const TageLink = [
   {
     tage: ``,
@@ -97,13 +90,11 @@ export const TageLink = [
   },
 ];
 
-// รูปภาพ
 export const ImageItem = [
   { imgs: "/images/pressrelease/2568/november/11/00.webp" },
 ];
 
 // --- Styled Components & Assets ---
-
 const BackgroundDecor = () => (
   <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
     <div className="absolute top-[-20%] left-[-10%] h-[50vw] w-[50vw] rounded-full bg-blue-600/10 blur-[120px] dark:bg-blue-500/10" />
@@ -112,7 +103,7 @@ const BackgroundDecor = () => (
   </div>
 );
 
-const MainDownloadCard = () => {
+const MainDownloadCard = ({ year }: { year: string }) => {
   return (
     <div className="px-2">
       <motion.div
@@ -126,56 +117,35 @@ const MainDownloadCard = () => {
           </div>
           <div className="grow">
             <h3 className="mb-2 text-2xl font-bold text-slate-800 dark:text-white">
-              รายงานผลการประเมิน ITA 2568
+              รายงานผลการประเมิน ITA {year}
             </h3>
             <p className="mb-4 leading-relaxed text-slate-600 dark:text-slate-300">
-              ดาวน์โหลดเอกสารสรุปผลการประเมินคุณธรรมและความโปร่งใส (ฉบับทางการ)
+              ดาวน์โหลดเอกสารสรุปผลการประเมินคุณธรรมและความโปร่งใส {year} (ฉบับทางการ)
             </p>
             <div className="flex flex-wrap justify-center gap-2 md:justify-start">
-              {/* Added types for item and idx to fix implicit any error */}
-              {TageLink.map(
-                (item: { tage: string; href: string }, idx: number) =>
-                  item.tage ? ( // Check if tage exists before rendering
-                    <Link key={idx} href={item.href} target="_blank">
-                      <Chip
-                        size="sm"
-                        variant="flat"
-                        color="primary"
-                        className="cursor-pointer font-medium transition-colors hover:bg-blue-100 dark:hover:bg-blue-900/50"
-                      >
-                        {item.tage}
-                      </Chip>
-                    </Link>
-                  ) : null,
+              {TageLink.map((item: { tage: string; href: string }, idx: number) =>
+                item.tage ? (
+                  <Link key={idx} href={item.href} target="_blank">
+                    <Chip size="sm" variant="flat" color="primary" className="cursor-pointer font-medium hover:bg-blue-100 dark:hover:bg-blue-900/50">
+                      {item.tage}
+                    </Chip>
+                  </Link>
+                ) : null
               )}
             </div>
           </div>
           <div className="shrink-0">
             <Link
-              href="/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/11/2587-สอศแจ้งผลประเมินITAประจำปีงบประมาณพศ2568.pdf"
+              href={year === "2568" ? "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/11/2587-สอศแจ้งผลประเมินITAประจำปีงบประมาณพศ2568.pdf" : "#"}
               target="_blank"
               download
             >
               <Button
                 size="lg"
                 className="border-0 bg-linear-to-r from-blue-600 to-teal-500 font-semibold text-white shadow-md hover:from-blue-700 hover:to-teal-600"
-                endContent={
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                    ></path>
-                  </svg>
-                }
+                endContent={<svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>}
               >
-                Download PDF
+                Download PDF {year}
               </Button>
             </Link>
           </div>
@@ -184,8 +154,6 @@ const MainDownloadCard = () => {
     </div>
   );
 };
-
-// --- Main Content Components ---
 
 const CategorySection = ({ group, index }: { group: any; index: number }) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -207,10 +175,8 @@ const CategorySection = ({ group, index }: { group: any; index: number }) => {
             : "rounded-2xl bg-white/60 backdrop-blur-md hover:bg-white hover:shadow-md dark:bg-slate-800/60 dark:hover:bg-slate-800"
         }`}
       >
-        <CardHeader className="flex items-center gap-4 p-6">
-          <div
-            className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br shadow-sm transition-all duration-300 group-hover:shadow-md ${isExpanded ? "scale-110 from-blue-500 to-teal-400 text-white" : "from-blue-100 to-teal-50 text-blue-600 dark:from-blue-900/30 dark:to-teal-900/30 dark:text-blue-400"}`}
-          >
+        <CardHeader className="flex items-center gap-4 p-4">
+          <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br shadow-sm transition-all duration-300 group-hover:shadow-md ${isExpanded ? "scale-110 from-blue-500 to-teal-400 text-white" : "from-blue-100 to-teal-50 text-blue-600 dark:from-blue-900/30 dark:to-teal-900/30 dark:text-blue-400"}`}>
             <AppstoreOutlined style={{ fontSize: "24px" }} />
           </div>
           <div className="grow text-left">
@@ -221,9 +187,7 @@ const CategorySection = ({ group, index }: { group: any; index: number }) => {
               {group.subtitle}
             </h3>
           </div>
-          <div
-            className={`transform transition-transform duration-300 ${isExpanded ? "rotate-90" : ""} text-slate-400`}
-          >
+          <div className={`transform transition-transform duration-300 ${isExpanded ? "rotate-90" : ""} text-slate-400`}>
             <RightOutlined style={{ fontSize: "20px" }} />
           </div>
         </CardHeader>
@@ -239,35 +203,22 @@ const CategorySection = ({ group, index }: { group: any; index: number }) => {
             className="ring-t-0 relative z-0 overflow-hidden rounded-b-2xl bg-white shadow-lg ring-2 ring-blue-500/50 dark:bg-slate-800 dark:ring-blue-400/50"
           >
             <div className="bg-slate-50/50 p-2 md:p-4 dark:bg-slate-900/50">
-              <Accordion
-                selectionMode="multiple"
-                variant="splitted"
-                className="gap-2"
+              <Accordion selectionMode="multiple" variant="splitted" className="gap-2"
                 itemClasses={{
                   base: "group rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 px-0 transition-all data-[open=true]:ring-1 data-[open=true]:ring-blue-200 dark:data-[open=true]:ring-blue-800",
-                  title:
-                    "font-semibold text-slate-700 dark:text-slate-200 text-base",
+                  title: "font-semibold text-slate-700 dark:text-slate-200 text-base",
                   subtitle: "text-slate-400 text-sm",
                   indicator: "text-blue-500 data-[open=true]:rotate-180",
                   content: "text-slate-600 dark:text-slate-400 pt-0 pb-4 px-2",
-                  trigger:
-                    "px-2 py-3 data-[hover=true]:bg-slate-50 dark:data-[hover=true]:bg-slate-700/50 rounded-xl transition-colors",
+                  trigger: "px-2 py-3 data-[hover=true]:bg-slate-50 dark:data-[hover=true]:bg-slate-700/50 rounded-xl transition-colors",
                 }}
               >
                 {group.items.map((item: any) => (
                   <AccordionItem
                     key={item.key}
                     aria-label={item.title}
-                    startContent={
-                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-blue-100 bg-blue-50 text-xs font-bold text-blue-600 dark:border-blue-800/50 dark:bg-blue-900/30 dark:text-blue-300">
-                        {item.key}
-                      </div>
-                    }
-                    title={
-                      <span>
-                        {item.title.substring(item.title.indexOf(" ") + 1)}
-                      </span>
-                    }
+                    startContent={<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-blue-100 bg-blue-50 text-xs font-bold text-blue-600 dark:border-blue-800/50 dark:bg-blue-900/30 dark:text-blue-300">{item.key}</div>}
+                    title={<span>{item.title.substring(item.title.indexOf(" ") + 1)}</span>}
                     subtitle={item.note}
                   >
                     <div className="rounded-xl border border-slate-100/50 bg-slate-50 p-4 dark:border-slate-800/50 dark:bg-slate-900/50">
@@ -285,12 +236,14 @@ const CategorySection = ({ group, index }: { group: any; index: number }) => {
 };
 
 export default function ITA() {
-  // Grouping Data
-  const topicGroups = useMemo(
-    () => [
+  const [selectedYear, setSelectedYear] = useState("2568");
+
+  const topicGroups = useMemo(() => {
+    const yearPrefix = selectedYear;
+    return [
       {
         id: "9.1",
-        title: "ตัวชี้วัดย่อยที่ 9.1",
+        title: `ตัวชี้วัดย่อยที่ 9.1 (${yearPrefix})`,
         subtitle: "ข้อมูลพื้นฐาน (O1 - O6)",
         items: [
           { key: "1", title: "O1 โครงสร้าง", component: <O1 /> },
@@ -303,336 +256,197 @@ export default function ITA() {
       },
       {
         id: "9.2",
-        title: "ตัวชี้วัดย่อยที่ 9.2",
+        title: `ตัวชี้วัดย่อยที่ 9.2 (${yearPrefix})`,
         subtitle: "การบริหารงาน (O7 - O16)",
         items: [
           { key: "7", title: "O7 ข่าวประชาสัมพันธ์", component: <O7 /> },
-          {
-            key: "8",
-            title: "O8 Q&A",
-            component: <O8 />,
-            note: "ช่องทางสื่อสารสองทาง เช่น Web board, Messenger Live Chat",
-          },
+          { key: "8", title: "O8 Q&A", component: <O8 />, note: "ช่องทางสื่อสารสองทาง เช่น Web board, Messenger Live Chat" },
           { key: "9", title: "O9 Social Network", component: <O9 /> },
           { key: "10", title: "O10 แผนดำเนินงานประจำปี", component: <O10 /> },
-          {
-            key: "11",
-            title: "O11 รายงานผลการดําเนินงานประจําปี",
-            component: <O11 />,
-          },
-          {
-            key: "12",
-            title: "O12 คู่มือหรือมาตรฐานการปฏิบัติงาน",
-            component: <O12 />,
-          },
-          {
-            key: "13",
-            title: "O13 คู่มือหรือมาตรฐานการให้บริการ",
-            component: <O13 />,
-          },
-          {
-            key: "14",
-            title: "O14 ข้อมูลเชิงสถิติการให้บริการ",
-            component: <O14 />,
-          },
-          {
-            key: "15",
-            title: "O15 รายงานผลการสํารวจความพึงพอใจ",
-            component: <O15 />,
-          },
+          { key: "11", title: "O11 รายงานผลการดําเนินงานประจําปี", component: <O11 /> },
+          { key: "12", title: "O12 คู่มือหรือมาตรฐานการปฏิบัติงาน", component: <O12 /> },
+          { key: "13", title: "O13 คู่มือหรือมาตรฐานการให้บริการ", component: <O13 /> },
+          { key: "14", title: "O14 ข้อมูลเชิงสถิติการให้บริการ", component: <O14 /> },
+          { key: "15", title: "O15 รายงานผลการสํารวจความพึงพอใจ", component: <O15 /> },
           { key: "16", title: "O16 E-Service", component: <O16 /> },
         ],
       },
       {
         id: "9.3",
-        title: "ตัวชี้วัดย่อยที่ 9.3",
+        title: `ตัวชี้วัดย่อยที่ 9.3 (${yearPrefix})`,
         subtitle: "การบริหารเงินงบประมาณ (O17 - O22)",
         items: [
-          {
-            key: "17",
-            title: "O17 แผนการใช้จ่ายงบประมาณประจําปี",
-            component: <O17 />,
-          },
-          {
-            key: "18",
-            title: "O18 ผลการใช้จ่ายงบประมาณประจําปี",
-            component: <O18 />,
-          },
-          {
-            key: "19",
-            title: "O19 แผนการจัดซื้อจัดจ้าง/จัดหาพัสดุ",
-            component: <O19 />,
-          },
-          {
-            key: "20",
-            title: "O20 ประกาศต่าง ๆ เกี่ยวกับการจัดซื้อจัดจ้าง",
-            component: <O20 />,
-          },
-          {
-            key: "21",
-            title: "O21 สรุปผลการจัดซื้อจัดจ้างรายเดือน",
-            component: <O21 />,
-          },
-          {
-            key: "22",
-            title: "O22 แผนการจัดซื้อจัดจ้าง/จัดหาพัสดุ",
-            component: <O22 />,
-          },
+          { key: "17", title: "O17 แผนการใช้จ่ายงบประมาณประจําปี", component: <O17 /> },
+          { key: "18", title: "O18 ผลการใช้จ่ายงบประมาณประจําปี", component: <O18 /> },
+          { key: "19", title: "O19 แผนการจัดซื้อจัดจ้าง/จัดหาพัสดุ", component: <O19 /> },
+          { key: "20", title: "O20 ประกาศต่าง ๆ เกี่ยวกับการจัดซื้อจัดจ้าง", component: <O20 /> },
+          { key: "21", title: "O21 สรุปผลการจัดซื้อจัดจ้างรายเดือน", component: <O21 /> },
+          { key: "22", title: "O22 แผนการจัดซื้อจัดจ้าง/จัดหาพัสดุ", component: <O22 /> },
         ],
       },
       {
         id: "9.4",
-        title: "ตัวชี้วัดย่อยที่ 9.4",
+        title: `ตัวชี้วัดย่อยที่ 9.4 (${yearPrefix})`,
         subtitle: "การบริหารและพัฒนาทรัพยากรบุคคล (O23 - O25)",
         items: [
-          {
-            key: "23",
-            title: "O23 การพัฒนาทรัพยากรบุคคล",
-            component: <O23 />,
-          },
-          {
-            key: "24",
-            title: "O24 หลักเกณฑ์การบริหารและพัฒนา",
-            component: <O24 />,
-          },
-          {
-            key: "25",
-            title: "O25 รายงานผลการพัฒนาทรัพยากรบุคคล",
-            component: <O25 />,
-          },
+          { key: "23", title: "O23 การพัฒนาทรัพยากรบุคคล", component: <O23 /> },
+          { key: "24", title: "O24 หลักเกณฑ์การบริหารและพัฒนา", component: <O24 /> },
+          { key: "25", title: "O25 รายงานผลการพัฒนาทรัพยากรบุคคล", component: <O25 /> },
         ],
       },
       {
         id: "9.5",
-        title: "ตัวชี้วัดย่อยที่ 9.5",
+        title: `ตัวชี้วัดย่อยที่ 9.5 (${yearPrefix})`,
         subtitle: "การส่งเสริมความโปร่งใสในสถานศึกษา (O26 - O29)",
         items: [
-          {
-            key: "26",
-            title: "O26 การจัดการร้องเรียนการทุจริต",
-            component: <O26 />,
-          },
-          {
-            key: "27",
-            title: "O27 ช่องทางแจ้งเรื่องร้องเรียนการทุจริต",
-            component: <O27 />,
-          },
-          {
-            key: "28",
-            title: "O28 ข้อมูลเชิงสถิติเรื่องร้องเรียน",
-            component: <O28 />,
-          },
-          {
-            key: "29",
-            title: "O29 การเปิดโอกาสให้เกิดการมีส่วนร่วม",
-            component: <O29 />,
-          },
+          { key: "26", title: "O26 การจัดการร้องเรียนการทุจริต", component: <O26 /> },
+          { key: "27", title: "O27 ช่องทางแจ้งเรื่องร้องเรียนการทุจริต", component: <O27 /> },
+          { key: "28", title: "O28 ข้อมูลเชิงสถิติเรื่องร้องเรียน", component: <O28 /> },
+          { key: "29", title: "O29 การเปิดโอกาสให้เกิดการมีส่วนร่วม", component: <O29 /> },
         ],
       },
       {
         id: "10.1",
-        title: "ตัวชี้วัดย่อยที่ 10.1",
+        title: `ตัวชี้วัดย่อยที่ 10.1 (${yearPrefix})`,
         subtitle: "การดำเนินการเพื่อป้องกันทุจริต (O30 - O35)",
         items: [
-          {
-            key: "30",
-            title: "O30 นโยบาย No Gift Policy",
-            component: <O30 />,
-          },
-          {
-            key: "31",
-            title: "O31 การมีส่วนร่วมของผู้บริหาร",
-            component: <O31 />,
-          },
-          {
-            key: "32",
-            title: "O32 การประเมินผลควบคุมภายใน",
-            component: <O32 />,
-          },
-          {
-            key: "33",
-            title: "O33 การเสริมสร้างวัฒนธรรมองค์กร",
-            component: <O33 />,
-          },
-          {
-            key: "34",
-            title: "O34 โครงการป้องกันการทุจริต",
-            component: <O34 />,
-          },
-          {
-            key: "35",
-            title: "O35 รายงานผลการป้องกันการทุจริต",
-            component: <O35 />,
-          },
+          { key: "30", title: "O30 นโยบาย No Gift Policy", component: <O30 /> },
+          { key: "31", title: "O31 การมีส่วนร่วมของผู้บริหาร", component: <O31 /> },
+          { key: "32", title: "O32 การประเมินผลควบคุมภายใน", component: <O32 /> },
+          { key: "33", title: "O33 การเสริมสร้างวัฒนธรรมองค์กร", component: <O33 /> },
+          { key: "34", title: "O34 โครงการป้องกันการทุจริต", component: <O34 /> },
+          { key: "35", title: "O35 รายงานผลการป้องกันการทุจริต", component: <O35 /> },
         ],
       },
       {
         id: "10.2",
-        title: "ตัวชี้วัดย่อยที่ 10.2",
+        title: `ตัวชี้วัดย่อยที่ 10.2 (${yearPrefix})`,
         subtitle: "มาตรการภายในเพื่อป้องกันการทุจริต (O36 - O37)",
         items: [
-          {
-            key: "36",
-            title: "O36 มาตรการส่งเสริมความโปร่งใส",
-            component: <O36 />,
-          },
-          {
-            key: "37",
-            title: "O37 การดําเนินการตามมาตรการ",
-            component: <O37 />,
-          },
+          { key: "36", title: "O36 มาตรการส่งเสริมความโปร่งใส", component: <O36 /> },
+          { key: "37", title: "O37 การดําเนินการตามมาตรการ", component: <O37 /> },
         ],
       },
-    ],
-    [],
-  );
+    ];
+  }, [selectedYear]);
 
   return (
     <div className="relative min-h-screen overflow-x-hidden font-sans">
       <BackgroundDecor />
-      {/* Header Section */}
-      <div className="relative z-10 border-b backdrop-blur-md">
-        <div className=" py-4">
-          <Breadcrumb
-            items={[
-              {
-                href: "/",
-                title: (
-                  <>
-                    <span className="font-medium text-slate-700 dark:text-slate-300">
-                      <HomeOutlined className="text-blue-500" />
-                    </span>
-                  </>
-                ),
-              },
-              {
-                href: "/pressrelease/2568/press6809",
-                title: (
-                  <>
-                    <span className="font-medium text-slate-700 dark:text-slate-300">
-                      <UserOutlined /> Application List
-                    </span>
-                  </>
-                ),
-              },
-              {
-                title: (
-                  <span className="font-medium text-slate-700 dark:text-slate-300">
-                    ITA Assessment
-                  </span>
-                ),
-              },
-            ]}
-            className="text-sm font-medium"
-          />
-        </div>
-      </div>
 
       {/* Hero Content */}
-      <div className="relative z-10  py-12 md:py-20">
-        <div className="mx-auto mb-12 max-w-5xl text-center">
+      <div className="relative z-10 py-12 md:py-20">
+        <div className="mx-auto mb-12 max-w-5xl text-center px-4">
+          
+          {/* --- Year Selector (มองเห็นได้ง่ายขึ้น) --- */}
+          <div className="mb-10 flex flex-col items-center gap-4">
+            <span className="text-sm font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+              <CalendarOutlined /> เลือกปีงบประมาณ
+            </span>
+            <div className="inline-flex p-1.5 bg-white/50 backdrop-blur-xl rounded-2xl border border-slate-200 shadow-xl dark:bg-slate-900/50 dark:border-slate-700">
+              {["2568", "2569"].map((year) => (
+                <button
+                  key={year}
+                  onClick={() => setSelectedYear(year)}
+                  className={`relative px-8 py-3 rounded-xl text-lg font-black transition-all duration-500 ${
+                    selectedYear === year
+                      ? "text-white shadow-2xl scale-105"
+                      : "text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                  }`}
+                >
+                  {selectedYear === year && (
+                    <motion.div
+                      layoutId="activeYear"
+                      className="absolute inset-0 bg-linear-to-r from-blue-600 to-teal-500 rounded-xl -z-10 shadow-lg shadow-blue-500/40"
+                    />
+                  )}
+                  ปี {year}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <motion.div
+            key={selectedYear + "cert"}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="mb-6 inline-flex items-center gap-2 rounded-full bg-blue-100/80 px-2 py-2 text-sm font-semibold text-blue-600 ring-1 ring-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-800"
+            className="mb-6 inline-flex items-center gap-2 rounded-full bg-blue-100/80 px-4 py-2 text-sm font-bold text-blue-600 ring-1 ring-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-800"
           >
-            <SafetyCertificateOutlined /> ITA 2568 : วิทยาลัยเทคนิคกันทรลักษ์
+            <SafetyCertificateOutlined /> ITA {selectedYear} : วิทยาลัยเทคนิคกันทรลักษ์
           </motion.div>
+
           <h1 className="mb-6 text-4xl leading-tight font-extrabold tracking-tight text-slate-800 drop-shadow-sm md:text-6xl lg:text-7xl dark:text-white">
-            <span className="bg-linear-to-r from-blue-600 via-teal-500 to-blue-700 bg-clip-text text-transparent dark:from-blue-400 dark:via-teal-300 dark:to-blue-500">
+            <span className="bg-linear-to-r from-blue-600 via-teal-500 to-blue-700 bg-clip-text text-transparent">
               Integrity & Transparency
             </span>
             <br />
-            Assessment
+            Assessment {selectedYear}
           </h1>
           <p className="mx-auto max-w-3xl text-lg leading-relaxed font-medium text-slate-600 md:text-xl dark:text-slate-300">
-            {Description[0]?.description}
+            {Description[0]?.description} {selectedYear === "2569" && "(ข้อมูลปีปัจจุบัน)"}
           </p>
         </div>
+
         {/* Main CTA Card */}
         <div className="mx-auto mb-16 max-w-[1600px]">
-          <MainDownloadCard />
+          <MainDownloadCard year={selectedYear} />
         </div>
-        {/* --- Info Cards Section (Modern Layout) --- */}
-        <div className="mx-auto mb-24 max-w-5xl space-y-8">
-          {/* 1. What is ITA Card (Card แนวนอน เน้น Logo และเนื้อหา) */}
+
+        {/* Info Cards Section */}
+        <div className="mx-auto mb-24 max-w-5xl space-y-8 px-4">
           <Card className="group overflow-hidden rounded-[2.5rem] border border-white/60 bg-white/80 shadow-xl shadow-blue-900/5 backdrop-blur-xl transition-all hover:shadow-2xl hover:shadow-blue-900/10 dark:border-slate-700 dark:bg-slate-800/80">
-            <CardBody className="relative flex flex-col items-center justify-between gap-8 p-8 md:flex-row ">
-              {/* Background Decor */}
-
-              {/* Logo Section */}
+            <CardBody className="relative flex flex-col items-center justify-between gap-8 p-8 md:flex-row">
               <div className="relative z-10 shrink-0 transform transition-transform duration-700 group-hover:scale-105 group-hover:rotate-2">
-                <div className="">
-                  <img
-                    src="/images/ita/ita.webp"
-                    alt="ITA Logo"
-                    className="h-auto w-60 object-contain md:w-60"
-                  />
-                </div>
+                <img src="/images/ita/ita.webp" alt="ITA Logo" className="h-auto w-60 object-contain" />
               </div>
-
-              {/* Text Section */}
               <div className="relative z-10 grow text-center md:text-left">
                 <div className="mb-4 inline-flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-1 text-xs font-bold tracking-wider text-blue-600 uppercase dark:bg-blue-900/30 dark:text-blue-400">
-                  <span>About ITA</span>
+                  <span>About ITA {selectedYear}</span>
                 </div>
-                <h3 className="mb-4 text-3xl font-extrabold text-slate-800 dark:text-white">
-                  ITA คืออะไร?
-                </h3>
+                <h3 className="mb-4 text-3xl font-extrabold text-slate-800 dark:text-white">ITA คืออะไร?</h3>
                 <p className="text-lg leading-relaxed font-medium text-slate-600 dark:text-slate-300">
-                  การประเมินคุณธรรมและความโปร่งใสในการดำเนินงานของหน่วยงานภาครัฐ
-                  (OIT)
+                  การประเมินคุณธรรมและความโปร่งใสในการดำเนินงานของหน่วยงานภาครัฐ (OIT) ประจำปีงบประมาณ {selectedYear}
                 </p>
                 <p className="mt-2 text-base font-normal text-slate-500 dark:text-slate-400">
-                  เพื่อยกระดับธรรมาภิบาล เปิดเผยข้อมูลสู่สาธารณะ
-                  และสร้างความเชื่อมั่นต่อประชาชนอย่างยั่งยืน
+                  เพื่อยกระดับธรรมาภิบาล เปิดเผยข้อมูลสู่สาธารณะ และสร้างความเชื่อมั่นต่อประชาชนอย่างยั่งยืน
                 </p>
               </div>
             </CardBody>
           </Card>
 
-          {/* 2. Date & Gallery Card (Card รูปภาพขนาดใหญ่) */}
-          <Card className=" ">
-            <CardBody className="">
-              {/* Added types for item and idx to fix implicit any error */}
-              {ImageItem.map(
-                (item: { imgs: string }, idx: number) =>
-                  item && (
-                    <motion.div key={idx} className=" ">
-                      <Image
-                        isBlurred
-                        removeWrapper
-                        src={item.imgs}
-                        className="rounded-3xl"
-                        alt={`image-${idx}`}
-                      />
-                    </motion.div>
-                  ),
+          <Card className="overflow-hidden rounded-3xl">
+            <CardBody className="p-0">
+              {ImageItem.map((item: { imgs: string }, idx: number) =>
+                item && (
+                  <motion.div key={idx}>
+                    <Image isBlurred removeWrapper src={item.imgs} className="w-full h-auto" alt={`image-${idx}`} />
+                  </motion.div>
+                )
               )}
             </CardBody>
           </Card>
         </div>
       </div>
 
-      {/* Main Content Content: The List */}
-      <div className="relative z-10 container mx-auto max-w-5xl px-2 pb-20">
+      {/* List Section */}
+      <div className="relative z-10 container mx-auto max-w-5xl px-4 pb-20">
         <div className="mb-12 text-center">
           <div className="mb-4 inline-block">
-            <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-600 shadow-sm dark:bg-blue-900/30 dark:text-blue-400">
-              <AppstoreOutlined style={{ fontSize: "24px" }} />
+            <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-full bg-blue-100 text-blue-600 shadow-sm dark:bg-blue-900/30 dark:text-blue-400">
+              <AppstoreOutlined style={{ fontSize: "28px" }} />
             </div>
           </div>
           <h2 className="mb-4 text-3xl font-extrabold text-slate-800 md:text-4xl dark:text-white">
-            เอกสารประกอบการประเมิน (OIT)
+            เอกสารประกอบการประเมิน (OIT) {selectedYear}
           </h2>
           <p className="mx-auto max-w-2xl text-lg font-medium text-slate-600 dark:text-slate-400">
-            ข้อมูลสาธารณะตามตัวชี้วัด เพื่อความโปร่งใสและตรวจสอบได้
+            ข้อมูลสาธารณะตามตัวชี้วัด เพื่อความโปร่งใสและตรวจสอบได้ของปีงบประมาณ {selectedYear}
           </p>
         </div>
 
         <div className="space-y-6">
           {topicGroups.map((group, index) => (
-            <CategorySection key={group.id} group={group} index={index} />
+            <CategorySection key={`${selectedYear}-${group.id}`} group={group} index={index} />
           ))}
         </div>
       </div>
