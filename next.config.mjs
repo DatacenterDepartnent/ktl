@@ -1,18 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // 1. ปลดล็อกขนาดไฟล์สำหรับการอัปโหลด (แก้ปัญหา Body exceeded 1 MB limit)
+  // 1. ปลดล็อกขนาดไฟล์สำหรับการอัปโหลด
   experimental: {
     serverActions: {
       bodySizeLimit: "10mb",
     },
   },
 
-  // 2. ป้องกันปัญหา Sharp ในสภาพแวดล้อม Server
-  serverExternalPackages: ["sharp"],
+  // 2. ป้องกันปัญหาเกี่ยวกับ Package ภายนอก
+  serverExternalPackages: ["sharp", "mongodb"], // เพิ่ม mongodb เข้าไปด้วยเพื่อความชัวร์
 
-  // 3. ตั้งค่ารูปภาพ (รองรับทั้ง uploads ในเครื่อง และ Cloudinary)
+  // 3. ตั้งค่ารูปภาพ
   images: {
-    unoptimized: false, // เปลี่ยนเป็น true หากต้องการปิดการใช้ Image Optimization ของ Next.js
+    unoptimized: false,
     formats: ["image/avif", "image/webp"],
     remotePatterns: [
       {
@@ -23,7 +23,7 @@ const nextConfig = {
     ],
   },
 
-  // 4. ข้ามการตรวจหา Error ตอน Build (ช่วยให้ Deploy ผ่านง่ายขึ้น)
+  // 4. ข้ามการตรวจหา Error ตอน Build
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -33,7 +33,10 @@ const nextConfig = {
 
   // 5. การตั้งค่าอื่นๆ
   compress: true,
-  transpilePackages: ["@heroui/react", "antd"],
+  // แก้ไขตรงนี้: เพิ่มการจัดการหน้า Error
+  devIndicators: {
+    appIsrStatus: false,
+  },
 };
 
 export default nextConfig;

@@ -98,12 +98,13 @@ export default async function Home() {
         <div className="max-w-[1600px] mx-auto w-full px-2">
           {isShow.background_effect !== false && activePosters.length > 0 && (
             <div className="flex flex-col gap-10 my-10">
-              {activePosters.map((poster: any) => (
-                <BackgroundBeamsWithCollisionDemo
-                  key={poster._id.toString()}
-                  data={poster}
-                />
-              ))}
+              {Array.isArray(activePosters) &&
+                activePosters.map((poster: any) => (
+                  <BackgroundBeamsWithCollisionDemo
+                    key={poster._id.toString()}
+                    data={poster}
+                  />
+                ))}
             </div>
           )}
 
@@ -116,12 +117,11 @@ export default async function Home() {
 
           <ShowFacebook />
 
-          {isShow.social_feed !== false && feeds.length > 0 && (
+          {isShow.social_feed !== false && (feeds?.length ?? 0) > 0 && (
             <div className="py-12">
-              <SocialFeedDisplay feeds={feeds} />
+              {Array.isArray(feeds) && <SocialFeedDisplay feeds={feeds} />}
             </div>
           )}
-
           {isShow.q_and_a !== false && (
             <div className="py-6">
               <QAPage />

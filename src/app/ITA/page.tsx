@@ -99,7 +99,7 @@ export const TageLink = [
 
 // รูปภาพ
 export const ImageItem = [
-  { imgs: "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/11/00.webp" },
+  { imgs: "/images/pressrelease/2568/november/11/00.webp" },
 ];
 
 // --- Styled Components & Assets ---
@@ -114,72 +114,74 @@ const BackgroundDecor = () => (
 
 const MainDownloadCard = () => {
   return (
-    <motion.div
-      whileHover={{ scale: 1.02, y: -5 }}
-      className="group relative overflow-hidden rounded-3xl bg-linear-to-br from-blue-400 via-teal-400 to-blue-600 p-0.5 shadow-xl shadow-blue-500/20 dark:from-blue-600 dark:via-teal-600 dark:to-blue-800"
-    >
-      <div className="absolute inset-0 bg-linear-to-br from-blue-400/30 to-teal-400/30 opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100"></div>
-      <div className="relative flex h-full flex-col items-center gap-6 rounded-[22px] bg-white/90 p-6 text-center backdrop-blur-xl md:flex-row md:p-8 md:text-left dark:bg-slate-900/95">
-        <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-linear-to-tr from-blue-500 to-teal-400 text-white shadow-lg">
-          <FilePdfOutlined style={{ fontSize: "40px" }} />
-        </div>
-        <div className="grow">
-          <h3 className="mb-2 text-2xl font-bold text-slate-800 dark:text-white">
-            รายงานผลการประเมิน ITA 2568
-          </h3>
-          <p className="mb-4 leading-relaxed text-slate-600 dark:text-slate-300">
-            ดาวน์โหลดเอกสารสรุปผลการประเมินคุณธรรมและความโปร่งใส (ฉบับทางการ)
-          </p>
-          <div className="flex flex-wrap justify-center gap-2 md:justify-start">
-            {/* Added types for item and idx to fix implicit any error */}
-            {TageLink.map(
-              (item: { tage: string; href: string }, idx: number) =>
-                item.tage ? ( // Check if tage exists before rendering
-                  <Link key={idx} href={item.href} target="_blank">
-                    <Chip
-                      size="sm"
-                      variant="flat"
-                      color="primary"
-                      className="cursor-pointer font-medium transition-colors hover:bg-blue-100 dark:hover:bg-blue-900/50"
-                    >
-                      {item.tage}
-                    </Chip>
-                  </Link>
-                ) : null,
-            )}
+    <div className="px-2">
+      <motion.div
+        whileHover={{ scale: 1.02, y: -5 }}
+        className="group relative overflow-hidden rounded-3xl bg-linear-to-br from-blue-400 via-teal-400 to-blue-600 p-0.5 shadow-xl shadow-blue-500/20 dark:from-blue-600 dark:via-teal-600 dark:to-blue-800"
+      >
+        <div className="absolute inset-0 bg-linear-to-br from-blue-400/30 to-teal-400/30 opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100"></div>
+        <div className="relative flex h-full flex-col items-center gap-6 rounded-[22px] bg-white/90 p-6 text-center backdrop-blur-xl md:flex-row md:p-8 md:text-left dark:bg-slate-900/95">
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-2xl bg-linear-to-tr from-blue-500 to-teal-400 text-white shadow-lg">
+            <FilePdfOutlined style={{ fontSize: "40px" }} />
+          </div>
+          <div className="grow">
+            <h3 className="mb-2 text-2xl font-bold text-slate-800 dark:text-white">
+              รายงานผลการประเมิน ITA 2568
+            </h3>
+            <p className="mb-4 leading-relaxed text-slate-600 dark:text-slate-300">
+              ดาวน์โหลดเอกสารสรุปผลการประเมินคุณธรรมและความโปร่งใส (ฉบับทางการ)
+            </p>
+            <div className="flex flex-wrap justify-center gap-2 md:justify-start">
+              {/* Added types for item and idx to fix implicit any error */}
+              {TageLink.map(
+                (item: { tage: string; href: string }, idx: number) =>
+                  item.tage ? ( // Check if tage exists before rendering
+                    <Link key={idx} href={item.href} target="_blank">
+                      <Chip
+                        size="sm"
+                        variant="flat"
+                        color="primary"
+                        className="cursor-pointer font-medium transition-colors hover:bg-blue-100 dark:hover:bg-blue-900/50"
+                      >
+                        {item.tage}
+                      </Chip>
+                    </Link>
+                  ) : null,
+              )}
+            </div>
+          </div>
+          <div className="shrink-0">
+            <Link
+              href="/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/11/2587-สอศแจ้งผลประเมินITAประจำปีงบประมาณพศ2568.pdf"
+              target="_blank"
+              download
+            >
+              <Button
+                size="lg"
+                className="border-0 bg-linear-to-r from-blue-600 to-teal-500 font-semibold text-white shadow-md hover:from-blue-700 hover:to-teal-600"
+                endContent={
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                    ></path>
+                  </svg>
+                }
+              >
+                Download PDF
+              </Button>
+            </Link>
           </div>
         </div>
-        <div className="shrink-0">
-          <Link
-            href="/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/11/2587-สอศแจ้งผลประเมินITAประจำปีงบประมาณพศ2568.pdf"
-            target="_blank"
-            download
-          >
-            <Button
-              size="lg"
-              className="border-0 bg-linear-to-r from-blue-600 to-teal-500 font-semibold text-white shadow-md hover:from-blue-700 hover:to-teal-600"
-              endContent={
-                <svg
-                  className="h-5 w-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                  ></path>
-                </svg>
-              }
-            >
-              Download PDF
-            </Button>
-          </Link>
-        </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 };
 
@@ -247,9 +249,9 @@ const CategorySection = ({ group, index }: { group: any; index: number }) => {
                     "font-semibold text-slate-700 dark:text-slate-200 text-base",
                   subtitle: "text-slate-400 text-sm",
                   indicator: "text-blue-500 data-[open=true]:rotate-180",
-                  content: "text-slate-600 dark:text-slate-400 pt-0 pb-4 px-4",
+                  content: "text-slate-600 dark:text-slate-400 pt-0 pb-4 px-2",
                   trigger:
-                    "px-4 py-3 data-[hover=true]:bg-slate-50 dark:data-[hover=true]:bg-slate-700/50 rounded-xl transition-colors",
+                    "px-2 py-3 data-[hover=true]:bg-slate-50 dark:data-[hover=true]:bg-slate-700/50 rounded-xl transition-colors",
                 }}
               >
                 {group.items.map((item: any) => (
@@ -532,7 +534,7 @@ export default function ITA() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="mb-6 inline-flex items-center gap-2 rounded-full bg-blue-100/80 px-4 py-2 text-sm font-semibold text-blue-600 ring-1 ring-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-800"
+            className="mb-6 inline-flex items-center gap-2 rounded-full bg-blue-100/80 px-2 py-2 text-sm font-semibold text-blue-600 ring-1 ring-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-800"
           >
             <SafetyCertificateOutlined /> ITA 2568 : วิทยาลัยเทคนิคกันทรลักษ์
           </motion.div>
@@ -613,7 +615,7 @@ export default function ITA() {
       </div>
 
       {/* Main Content Content: The List */}
-      <div className="relative z-10 container mx-auto max-w-5xl px-4 pb-20">
+      <div className="relative z-10 container mx-auto max-w-5xl px-2 pb-20">
         <div className="mb-12 text-center">
           <div className="mb-4 inline-block">
             <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-600 shadow-sm dark:bg-blue-900/30 dark:text-blue-400">
