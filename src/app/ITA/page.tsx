@@ -22,43 +22,80 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 
 // Imports O1 - O37 (Keep existing imports)
-import O1 from "./01/page";
-import O2 from "./02/page";
-import O3 from "./03/page";
-import O4 from "./04/page";
-import O5 from "./05/page";
-import O6 from "./06/page";
-import O7 from "./07/page";
-import O8 from "./08/page";
-import O9 from "./09/page";
-import O10 from "./010/page";
-import O11 from "./011/page";
-import O12 from "./012/page";
-import O13 from "./013/page";
-import O14 from "./014/page";
-import O15 from "./015/page";
-import O16 from "./016/page";
-import O17 from "./017/page";
-import O18 from "./018/page";
-import O19 from "./019/page";
-import O20 from "./020/page";
-import O21 from "./021/page";
-import O22 from "./022/page";
-import O23 from "./023/page";
-import O24 from "./024/page";
-import O25 from "./025/page";
-import O26 from "./026/page";
-import O27 from "./027/page";
-import O28 from "./028/page";
-import O29 from "./029/page";
-import O30 from "./030/page";
-import O31 from "./031/page";
-import O32 from "./032/page";
-import O33 from "./033/page";
-import O34 from "./034/page";
-import O35 from "./035/page";
-import O36 from "./036/page";
-import O37 from "./037/page";
+import O1_68 from "./2568/01/page";
+import O1_69 from "./2569/01/page";
+import O2_68 from "./2568/02/page";
+import O2_69 from "./2568/02/page";
+import O3_68 from "./2568/03/page";
+import O3_69 from "./2568/03/page";
+import O4_68 from "./2568/04/page";
+import O4_69 from "./2568/04/page";
+import O5_68 from "./2568/05/page";
+import O5_69 from "./2568/05/page";
+import O6_68 from "./2568/06/page";
+import O6_69 from "./2568/06/page";
+import O7_68 from "./2568/07/page";
+import O7_69 from "./2568/07/page";
+import O8_68 from "./2568/08/page";
+import O8_69 from "./2568/08/page";
+import O9_68 from "./2568/09/page";
+import O9_69 from "./2568/09/page";
+import O10_68 from "./2568/010/page";
+import O10_69 from "./2568/010/page";
+import O11_68 from "./2568/011/page";
+import O11_69 from "./2568/011/page";
+import O12_68 from "./2568/012/page";
+import O12_69 from "./2568/012/page";
+import O13_68 from "./2568/013/page";
+import O13_69 from "./2568/013/page";
+import O14_68 from "./2568/014/page";
+import O14_69 from "./2568/014/page";
+import O15_68 from "./2568/015/page";
+import O15_69 from "./2568/015/page";
+import O16_68 from "./2568/016/page";
+import O16_69 from "./2568/016/page";
+import O17_68 from "./2568/017/page";
+import O17_69 from "./2568/017/page";
+import O18_68 from "./2568/018/page";
+import O18_69 from "./2568/018/page";
+import O19_68 from "./2568/019/page";
+import O19_69 from "./2568/019/page";
+import O20_68 from "./2568/020/page";
+import O20_69 from "./2568/020/page";
+import O21_68 from "./2568/021/page";
+import O21_69 from "./2568/021/page";
+import O22_68 from "./2568/022/page";
+import O22_69 from "./2568/022/page";
+import O23_68 from "./2568/023/page";
+import O23_69 from "./2568/023/page";
+import O24_68 from "./2568/024/page";
+import O24_69 from "./2568/024/page";
+import O25_68 from "./2568/025/page";
+import O25_69 from "./2568/025/page";
+import O26_68 from "./2568/026/page";
+import O26_69 from "./2568/026/page";
+import O27_68 from "./2568/027/page";
+import O27_69 from "./2568/027/page";
+import O28_68 from "./2568/028/page";
+import O28_69 from "./2568/028/page";
+import O29_68 from "./2568/029/page";
+import O29_69 from "./2568/029/page";
+import O30_68 from "./2568/030/page";
+import O30_69 from "./2568/030/page";
+import O31_68 from "./2568/031/page";
+import O31_69 from "./2568/031/page";
+import O32_68 from "./2568/032/page";
+import O32_69 from "./2568/032/page";
+import O33_68 from "./2568/033/page";
+import O33_69 from "./2568/033/page";
+import O34_68 from "./2568/034/page";
+import O34_69 from "./2568/034/page";
+import O35_68 from "./2568/035/page";
+import O35_69 from "./2568/035/page";
+import O36_68 from "./2568/036/page";
+import O36_69 from "./2568/036/page";
+import O37_68 from "./2568/037/page";
+import O37_69 from "./2568/037/page";
 
 // --- DATA CONSTANTS ---
 export const DataPressrelease = {
@@ -120,30 +157,55 @@ const MainDownloadCard = ({ year }: { year: string }) => {
               รายงานผลการประเมิน ITA {year}
             </h3>
             <p className="mb-4 leading-relaxed text-slate-600 dark:text-slate-300">
-              ดาวน์โหลดเอกสารสรุปผลการประเมินคุณธรรมและความโปร่งใส {year} (ฉบับทางการ)
+              ดาวน์โหลดเอกสารสรุปผลการประเมินคุณธรรมและความโปร่งใส {year}{" "}
+              (ฉบับทางการ)
             </p>
             <div className="flex flex-wrap justify-center gap-2 md:justify-start">
-              {TageLink.map((item: { tage: string; href: string }, idx: number) =>
-                item.tage ? (
-                  <Link key={idx} href={item.href} target="_blank">
-                    <Chip size="sm" variant="flat" color="primary" className="cursor-pointer font-medium hover:bg-blue-100 dark:hover:bg-blue-900/50">
-                      {item.tage}
-                    </Chip>
-                  </Link>
-                ) : null
+              {TageLink.map(
+                (item: { tage: string; href: string }, idx: number) =>
+                  item.tage ? (
+                    <Link key={idx} href={item.href} target="_blank">
+                      <Chip
+                        size="sm"
+                        variant="flat"
+                        color="primary"
+                        className="cursor-pointer font-medium hover:bg-blue-100 dark:hover:bg-blue-900/50"
+                      >
+                        {item.tage}
+                      </Chip>
+                    </Link>
+                  ) : null,
               )}
             </div>
           </div>
           <div className="shrink-0">
             <Link
-              href={year === "2568" ? "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/11/2587-สอศแจ้งผลประเมินITAประจำปีงบประมาณพศ2568.pdf" : "#"}
+              href={
+                year === "2568"
+                  ? "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/11/2587-สอศแจ้งผลประเมินITAประจำปีงบประมาณพศ2568.pdf"
+                  : "#"
+              }
               target="_blank"
               download
             >
               <Button
                 size="lg"
                 className="border-0 bg-linear-to-r from-blue-600 to-teal-500 font-semibold text-white shadow-md hover:from-blue-700 hover:to-teal-600"
-                endContent={<svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>}
+                endContent={
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                    ></path>
+                  </svg>
+                }
               >
                 Download PDF {year}
               </Button>
@@ -176,7 +238,9 @@ const CategorySection = ({ group, index }: { group: any; index: number }) => {
         }`}
       >
         <CardHeader className="flex items-center gap-4 p-4">
-          <div className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br shadow-sm transition-all duration-300 group-hover:shadow-md ${isExpanded ? "scale-110 from-blue-500 to-teal-400 text-white" : "from-blue-100 to-teal-50 text-blue-600 dark:from-blue-900/30 dark:to-teal-900/30 dark:text-blue-400"}`}>
+          <div
+            className={`flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br shadow-sm transition-all duration-300 group-hover:shadow-md ${isExpanded ? "scale-110 from-blue-500 to-teal-400 text-white" : "from-blue-100 to-teal-50 text-blue-600 dark:from-blue-900/30 dark:to-teal-900/30 dark:text-blue-400"}`}
+          >
             <AppstoreOutlined style={{ fontSize: "24px" }} />
           </div>
           <div className="grow text-left">
@@ -187,7 +251,9 @@ const CategorySection = ({ group, index }: { group: any; index: number }) => {
               {group.subtitle}
             </h3>
           </div>
-          <div className={`transform transition-transform duration-300 ${isExpanded ? "rotate-90" : ""} text-slate-400`}>
+          <div
+            className={`transform transition-transform duration-300 ${isExpanded ? "rotate-90" : ""} text-slate-400`}
+          >
             <RightOutlined style={{ fontSize: "20px" }} />
           </div>
         </CardHeader>
@@ -203,22 +269,35 @@ const CategorySection = ({ group, index }: { group: any; index: number }) => {
             className="ring-t-0 relative z-0 overflow-hidden rounded-b-2xl bg-white shadow-lg ring-2 ring-blue-500/50 dark:bg-slate-800 dark:ring-blue-400/50"
           >
             <div className="bg-slate-50/50 p-2 md:p-4 dark:bg-slate-900/50">
-              <Accordion selectionMode="multiple" variant="splitted" className="gap-2"
+              <Accordion
+                selectionMode="multiple"
+                variant="splitted"
+                className="gap-2"
                 itemClasses={{
                   base: "group rounded-xl bg-white dark:bg-slate-800 shadow-sm border border-slate-100 dark:border-slate-700 px-0 transition-all data-[open=true]:ring-1 data-[open=true]:ring-blue-200 dark:data-[open=true]:ring-blue-800",
-                  title: "font-semibold text-slate-700 dark:text-slate-200 text-base",
+                  title:
+                    "font-semibold text-slate-700 dark:text-slate-200 text-base",
                   subtitle: "text-slate-400 text-sm",
                   indicator: "text-blue-500 data-[open=true]:rotate-180",
                   content: "text-slate-600 dark:text-slate-400 pt-0 pb-4 px-2",
-                  trigger: "px-2 py-3 data-[hover=true]:bg-slate-50 dark:data-[hover=true]:bg-slate-700/50 rounded-xl transition-colors",
+                  trigger:
+                    "px-2 py-3 data-[hover=true]:bg-slate-50 dark:data-[hover=true]:bg-slate-700/50 rounded-xl transition-colors",
                 }}
               >
                 {group.items.map((item: any) => (
                   <AccordionItem
                     key={item.key}
                     aria-label={item.title}
-                    startContent={<div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-blue-100 bg-blue-50 text-xs font-bold text-blue-600 dark:border-blue-800/50 dark:bg-blue-900/30 dark:text-blue-300">{item.key}</div>}
-                    title={<span>{item.title.substring(item.title.indexOf(" ") + 1)}</span>}
+                    startContent={
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border border-blue-100 bg-blue-50 text-xs font-bold text-blue-600 dark:border-blue-800/50 dark:bg-blue-900/30 dark:text-blue-300">
+                        {item.key}
+                      </div>
+                    }
+                    title={
+                      <span>
+                        {item.title.substring(item.title.indexOf(" ") + 1)}
+                      </span>
+                    }
                     subtitle={item.note}
                   >
                     <div className="rounded-xl border border-slate-100/50 bg-slate-50 p-4 dark:border-slate-800/50 dark:bg-slate-900/50">
@@ -246,12 +325,36 @@ export default function ITA() {
         title: `ตัวชี้วัดย่อยที่ 9.1 (${yearPrefix})`,
         subtitle: "ข้อมูลพื้นฐาน (O1 - O6)",
         items: [
-          { key: "1", title: "O1 โครงสร้าง", component: <O1 /> },
-          { key: "2", title: "O2 ข้อมูลผู้บริหาร", component: <O2 /> },
-          { key: "3", title: "O3 อำนาจหน้าที่", component: <O3 /> },
-          { key: "4", title: "O4 แผนพัฒนาสถานศึกษา", component: <O4 /> },
-          { key: "5", title: "O5 ข้อมูลการติดต่อ", component: <O5 /> },
-          { key: "6", title: "O6 กฎหมายที่เกี่ยวข้อง", component: <O6 /> },
+          {
+            key: "1",
+            title: "O1 โครงสร้าง",
+            component: selectedYear === "2569" ? <O1_69 /> : <O1_68 />,
+          },
+          {
+            key: "2",
+            title: "O2 ข้อมูลผู้บริหาร",
+            component: selectedYear === "2569" ? <O2_69 /> : <O2_68 />,
+          },
+          {
+            key: "3",
+            title: "O3 อำนาจหน้าที่",
+            component: selectedYear === "2569" ? <O3_69 /> : <O3_68 />,
+          },
+          {
+            key: "4",
+            title: "O4 แผนพัฒนาสถานศึกษา",
+            component: selectedYear === "2569" ? <O4_69 /> : <O4_68 />,
+          },
+          {
+            key: "5",
+            title: "O5 ข้อมูลการติดต่อ",
+            component: selectedYear === "2569" ? <O5_69 /> : <O5_68 />,
+          },
+          {
+            key: "6",
+            title: "O6 กฎหมายที่เกี่ยวข้อง",
+            component: selectedYear === "2569" ? <O6_69 /> : <O6_68 />,
+          },
         ],
       },
       {
@@ -259,16 +362,57 @@ export default function ITA() {
         title: `ตัวชี้วัดย่อยที่ 9.2 (${yearPrefix})`,
         subtitle: "การบริหารงาน (O7 - O16)",
         items: [
-          { key: "7", title: "O7 ข่าวประชาสัมพันธ์", component: <O7 /> },
-          { key: "8", title: "O8 Q&A", component: <O8 />, note: "ช่องทางสื่อสารสองทาง เช่น Web board, Messenger Live Chat" },
-          { key: "9", title: "O9 Social Network", component: <O9 /> },
-          { key: "10", title: "O10 แผนดำเนินงานประจำปี", component: <O10 /> },
-          { key: "11", title: "O11 รายงานผลการดําเนินงานประจําปี", component: <O11 /> },
-          { key: "12", title: "O12 คู่มือหรือมาตรฐานการปฏิบัติงาน", component: <O12 /> },
-          { key: "13", title: "O13 คู่มือหรือมาตรฐานการให้บริการ", component: <O13 /> },
-          { key: "14", title: "O14 ข้อมูลเชิงสถิติการให้บริการ", component: <O14 /> },
-          { key: "15", title: "O15 รายงานผลการสํารวจความพึงพอใจ", component: <O15 /> },
-          { key: "16", title: "O16 E-Service", component: <O16 /> },
+          {
+            key: "7",
+            title: "O7 ข่าวประชาสัมพันธ์",
+            component: selectedYear === "2569" ? <O7_69 /> : <O7_68 />,
+          },
+          {
+            key: "8",
+            title: "O8 Q&A",
+            component: selectedYear === "2569" ? <O8_69 /> : <O8_68 />,
+            note: "ช่องทางสื่อสารสองทาง เช่น Web board, Messenger Live Chat",
+          },
+          {
+            key: "9",
+            title: "O9 Social Network",
+            component: selectedYear === "2569" ? <O9_69 /> : <O9_68 />,
+          },
+          {
+            key: "10",
+            title: "O10 แผนดำเนินงานประจำปี",
+            component: selectedYear === "2569" ? <O10_69 /> : <O10_68 />,
+          },
+          {
+            key: "11",
+            title: "O11 รายงานผลการดําเนินงานประจําปี",
+            component: selectedYear === "2569" ? <O11_69 /> : <O11_68 />,
+          },
+          {
+            key: "12",
+            title: "O12 คู่มือหรือมาตรฐานการปฏิบัติงาน",
+            component: selectedYear === "2569" ? <O12_69 /> : <O12_68 />,
+          },
+          {
+            key: "13",
+            title: "O13 คู่มือหรือมาตรฐานการให้บริการ",
+            component: selectedYear === "2569" ? <O13_69 /> : <O13_68 />,
+          },
+          {
+            key: "14",
+            title: "O14 ข้อมูลเชิงสถิติการให้บริการ",
+            component: selectedYear === "2569" ? <O14_69 /> : <O14_68 />,
+          },
+          {
+            key: "15",
+            title: "O15 รายงานผลการสํารวจความพึงพอใจ",
+            component: selectedYear === "2569" ? <O15_69 /> : <O15_68 />,
+          },
+          {
+            key: "16",
+            title: "O16 E-Service",
+            component: selectedYear === "2569" ? <O16_69 /> : <O16_68 />,
+          },
         ],
       },
       {
@@ -276,12 +420,36 @@ export default function ITA() {
         title: `ตัวชี้วัดย่อยที่ 9.3 (${yearPrefix})`,
         subtitle: "การบริหารเงินงบประมาณ (O17 - O22)",
         items: [
-          { key: "17", title: "O17 แผนการใช้จ่ายงบประมาณประจําปี", component: <O17 /> },
-          { key: "18", title: "O18 ผลการใช้จ่ายงบประมาณประจําปี", component: <O18 /> },
-          { key: "19", title: "O19 แผนการจัดซื้อจัดจ้าง/จัดหาพัสดุ", component: <O19 /> },
-          { key: "20", title: "O20 ประกาศต่าง ๆ เกี่ยวกับการจัดซื้อจัดจ้าง", component: <O20 /> },
-          { key: "21", title: "O21 สรุปผลการจัดซื้อจัดจ้างรายเดือน", component: <O21 /> },
-          { key: "22", title: "O22 แผนการจัดซื้อจัดจ้าง/จัดหาพัสดุ", component: <O22 /> },
+          {
+            key: "17",
+            title: "O17 แผนการใช้จ่ายงบประมาณประจําปี",
+            component: selectedYear === "2569" ? <O17_69 /> : <O17_68 />,
+          },
+          {
+            key: "18",
+            title: "O18 ผลการใช้จ่ายงบประมาณประจําปี",
+            component: selectedYear === "2569" ? <O18_69 /> : <O18_68 />,
+          },
+          {
+            key: "19",
+            title: "O19 แผนการจัดซื้อจัดจ้าง/จัดหาพัสดุ",
+            component: selectedYear === "2569" ? <O19_69 /> : <O19_68 />,
+          },
+          {
+            key: "20",
+            title: "O20 ประกาศต่าง ๆ เกี่ยวกับการจัดซื้อจัดจ้าง",
+            component: selectedYear === "2569" ? <O20_69 /> : <O20_68 />,
+          },
+          {
+            key: "21",
+            title: "O21 สรุปผลการจัดซื้อจัดจ้างรายเดือน",
+            component: selectedYear === "2569" ? <O21_69 /> : <O21_68 />,
+          },
+          {
+            key: "22",
+            title: "O22 แผนการจัดซื้อจัดจ้าง/จัดหาพัสดุ",
+            component: selectedYear === "2569" ? <O22_69 /> : <O22_68 />,
+          },
         ],
       },
       {
@@ -289,9 +457,21 @@ export default function ITA() {
         title: `ตัวชี้วัดย่อยที่ 9.4 (${yearPrefix})`,
         subtitle: "การบริหารและพัฒนาทรัพยากรบุคคล (O23 - O25)",
         items: [
-          { key: "23", title: "O23 การพัฒนาทรัพยากรบุคคล", component: <O23 /> },
-          { key: "24", title: "O24 หลักเกณฑ์การบริหารและพัฒนา", component: <O24 /> },
-          { key: "25", title: "O25 รายงานผลการพัฒนาทรัพยากรบุคคล", component: <O25 /> },
+          {
+            key: "23",
+            title: "O23 การพัฒนาทรัพยากรบุคคล",
+            component: selectedYear === "2569" ? <O23_69 /> : <O23_68 />,
+          },
+          {
+            key: "24",
+            title: "O24 หลักเกณฑ์การบริหารและพัฒนา",
+            component: selectedYear === "2569" ? <O24_69 /> : <O24_68 />,
+          },
+          {
+            key: "25",
+            title: "O25 รายงานผลการพัฒนาทรัพยากรบุคคล",
+            component: selectedYear === "2569" ? <O25_69 /> : <O25_68 />,
+          },
         ],
       },
       {
@@ -299,10 +479,26 @@ export default function ITA() {
         title: `ตัวชี้วัดย่อยที่ 9.5 (${yearPrefix})`,
         subtitle: "การส่งเสริมความโปร่งใสในสถานศึกษา (O26 - O29)",
         items: [
-          { key: "26", title: "O26 การจัดการร้องเรียนการทุจริต", component: <O26 /> },
-          { key: "27", title: "O27 ช่องทางแจ้งเรื่องร้องเรียนการทุจริต", component: <O27 /> },
-          { key: "28", title: "O28 ข้อมูลเชิงสถิติเรื่องร้องเรียน", component: <O28 /> },
-          { key: "29", title: "O29 การเปิดโอกาสให้เกิดการมีส่วนร่วม", component: <O29 /> },
+          {
+            key: "26",
+            title: "O26 การจัดการร้องเรียนการทุจริต",
+            component: selectedYear === "2569" ? <O26_69 /> : <O26_68 />,
+          },
+          {
+            key: "27",
+            title: "O27 ช่องทางแจ้งเรื่องร้องเรียนการทุจริต",
+            component: selectedYear === "2569" ? <O27_69 /> : <O27_68 />,
+          },
+          {
+            key: "28",
+            title: "O28 ข้อมูลเชิงสถิติเรื่องร้องเรียน",
+            component: selectedYear === "2569" ? <O28_69 /> : <O28_68 />,
+          },
+          {
+            key: "29",
+            title: "O29 การเปิดโอกาสให้เกิดการมีส่วนร่วม",
+            component: selectedYear === "2569" ? <O29_69 /> : <O29_68 />,
+          },
         ],
       },
       {
@@ -310,12 +506,36 @@ export default function ITA() {
         title: `ตัวชี้วัดย่อยที่ 10.1 (${yearPrefix})`,
         subtitle: "การดำเนินการเพื่อป้องกันทุจริต (O30 - O35)",
         items: [
-          { key: "30", title: "O30 นโยบาย No Gift Policy", component: <O30 /> },
-          { key: "31", title: "O31 การมีส่วนร่วมของผู้บริหาร", component: <O31 /> },
-          { key: "32", title: "O32 การประเมินผลควบคุมภายใน", component: <O32 /> },
-          { key: "33", title: "O33 การเสริมสร้างวัฒนธรรมองค์กร", component: <O33 /> },
-          { key: "34", title: "O34 โครงการป้องกันการทุจริต", component: <O34 /> },
-          { key: "35", title: "O35 รายงานผลการป้องกันการทุจริต", component: <O35 /> },
+          {
+            key: "30",
+            title: "O30 นโยบาย No Gift Policy",
+            component: selectedYear === "2569" ? <O30_69 /> : <O30_68 />,
+          },
+          {
+            key: "31",
+            title: "O31 การมีส่วนร่วมของผู้บริหาร",
+            component: selectedYear === "2569" ? <O31_69 /> : <O31_68 />,
+          },
+          {
+            key: "32",
+            title: "O32 การประเมินผลควบคุมภายใน",
+            component: selectedYear === "2569" ? <O32_69 /> : <O32_68 />,
+          },
+          {
+            key: "33",
+            title: "O33 การเสริมสร้างวัฒนธรรมองค์กร",
+            component: selectedYear === "2569" ? <O33_69 /> : <O33_68 />,
+          },
+          {
+            key: "34",
+            title: "O34 โครงการป้องกันการทุจริต",
+            component: selectedYear === "2569" ? <O34_69 /> : <O34_68 />,
+          },
+          {
+            key: "35",
+            title: "O35 รายงานผลการป้องกันการทุจริต",
+            component: selectedYear === "2569" ? <O35_69 /> : <O35_68 />,
+          },
         ],
       },
       {
@@ -323,8 +543,16 @@ export default function ITA() {
         title: `ตัวชี้วัดย่อยที่ 10.2 (${yearPrefix})`,
         subtitle: "มาตรการภายในเพื่อป้องกันการทุจริต (O36 - O37)",
         items: [
-          { key: "36", title: "O36 มาตรการส่งเสริมความโปร่งใส", component: <O36 /> },
-          { key: "37", title: "O37 การดําเนินการตามมาตรการ", component: <O37 /> },
+          {
+            key: "36",
+            title: "O36 มาตรการส่งเสริมความโปร่งใส",
+            component: selectedYear === "2569" ? <O36_69 /> : <O36_68 />,
+          },
+          {
+            key: "37",
+            title: "O37 การดําเนินการตามมาตรการ",
+            component: selectedYear === "2569" ? <O37_69 /> : <O37_68 />,
+          },
         ],
       },
     ];
@@ -337,7 +565,6 @@ export default function ITA() {
       {/* Hero Content */}
       <div className="relative z-10 py-12 md:py-20">
         <div className="mx-auto mb-12 max-w-5xl text-center px-4">
-          
           {/* --- Year Selector (มองเห็นได้ง่ายขึ้น) --- */}
           <div className="mb-10 flex flex-col items-center gap-4">
             <span className="text-sm font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
@@ -372,7 +599,8 @@ export default function ITA() {
             animate={{ opacity: 1, scale: 1 }}
             className="mb-6 inline-flex items-center gap-2 rounded-full bg-blue-100/80 px-4 py-2 text-sm font-bold text-blue-600 ring-1 ring-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:ring-blue-800"
           >
-            <SafetyCertificateOutlined /> ITA {selectedYear} : วิทยาลัยเทคนิคกันทรลักษ์
+            <SafetyCertificateOutlined /> ITA {selectedYear} :
+            วิทยาลัยเทคนิคกันทรลักษ์
           </motion.div>
 
           <h1 className="mb-6 text-4xl leading-tight font-extrabold tracking-tight text-slate-800 drop-shadow-sm md:text-6xl lg:text-7xl dark:text-white">
@@ -383,7 +611,8 @@ export default function ITA() {
             Assessment {selectedYear}
           </h1>
           <p className="mx-auto max-w-3xl text-lg leading-relaxed font-medium text-slate-600 md:text-xl dark:text-slate-300">
-            {Description[0]?.description} {selectedYear === "2569" && "(ข้อมูลปีปัจจุบัน)"}
+            {Description[0]?.description}{" "}
+            {selectedYear === "2569" && "(ข้อมูลปีปัจจุบัน)"}
           </p>
         </div>
 
@@ -397,18 +626,26 @@ export default function ITA() {
           <Card className="group overflow-hidden rounded-[2.5rem] border border-white/60 bg-white/80 shadow-xl shadow-blue-900/5 backdrop-blur-xl transition-all hover:shadow-2xl hover:shadow-blue-900/10 dark:border-slate-700 dark:bg-slate-800/80">
             <CardBody className="relative flex flex-col items-center justify-between gap-8 p-8 md:flex-row">
               <div className="relative z-10 shrink-0 transform transition-transform duration-700 group-hover:scale-105 group-hover:rotate-2">
-                <img src="/images/ita/ita.webp" alt="ITA Logo" className="h-auto w-60 object-contain" />
+                <img
+                  src="/images/ita/ita.webp"
+                  alt="ITA Logo"
+                  className="h-auto w-60 object-contain"
+                />
               </div>
               <div className="relative z-10 grow text-center md:text-left">
                 <div className="mb-4 inline-flex items-center gap-2 rounded-lg bg-blue-50 px-3 py-1 text-xs font-bold tracking-wider text-blue-600 uppercase dark:bg-blue-900/30 dark:text-blue-400">
                   <span>About ITA {selectedYear}</span>
                 </div>
-                <h3 className="mb-4 text-3xl font-extrabold text-slate-800 dark:text-white">ITA คืออะไร?</h3>
+                <h3 className="mb-4 text-3xl font-extrabold text-slate-800 dark:text-white">
+                  ITA คืออะไร?
+                </h3>
                 <p className="text-lg leading-relaxed font-medium text-slate-600 dark:text-slate-300">
-                  การประเมินคุณธรรมและความโปร่งใสในการดำเนินงานของหน่วยงานภาครัฐ (OIT) ประจำปีงบประมาณ {selectedYear}
+                  การประเมินคุณธรรมและความโปร่งใสในการดำเนินงานของหน่วยงานภาครัฐ
+                  (OIT) ประจำปีงบประมาณ {selectedYear}
                 </p>
                 <p className="mt-2 text-base font-normal text-slate-500 dark:text-slate-400">
-                  เพื่อยกระดับธรรมาภิบาล เปิดเผยข้อมูลสู่สาธารณะ และสร้างความเชื่อมั่นต่อประชาชนอย่างยั่งยืน
+                  เพื่อยกระดับธรรมาภิบาล เปิดเผยข้อมูลสู่สาธารณะ
+                  และสร้างความเชื่อมั่นต่อประชาชนอย่างยั่งยืน
                 </p>
               </div>
             </CardBody>
@@ -416,12 +653,19 @@ export default function ITA() {
 
           <Card className="overflow-hidden rounded-3xl">
             <CardBody className="p-0">
-              {ImageItem.map((item: { imgs: string }, idx: number) =>
-                item && (
-                  <motion.div key={idx}>
-                    <Image isBlurred removeWrapper src={item.imgs} className="w-full h-auto" alt={`image-${idx}`} />
-                  </motion.div>
-                )
+              {ImageItem.map(
+                (item: { imgs: string }, idx: number) =>
+                  item && (
+                    <motion.div key={idx}>
+                      <Image
+                        isBlurred
+                        removeWrapper
+                        src={item.imgs}
+                        className="w-full h-auto"
+                        alt={`image-${idx}`}
+                      />
+                    </motion.div>
+                  ),
               )}
             </CardBody>
           </Card>
@@ -440,13 +684,18 @@ export default function ITA() {
             เอกสารประกอบการประเมิน (OIT) {selectedYear}
           </h2>
           <p className="mx-auto max-w-2xl text-lg font-medium text-slate-600 dark:text-slate-400">
-            ข้อมูลสาธารณะตามตัวชี้วัด เพื่อความโปร่งใสและตรวจสอบได้ของปีงบประมาณ {selectedYear}
+            ข้อมูลสาธารณะตามตัวชี้วัด เพื่อความโปร่งใสและตรวจสอบได้ของปีงบประมาณ{" "}
+            {selectedYear}
           </p>
         </div>
 
         <div className="space-y-6">
           {topicGroups.map((group, index) => (
-            <CategorySection key={`${selectedYear}-${group.id}`} group={group} index={index} />
+            <CategorySection
+              key={`${selectedYear}-${group.id}`}
+              group={group}
+              index={index}
+            />
           ))}
         </div>
       </div>
