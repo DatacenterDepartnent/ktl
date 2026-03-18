@@ -4,7 +4,6 @@ import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 
-// --- Configuration ---
 const FILTER_CATEGORIES = [
   { value: "All", label: "ทุกหมวดหมู่" },
   { value: "PR", label: "ข่าวประชาสัมพันธ์" },
@@ -45,7 +44,6 @@ interface NewsItem {
   images?: string[];
   announcementImages?: string[];
   createdAt: string;
-  // ✅ เพิ่ม authorId เพื่อใช้เช็คสิทธิ์การแก้ไข/ลบ
   authorId?: string;
   author?: {
     name: string;
@@ -92,28 +90,24 @@ export default function NewsListClient({
 
   const filteredNews = useMemo(() => {
     let result = Array.isArray(initialNews) ? initialNews : [];
-
     if (selectedCategory !== "All") {
       result = result.filter((news) => {
         const cats = news.categories || (news.category ? [news.category] : []);
         return cats.includes(selectedCategory);
       });
     }
-
     if (selectedYear !== "All" && !REDIRECT_URLS[selectedYear]) {
       result = result.filter((news) => {
         const year = new Date(news.createdAt).getFullYear() + 543;
         return year.toString() === selectedYear;
       });
     }
-
     if (selectedMonth !== "All") {
       result = result.filter((news) => {
         const month = new Date(news.createdAt).getMonth();
         return month.toString() === selectedMonth;
       });
     }
-
     return result;
   }, [initialNews, selectedCategory, selectedMonth, selectedYear]);
 
@@ -122,105 +116,52 @@ export default function NewsListClient({
 
   return (
     <div className="w-full">
-      {/* --- Filter Section --- */}
-      <div className="mb-16 bg-white/70 backdrop-blur-xl p-3 md:p-4 rounded-[2.5rem] border border-slate-200/60 top-24 z-20 shadow-xl shadow-slate-200/30 dark:bg-slate-900/80 dark:border-slate-700 dark:shadow-black/40">
+      {/* --- Filter Section (คงเดิม) --- */}
+      <div className="mb-16 bg-white/70 backdrop-blur-xl p-3 md:p-4 rounded-[2.5rem] border border-slate-200/60 shadow-xl dark:bg-slate-900/80 dark:border-slate-700">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-          <div className="relative group">
-            <select
-              value={selectedCategory}
-              onChange={(e) => {
-                setSelectedCategory(e.target.value);
-                setVisibleCount(12);
-              }}
-              className="w-full bg-white border-none rounded-full px-6 py-4 text-sm font-bold text-slate-700 appearance-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer transition-all shadow-sm group-hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-200 dark:group-hover:bg-slate-700"
-            >
-              {FILTER_CATEGORIES.map((cat) => (
-                <option key={cat.value} value={cat.value}>
-                  {cat.label}
-                </option>
-              ))}
-            </select>
-            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 dark:text-slate-500">
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={3}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
-          </div>
-
-          <div className="relative group">
-            <select
-              value={selectedYear}
-              onChange={(e) => {
-                setSelectedYear(e.target.value);
-                setVisibleCount(12);
-              }}
-              className="w-full bg-white border-none rounded-full px-6 py-4 text-sm font-bold text-slate-700 appearance-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer transition-all shadow-sm group-hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-200 dark:group-hover:bg-slate-700"
-            >
-              <option value="All">ทุกปี พ.ศ.</option>
-              {availableYears.map((year) => (
-                <option key={year} value={year}>
-                  พ.ศ. {year} {REDIRECT_URLS[year] ? "🔗" : ""}
-                </option>
-              ))}
-            </select>
-            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 dark:text-slate-500">
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={3}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
-          </div>
-
-          <div className="relative group">
-            <select
-              value={selectedMonth}
-              onChange={(e) => {
-                setSelectedMonth(e.target.value);
-                setVisibleCount(12);
-              }}
-              className="w-full bg-white border-none rounded-full px-6 py-4 text-sm font-bold text-slate-700 appearance-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer transition-all shadow-sm group-hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-200 dark:group-hover:bg-slate-700"
-            >
-              {MONTHS.map((m) => (
-                <option key={m.value} value={m.value}>
-                  {m.label}
-                </option>
-              ))}
-            </select>
-            <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 dark:text-slate-500">
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={3}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </div>
-          </div>
+          <select
+            value={selectedCategory}
+            onChange={(e) => {
+              setSelectedCategory(e.target.value);
+              setVisibleCount(12);
+            }}
+            className="w-full bg-white border-none rounded-full px-6 py-4 text-sm font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-200"
+          >
+            {FILTER_CATEGORIES.map((cat) => (
+              <option key={cat.value} value={cat.value}>
+                {cat.label}
+              </option>
+            ))}
+          </select>
+          <select
+            value={selectedYear}
+            onChange={(e) => {
+              setSelectedYear(e.target.value);
+              setVisibleCount(12);
+            }}
+            className="w-full bg-white border-none rounded-full px-6 py-4 text-sm font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-200"
+          >
+            <option value="All">ทุกปี พ.ศ.</option>
+            {availableYears.map((year) => (
+              <option key={year} value={year}>
+                พ.ศ. {year} {REDIRECT_URLS[year] ? "🔗" : ""}
+              </option>
+            ))}
+          </select>
+          <select
+            value={selectedMonth}
+            onChange={(e) => {
+              setSelectedMonth(e.target.value);
+              setVisibleCount(12);
+            }}
+            className="w-full bg-white border-none rounded-full px-6 py-4 text-sm font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-200"
+          >
+            {MONTHS.map((m) => (
+              <option key={m.value} value={m.value}>
+                {m.label}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
@@ -234,75 +175,73 @@ export default function NewsListClient({
               news.announcementImages?.[0] ||
               news.images?.[0] ||
               "/no-image.png";
-            const displayCategories = news.categories?.length
-              ? news.categories
-              : news.category
-                ? [news.category]
-                : ["General"];
-
             return (
               <Link
                 key={news._id}
                 href={`/news/${news._id}`}
                 className="group flex flex-col bg-white dark:bg-zinc-900/50 rounded-3xl overflow-hidden border border-slate-200 dark:border-zinc-800 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 dark:bg-zinc-800">
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
                   <Image
                     src={coverImage}
                     alt={news.title}
                     fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    unoptimized
                   />
-                  <div className="absolute top-4 left-4 flex flex-wrap gap-2 max-w-[90%]">
-                    {displayCategories.map((cat, index) => (
-                      <span
-                        key={index}
-                        className="px-3 py-1.5 bg-white/95 dark:bg-zinc-900/95 backdrop-blur-md text-blue-600 dark:text-blue-400 text-[10px] font-bold uppercase tracking-wider rounded-full shadow-sm border border-slate-100 dark:border-slate-800"
-                      >
-                        {cat}
-                      </span>
-                    ))}
-                  </div>
                 </div>
 
                 <div className="px-6 py-8 flex flex-col flex-1">
-                  <div className="flex items-center justify-between mb-5">
+                  <div className="flex flex-wrap items-center justify-between mb-5 gap-y-2">
                     <div className="flex items-center gap-3">
-                      <div className="h-px w-8 bg-blue-600/30 group-hover:w-12 transition-all duration-700 dark:bg-blue-500/50"></div>
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] dark:text-slate-500">
-                        {new Date(news.createdAt).toLocaleDateString("th-TH", {
+                      <div className="h-px w-8 bg-blue-600/30 group-hover:w-12 transition-all duration-700"></div>
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider dark:text-slate-500">
+                        {/* ✅ แสดงวันที่และเวลา */}
+                        {new Date(news.createdAt).toLocaleString("th-TH", {
                           day: "numeric",
                           month: "short",
                           year: "numeric",
-                        })}
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        }) + " น."}
                       </span>
                     </div>
 
-                    {/* ✅ ส่วนแสดงชื่อผู้เขียนแบบ Badge (Minimal) */}
+                    {/* ✅ ส่วนแสดงชื่อผู้เขียน */}
                     {news.author?.name && (
-                      <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-slate-50 dark:bg-white/5 border border-slate-100 dark:border-white/5">
-                        <div className="w-1 h-1 rounded-full bg-blue-500 animate-pulse"></div>
-                        <span className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-tighter">
+                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100/50 dark:border-blue-800/20 transition-colors group-hover:bg-blue-100/50">
+                        <svg
+                          className="w-3 h-3 text-blue-500/70"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                          />
+                        </svg>
+                        <span className="text-[9px] font-bold text-blue-600/80 dark:text-blue-400/80 uppercase">
                           {news.author.name.split(" ")[0]}
                         </span>
                       </div>
                     )}
                   </div>
 
-                  <h3 className="text-xl font-bold text-slate-800 line-clamp-2 leading-[1.35] group-hover:text-blue-600 transition-colors duration-300 dark:text-slate-100 dark:group-hover:text-blue-400">
+                  <h3 className="text-xl font-bold text-slate-800 line-clamp-2 leading-[1.35] group-hover:text-blue-600 transition-colors dark:text-slate-100 dark:group-hover:text-blue-400">
                     {news.title}
                   </h3>
-
-                  <p className="mt-4 text-slate-500 text-sm leading-relaxed line-clamp-2 font-medium opacity-70 dark:text-slate-400">
-                    คลิกเพื่ออ่านรายละเอียดกิจกรรมและความเคลื่อนไหวที่เกิดขึ้นอย่างครบถ้วน...
+                  <p className="mt-4 text-slate-500 text-sm leading-relaxed line-clamp-2 opacity-70">
+                    คลิกเพื่ออ่านรายละเอียดกิจกรรมและความเคลื่อนไหว...
                   </p>
 
                   <div className="mt-auto pt-8 border-t border-slate-100 flex items-center justify-between dark:border-slate-800">
-                    <span className="text-[11px] font-black text-slate-900 uppercase tracking-widest group-hover:text-blue-600 transition-all duration-300 transform group-hover:translate-x-2 dark:text-slate-300 dark:group-hover:text-blue-400">
+                    <span className="text-[11px] font-black text-slate-900 uppercase tracking-widest group-hover:text-blue-600 transition-all transform group-hover:translate-x-2 dark:text-slate-300">
                       อ่านบทความฉบับเต็ม
                     </span>
-                    <div className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center group-hover:bg-blue-600 group-hover:border-blue-600 group-hover:text-white transition-all duration-500 dark:border-slate-700 dark:group-hover:bg-blue-500 dark:group-hover:border-blue-500">
+                    <div className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
                       <svg
                         className="w-4 h-4"
                         fill="none"
@@ -324,41 +263,12 @@ export default function NewsListClient({
           })}
         </div>
       ) : (
+        /* --- Empty State --- */
         <div className="py-48 text-center flex flex-col items-center">
-          <div className="w-24 h-24 bg-slate-50 rounded-full flex items-center justify-center mb-8 border border-slate-100 dark:bg-slate-800 dark:border-slate-700">
-            <span className="text-5xl opacity-20">📂</span>
-          </div>
-          <h4 className="text-xl font-bold text-slate-800 tracking-tight dark:text-slate-200">
+          <span className="text-5xl opacity-20 mb-8">📂</span>
+          <h4 className="text-xl font-bold text-slate-800 dark:text-slate-200">
             ไม่พบข้อมูลที่คุณค้นหา
           </h4>
-          <p className="text-slate-400 mt-2 font-medium dark:text-slate-500">
-            กรุณาลองเปลี่ยนเงื่อนไขการกรองข้อมูลใหม่
-          </p>
-          <button
-            onClick={() => {
-              setSelectedCategory("All");
-              setSelectedMonth("All");
-              setSelectedYear("All");
-            }}
-            className="mt-8 text-blue-600 text-xs font-black uppercase tracking-widest hover:text-blue-800 transition-colors underline decoration-2 underline-offset-8 dark:text-blue-400 dark:hover:text-blue-300"
-          >
-            Reset Filters
-          </button>
-        </div>
-      )}
-
-      {/* --- Load More --- */}
-      {filteredNews.length > visibleCount && (
-        <div className="flex flex-col items-center justify-center mt-24 space-y-6">
-          <button
-            onClick={handleLoadMore}
-            className="group relative px-16 py-5 bg-slate-900 text-white rounded-full font-black text-[11px] uppercase tracking-[0.4em] shadow-2xl hover:bg-blue-600 transition-all duration-500 active:scale-95 dark:bg-slate-800 dark:hover:bg-blue-600"
-          >
-            Load More Stories
-          </button>
-          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em] dark:text-slate-500">
-            {filteredNews.length - visibleCount} เรื่องราวเพิ่มเติมในฟีด
-          </p>
         </div>
       )}
     </div>

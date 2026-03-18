@@ -58,6 +58,19 @@ const stripHtml = (html: string) => {
   return html.replace(/<[^>]*>?/gm, "") || "";
 };
 
+// ✅ ปรับปรุง Helper: แสดงทั้งวันที่และเวลา
+const formatDateTime = (dateString: string) => {
+  return (
+    new Date(dateString).toLocaleString("th-TH", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }) + " น."
+  );
+};
+
 export default async function AnnouncementPage() {
   const announcements = await getAnnouncements();
 
@@ -115,18 +128,16 @@ export default async function AnnouncementPage() {
                         viewBox="0 0 24 24"
                         stroke="currentColor"
                       >
+                        {/* ✅ เปลี่ยนเป็นไอคอนนาฬิกา */}
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth={2}
-                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-                      {new Date(news.createdAt).toLocaleDateString("th-TH", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}
+                      {/* ✅ แสดงวันที่พร้อมเวลา */}
+                      {formatDateTime(news.createdAt)}
                     </div>
 
                     <Image
@@ -146,7 +157,7 @@ export default async function AnnouncementPage() {
                           News Update
                         </h4>
 
-                        {/* ✅ ปรับใหม่: แสดงชื่อแบบเรียบหรู ไม่ใช้คำว่า "ผู้เขียน" */}
+                        {/* ✅ แสดงชื่อผู้เขียน */}
                         {news.author?.name && (
                           <div className="flex items-center gap-1.5 text-[10px] text-slate-400 px-2 py-1 rounded-lg dark:bg-slate-800/50 dark:text-slate-500">
                             <div className="w-1.5 h-1.5 rounded-full bg-red-400/50"></div>

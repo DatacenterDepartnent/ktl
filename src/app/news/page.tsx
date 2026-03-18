@@ -10,6 +10,9 @@ interface NewsItem {
   images?: string[];
   announcementImages?: string[];
   createdAt: string;
+  author?: {
+    name: string;
+  };
 }
 
 async function getNews(): Promise<NewsItem[]> {
@@ -33,6 +36,7 @@ async function getNews(): Promise<NewsItem[]> {
         createdAt: 1,
         images: { $slice: 1 },
         announcementImages: { $slice: 1 },
+        author: 1, // ✅ ดึงข้อมูลผู้โพสต์
       })
       .sort({ createdAt: -1 })
       .limit(100)
@@ -50,11 +54,9 @@ export default async function AllNewsPage() {
 
   return (
     <main className="min-h-screen bg-slate-50/50 dark:bg-zinc-950 text-slate-900 dark:text-slate-200 font-sans selection:bg-blue-100 dark:selection:bg-blue-900/30">
-      {/* --- Hero / Header Section --- */}
       <div className="relative z-10 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border-b border-slate-200/60 dark:border-zinc-800 pt-32 pb-12 md:pt-40 md:pb-20">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
-            {/* Title & Description */}
             <div className="space-y-4 max-w-3xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider">
                 <span className="relative flex h-2 w-2">
@@ -63,14 +65,12 @@ export default async function AllNewsPage() {
                 </span>
                 Latest Updates
               </div>
-
               <h1 className="text-4xl md:text-5xl lg:text-7xl font-black tracking-tight text-slate-900 dark:text-white leading-[0.9]">
                 NEWS & <br className="hidden md:block" />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
                   EVENTS
                 </span>
               </h1>
-
               <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 font-medium leading-relaxed max-w-2xl">
                 เกาะติดทุกความเคลื่อนไหว กิจกรรม และประกาศสำคัญจาก
                 <span className="text-slate-900 dark:text-white font-semibold ml-1">
@@ -78,8 +78,6 @@ export default async function AllNewsPage() {
                 </span>
               </p>
             </div>
-
-            {/* Action Bar */}
             <div className="flex items-center gap-4 self-start md:self-end">
               <div className="flex flex-col items-end">
                 <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mb-1">
@@ -94,13 +92,9 @@ export default async function AllNewsPage() {
         </div>
       </div>
 
-      {/* --- Content Section --- */}
       <div className="py-12 md:py-20 relative">
-        {/* Background decorative elements */}
         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-zinc-800 to-transparent"></div>
-
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Stats / Filter Bar */}
           <div className="mb-12 flex items-center justify-between gap-6">
             <div className="flex items-center gap-4 w-full">
               <div className="h-px flex-1 bg-gradient-to-r from-slate-200 to-transparent dark:from-zinc-800"></div>
@@ -110,25 +104,9 @@ export default async function AllNewsPage() {
               <div className="h-px flex-1 bg-gradient-to-l from-slate-200 to-transparent dark:from-zinc-800"></div>
             </div>
           </div>
-
-          {/* News List Client Component (Handles Grid & Filtering) */}
           <div className="relative min-h-[50vh]">
             <NewsListClient initialNews={newsList} />
           </div>
-
-          {/* Footer Note */}
-          {newsList.length > 0 && (
-            <div className="mt-24 text-center">
-              <div className="inline-flex items-center justify-center p-2 rounded-full bg-slate-100 dark:bg-zinc-900 mb-4">
-                <div className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-zinc-700 mx-1"></div>
-                <div className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-zinc-700 mx-1"></div>
-                <div className="w-1.5 h-1.5 rounded-full bg-slate-400 dark:bg-zinc-700 mx-1"></div>
-              </div>
-              <p className="text-slate-400 dark:text-slate-600 text-sm font-medium">
-                สิ้นสุดรายการข่าวปัจจุบัน
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </main>

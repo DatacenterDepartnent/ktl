@@ -30,7 +30,7 @@ async function getLatestNews(): Promise<NewsItem[]> {
       .find({})
       .sort({ createdAt: -1 })
       .limit(3)
-      // ✅ 2. เอา .project() ออก หรือใส่ author: 1 เข้าไปเพื่อให้ข้อมูลชื่อผู้โพสต์ติดมาด้วย
+      // ✅ 2. เอา .project() ออก เพื่อให้ข้อมูล author ติดมาด้วย (หรือใส่ author: 1)
       .toArray();
 
     return JSON.parse(JSON.stringify(news));
@@ -40,23 +40,25 @@ async function getLatestNews(): Promise<NewsItem[]> {
   }
 }
 
-// Helper: แปลงวันที่เป็นภาษาไทย
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString("th-TH", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+// ✅ 3. ปรับ Helper: แปลงวันที่และเวลาเป็นภาษาไทย
+const formatDateTime = (dateString: string) => {
+  return (
+    new Date(dateString).toLocaleString("th-TH", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }) + " น."
+  );
 };
 
 export default async function PressRelease() {
   const latestNews = await getLatestNews();
 
   return (
-    <main className="flex-col   relative max-w-[1600px] mx-auto flex items-center justify-between dark:bg-transparent">
+    <main className="flex-col relative max-w-[1600px] mx-auto flex items-center justify-between dark:bg-transparent">
       <div className="w-full">
-        {" "}
-        {/* เพิ่ม w-full เพื่อความแน่นอนของ Layout */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
           <div className="flex gap-4">
             <div className="w-1.5 bg-orange-500 rounded-full h-auto self-stretch"></div>
@@ -74,6 +76,7 @@ export default async function PressRelease() {
           </div>
           <ViewAllButton />
         </div>
+
         {/* --- News Grid --- */}
         {latestNews.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -97,11 +100,11 @@ export default async function PressRelease() {
 
                 {/* 2. เนื้อหาการ์ด */}
                 <div className="p-5 flex flex-col flex-1">
-                  {/* แถวข้อมูล: วันที่ + ผู้โพสต์ */}
-                  <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-3 text-zinc-400 text-[11px] font-medium dark:text-zinc-500">
-                    <div className="flex items-center gap-1">
+                  {/* ✅ แถวข้อมูล: วันที่/เวลา + ผู้โพสต์ */}
+                  <div className="flex flex-wrap items-center justify-between gap-2 mb-4 text-zinc-400 text-[10px] font-bold uppercase tracking-tight dark:text-zinc-500">
+                    <div className="flex items-center gap-1.5">
                       <svg
-                        className="w-3.5 h-3.5"
+                        className="w-3.5 h-3.5 text-zinc-400/80"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -109,16 +112,18 @@ export default async function PressRelease() {
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
-                          strokeWidth={1.5}
-                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          strokeWidth={2}
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-                      {formatDate(news.createdAt)}
+                      <span>{formatDateTime(news.createdAt)}</span>
                     </div>
+
+                    {/* ✅ Badge ผู้เขียน (ดึงชื่อแรกมาแสดงเหมือนหน้า NewsList) */}
                     {news.author?.name && (
-                      <div className="flex items-center gap-1 text-orange-500/80">
+                      <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900/50 text-orange-600 dark:text-orange-400">
                         <svg
-                          className="w-3.5 h-3.5"
+                          className="w-3 h-3"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -126,11 +131,11 @@ export default async function PressRelease() {
                           <path
                             strokeLinecap="round"
                             strokeLinejoin="round"
-                            strokeWidth={1.5}
+                            strokeWidth={2.5}
                             d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                           />
                         </svg>
-                        <span>ผู้เขียน: {news.author.name.split(" ")[0]} </span>
+                        <span>{news.author.name.split(" ")[0]}</span>
                       </div>
                     )}
                   </div>

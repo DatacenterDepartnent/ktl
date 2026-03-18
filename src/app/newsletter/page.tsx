@@ -39,7 +39,6 @@ async function getNewsletters(): Promise<NewsItem[]> {
       .find(query)
       .sort({ createdAt: -1 })
       .limit(3)
-      // ✅ 2. ตรวจสอบให้แน่ใจว่าไม่ได้ใช้ .project() ที่ไปตัด author ทิ้ง
       .toArray();
 
     return JSON.parse(JSON.stringify(newsletters));
@@ -99,11 +98,11 @@ export default async function NewsletterPage() {
                         priority={index === 0}
                         className="object-cover object-top transition-transform duration-1000 group-hover:scale-110"
                       />
-                      {/* Gradient Overlay - เข้มขึ้นเพื่อให้ข้อความอ่านง่าย */}
+                      {/* Gradient Overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
                     </div>
 
-                    {/* Date Badge */}
+                    {/* Date & Time Badge */}
                     <div className="absolute top-5 right-5 z-10 bg-white/10 backdrop-blur-md border border-white/20 px-3 py-1.5 rounded-xl flex items-center gap-2 text-[10px] font-bold text-white uppercase">
                       <svg
                         className="w-3 h-3 text-yellow-400"
@@ -111,18 +110,22 @@ export default async function NewsletterPage() {
                         viewBox="0 0 24 24"
                         stroke="currentColor"
                       >
+                        {/* ไอคอนนาฬิกา */}
                         <path
                           strokeLinecap="round"
                           strokeLinejoin="round"
                           strokeWidth={2}
-                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-                      {new Date(news.createdAt).toLocaleDateString("th-TH", {
-                        year: "numeric",
-                        month: "short",
+                      {/* ✅ แสดงวันที่และเวลา */}
+                      {new Date(news.createdAt).toLocaleString("th-TH", {
                         day: "numeric",
-                      })}
+                        month: "short",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }) + " น."}
                     </div>
 
                     {/* Content Overlay */}
@@ -138,7 +141,7 @@ export default async function NewsletterPage() {
                         {news.title}
                       </h3>
 
-                      {/* ✅ เพิ่มส่วนแสดงชื่อผู้โพสต์ตรงนี้ */}
+                      {/* ✅ แสดงชื่อผู้โพสต์ (ตำแหน่งเดิมที่เพิ่มไว้) */}
                       {news.author?.name && (
                         <div className="flex items-center gap-2 mb-4 text-[11px] text-slate-300 font-medium">
                           <svg
