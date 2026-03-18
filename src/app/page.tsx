@@ -97,7 +97,7 @@ export default async function Home() {
 
         <div className="max-w-[1600px] mx-auto w-full px-2">
           {isShow.background_effect !== false && activePosters.length > 0 && (
-            <div className="flex flex-col gap-10 my-10">
+            <div className="flex flex-col gap-10 my-10 py-12">
               {Array.isArray(activePosters) &&
                 activePosters.map((poster: any) => (
                   <BackgroundBeamsWithCollisionDemo
@@ -108,14 +108,27 @@ export default async function Home() {
             </div>
           )}
 
-          {isShow.press_release !== false && <PressRelease />}
-          {isShow.newsletter !== false && <Newsletter />}
-          {isShow.announcement !== false && <Announcement />}
-          {isShow.tender !== false && <TenderPage />}
-          {isShow.command !== false && <CommandPage />}
-          {isShow.internship !== false && <InternshipPage />}
-
-          <ShowFacebook />
+          <div className="py-12">
+            {isShow.press_release !== false && <PressRelease />}
+          </div>
+          <div className="py-12">
+            {isShow.newsletter !== false && <Newsletter />}
+          </div>
+          <div className="py-12">
+            {isShow.announcement !== false && <Announcement />}
+          </div>
+          <div className="py-12">
+            {isShow.tender !== false && <TenderPage />}
+          </div>
+          <div className="py-12">
+            {isShow.command !== false && <CommandPage />}
+          </div>
+          <div className="py-12">
+            {isShow.internship !== false && <InternshipPage />}
+          </div>
+          <div className="py-12">
+            <ShowFacebook />
+          </div>
 
           {isShow.social_feed !== false && (feeds?.length ?? 0) > 0 && (
             <div className="py-12">
@@ -123,7 +136,7 @@ export default async function Home() {
             </div>
           )}
           {isShow.q_and_a !== false && (
-            <div className="py-6">
+            <div className="py-12">
               <QAPage />
             </div>
           )}

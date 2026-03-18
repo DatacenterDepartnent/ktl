@@ -95,7 +95,7 @@ export default function ManageNavbar() {
   const parentOptions = navItems.filter((item) => !item.parentId);
 
   return (
-    <div className="max-w-[1600px] mx-auto p-2 text-zinc-800 dark:text-zinc-200">
+    <div className="max-w-[1600px] py-12 mx-auto p-2 text-zinc-800 dark:text-zinc-200">
       <div className="">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 pb-6 border-b border-zinc-200 gap-4 dark:border-zinc-800">

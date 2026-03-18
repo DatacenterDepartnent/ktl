@@ -239,22 +239,22 @@ export default function SuperAdminPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         {[
           {
-            label: "Total_Activity",
+            label: "กิจกรรมทั้งหมด",
             val: summary?.totalActions,
             color: "text-blue-600",
           },
           {
-            label: "Identity_Approved",
+            label: "การอนุมัติข้อมูลประจำตัว",
             val: summary?.approvals,
             color: "text-emerald-600",
           },
           {
-            label: "Permission_Changes",
+            label: "การเปลี่ยนแปลงสิทธิ์์ผู้ใช้",
             val: summary?.roleChanges,
             color: "text-rose-600",
           },
           {
-            label: "System_Updates",
+            label: "การอัปเดตระบบ",
             val: summary?.updates,
             color: "text-orange-500",
           },
@@ -279,13 +279,13 @@ export default function SuperAdminPage() {
       <div className="bg-white rounded-[3rem] shadow-2xl border border-slate-100 overflow-hidden mb-16">
         <div className="p-6 border-b border-slate-50 flex justify-between items-center bg-white/50 backdrop-blur-md">
           <h1 className="text-3xl font-black text-slate-900 italic uppercase tracking-tighter">
-            Member_Management
+            การจัดการสมาชิก
           </h1>
           <button
             onClick={fetchData}
             className="bg-slate-900 text-white text-[11px] font-black px-8 py-4 rounded-2xl hover:bg-blue-600 transition-all uppercase italic"
           >
-            Refresh_Database
+            รีเฟรชฐานข้อมูล
           </button>
         </div>
 
@@ -293,11 +293,11 @@ export default function SuperAdminPage() {
           <table className="w-full text-left">
             <thead className="bg-slate-50/50 text-slate-400 text-[10px] uppercase font-black tracking-widest">
               <tr>
-                <th className="p-6 text-center w-20">Order</th>
-                <th className="p-6">User_Identity</th>
-                <th className="p-6 text-center">Auth_Level</th>
-                <th className="p-6 text-center">Protocol_Status</th>
-                <th className="p-6 text-right">Actions</th>
+                <th className="p-6 text-center w-20">ลำดับ</th>
+                <th className="p-6">ข้อมูลประจำตัวผู้ใช้</th>
+                <th className="p-6 text-center">ระดับการอนุญาต</th>
+                <th className="p-6 text-center">ถานะโปรโตคอล</th>
+                <th className="p-6 text-right">การดำเนินการ</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
@@ -343,9 +343,9 @@ export default function SuperAdminPage() {
                       }
                       className={`text-[10px] font-black border-2 rounded-xl px-4 py-2 outline-none uppercase ${getRoleStyle(user.role)}`}
                     >
-                      <option value="editor">EDITOR</option>
-                      <option value="admin">ADMINISTRATOR</option>
                       <option value="super_admin">SUPER_ADMIN</option>
+                      <option value="admin">ADMIN</option>
+                      <option value="editor">EDITOR</option>
                     </select>
                   </td>
                   <td className="p-6 text-center">
@@ -382,13 +382,13 @@ export default function SuperAdminPage() {
         <div className="p-6 border-b border-white/5 flex justify-between items-center">
           <h2 className="text-2xl font-black text-white italic uppercase tracking-tighter flex items-center gap-3">
             <span className="h-3 w-3 bg-rose-500 rounded-full animate-ping"></span>
-            Audit_Control_Log
+            บันทึกการตรวจสอบควบคุม
           </h2>
           <button
             onClick={handleClearLogs}
             className="text-[10px] font-black bg-rose-500/10 text-rose-500 px-6 py-3 rounded-2xl hover:bg-rose-500 hover:text-white border border-rose-500/20 uppercase tracking-widest"
           >
-            Wipe_Logs
+            ล้างบันทึก
           </button>
         </div>
 

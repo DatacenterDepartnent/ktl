@@ -67,7 +67,7 @@ export default function ManageHomePage() {
     );
 
   return (
-    <div className="max-w-6xl mx-auto p-2 space-y-10 animate-in fade-in duration-500">
+    <div className="max-w-7xl py-12 mx-auto p-2 space-y-10 animate-in fade-in duration-500">
       <Toaster position="bottom-right" />
 
       {/* --- Header --- */}
