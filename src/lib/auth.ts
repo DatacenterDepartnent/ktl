@@ -88,6 +88,7 @@ import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import clientPromise from "@/lib/db";
 import bcrypt from "bcryptjs";
+import { ObjectId } from "mongodb";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -114,26 +115,69 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         );
         if (!isPasswordCorrect) throw new Error("รหัสผ่านไม่ถูกต้อง");
 
+        // ✅ สร้างเลข session ID ใหม่ทุกครั้งที่ล็อกอิน
+        const sessionId = crypto.randomUUID();
+
+        // ✅ บันทึก sessionId ของปัจจุบันทับลงในฐานข้อมูล
+        await db.collection("users").updateOne(
+          { _id: user._id },
+          { $set: { currentSessionId: sessionId } }
+        );
+
         return {
           id: user._id.toString(),
           name: user.name,
           username: user.username,
           email: user.email || null,
           role: user.role || "user",
+          sessionId, // ส่งต่อไปให้ jwt callback
         };
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
+      // 1. กำหนดค่าเริ่มต้นเมื่อล็อกอินใหม่ ๆ
       if (user) {
         token.id = user.id;
         token.role = (user as any).role;
         token.username = (user as any).username;
+        token.sessionId = (user as any).sessionId;
+        token.loginTimestamp = Date.now();
       }
+
+      // 2. ตรวจสอบเงื่อนไขหมดเวลา 1 ชั่วโมง (ยกเว้น super_admin)
+      if (token.role !== "super_admin" && token.loginTimestamp) {
+        const ONE_HOUR_MS = 60 * 60 * 1000;
+        if (Date.now() - (token.loginTimestamp as number) > ONE_HOUR_MS) {
+          token.error = "SessionExpired";
+          return token;
+        }
+      }
+
+      // 3. ตรวจสอบการเข้าสู่ระบบซ้อนกัน (เช็ค Device ที่เข้าหลังสุด)
+      if (token.id && token.sessionId && !token.error) {
+        try {
+          const client = await clientPromise;
+          const db = client.db("ktltc_db");
+          const currentUser = await db.collection("users").findOne({ _id: new ObjectId(token.id as string) });
+          // หาก session id ของ token เก่า ไม่ตรงกับในฐานข้อมูล แสดงว่ามีเครื่องอื่นล็อกอินเข้ามาใช้งานแทนที่แล้ว
+          if (!currentUser || currentUser.currentSessionId !== token.sessionId) {
+            token.error = "ConcurrentLogin";
+            return token;
+          }
+        } catch (error) {
+          console.error("JWT Session validation error:", error);
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {
+      // ✅ แนบค่า error (ถ้ามี) กลับไปที่ฝั่ง Client
+      if (token.error) {
+        (session as any).error = token.error;
+      }
       if (session.user) {
         (session.user as any).id = token.id;
         (session.user as any).role = token.role;
@@ -142,6 +186,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session;
     },
   },
-  session: { strategy: "jwt" },
+  session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 },
   pages: { signIn: "/login" },
 });

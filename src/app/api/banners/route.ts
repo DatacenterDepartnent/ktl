@@ -39,8 +39,9 @@ export async function GET(req: Request) {
       .toArray();
 
     return NextResponse.json(banners);
-  } catch (error) {
-    return NextResponse.json({ error: "Server Error" }, { status: 500 });
+  } catch (error: any) {
+    console.error("DEBUG API ERROR:", error);
+    return NextResponse.json({ error: "Server Error", details: error.message, stack: error.stack }, { status: 500 });
   }
 }
 

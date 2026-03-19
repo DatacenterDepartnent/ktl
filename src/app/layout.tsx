@@ -12,6 +12,7 @@ import "../styles/index.css";
 import "../styles/globals.css";
 import { SessionProvider } from "next-auth/react";
 import ScrollUp from "@/components/Common/ScrollUp";
+import SessionWatcher from "@/components/SessionWatcher";
 
 // 1. ตั้งค่าฟอนต์หลักของเว็บ (Prompt) จาก Google Fonts
 // การใช้ next/font ช่วยลด Layout Shift และโหลดฟอนต์ได้รวดเร็ว
@@ -78,6 +79,7 @@ export default function RootLayout({
           refetchInterval={0} // ✅ ปิดการยิงไปที่ /api/auth/session เป็นระยะๆ
           refetchOnWindowFocus={false} // ✅ ปิดการยิง heartbeat ทุกครั้งที่สลับหน้าต่างกลับมา
         >
+          <SessionWatcher />
           {/* ThemeProvider: ตัวจัดการ Dark Mode / Light Mode */}
           <ThemeProvider
             attribute="class"
