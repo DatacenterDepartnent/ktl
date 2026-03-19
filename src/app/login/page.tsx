@@ -33,6 +33,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,6 +56,7 @@ export default function LoginPage() {
           details: "พยายามเข้าสู่ระบบด้วยรหัสผ่านที่ผิด",
         });
         setError("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+        setLoading(false);
       } else {
         // ✅ กรณี Login สำเร็จ: บันทึก Log เข้าสู่ระบบ
         await recordActivity({
@@ -63,12 +65,12 @@ export default function LoginPage() {
           details: "เข้าสู่ระบบจัดการเนื้อหา (CMS) สำเร็จ",
         });
 
+        setSuccess(true);
         router.refresh();
         router.push("/dashboard");
       }
     } catch (err) {
       setError("เกิดข้อผิดพลาดในการเชื่อมต่อ");
-    } finally {
       setLoading(false);
     }
   };
@@ -201,17 +203,35 @@ export default function LoginPage() {
                 )}
               </button>
             </div>
-            <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
+            <motion.div whileHover={{ scale: (loading || success) ? 1 : 1.01 }} whileTap={{ scale: (loading || success) ? 1 : 0.99 }}>
               <button
                 type="submit"
-                disabled={loading}
-                className="relative w-full flex items-center justify-center gap-3 bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-600/20 transition-all disabled:opacity-80 disabled:cursor-wait mt-4 overflow-hidden group"
+                disabled={loading || success}
+                className={`relative w-full flex items-center justify-center gap-3 text-white font-bold py-4 rounded-2xl shadow-lg transition-all mt-4 overflow-hidden group ${
+                  success 
+                    ? "bg-emerald-500 shadow-emerald-500/40" 
+                    : "bg-blue-600 shadow-blue-600/20 hover:bg-blue-700 disabled:opacity-80 disabled:cursor-wait dark:hover:bg-blue-500"
+                }`}
               >
                 {/* Background Hover Effect */}
-                <div className="absolute inset-0 bg-blue-700 translate-y-full group-hover:translate-y-0 transition-transform duration-300 dark:bg-blue-500" />
+                {!success && <div className="absolute inset-0 bg-blue-700 translate-y-full group-hover:translate-y-0 transition-transform duration-300 dark:bg-blue-500" />}
                 
                 <span className="relative z-10 flex items-center gap-2">
-                  {loading ? (
+                  {success ? (
+                    <>
+                      <motion.svg 
+                        initial={{ scale: 0 }} 
+                        animate={{ scale: 1 }} 
+                        className="h-6 w-6 text-white" 
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        stroke="currentColor"
+                      >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </motion.svg>
+                      เข้าสู่ระบบสำเร็จ!
+                    </>
+                  ) : loading ? (
                     <>
                       <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -225,7 +245,7 @@ export default function LoginPage() {
                 </span>
 
                 {/* Loading Pulse Overlay */}
-                {loading && (
+                {(loading || success) && (
                   <div className="absolute inset-0 bg-white/20 animate-pulse z-0" />
                 )}
               </button>
