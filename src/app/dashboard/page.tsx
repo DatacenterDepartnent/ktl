@@ -19,6 +19,7 @@ async function getDashboardData() {
 
     const username = session?.user?.name || (session?.user as any)?.username;
     const role = (session?.user as any)?.role;
+    const image = session?.user?.image;
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
@@ -81,7 +82,7 @@ async function getDashboardData() {
     }
 
     return {
-      user: { username, role },
+      user: { username, role, image },
       stats: {
         totalNews,
         totalNav,
@@ -133,15 +134,26 @@ export default async function DashboardPage() {
               </p>
             </div>
 
-            <div className="flex items-center gap-4 bg-white dark:bg-zinc-900 p-2 pr-6 rounded-full border border-zinc-200 dark:border-zinc-800 shadow-sm">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md uppercase">
-                {user.username?.charAt(0) || "U"}
-              </div>
+            <div className="flex items-center gap-4 bg-white dark:bg-zinc-900 p-2 pr-6 rounded-full border border-zinc-200 dark:border-zinc-800 shadow-sm transition-all hover:shadow-md group cursor-pointer">
+              {user.image ? (
+                <div className="relative">
+                  <img
+                    src={user.image}
+                    alt={user.username}
+                    className="w-10 h-10 rounded-full object-cover border-2 border-white dark:border-zinc-800 shadow-sm group-hover:scale-105 transition-transform"
+                  />
+                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-zinc-900 rounded-full" />
+                </div>
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md uppercase group-hover:scale-105 transition-transform">
+                  {user.username?.charAt(0) || "U"}
+                </div>
+              )}
               <div>
                 <p className="text-[10px] font-black text-blue-600 uppercase leading-none mb-1">
                   {user.role || "MEMBER"}
                 </p>
-                <p className="text-sm font-bold text-zinc-800 dark:text-zinc-200 leading-none">
+                <p className="text-sm font-bold text-zinc-800 dark:text-zinc-200 leading-none group-hover:text-blue-600 transition-colors">
                   {user.username}
                 </p>
               </div>

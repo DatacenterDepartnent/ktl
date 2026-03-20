@@ -49,7 +49,7 @@ export async function PATCH(req: Request) {
 
   try {
     const body = await req.json();
-    const { name, email, phone, lineId, password, image } = body;
+    const { name, email, phone, lineId, password, image, coverImage } = body;
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
@@ -64,43 +64,59 @@ export async function PATCH(req: Request) {
 
     let logDetail = "อัปเดตข้อมูลส่วนตัว";
 
-    // ✅ 1. ตรวจสอบและอัปโหลดรูป (ปรับให้เร็วขึ้นด้วย Eager Transformation)
+    // ✅ 1. Manage Profile Image
     if (image && image.startsWith("data:image")) {
       try {
         const uploadResponse = await cloudinary.uploader.upload(image, {
           folder: "user_profiles",
           transformation: [
             { width: 200, height: 200, crop: "fill", gravity: "face" },
-          ], // ✅ ลดขนาดรูปตั้งแต่ตอนอัปโหลด ช่วย FCP/LCP
+          ], 
         });
         updateData.image = uploadResponse.secure_url;
         logDetail = "อัปเดตโปรไฟล์และเปลี่ยนรูปภาพใหม่";
       } catch (uploadError) {
-        console.error("Cloudinary upload error:", uploadError);
+        console.error("Cloudinary profile upload error:", uploadError);
       }
     }
 
-    // ✅ 2. จัดการเรื่องรหัสผ่าน
+    // ✅ 2. Manage Cover Image
+    if (coverImage && coverImage.startsWith("data:image")) {
+      try {
+        const coverUploadResponse = await cloudinary.uploader.upload(coverImage, {
+          folder: "user_covers",
+          // Optimization for banner aspect ratio
+          transformation: [
+            { width: 1200, height: 400, crop: "fill" },
+          ],
+        });
+        updateData.coverImage = coverUploadResponse.secure_url;
+        logDetail += (logDetail.includes("อัปเดต") ? " และ" : "อัปเดต") + "ภาพหน้าปกใหม่";
+      } catch (coverError) {
+        console.error("Cloudinary cover upload error:", coverError);
+      }
+    }
+
+    // ✅ 3. Manage Password
     if (password && password.trim() !== "") {
       const hashedPassword = await bcrypt.hash(password, 10);
       updateData.password = hashedPassword;
       logDetail += " และเปลี่ยนรหัสผ่าน";
     }
 
-    // ✅ 3. อัปเดตข้อมูลในคอลเลกชัน users
+    // ✅ 4. Update the user record
     await db
       .collection("users")
       .updateOne({ _id: new ObjectId(userId) }, { $set: updateData });
 
-    // ✅ 4. บันทึก Log กิจกรรม (ใช้ชื่อที่อัปเดตใหม่เพื่อให้หน้า Log แสดงผลถูกต้อง)
+    // ✅ 5. Record Activity Log
     try {
       await db.collection("logs").insertOne({
         userId: new ObjectId(userId),
-        userName: name || sessionUserName || "User", // ✅ ใช้ name ล่าสุดที่เพิ่งแก้
+        userName: name || sessionUserName || "User", 
         action: "UPDATE_PROFILE",
         details: logDetail,
         timestamp: new Date(),
-        // ปรับการดึง IP ให้แม่นยำขึ้น
         ip: req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1",
       });
     } catch (logError) {
@@ -111,6 +127,7 @@ export async function PATCH(req: Request) {
       success: true,
       message: "อัปเดตข้อมูลสำเร็จ",
       imageUrl: updateData.image,
+      coverUrl: updateData.coverImage,
     });
   } catch (error) {
     console.error("Update error:", error);

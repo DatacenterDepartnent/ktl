@@ -3,13 +3,29 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  UserOutlined, 
+  PhoneOutlined, 
+  MailOutlined, 
+  MessageOutlined, 
+  LockOutlined, 
+  CameraOutlined,
+  SafetyCertificateOutlined,
+  CheckCircleFilled,
+  SaveOutlined,
+  PictureOutlined
+} from "@ant-design/icons";
 
 export default function ProfilePage() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [previewCover, setPreviewCover] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -18,7 +34,8 @@ export default function ProfilePage() {
     phone: "",
     lineId: "",
     role: "",
-    image: "", // ✅ เพิ่มฟิลด์รูปภาพ
+    image: "", 
+    coverImage: "",
     password: "",
     confirmPassword: "",
   });
@@ -37,10 +54,12 @@ export default function ProfilePage() {
             lineId: data.lineId || "",
             role: data.role || "",
             image: data.image || "",
+            coverImage: data.coverImage || "",
             password: "",
             confirmPassword: "",
           });
           if (data.image) setPreviewImage(data.image);
+          if (data.coverImage) setPreviewCover(data.coverImage);
         }
       } catch (error) {
         console.error("Load profile error:", error);
@@ -51,15 +70,23 @@ export default function ProfilePage() {
     fetchProfile();
   }, []);
 
-  // ฟังก์ชันจัดการการเลือกรูปภาพ
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
         setPreviewImage(reader.result as string);
-        // ในที่นี้แนะนำให้ส่ง File ไปที่ Upload API แล้วเก็บ URL กลับมา
-        // หรือถ้าจะส่ง Base64 (ไม่แนะนำถ้าไฟล์ใหญ่) ให้เซ็ตลง formData ตรงๆ
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewCover(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -73,20 +100,23 @@ export default function ProfilePage() {
     }
 
     setSaving(true);
+    setSaveSuccess(false);
     try {
       const res = await fetch("/api/profile", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
-          image: previewImage, // ส่ง URL รูปภาพใหม่ไป (ถ้าคุณจัดการ upload แล้ว)
+          image: previewImage,
+          coverImage: previewCover,
         }),
       });
 
       if (res.ok) {
-        alert("✅ บันทึกข้อมูลเรียบร้อยแล้ว!");
+        setSaveSuccess(true);
         setFormData((prev) => ({ ...prev, password: "", confirmPassword: "" }));
         router.refresh();
+        setTimeout(() => setSaveSuccess(false), 3000);
       } else {
         alert("❌ เกิดข้อผิดพลาด");
       }
@@ -97,213 +127,298 @@ export default function ProfilePage() {
     }
   };
 
-  if (loading)
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { staggerChildren: 0.1, delayChildren: 0.1 }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.5 } }
+  };
+
+  if (loading) {
     return (
-      <div className="p-20 text-center font-bold text-zinc-400 animate-pulse">
-        กำลังโหลดข้อมูล...
+      <div className="flex h-[80vh] items-center justify-center">
+        <div className="relative flex h-20 w-20 items-center justify-center">
+          <div className="absolute h-full w-full animate-ping rounded-full bg-blue-400 opacity-20"></div>
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
+        </div>
       </div>
     );
+  }
 
   return (
-    <div className="max-w-[1600px] mx-auto px-2 py-12">
-      {/* --- Header Section --- */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12 border-b border-zinc-200 dark:border-zinc-800 pb-10">
-        <div className="space-y-2">
-          <h1 className="text-5xl font-black text-zinc-900 dark:text-white tracking-tighter uppercase">
-            My <span className="text-blue-600">Profile</span>
-          </h1>
-          <p className="text-zinc-500 font-medium italic">
-            จัดการข้อมูลส่วนตัวและรูปโปรไฟล์ของคุณ
-          </p>
-        </div>
+    <div className="px-2">
+      {/* Background Ambient Glow */}
+      <div className="pointer-events-none absolute inset-0 z-0">
+        <div className="absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full bg-blue-400/10 blur-[120px] dark:bg-blue-600/10 transition-colors duration-1000" />
+        <div className="absolute top-1/2 right-[-20%] h-[500px] w-[500px] rounded-full bg-indigo-400/10 blur-[120px] dark:bg-purple-600/10 transition-colors duration-1000" />
       </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="grid grid-cols-1 lg:grid-cols-3 gap-8"
+      <motion.div 
+        className="relative z-10 max-w-7xl mx-auto"
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
       >
-        {/* --- Left Column: Avatar Upload (Bento Style) --- */}
-        <div className="lg:col-span-1">
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-8 rounded-[2.5rem] shadow-sm flex flex-col items-center text-center">
-            <div
-              className="relative group cursor-pointer"
+        
+        {/* --- Header & Cover Photo --- */}
+        <motion.div variants={itemVariants} className="relative rounded-[2.5rem] shadow-2xl shadow-blue-900/5 dark:shadow-none bg-white dark:bg-zinc-900/50 backdrop-blur-xl border border-white/50 dark:border-zinc-800/50 mb-10 overflow-hidden group">
+          
+          {/* Cover Banner */}
+          <div 
+            className="relative h- sm:h-72 w-full overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 cursor-pointer group/cover"
+            onClick={() => coverInputRef.current?.click()}
+          >
+            {previewCover ? (
+              <img src={previewCover} alt="Cover" className="h-full w-full object-cover transition-transform duration-700 group-hover/cover:scale-105" />
+            ) : (
+              <div className="absolute inset-0 bg-black/10" />
+            )}
+            
+            {/* Animated Gradient Mesh Overlay */}
+            <div className="absolute inset-0 opacity-40 mix-blend-overlay bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/40 via-transparent to-black/40" />
+            
+            {/* Change Cover Label */}
+            <div className="absolute inset-0  bg-black/20 opacity-0 group-hover/cover:opacity-100 flex items-center justify-center transition-opacity duration-300 backdrop-blur-[2px]">
+              <div className="bg-white/20 backdrop-blur-md border border-white/30 px-6 py-2 rounded-full flex items-center gap-2 text-white font-bold">
+                <PictureOutlined className="text-xl" />
+                <span>CHANGE COVER</span>
+              </div>
+            </div>
+
+            {/* <div className="absolute top-6 left-8 pointer-events-none">
+              <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tight drop-shadow-lg">
+                Profile Setting
+              </h1>
+              <p className="text-blue-100 mt-1 font-medium italic opacity-90 drop-shadow-md">
+                อัปเดตข้อมูล และสถานะของคุณให้เป็นปัจจุบัน
+              </p>
+            </div> */}
+
+            <input type="file" ref={coverInputRef} onChange={handleCoverChange} className="hidden" accept="image/*" />
+          </div>
+
+          {/* Avatar & Role Floating Area */}
+          <div className="px-8 pb-10 sm:px-12 flex flex-col sm:flex-row items-center sm:items-end gap-6 sm:gap-10 -mt-20 sm:-mt-24 relative z-10 w-full">
+            
+            {/* Avatar Upload */}
+            <div 
+              className="relative group/avatar cursor-pointer "
               onClick={() => fileInputRef.current?.click()}
             >
-              <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-white dark:border-zinc-800 shadow-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+              <div className="h-40 w-40 sm:h-48 sm:w-48  rounded-full overflow-hidden border-[6px] border-white dark:border-zinc-900 shadow-2xl shadow-black/20 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center transition-transform duration-300 group-hover/avatar:scale-105">
                 {previewImage ? (
-                  <img
-                    src={previewImage}
-                    alt="Profile"
-                    className="w-full h-full object-cover"
-                  />
+                  <img src={previewImage} alt="Profile" className="h-full w-full object-cover" />
                 ) : (
-                  <span className="text-5xl">👤</span>
+                  <UserOutlined className="text-6xl text-zinc-300 dark:text-zinc-600" />
                 )}
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/avatar:opacity-100 flex flex-col items-center justify-center transition-opacity duration-300 backdrop-blur-sm">
+                  <CameraOutlined className="text-white text-3xl mb-2" />
+                  <span className="text-white text-xs font-bold uppercase tracking-widest">Change Photo</span>
+                </div>
               </div>
-              <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <span className="text-white text-xs font-bold uppercase tracking-widest">
-                  Change Photo
+              
+              {/* Camera Badge Overlay */}
+              <div className="absolute bottom-1 right-4 h-10 w-10 text-white bg-blue-600 rounded-full flex items-center justify-center shadow-lg border-4 border-white dark:border-zinc-900 shadow-blue-900/30 transition-transform group-hover/avatar:scale-110">
+                <CameraOutlined className="text-lg" />
+              </div>
+              <input type="file" ref={fileInputRef} onChange={handleImageChange} className="hidden" accept="image/*" />
+            </div>
+
+            {/* User Title & Badge */}
+            <div className=" text-center sm:text-left">
+              <h2 className="text-3xl sm:text-4xl font-black text-zinc-900 dark:text-white leading-none tracking-tight pt-12">
+                {formData.username || "Super Admin"}
+              </h2>
+              <div className="mt-4 flex flex-wrap items-center justify-center sm:justify-start gap-3">
+                <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-[0.15em] shadow-sm">
+                  <SafetyCertificateOutlined /> {formData.role || "Member"}
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-100 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 text-xs font-bold uppercase tracking-[0.1em] shadow-sm">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Active Member
                 </span>
               </div>
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handleImageChange}
-                className="hidden"
-                accept="image/*"
-              />
             </div>
 
-            <div className="mt-6">
-              <h2 className="text-xl font-black text-zinc-900 dark:text-white leading-none">
-                {formData.username}
-              </h2>
-              <p className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] mt-2 bg-blue-50 dark:bg-blue-900/20 px-4 py-1 rounded-full">
-                {formData.role || "Member"}
-              </p>
-            </div>
-
-            <p className="text-xs text-zinc-400 mt-6 font-medium italic">
-              แนะนำรูปทรงจัตุรัส <br /> ขนาดไม่เกิน 2MB
-            </p>
           </div>
-        </div>
+        </motion.div>
 
-        {/* --- Right Column: Forms (Bento Style) --- */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 p-6 rounded-[2rem] shadow-sm">
-            <h3 className="text-sm font-black uppercase tracking-widest text-zinc-400 mb-6 flex items-center gap-2">
-              <span className="w-1.5 h-4 bg-blue-600 rounded-full" /> Personal
-              Information
-            </h3>
+        <form onSubmit={handleSubmit} className="space-y-10 pb-20">
+          
+{/* --- Personal Information Card --- */}
+<motion.div variants={itemVariants} className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 p-6 sm:p-8 rounded-3xl shadow-sm transition-all duration-300">
+  <div className="flex items-center gap-4 mb-8">
+    <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center text-lg">
+      <UserOutlined />
+    </div>
+    <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-900 dark:text-white">
+      รายละเอียดส่วนบุคคล
+    </h3>
+  </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div className="md:col-span-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-2 mb-2 block">
-                  ชื่อ-นามสกุล
-                </label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                  className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-3.5 font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                />
-              </div>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="md:col-span-2 group">
+      <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 ml-1 mb-2 block transition-colors group-focus-within:text-blue-500">
+        ชื่อ-นามสกุลจริง
+      </label>
+      <div className="relative">
+        <UserOutlined className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-blue-500 transition-colors " />
+        <input
+          type="text"
+          value={formData.name}
+          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/50 rounded-2xl pl-12 pr-5 py-4 text-zinc-800 dark:text-zinc-200 focus:bg-white dark:focus:bg-zinc-800 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all"
+          placeholder="นายกมล เทคนิค"
+        />
+      </div>
+    </div>
 
-              <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-2 mb-2 block">
-                  เบอร์โทรศัพท์
-                </label>
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, phone: e.target.value })
-                  }
-                  className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-3.5 font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                />
-              </div>
+    <div className="group">
+      <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 ml-1 mb-2 block transition-colors group-focus-within:text-blue-500">
+        เบอร์ติดต่อ
+      </label>
+      <div className="relative">
+        <PhoneOutlined className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-blue-500 transition-colors" />
+        <input
+          type="tel"
+          value={formData.phone}
+          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+          className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/50 rounded-2xl pl-12 pr-5 py-4 text-zinc-800 dark:text-zinc-200 focus:bg-white dark:focus:bg-zinc-800 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all"
+          placeholder="08X-XXX-XXXX"
+        />
+      </div>
+    </div>
 
-              <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-2 mb-2 block">
-                  Line ID
-                </label>
-                <input
-                  type="text"
-                  value={formData.lineId}
-                  onChange={(e) =>
-                    setFormData({ ...formData, lineId: e.target.value })
-                  }
-                  className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-3.5 font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                />
-              </div>
+    <div className="group">
+      <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 ml-1 mb-2 block transition-colors group-focus-within:text-blue-500">
+        Line ID
+      </label>
+      <div className="relative">
+        <MessageOutlined className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-blue-500 transition-colors" />
+        <input
+          type="text"
+          value={formData.lineId}
+          onChange={(e) => setFormData({ ...formData, lineId: e.target.value })}
+          className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/50 rounded-2xl pl-12 pr-5 py-4 text-zinc-800 dark:text-zinc-200 focus:bg-white dark:focus:bg-zinc-800 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all"
+          placeholder="@ktltc"
+        />
+      </div>
+    </div>
+  </div>
+</motion.div>
 
-              <div className="md:col-span-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-2 mb-2 block">
-                  อีเมล
-                </label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-3.5 font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                />
-              </div>
-            </div>
-          </div>
+{/* --- ความปลอดภัย Card --- */}
+<motion.div variants={itemVariants} className="mt-6 bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 p-6 sm:p-8 rounded-3xl shadow-sm transition-all duration-300">
+  <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+    <div className="flex items-center gap-4">
+      <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center text-lg">
+        <LockOutlined />
+      </div>
+      <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-900 dark:text-white">
+        ความปลอดภัย
+      </h3>
+    </div>
+    <span className="text-[10px] font-bold text-zinc-400 uppercase bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700">
+      Leave blank to keep current password
+    </span>
+  </div>
 
-          {/* Security Bento */}
-          <div className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 p-6 rounded-[2rem] shadow-sm">
-            <h3 className="text-sm font-black uppercase tracking-widest text-zinc-400 mb-6 flex items-center gap-2">
-              <span className="w-1.5 h-4 bg-red-500 rounded-full" /> Security
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-2 mb-2 block">
-                  รหัสผ่านใหม่
-                </label>
-                <input
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) =>
-                    setFormData({ ...formData, password: e.target.value })
-                  }
-                  placeholder="Leave blank to keep same"
-                  className="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-3.5 font-bold focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                />
-              </div>
-              <div>
-                <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-2 mb-2 block">
-                  ยืนยันรหัสผ่าน
-                </label>
-                <input
-                  type="password"
-                  value={formData.confirmPassword}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      confirmPassword: e.target.value,
-                    })
-                  }
-                  className={`w-full bg-zinc-50 dark:bg-zinc-950 border rounded-2xl px-5 py-3.5 font-bold focus:ring-2 outline-none transition-all ${
-                    formData.password &&
-                    formData.password !== formData.confirmPassword
-                      ? "border-red-500 focus:ring-red-500"
-                      : "border-zinc-200 dark:border-zinc-800 focus:ring-blue-500"
-                  }`}
-                />
-              </div>
-            </div>
-          </div>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="group">
+      <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 ml-1 mb-2 block transition-colors group-focus-within:text-amber-500">
+        รหัสผ่านใหม่
+      </label>
+      <div className="relative">
+        <LockOutlined className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-amber-500 transition-colors " />
+        <input
+          type="password"
+          value={formData.password}
+          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+          placeholder="••••••••"
+          className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/50 rounded-2xl pl-12 pr-5 py-4 text-zinc-800 dark:text-zinc-200 focus:bg-white dark:focus:bg-zinc-800 focus:ring-4 focus:ring-amber-500/5 focus:border-amber-500 outline-none transition-all"
+        />
+      </div>
+    </div>
 
-          <div className="flex justify-end">
+    <div className="group">
+      <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 ml-1 mb-2 block transition-colors group-focus-within:text-amber-500">
+        ยืนยันรหัสผ่าน
+      </label>
+      <div className="relative">
+        <LockOutlined className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-400 transition-colors" />
+        <input
+          type="password"
+          value={formData.confirmPassword}
+          onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+          placeholder="••••••••"
+          className={`w-full bg-zinc-50 dark:bg-zinc-800/50 border rounded-2xl pl-12 pr-5 py-4 text-zinc-800 dark:text-zinc-200 outline-none transition-all ${
+            formData.password && formData.password !== formData.confirmPassword
+              ? "border-red-400 focus:ring-4 focus:ring-red-500/5"
+              : "border-zinc-200 dark:border-zinc-700/50 focus:bg-white dark:focus:bg-zinc-800 focus:ring-4 focus:ring-amber-500/5 focus:border-amber-500"
+          }`}
+        />
+      </div>
+      <AnimatePresence>
+        {formData.password && formData.password !== formData.confirmPassword && (
+          <motion.p 
+            initial={{ opacity: 0, y: -10 }} 
+            animate={{ opacity: 1, y: 0 }} 
+            className="text-red-500 text-[11px] font-medium mt-2 ml-1"
+          >
+            * รหัสผ่านไม่ตรงกัน
+          </motion.p>
+        )}
+      </AnimatePresence>
+    </div>
+  </div>
+</motion.div>
+
+          {/* --- Action Buttons --- */}
+          <motion.div variants={itemVariants} className="flex justify-end pt-6">
             <button
               type="submit"
               disabled={saving}
-              className={`group flex items-center gap-3 px-10 py-4 rounded-[2rem] font-black text-white transition-all shadow-xl ${
-                saving
-                  ? "bg-zinc-400 cursor-wait"
-                  : "bg-blue-600 hover:bg-blue-500 hover:shadow-blue-500/30 active:scale-95"
+              className={`group relative overflow-hidden flex items-center justify-center gap-4 px-14 py-6 rounded-full font-black text-white transition-all duration-300 shadow-2xl ${
+                saveSuccess 
+                ? "bg-emerald-500 shadow-emerald-500/40 scale-105"
+                : saving
+                  ? "bg-zinc-400 cursor-wait shadow-none"
+                  : "bg-gradient-to-r from-blue-600 to-indigo-700 hover:shadow-indigo-600/50 hover:-translate-y-1.5 active:scale-95 active:translate-y-0"
               }`}
             >
-              {saving ? (
-                "SAVING..."
-              ) : (
-                <>
-                  <span>SAVE CHANGES</span>
-                  <span className="group-hover:translate-x-1 transition-transform">
-                    →
-                  </span>
-                </>
+              {!saving && !saveSuccess && (
+                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
               )}
+              
+              <span className="relative px-6 z-10 flex items-center gap-4 tracking-[0.15em] uppercase text-lg">
+                {saveSuccess ? (
+                  <>
+                    <CheckCircleFilled className="text-2xl" />
+                    SUCCESSFULLY UPDATED!
+                  </>
+                ) : saving ? (
+                  <>
+                    <div className="h-6 w-6 animate-spin rounded-full border-3 border-white border-t-transparent"></div>
+                    APPLYING CHANGES...
+                  </>
+                ) : (
+                  <>
+                    CONFIRM & SAVE DATA
+                    <SaveOutlined className="text-xl group-hover:scale-125 transition-transform duration-300" />
+                  </>
+                )}
+              </span>
             </button>
-          </div>
-        </div>
-      </form>
+          </motion.div>
+
+        </form>
+      </motion.div>
     </div>
   );
 }

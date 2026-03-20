@@ -136,7 +136,7 @@ const BackgroundDecor = () => (
   <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
     <div className="absolute top-[-20%] left-[-10%] h-[50vw] w-[50vw] rounded-full bg-blue-600/10 blur-[120px] dark:bg-blue-500/10" />
     <div className="absolute right-[-10%] bottom-[-20%] h-[60vw] w-[60vw] rounded-full bg-teal-500/10 blur-[150px] dark:bg-teal-400/10" />
-    <div className="absolute top-1/2 left-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 bg-[url('/images/grid-pattern.png')] bg-repeat opacity-[0.03] dark:opacity-[0.05]" />
+    <div className="absolute top-1/2 left-1/2 h-full w-full -translate-x-1/2 -translate-y-1/2 bg-repeat opacity-[0.03] dark:opacity-[0.05]" />
   </div>
 );
 
@@ -182,7 +182,7 @@ const MainDownloadCard = ({ year }: { year: string }) => {
             <Link
               href={
                 year === "2568"
-                  ? "/images/ข่าวประชาสัมพันธ์/2568/พฤศจิกายน/11/2587-สอศแจ้งผลประเมินITAประจำปีงบประมาณพศ2568.pdf"
+                  ? "/pdf/ITA/2568/ผลประเมินITA2568.pdf"
                   : "#"
               }
               target="_blank"
