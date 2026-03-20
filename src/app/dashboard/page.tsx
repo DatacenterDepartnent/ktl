@@ -205,7 +205,12 @@ export default async function DashboardPage() {
             title="จัดการเมนูเว็บ"
             icon="🔗"
           />
-          {/* ✅ เพิ่มปุ่มจัดการ Q&A */}
+          <ActionCard
+            href="/dashboard/pages"
+            title="จัดการเนื้อหาในเมนู"
+            icon="📝"
+          />
+
           <ActionCard
             href="/dashboard/questions"
             title="จัดการ Q&A"
@@ -213,11 +218,6 @@ export default async function DashboardPage() {
             badge={stats.totalPendingQA > 0 ? stats.totalPendingQA : null}
           />
 
-          <ActionCard
-            href="/dashboard/pages"
-            title="จัดการเนื้อหาเมนู"
-            icon="📝"
-          />
           <ActionCard href="/" title="หน้าเว็บจริง" icon="🌏" external />
         </div>
       </div>
