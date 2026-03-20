@@ -9,6 +9,7 @@ import {
   FiClock,
   FiCheckCircle,
   FiZap,
+  FiHelpCircle,
 } from "react-icons/fi";
 
 export default function QAPage() {
@@ -137,12 +138,13 @@ export default function QAPage() {
                   <div className="space-y-2">
                     <label className="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase ml-1">
                       <FiUser size={14} className="text-cyan-500" /> ชื่อผู้ส่ง
-                      (ระบุหรือไม่ก็ได้)
+                      <span className="text-cyan-500">*</span>
                     </label>
                     <input
                       type="text"
                       placeholder="เช่น ศิษย์เก่า KTLTC / ผู้ปกครอง"
                       className="w-full bg-slate-50/50 border border-slate-200 rounded-2xl p-4 font-bold outline-none focus:ring-4 focus:ring-cyan-500/5 focus:border-cyan-500 transition-all placeholder:text-slate-300"
+                      required
                       value={form.guestName}
                       onChange={(e) =>
                         setForm({ ...form, guestName: e.target.value })
@@ -150,14 +152,14 @@ export default function QAPage() {
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500 uppercase ml-1">
-                      หัวข้อคำถาม *
+                  <div className="space-y-2.5">
+                    <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 flex items-center gap-2">
+                      หัวข้อคำถาม <span className="text-cyan-500">*</span>
                     </label>
                     <input
                       type="text"
                       placeholder="ระบุเรื่องที่ต้องการสอบถาม..."
-                      className="w-full bg-slate-50/50 border border-slate-200 rounded-2xl p-4 font-bold outline-none focus:ring-4 focus:ring-cyan-500/5 focus:border-cyan-500 transition-all"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl p-4 md:p-5 font-bold outline-none focus:ring-4 focus:ring-cyan-500/5 focus:border-cyan-500 focus:bg-white transition-all"
                       required
                       value={form.subject}
                       onChange={(e) =>
@@ -166,13 +168,13 @@ export default function QAPage() {
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-xs font-bold text-slate-500 uppercase ml-1">
-                      รายละเอียด *
+                  <div className="space-y-2.5">
+                    <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1 flex items-center gap-2">
+                      รายละเอียด<span className="text-cyan-500">*</span>
                     </label>
                     <textarea
-                      placeholder="พิมพ์รายละเอียดที่นี่..."
-                      className="h-40 w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-3xl p-5 font-bold outline-none focus:ring-4 focus:ring-cyan-500/5 focus:border-cyan-500 transition-all resize-none"
+                      placeholder="Type details here..."
+                      className="h-44 w-full bg-slate-900 text-white rounded-3xl p-5 md:p-6 font-medium outline-none focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-500 transition-all resize-none shadow-inner leading-relaxed"
                       required
                       value={form.content}
                       onChange={(e) =>
@@ -184,11 +186,33 @@ export default function QAPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-slate-900 text-white shadow-xl shadow-slate-200 dark:shadow-none tracking-widest hover:bg-cyan-600 transition-all disabled:bg-slate-300 flex items-center justify-center gap-3 active:scale-[0.98]"
+                    className="group w-full bg-slate-950 text-white h-16 rounded-2xl font-black uppercase tracking-[0.2em] shadow-2xl shadow-slate-300 dark:shadow-none hover:bg-cyan-600 transition-all disabled:bg-slate-200 disabled:text-slate-400 flex items-center justify-center gap-4 active:scale-[0.98] relative overflow-hidden"
                   >
-                    {isSubmitting ? "กำลังส่งข้อมูล..." : "ส่งข้อมูลเข้าระบบ ↗"}
+                    <div className="relative z-10 flex items-center gap-3">
+                      {isSubmitting ? (
+                        "PROCESSING..."
+                      ) : (
+                        <>
+                          SUBMIT ↗
+                          <FiSend className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                        </>
+                      )}
+                    </div>
                   </button>
                 </form>
+
+                <div className="mt-10 p-6 bg-slate-50/50 rounded-2xl border border-slate-100/50 italic">
+                  <div className="flex gap-3 items-start">
+                    <FiHelpCircle
+                      className="text-cyan-500 mt-1 shrink-0"
+                      size={18}
+                    />
+                    <p className="text-[10px] text-slate-500 leading-relaxed font-bold">
+                      คำถามของคุณจะถูกส่งไปยังเจ้าหน้าที่ที่เกี่ยวข้องโดยตรง
+                      เราจะพยายามตอบภายใน 24-48 ชั่วโมง
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
           </aside>

@@ -22,7 +22,7 @@ const BackgroundBeamsWithCollisionDemo = dynamic(
 const SocialFeedDisplay = dynamic(
   () => import("@/components/home/SocialFeedDisplay"),
 );
-const ShowFacebook = dynamic(() => import("@/components/ShowFacebook"));
+import ShowFacebookClient from "@/components/ShowFacebookClient";
 const CalendarPage = dynamic(() => import("@/components/Calendar"));
 const QAPage = dynamic(() => import("./q-and-a/page"));
 
@@ -129,7 +129,7 @@ export default async function Home() {
             {isShow.internship !== false && <InternshipPage />}
           </div>
           <div className="py-12">
-            <ShowFacebook />
+            <ShowFacebookClient />
           </div>
 
           {isShow.social_feed !== false && (feeds?.length ?? 0) > 0 && (

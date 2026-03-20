@@ -150,7 +150,6 @@ export default function NavbarClient({
                     </div>
                   )}
                 </div>
-                <div className="fixed top-0 left-0 w-full h-full z-60 bg-black/40 backdrop-blur-sm xl:hidden" />
                 <div className="text-left hidden lg:block overflow-hidden">
                   <p
                     className={`text-[10px] font-black uppercase leading-none mb-1 tracking-widest ${

@@ -2,6 +2,7 @@ import clientPromise from "@/lib/db";
 import Link from "next/link";
 import { v2 as cloudinary } from "cloudinary";
 import { auth } from "@/lib/auth";
+import DashboardHeader from "@/components/dashboard/DashboardHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -117,49 +118,7 @@ export default async function DashboardPage() {
     <div className="min-h-screen bg-[#fafafa] dark:bg-zinc-950 transition-colors duration-500">
       <div className="max-w-[1600px] mx-auto w-full px-2 py-12">
         {/* --- 1. HEADER SECTION --- */}
-        <div className="mb-12 border-b border-zinc-200 dark:border-zinc-800 pb-10">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">
-                  System Live
-                </span>
-              </div>
-              <h1 className="text-6xl font-black text-zinc-900 dark:text-white tracking-tighter uppercase">
-                Over<span className="text-blue-600">view</span>
-              </h1>
-              <p className="text-zinc-500 dark:text-zinc-400 font-medium italic">
-                วิทยาลัยเทคนิคกันทรลักษ์ • แผงควบคุมระบบบริหารจัดการ
-              </p>
-            </div>
-
-            <div className="group flex grow items-center gap-4 p-4 rounded-3xl bg-linear-to-br from-indigo-500 to-blue-600 shadow-lg shadow-indigo-200 dark:shadow-none hover:scale-[1.02] transition-all duration-300">
-              {user.image ? (
-                <div className="relative">
-                  <img
-                    src={user.image}
-                    alt={user.username}
-                    className="w-10 h-10 rounded-full object-cover border-2 border-white dark:border-zinc-800 shadow-sm group-hover:scale-105 transition-transform"
-                  />
-                  <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-zinc-900 rounded-full" />
-                </div>
-              ) : (
-                <div className="w-10 h-10 rounded-full bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md uppercase group-hover:scale-105 transition-transform">
-                  {user.username?.charAt(0) || "U"}
-                </div>
-              )}
-              <div>
-                <p className="text-[10px] font-black text-blue-600 uppercase leading-none mb-1">
-                  {user.role || "MEMBER"}
-                </p>
-                <p className="text-sm font-bold text-zinc-800 dark:text-zinc-200 leading-none group-hover:text-blue-600 transition-colors">
-                  {user.username}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <DashboardHeader user={user} />
 
         {/* --- 2. STATS GRID (Bento Style) --- */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">

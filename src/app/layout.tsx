@@ -13,6 +13,7 @@ import "../styles/globals.css";
 import { SessionProvider } from "next-auth/react";
 import ScrollUp from "@/components/Common/ScrollUp";
 import SessionWatcher from "@/components/SessionWatcher";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 
 // 1. ตั้งค่าฟอนต์หลักของเว็บ (Prompt) จาก Google Fonts
 // การใช้ next/font ช่วยลด Layout Shift และโหลดฟอนต์ได้รวดเร็ว
@@ -75,30 +76,32 @@ export default function RootLayout({
 
       {/* body: เรียกใช้ฟอนต์ Prompt และกำหนดสีพื้นหลัง/ตัวหนังสือพื้นฐาน */}
       <body className={`${prompt.className} ${prompt.variable} antialiased`}>
-        <SessionProvider
-          refetchInterval={0} // ✅ ปิดการยิงไปที่ /api/auth/session เป็นระยะๆ
-          refetchOnWindowFocus={false} // ✅ ปิดการยิง heartbeat ทุกครั้งที่สลับหน้าต่างกลับมา
-        >
-          <SessionWatcher />
-          {/* ThemeProvider: ตัวจัดการ Dark Mode / Light Mode */}
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system" // เริ่มต้นตามการตั้งค่าของเครื่องผู้ใช้
-            enableSystem
-            disableTransitionOnChange
+        <AntdRegistry>
+          <SessionProvider
+            refetchInterval={0} // ✅ ปิดการยิงไปที่ /api/auth/session เป็นระยะๆ
+            refetchOnWindowFocus={false} // ✅ ปิดการยิง heartbeat ทุกครั้งที่สลับหน้าต่างกลับมา
           >
-            {/* Navbar: เมนูด้านบน (จะแสดงทุกหน้า) */}
-            <Navbar />
-            {/* children: เนื้อหาของหน้าที่เราเปิดอยู่ (เช่น หน้า Home, หน้า News) */}
-            {children}
-            {/* เครื่องมือเก็บสถิติของ Vercel */}
-            <SpeedInsights /> {/* วัดความเร็วเว็บ */}
-            <Analytics /> {/* วัดจำนวนคนเข้าชม */}
-            {/* Footer: ส่วนท้ายเว็บ (จะแสดงทุกหน้า) */}
-            <ScrollUp />
-            <Footer />
-          </ThemeProvider>
-        </SessionProvider>
+            <SessionWatcher />
+            {/* ThemeProvider: ตัวจัดการ Dark Mode / Light Mode */}
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system" // เริ่มต้นตามการตั้งค่าของเครื่องผู้ใช้
+              enableSystem
+              disableTransitionOnChange
+            >
+              {/* Navbar: เมนูด้านบน (จะแสดงทุกหน้า) */}
+              <Navbar />
+              {/* children: เนื้อหาของหน้าที่เราเปิดอยู่ (เช่น หน้า Home, หน้า News) */}
+              {children}
+              {/* เครื่องมือเก็บสถิติของ Vercel */}
+              <SpeedInsights /> {/* วัดความเร็วเว็บ */}
+              <Analytics /> {/* วัดจำนวนคนเข้าชม */}
+              {/* Footer: ส่วนท้ายเว็บ (จะแสดงทุกหน้า) */}
+              <ScrollUp />
+              <Footer />
+            </ThemeProvider>
+          </SessionProvider>
+        </AntdRegistry>
       </body>
     </html>
   );
