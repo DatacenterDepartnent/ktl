@@ -43,7 +43,7 @@ export default function Planning() {
           </div>
           <h1 className="text-3xl font-extrabold md:text-5xl leading-tight">
             ฝ่าย
-            <span className="bg-gradient-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-blue-600 to-teal-500 bg-clip-text text-transparent">
               แผนงานและความร่วมมือ
             </span>
           </h1>
@@ -64,7 +64,7 @@ export default function Planning() {
           {/* 1. รองผู้อำนวยการ (Head of Department) */}
           <motion.div variants={itemVar} className="flex justify-center">
             <div className="relative w-full max-w-md">
-              <div className="absolute -inset-0.5 rounded-[24px] bg-gradient-to-r from-blue-600 to-teal-600 opacity-30 blur-xl transition duration-1000 group-hover:opacity-100"></div>
+              <div className="absolute -inset-0.5 rounded-[24px] bg-linear-to-r from-blue-600 to-teal-600 opacity-30 blur-xl transition duration-1000 group-hover:opacity-100"></div>
               <BackgroundGradient className="relative rounded-[22px] bg-white p-6 shadow-xl dark:bg-zinc-900">
                 <div className="flex flex-col items-center text-center">
                   {/* Image */}
@@ -125,7 +125,7 @@ export default function Planning() {
                   <div className="flex h-full flex-col">
                     {/* Image */}
                     <div className="relative mb-5 overflow-hidden rounded-xl bg-slate-100">
-                      <div className="aspect-[3/4] w-full">
+                      <div className="aspect-3/4 w-full">
                         <Image
                           src={item.img}
                           alt={item.title}

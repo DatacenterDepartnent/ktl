@@ -40,7 +40,7 @@ export default function Philosophy() {
   return (
     <section className="relative min-h-screen overflow-hidden bg-slate-50 py-20 font-sans text-slate-800 dark:bg-neutral-950 dark:text-slate-200">
       {/* --- Background Decoration --- */}
-      <div className="pointer-events-none absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-[size:6rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] dark:bg-neutral-950 dark:bg-[linear-gradient(to_right,#171717_1px,transparent_1px),linear-gradient(to_bottom,#171717_1px,transparent_1px)]"></div>
+      <div className="pointer-events-none absolute inset-0 -z-10 h-full w-full bg-white bg-[linear-gradient(to_right,#f0f0f0_1px,transparent_1px),linear-gradient(to_bottom,#f0f0f0_1px,transparent_1px)] bg-size-[6rem_4rem] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] dark:bg-neutral-950 dark:bg-[linear-gradient(to_right,#171717_1px,transparent_1px),linear-gradient(to_bottom,#171717_1px,transparent_1px)]"></div>
 
       <div className="pointer-events-none absolute left-0 top-0 -z-10 h-[500px] w-[500px] rounded-full bg-sky-400/20 blur-[100px] dark:bg-sky-900/20" />
       <div className="pointer-events-none absolute bottom-0 right-0 -z-10 h-[500px] w-[500px] rounded-full bg-indigo-400/20 blur-[100px] dark:bg-indigo-900/20" />
@@ -60,7 +60,7 @@ export default function Philosophy() {
           <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 md:text-6xl dark:text-white">
             ข้อมูลพื้นฐาน
             <br className="block md:hidden" />
-            <span className="mt-2 block bg-gradient-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent md:mt-0 md:inline-block md:ml-4 dark:from-sky-400 dark:to-indigo-400">
+            <span className="mt-2 block bg-linear-to-r from-sky-600 to-indigo-600 bg-clip-text text-transparent md:mt-0 md:inline-block md:ml-4 dark:from-sky-400 dark:to-indigo-400">
               <FlipWords words={words} className="font-extrabold" />
             </span>
           </h1>
@@ -164,7 +164,7 @@ export default function Philosophy() {
             variants={itemVar}
             className="col-span-1 md:col-span-12 lg:col-span-4"
           >
-            <div className="h-full rounded-3xl bg-gradient-to-br from-slate-900 to-slate-800 p-8 text-white shadow-xl dark:from-neutral-800 dark:to-neutral-900">
+            <div className="h-full rounded-3xl bg-linear-to-br from-slate-900 to-slate-800 p-8 text-white shadow-xl dark:from-neutral-800 dark:to-neutral-900">
               <div className="mb-6 flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white backdrop-blur-sm">
                   <BookOutlined style={{ fontSize: "20px" }} />
@@ -217,7 +217,7 @@ export default function Philosophy() {
 
           {/* 6. Motto (Banner) */}
           <motion.div variants={itemVar} className="col-span-1 md:col-span-12">
-            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-sky-500 to-indigo-600 p-8 text-center text-white shadow-lg">
+            <div className="relative overflow-hidden rounded-3xl bg-linear-to-r from-sky-500 to-indigo-600 p-8 text-center text-white shadow-lg">
               <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10"></div>
               <h3 className="relative z-10 mb-2 text-xl font-bold uppercase tracking-wider opacity-90">
                 คำขวัญ (Motto)

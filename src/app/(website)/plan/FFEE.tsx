@@ -54,7 +54,7 @@ export default function FFEE() {
           </div>
           <h1 className="text-3xl font-extrabold md:text-5xl leading-tight">
             งานกองทุน <br className="md:hidden" />
-            <span className="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
               เพื่อความเสมอภาคทางการศึกษา
             </span>
           </h1>
@@ -71,14 +71,14 @@ export default function FFEE() {
           {/* Left Column: Image & Personnel */}
           <motion.div variants={itemVar} className="space-y-8">
             <div className="overflow-hidden rounded-3xl shadow-xl shadow-green-100/50 dark:bg-zinc-900 dark:shadow-none">
-              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
+              <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl">
                 <Image
                   src="/images/error.webp"
                   alt="หัวหน้างานกองทุนฯ"
                   className="h-full w-full object-cover"
                   removeWrapper
                 />
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
+                <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/70 to-transparent p-6">
                   <h3 className="text-xl font-bold text-white">
                     หัวหน้างานกองทุนฯ
                   </h3>

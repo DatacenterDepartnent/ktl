@@ -54,7 +54,7 @@ export default function PAB() {
           </div>
           <h1 className="text-3xl font-extrabold md:text-5xl leading-tight">
             งานวางแผน <br className="md:hidden" />
-            <span className="bg-gradient-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-teal-600 to-cyan-600 bg-clip-text text-transparent">
               และงบประมาณ
             </span>
           </h1>
@@ -72,14 +72,14 @@ export default function PAB() {
           <motion.div variants={itemVar} className="space-y-8 lg:col-span-5">
             {/* หัวหน้างาน */}
             <div className=" ">
-              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
+              <div className="relative aspect-4/3 w-full overflow-hidden rounded-2xl">
                 <Image
                   src="/images/บุคลากร/แผน/งานวางแผนและงบประมาณ.webp"
                   alt="หัวหน้างานวางแผน"
                   className="h-full w-full object-cover"
                   removeWrapper
                 />
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-6">
+                <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/70 to-transparent p-6">
                   <h3 className="text-xl font-bold text-white">
                     หัวหน้างานวางแผนฯ
                   </h3>

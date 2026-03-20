@@ -22,7 +22,7 @@ export default async function HeroPoster() {
     <section className="relative w-full max-w-5xl mx-auto px-4 py-12">
       <div className="bg-white dark:bg-zinc-900 rounded-[3rem] overflow-hidden shadow-2xl border border-zinc-200 dark:border-zinc-800 flex flex-col md:flex-row items-center">
         {/* ส่วนรูปภาพ */}
-        <div className="relative w-full md:w-1/2 aspect-[3/4]">
+        <div className="relative w-full md:w-1/2 aspect-3/4">
           <Image
             src={poster.imageUrl}
             alt={poster.title}

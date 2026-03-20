@@ -134,7 +134,7 @@ export default async function DashboardPage() {
               </p>
             </div>
 
-            <div className="flex items-center gap-4 bg-white dark:bg-zinc-900 p-2 pr-6 rounded-full border border-zinc-200 dark:border-zinc-800 shadow-sm transition-all hover:shadow-md group cursor-pointer">
+            <div className="group flex grow items-center gap-4 p-4 rounded-3xl bg-linear-to-br from-indigo-500 to-blue-600 shadow-lg shadow-indigo-200 dark:shadow-none hover:scale-[1.02] transition-all duration-300">
               {user.image ? (
                 <div className="relative">
                   <img
@@ -145,7 +145,7 @@ export default async function DashboardPage() {
                   <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-emerald-500 border-2 border-white dark:border-zinc-900 rounded-full" />
                 </div>
               ) : (
-                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md uppercase group-hover:scale-105 transition-transform">
+                <div className="w-10 h-10 rounded-full bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white font-bold shadow-md uppercase group-hover:scale-105 transition-transform">
                   {user.username?.charAt(0) || "U"}
                 </div>
               )}
@@ -211,7 +211,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Total Images */}
-        <div className="mt-12 p-6 rounded-[2rem] bg-zinc-100 dark:bg-zinc-900/50 flex items-center justify-between border border-zinc-200 dark:border-zinc-800">
+        <div className="mt-12 p-6 rounded-4xl bg-zinc-100 dark:bg-zinc-900/50 flex items-center justify-between border border-zinc-200 dark:border-zinc-800">
           <div className="flex items-center gap-4">
             <span className="text-2xl">📸</span>
             <div>
@@ -276,7 +276,7 @@ function StatCard({ label, value, icon, color }: any) {
     pink: "text-pink-600 bg-pink-50 dark:bg-pink-900/10",
   };
   return (
-    <div className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 p-5 rounded-[2rem] shadow-sm group transition-all hover:shadow-md">
+    <div className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 p-5 rounded-4xl shadow-sm group transition-all hover:shadow-md">
       <div
         className={`w-10 h-10 rounded-2xl ${colors[color]} flex items-center justify-center text-xl mb-3 group-hover:scale-110 transition-transform`}
       >
@@ -336,7 +336,7 @@ function ActionCard({ href, title, icon, external }: any) {
     <Link
       href={href}
       target={external ? "_blank" : "_self"}
-      className="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 rounded-[2rem] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all"
+      className="group bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 rounded-4xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all"
     >
       <div className="text-4xl mb-4 group-hover:scale-110 transition-transform">
         {icon}

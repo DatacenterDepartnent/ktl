@@ -86,7 +86,7 @@ export default async function NewsletterPage() {
                   <Link
                     key={news._id}
                     href={`/news/${news._id}`}
-                    className="group relative block rounded-[2rem] overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-100 hover:-translate-y-2 aspect-[3/4] dark:border-slate-800 dark:shadow-black/40"
+                    className="group relative block rounded-4xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-slate-100 hover:-translate-y-2 aspect-3/4 dark:border-slate-800 dark:shadow-black/40"
                   >
                     {/* Image Area */}
                     <div className="absolute inset-0 w-full h-full bg-slate-100 dark:bg-slate-800">
@@ -99,7 +99,7 @@ export default async function NewsletterPage() {
                         className="object-cover object-top transition-transform duration-1000 group-hover:scale-110"
                       />
                       {/* Gradient Overlay */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent"></div>
+                      <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/30 to-transparent"></div>
                     </div>
 
                     {/* Date & Time Badge */}

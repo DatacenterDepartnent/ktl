@@ -158,7 +158,7 @@ export default function PlanningPage() {
   return (
     <section className="relative min-h-screen py-20 overflow-hidden bg-slate-50/50 dark:bg-black">
       {/* Decorative Background */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-indigo-100/40 to-transparent dark:from-indigo-900/20 pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-linear-to-b from-indigo-100/40 to-transparent dark:from-indigo-900/20 pointer-events-none" />
 
       <motion.div
         initial="hidden"
@@ -176,7 +176,7 @@ export default function PlanningPage() {
 
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">
             ฝ่ายแผนงาน
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400">
               และความร่วมมือ
             </span>
           </h1>
@@ -243,7 +243,7 @@ export default function PlanningPage() {
                   {/* Main Component Render */}
                   <div className="relative">
                     {/* Decorative line */}
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-indigo-500/20 to-transparent rounded-full" />
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-linear-to-b from-indigo-500/20 to-transparent rounded-full" />
                     <div className="pl-6">{job.component}</div>
                   </div>
                 </div>

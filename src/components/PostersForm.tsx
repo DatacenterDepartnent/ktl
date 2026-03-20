@@ -62,7 +62,7 @@ export default function PostersForm({
             </label>
             <div className="relative group overflow-hidden rounded-[2.5rem] border-2 border-dashed border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 transition-all hover:border-blue-400">
               {formData.imageUrl ? (
-                <div className="relative aspect-[3/4] w-full h-full animate-in zoom-in-95 duration-300">
+                <div className="relative aspect-3/4 w-full h-full animate-in zoom-in-95 duration-300">
                   <Image
                     src={formData.imageUrl}
                     alt="Poster Preview"
@@ -100,7 +100,7 @@ export default function PostersForm({
                     <button
                       type="button"
                       onClick={() => open()}
-                      className="w-full aspect-[3/4] flex flex-col items-center justify-center gap-4 transition-all"
+                      className="w-full aspect-3/4 flex flex-col items-center justify-center gap-4 transition-all"
                     >
                       <div className="w-16 h-16 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
                         <Plus size={32} />
@@ -220,7 +220,7 @@ export default function PostersForm({
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-[2] py-4 bg-sky-900 hover:bg-sky-600 dark:bg-white text-white dark:text-zinc-900 rounded-2xl font-black uppercase tracking-widest transition-all hover:shadow-lg active:scale-[0.98] disabled:opacity-50"
+                className="flex-2 py-4 bg-sky-900 hover:bg-sky-600 dark:bg-white text-white dark:text-zinc-900 rounded-2xl font-black uppercase tracking-widest transition-all hover:shadow-lg active:scale-[0.98] disabled:opacity-50"
               >
                 {loading
                   ? "กำลังดำเนินการ..."

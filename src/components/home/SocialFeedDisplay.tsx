@@ -34,7 +34,7 @@ export default function SocialFeedDisplay({
       <div className="max-w-[1600px] mx-auto bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-[3rem] p-8 md:p-16 shadow-2xl shadow-zinc-200/50 dark:shadow-none">
         {/* Header */}
         <div className="flex flex-col items-center text-center mb-12">
-          <div className="w-20 h-20 bg-red-50 dark:bg-red-900/20 rounded-[2rem] flex items-center justify-center mb-6 shadow-lg shadow-red-100">
+          <div className="w-20 h-20 bg-red-50 dark:bg-red-900/20 rounded-4xl flex items-center justify-center mb-6 shadow-lg shadow-red-100">
             <FiYoutube className="text-red-500 text-4xl" />
           </div>
           <h2 className="text-3xl md:text-4xl font-black text-zinc-800 dark:text-white mb-2 tracking-tight">
@@ -95,7 +95,7 @@ export default function SocialFeedDisplay({
               </details>
             ))
           ) : (
-            <div className="py-20 text-center bg-zinc-50 dark:bg-zinc-800/20 rounded-[2rem] border-2 border-dashed border-zinc-100 dark:border-zinc-800">
+            <div className="py-20 text-center bg-zinc-50 dark:bg-zinc-800/20 rounded-4xl border-2 border-dashed border-zinc-100 dark:border-zinc-800">
               <p className="text-zinc-400 font-bold uppercase tracking-widest text-sm">
                 NO VIDEOS DISCOVERED
               </p>

@@ -125,7 +125,7 @@ export default function NavbarClient({
         <div className="flex items-center gap-3 shrink-0">
           <ThemeToggle />
 
-          <div className="hidden h-8 w-[1px] bg-zinc-200 dark:bg-zinc-800 mx-1 xl:block" />
+          <div className="hidden xl:block w-px h-8 bg-zinc-200 dark:bg-zinc-800" />
 
           {username ? (
             <div
@@ -145,11 +145,12 @@ export default function NavbarClient({
                       className="object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-sm font-bold uppercase">
+                    <div className="w-full h-full bg-linear-to-tr from-blue-600 to-indigo-500 flex items-center justify-center text-white text-sm font-bold uppercase">
                       {username.charAt(0)}
                     </div>
                   )}
                 </div>
+                <div className="fixed top-0 left-0 w-full h-full z-60 bg-black/40 backdrop-blur-sm xl:hidden" />
                 <div className="text-left hidden lg:block overflow-hidden">
                   <p
                     className={`text-[10px] font-black uppercase leading-none mb-1 tracking-widest ${
@@ -181,7 +182,7 @@ export default function NavbarClient({
 
               {/* Enhanced Dropdown Menu */}
               {isUserDropdownOpen && (
-                <div className="absolute right-0 top-full pt-2 w-56 animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-200 z-[60]">
+                <div className="absolute right-0 top-full pt-2 w-56 animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-200 z-60">
                   <div className="bg-white/80 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl backdrop-blur-xl overflow-hidden p-1.5">
                     <div className="px-3 py-2 mb-1 border-b border-zinc-100 dark:border-zinc-800/50">
                       <p className="text-[11px] text-zinc-400 font-medium">
@@ -292,7 +293,7 @@ export default function NavbarClient({
               className="relative overflow-hidden px-6 py-2 rounded-full bg-blue-600 text-white text-sm font-bold transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 active:scale-95 group"
             >
               <span className="relative z-10">Sign In</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
+              <div className="absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
             </Link>
           )}
 

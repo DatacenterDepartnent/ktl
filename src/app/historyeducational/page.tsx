@@ -63,7 +63,7 @@ export default function HistoryEducational() {
 
           <h1 className="max-w-3xl text-4xl font-black tracking-tight text-slate-900 md:text-6xl dark:text-white">
             วิทยาลัยเทคนิค
-            <span className="bg-gradient-to-r from-blue-600 to-blue-600 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-blue-600 to-blue-600 bg-clip-text text-transparent">
               กันทรลักษ์
             </span>
           </h1>
@@ -147,7 +147,7 @@ export default function HistoryEducational() {
                 </h3>
               </div>
 
-              <div className="relative space-y-8 pl-4 before:absolute before:left-6 before:top-2 before:h-[90%] before:w-0.5 before:bg-gradient-to-b before:from-blue-500 before:to-slate-200 dark:before:to-neutral-800">
+              <div className="relative space-y-8 pl-4 before:absolute before:left-6 before:top-2 before:h-[90%] before:w-0.5 before:bg-linear-to-b before:from-blue-500 before:to-slate-200 dark:before:to-neutral-800">
                 {[
                   {
                     year: "30 มี.ค. 2537",
@@ -235,7 +235,7 @@ export default function HistoryEducational() {
               setSelectedImage("/images/image/ข้อมูลด้านอาคารสถานที่.webp")
             }
           >
-            <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-40" />
+            <div className="absolute inset-0 z-10 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-40" />
 
             {/* Zoom Icon Overlay */}
             <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100">
@@ -267,7 +267,7 @@ export default function HistoryEducational() {
                 key={index}
                 variants={itemVariants}
                 layoutId={`gallery-img-${index}`}
-                className="group relative aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl bg-slate-100 dark:bg-neutral-800"
+                className="group relative aspect-4/3 cursor-pointer overflow-hidden rounded-2xl bg-slate-100 dark:bg-neutral-800"
                 onClick={() => setSelectedImage(item.img)}
               >
                 {/* Overlay on Hover */}

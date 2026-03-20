@@ -168,9 +168,9 @@ export default function ManagePostersPage() {
         {posters.map((poster, index) => (
           <div
             key={poster._id}
-            className="group bg-white dark:bg-zinc-900 rounded-[2rem] p-2 border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500"
+            className="group bg-white dark:bg-zinc-900 rounded-4xl p-2 border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500"
           >
-            <div className="relative aspect-[3/4] rounded-[2rem] overflow-hidden mb-5">
+            <div className="relative aspect-3/4 rounded-4xl overflow-hidden mb-5">
               <Image
                 src={poster.imageUrl}
                 alt={poster.title}

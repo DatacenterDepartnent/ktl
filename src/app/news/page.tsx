@@ -67,7 +67,7 @@ export default async function AllNewsPage() {
               </div>
               <h1 className="text-4xl md:text-5xl lg:text-7xl font-black tracking-tight text-slate-900 dark:text-white leading-[0.9]">
                 NEWS & <br className="hidden md:block" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
+                <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
                   EVENTS
                 </span>
               </h1>
@@ -93,15 +93,15 @@ export default async function AllNewsPage() {
       </div>
 
       <div className="py-12 md:py-20 relative">
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-slate-200 dark:via-zinc-800 to-transparent"></div>
+        <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-slate-200 dark:via-zinc-800 to-transparent"></div>
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-12 flex items-center justify-between gap-6">
             <div className="flex items-center gap-4 w-full">
-              <div className="h-px flex-1 bg-gradient-to-r from-slate-200 to-transparent dark:from-zinc-800"></div>
+              <div className="h-px flex-1 bg-linear-to-r from-slate-200 to-transparent dark:from-zinc-800"></div>
               <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest whitespace-nowrap">
                 Showing {newsList.length} Stories
               </span>
-              <div className="h-px flex-1 bg-gradient-to-l from-slate-200 to-transparent dark:from-zinc-800"></div>
+              <div className="h-px flex-1 bg-linear-to-l from-slate-200 to-transparent dark:from-zinc-800"></div>
             </div>
           </div>
           <div className="relative min-h-[50vh]">

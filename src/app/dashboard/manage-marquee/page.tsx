@@ -86,7 +86,7 @@ export default function ManageMarqueePage() {
         </div>
       </div>
 
-      <section className="bg-white dark:bg-zinc-900 rounded-[2rem] py-6 px-4 border border-zinc-200 dark:border-zinc-800 shadow-2xl shadow-amber-500/5">
+      <section className="bg-white dark:bg-zinc-900 rounded-4xl py-6 px-4 border border-zinc-200 dark:border-zinc-800 shadow-2xl shadow-amber-500/5">
         <div className="space-y-10">
           {[
             { key: "marquee_text_1", label: "ข้อความมาร์ค 1 (ขวาไปซ้าย)" },
@@ -105,13 +105,15 @@ export default function ManageMarqueePage() {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-3">
-                  <input
-                    id={item.key}
-                    type="text"
-                    defaultValue={setting?.value || ""}
-                    placeholder="กรุณากรอกข้อความที่ต้องการให้วิ่ง..."
-                    className="flex-1 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-800 p-5 rounded-[1.5rem] focus:ring-2 ring-amber-500 outline-none transition-all font-medium group-hover:border-amber-200"
-                  />
+                  <div className="flex-1 p-6 bg-zinc-50 dark:bg-zinc-800/50 rounded-3xl border border-zinc-100 dark:border-zinc-800">
+                    <input
+                      id={item.key}
+                      type="text"
+                      defaultValue={setting?.value || ""}
+                      placeholder="กรุณากรอกข้อความที่ต้องการให้วิ่ง..."
+                      className="w-full bg-transparent outline-none font-medium focus:ring-0"
+                    />
+                  </div>
                   <button
                     disabled={isSaving === item.key}
                     onClick={() =>
@@ -122,7 +124,7 @@ export default function ManageMarqueePage() {
                         item.label,
                       )
                     }
-                    className="bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-10 py-5 rounded-[1.5rem] font-black shadow-xl hover:bg-amber-500 hover:text-white transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 uppercase text-xs tracking-widest"
+                    className="bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 px-10 py-5 rounded-3xl font-black shadow-xl hover:bg-amber-500 hover:text-white transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 uppercase text-xs tracking-widest"
                   >
                     {isSaving === item.key ? (
                       <FiLoader className="animate-spin" />
@@ -138,7 +140,7 @@ export default function ManageMarqueePage() {
         </div>
 
         {/* Info Box */}
-        <div className="mt-12 p-6 bg-amber-50/50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20 rounded-[2rem] flex gap-4 items-start">
+        <div className="mt-12 p-6 bg-amber-50/50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/20 rounded-4xl flex gap-4 items-start">
           <FiInfo className="text-amber-500 shrink-0 mt-1" size={20} />
           <div className="space-y-1">
             <p className="text-xs font-bold text-amber-800 dark:text-amber-400 uppercase tracking-wider">

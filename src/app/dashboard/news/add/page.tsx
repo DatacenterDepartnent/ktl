@@ -97,7 +97,7 @@ function SortableImage({ id, src, onRemove, isVertical = false }: any) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`relative rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-700 group touch-none bg-slate-100 dark:bg-zinc-800 ${isVertical ? "aspect-[3/4]" : "aspect-video"}`}
+      className={`relative rounded-xl overflow-hidden border border-slate-200 dark:border-zinc-700 group touch-none bg-slate-100 dark:bg-zinc-800 ${isVertical ? "aspect-3/4" : "aspect-video"}`}
     >
       <div
         {...attributes}
@@ -318,7 +318,7 @@ export default function AddNewsPage() {
       `}</style>
 
       {/* Header */}
-      <div className="sticky top-0 z-[100] w-full border-b border-slate-200 bg-white/80 shadow-sm backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
+      <div className="sticky top-0 z-100 w-full border-b border-slate-200 bg-white/80 shadow-sm backdrop-blur-md dark:border-zinc-800 dark:bg-black/80">
         <div className="mx-auto flex max-w-[1600px] items-center justify-between px-2 py-2">
           {/* ฝั่งซ้าย: ปุ่มย้อนกลับและข้อมูลผู้เขียน */}
           <div className="flex items-center gap-4">
@@ -431,7 +431,7 @@ export default function AddNewsPage() {
           <label className="text-[11px] font-black uppercase tracking-widest flex items-center gap-2 italic text-indigo-600">
             <FiFileText /> เนื้อหาข่าวสาร
           </label>
-          <div className="overflow-hidden rounded-[2rem] border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
+          <div className="overflow-hidden rounded-4xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900">
             {SunEditorComponent ? (
               <SunEditorComponent
                 setContents={content}
@@ -552,7 +552,7 @@ export default function AddNewsPage() {
                   />
                 ))}
               </SortableContext>
-              <label className="aspect-[3/4] border-2 border-dashed border-slate-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-purple-50 transition-all bg-white dark:bg-zinc-900 group">
+              <label className="aspect-3/4 border-2 border-dashed border-slate-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:bg-purple-50 transition-all bg-white dark:bg-zinc-900 group">
                 <input
                   type="file"
                   multiple
@@ -706,7 +706,7 @@ export default function AddNewsPage() {
 
       {/* Floating Status */}
       {isCompressing && (
-        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[60] bg-indigo-600 text-white px-8 py-4 rounded-full shadow-2xl flex items-center gap-4 animate-bounce">
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-60 bg-indigo-600 text-white px-8 py-4 rounded-full shadow-2xl flex items-center gap-4 animate-bounce">
           <span className="text-sm font-black italic">
             กำลังเตรียมรูปภาพ...
           </span>

@@ -171,7 +171,7 @@ export default function AdministrativeStructure() {
           </div>
           <h1 className="text-4xl font-extrabold md:text-5xl">
             โครงสร้าง
-            <span className="bg-gradient-to-r from-yellow-500 to-amber-600 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-yellow-500 to-amber-600 bg-clip-text text-transparent">
               การบริหารงาน
             </span>
           </h1>

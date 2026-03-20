@@ -107,7 +107,7 @@ function SortableImage({
       ref={setNodeRef}
       style={style}
       className={`relative rounded-xl overflow-hidden shadow-sm border-2 group touch-none bg-slate-100 dark:bg-zinc-800 ${
-        isVertical ? "aspect-[3/4]" : "aspect-video"
+        isVertical ? "aspect-3/4" : "aspect-video"
       } ${isNew ? "border-blue-400 dark:border-blue-600" : "border-slate-200 dark:border-zinc-700"}`}
     >
       <div
@@ -531,7 +531,7 @@ export default function EditNewsPage({
                   />
                 ))}
               </SortableContext>
-              <label className="aspect-[3/4] border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-purple-50 dark:border-zinc-600 dark:hover:bg-purple-900/20">
+              <label className="aspect-3/4 border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:bg-purple-50 dark:border-zinc-600 dark:hover:bg-purple-900/20">
                 <input
                   type="file"
                   multiple
@@ -665,7 +665,7 @@ export default function EditNewsPage({
           <button
             onClick={handleUpdate}
             disabled={submitting || isCompressing}
-            className={`flex-1 py-4 rounded-full font-bold text-white transition-all ${submitting || isCompressing ? "bg-slate-300" : "bg-gradient-to-r from-amber-500 to-orange-600 shadow-xl"}`}
+            className={`flex-1 py-4 rounded-full font-bold text-white transition-all ${submitting || isCompressing ? "bg-slate-300" : "bg-linear-to-r from-amber-500 to-orange-600 shadow-xl"}`}
           >
             {submitting ? "⏳ กำลังบันทึก..." : "💾 บันทึกการแก้ไขข่าวสาร"}
           </button>

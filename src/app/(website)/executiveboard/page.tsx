@@ -49,7 +49,7 @@ export default function ExecutiveBoard() {
           </div>
           <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 md:text-5xl dark:text-white">
             คณะกรรมการ
-            <span className="bg-gradient-to-r from-yellow-600 to-yellow-400 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-yellow-600 to-yellow-400 bg-clip-text text-transparent">
               บริหารสถานศึกษา
             </span>
           </h1>
@@ -62,7 +62,7 @@ export default function ExecutiveBoard() {
         <motion.div variants={itemVar} className="mb-24 flex justify-center">
           <div className="relative w-full max-w-lg transition-transform hover:scale-[1.02]">
             {/* Glow Effect */}
-            <div className="absolute -inset-0.5 rounded-3xl bg-gradient-to-br from-yellow-400 to-yellow-600 opacity-20 blur-2xl dark:opacity-40"></div>
+            <div className="absolute -inset-0.5 rounded-3xl bg-linear-to-br from-yellow-400 to-yellow-600 opacity-20 blur-2xl dark:opacity-40"></div>
 
             <div className="relative overflow-hidden rounded-3xl border border-yellow-100 bg-white p-8 shadow-2xl dark:border-neutral-800 dark:bg-neutral-900">
               <div className="absolute right-6 top-6 text-yellow-500 opacity-20">
@@ -150,7 +150,7 @@ export default function ExecutiveBoard() {
                   </p>
 
                   {/* Spacer to push footer down */}
-                  <div className="flex-grow" />
+                  <div className="grow" />
 
                   {/* Footer Badge */}
                   <div className="mt-5 w-full border-t border-slate-100 pt-4 dark:border-neutral-800">

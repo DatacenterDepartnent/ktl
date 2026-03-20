@@ -221,7 +221,7 @@ export default function QuestionsPage() {
               {/* Reply Section */}
               <div className="mt-8">
                 {q.answer ? (
-                  <div className="bg-emerald-50 border-2 border-emerald-100 p-8 rounded-[2rem] relative group/reply transition-all">
+                  <div className="bg-emerald-50 border-2 border-emerald-100 p-8 rounded-4xl relative group/reply transition-all">
                     <p className="text-[10px] font-black text-emerald-600 uppercase mb-2 tracking-widest">
                       Our_Response:
                     </p>
@@ -246,7 +246,7 @@ export default function QuestionsPage() {
                       setSelectedQuestion(q);
                       setAnswerText("");
                     }}
-                    className="w-full py-4 bg-slate-900 text-white rounded-[1.5rem] font-black italic uppercase text-md tracking-widest hover:bg-cyan-500 hover:scale-[1.01] transition-all group-hover:bg-cyan-600 shadow-xl"
+                    className="w-full py-4 bg-slate-900 text-white rounded-3xl font-black italic uppercase text-md tracking-widest hover:bg-cyan-500 hover:scale-[1.01] transition-all group-hover:bg-cyan-600 shadow-xl"
                   >
                     ตอบคำถามนี้ ↗
                   </button>
@@ -259,8 +259,8 @@ export default function QuestionsPage() {
 
       {/* 🔴 Edit/Reply Modal */}
       {selectedQuestion && (
-        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4 z-[100] animate-in fade-in duration-300">
-          <div className="bg-white w-full max-w-2xl rounded-[2rem] py-6 px-4 shadow-2xl relative animate-in slide-in-from-bottom-5 border-4 border-slate-900">
+        <div className="fixed inset-0 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4 z-100 animate-in fade-in duration-300">
+          <div className="bg-white w-full max-w-2xl rounded-4xl py-6 px-4 shadow-2xl relative animate-in slide-in-from-bottom-5 border-4 border-slate-900">
             <button
               onClick={() => setSelectedQuestion(null)}
               className="absolute top-8 right-8 text-slate-300 hover: font-black"
@@ -275,11 +275,11 @@ export default function QuestionsPage() {
             <h2 className="text-3xl font-black  uppercase mb-8 leading-none italic">
               คุณ {selectedQuestion.guestName}
             </h2>
-            <div className="mb-8 p-6 bg-slate-50 rounded-2xl border border-slate-100 italic text-slate-500 max-h-32 overflow-y-auto">
+            <div className="flex-1 p-6 bg-white dark:bg-zinc-900 rounded-3xl border border-slate-100 dark:border-zinc-800 shadow-sm max-h-32 overflow-y-auto">
               "{selectedQuestion.content}"
             </div>
             <textarea
-              className="w-full h-52 p-8 bg-slate-50 border-4 border-slate-100 rounded-[2rem] focus:border-cyan-500 outline-none font-bold text-lg transition-all"
+              className="w-full h-52 p-8 bg-slate-50 border-4 border-slate-100 rounded-4xl focus:border-cyan-500 outline-none font-bold text-lg transition-all"
               placeholder="พิมพ์คำตอบ..."
               value={answerText}
               onChange={(e) => setAnswerText(e.target.value)}

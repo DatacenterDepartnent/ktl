@@ -293,7 +293,7 @@ export default function CreateQRCode() {
               <div className="text-center lg:text-left space-y-2">
                 <h1 className="text-4xl font-black text-gray-900 dark:text-white tracking-tight">
                   สร้าง{" "}
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#DAA520] to-yellow-300">
+                  <span className="text-transparent bg-clip-text bg-linear-to-r from-[#DAA520] to-yellow-300">
                     QR Code
                   </span>{" "}
                   <br /> ของคุณได้ง่ายๆ
@@ -369,10 +369,10 @@ export default function CreateQRCode() {
             {/* Right Column: Preview */}
             <div className="order-1 lg:order-2 flex justify-center">
               <div className="relative group">
-                <div className="absolute -inset-4 bg-gradient-to-r from-blue-500 to-[#DAA520] rounded-[2rem] blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
+                <div className="absolute -inset-4 bg-linear-to-r from-blue-500 to-[#DAA520] rounded-4xl blur-xl opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
                 <div
                   id="myqrcode"
-                  className="relative bg-white p-8 rounded-[2rem] shadow-2xl border border-gray-100 dark:border-gray-800 transform transition-transform duration-500 hover:scale-[1.02] hover:-rotate-1"
+                  className="relative bg-white p-8 rounded-4xl shadow-2xl border border-gray-100 dark:border-gray-800 transform transition-transform duration-500 hover:scale-[1.02] hover:-rotate-1"
                 >
                   <div className="relative">
                     {/* Visual Corner Accents */}

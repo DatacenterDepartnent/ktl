@@ -172,7 +172,7 @@ export default function QAPage() {
                     </label>
                     <textarea
                       placeholder="พิมพ์รายละเอียดที่นี่..."
-                      className="h-40 w-full bg-slate-50/50 border border-slate-200 rounded-[1.5rem] p-5 font-bold outline-none focus:ring-4 focus:ring-cyan-500/5 focus:border-cyan-500 transition-all resize-none"
+                      className="h-40 w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-3xl p-5 font-bold outline-none focus:ring-4 focus:ring-cyan-500/5 focus:border-cyan-500 transition-all resize-none"
                       required
                       value={form.content}
                       onChange={(e) =>
@@ -184,7 +184,7 @@ export default function QAPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-[0.1em] hover:bg-cyan-600 transition-all shadow-md shadow-slate-200 disabled:bg-slate-300 flex items-center justify-center gap-3 active:scale-[0.98]"
+                    className="w-full bg-slate-900 text-white shadow-xl shadow-slate-200 dark:shadow-none tracking-widest hover:bg-cyan-600 transition-all disabled:bg-slate-300 flex items-center justify-center gap-3 active:scale-[0.98]"
                   >
                     {isSubmitting ? "กำลังส่งข้อมูล..." : "ส่งข้อมูลเข้าระบบ ↗"}
                   </button>
@@ -213,7 +213,7 @@ export default function QAPage() {
                 {questions.map((q) => (
                   <div
                     key={q._id}
-                    className="group bg-white rounded-[2rem] p-4 border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/30 transition-all duration-300"
+                    className="group bg-white rounded-4xl p-4 border border-slate-100 shadow-sm hover:shadow-xl hover:shadow-slate-200/30 transition-all duration-300"
                   >
                     <div className="flex flex-wrap justify-between items-center gap-4 mb-6 border-b border-slate-50 pb-6">
                       <span

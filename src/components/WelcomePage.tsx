@@ -109,7 +109,7 @@ export default function WelcomePage() {
                   translateZ="50"
                   className="text-3xl font-extrabold text-slate-800 dark:text-slate-100"
                 >
-                  <span className="bg-gradient-to-r from-slate-800 to-slate-500 bg-clip-text text-transparent dark:from-white dark:to-slate-400">
+                  <span className="bg-linear-to-r from-slate-800 to-slate-500 bg-clip-text text-transparent dark:from-white dark:to-slate-400">
                     นางสาวทักษิณา ชมจันทร์
                   </span>
                 </CardItem>
@@ -125,7 +125,7 @@ export default function WelcomePage() {
 
                 {/* Image Layer (Z=80 - ลอยออกมามากที่สุด) */}
                 <CardItem translateZ="80" className="mt-8 w-full">
-                  <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl shadow-lg ring-1 ring-black/5 dark:ring-white/10">
+                  <div className="relative aspect-4/5 w-full overflow-hidden rounded-2xl shadow-lg ring-1 ring-black/5 dark:ring-white/10">
                     <NextImage
                       src="/images/banners/3.webp"
                       alt="Director Image"

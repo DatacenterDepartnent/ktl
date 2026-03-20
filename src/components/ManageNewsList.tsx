@@ -70,7 +70,7 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
               className="group border border-zinc-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col h-full bg-white dark:bg-zinc-900 dark:border-zinc-800"
             >
               {/* Image Section */}
-              <div className="relative w-full aspect-[4/3] bg-zinc-100 overflow-hidden dark:bg-zinc-800">
+              <div className="relative w-full aspect-4/3 bg-zinc-100 overflow-hidden dark:bg-zinc-800">
                 <Image
                   src={displayImage}
                   alt={news.title}
@@ -115,7 +115,7 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
                   </div>
                 </div>
 
-                <h3 className="text-[15px] font-extrabold text-zinc-800 mb-5 line-clamp-2 leading-relaxed group-hover:text-blue-600 transition-colors min-h-[3rem] dark:text-zinc-100 dark:group-hover:text-blue-400">
+                <h3 className="text-[15px] font-extrabold text-zinc-800 mb-5 line-clamp-2 leading-relaxed group-hover:text-blue-600 transition-colors min-h-12 dark:text-zinc-100 dark:group-hover:text-blue-400">
                   {news.title}
                 </h3>
 
@@ -193,7 +193,7 @@ export default function ManageNewsList({ newsList }: { newsList: NewsItem[] }) {
                     </Link>
                   </div>
 
-                  <div className="h-6 w-[1px] bg-zinc-200 dark:bg-zinc-700 mx-1"></div>
+                  <div className="w-px h-10 bg-slate-100 dark:bg-zinc-800 mx-1"></div>
 
                   {/* ✅ แก้ไขตรงนี้: เพิ่ม prop title เพื่อให้ปุ่มลบนำไปบันทึก Log ได้ */}
                   <DeleteNewsBtn id={news._id} title={news.title} />

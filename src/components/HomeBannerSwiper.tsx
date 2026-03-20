@@ -29,7 +29,7 @@ export default function HomeBannerSwiper() {
   if (!mounted || loading) {
     return (
       <div className="w-full max-w-[1920px] mx-auto my-4 px-0 md:px-4">
-        <div className="w-full aspect-[1920/820] bg-slate-200 animate-pulse rounded-lg md:rounded-[2.5rem]" />
+        <div className="relative aspect-1920/820 overflow-hidden bg-slate-200 animate-pulse rounded-lg md:rounded-[2.5rem]" />
       </div>
     );
   }
@@ -81,8 +81,17 @@ export default function HomeBannerSwiper() {
         ))}
 
         {/* Navigation Buttons */}
-        <div className="swiper-button-prev !text-white !w-12 !h-12 !bg-black/20 hover:!bg-black/50 !rounded-full !after:text-[18px] opacity-0 group-hover:opacity-100 transition-all duration-300 ml-6"></div>
-        <div className="swiper-button-next !text-white !w-12 !h-12 !bg-black/20 hover:!bg-black/50 !rounded-full !after:text-[18px] opacity-0 group-hover:opacity-100 transition-all duration-300 mr-6"></div>
+        {/* Navigation Buttons */}
+        {(() => {
+          const prevBtn = "swiper-button-prev !after:content-['prev'] !after:text-xs !after:font-bold text-white! w-12! h-12! bg-black/20! hover:bg-black/50! rounded-full! transition-all duration-300 transform -translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0";
+          const nextBtn = "swiper-button-next !after:content-['next'] !after:text-xs !after:font-bold text-white! w-12! h-12! bg-black/20! hover:bg-black/50! rounded-full! transition-all duration-300 transform translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0";
+          return (
+            <>
+              <div className={`${prevBtn} ml-6`}></div>
+              <div className={`${nextBtn} mr-6`}></div>
+            </>
+          );
+        })()}
       </Swiper>
 
       <style jsx global>{`
@@ -123,7 +132,7 @@ function BannerImage({
       />
 
       {/* Gradient Overlay */}
-      <div className="absolute inset-x-0 bottom-0 h-1/4 bg-gradient-to-t from-black/30 to-transparent pointer-events-none" />
+      <div className="absolute inset-x-0 bottom-0 h-1/4 bg-linear-to-t from-black/30 to-transparent pointer-events-none" />
     </div>
   );
 }

@@ -148,13 +148,13 @@ export default async function Footer() {
             {countDigits.map((digit: string, index: number) => (
               <div
                 key={index}
-                className="relative w-8 h-12 md:w-10 md:h-14 bg-gradient-to-b from-[#222] to-[#111] rounded border border-slate-700 flex items-center justify-center overflow-hidden shadow-lg"
+                className="relative w-8 h-12 md:w-10 md:h-14 bg-linear-to-b from-[#222] to-[#111] rounded border border-slate-700 flex items-center justify-center overflow-hidden shadow-lg"
               >
                 <div className="absolute top-1/2 w-full h-px bg-black/50 z-10 shadow-[0_1px_0_rgba(255,255,255,0.1)]"></div>
                 <span className="text-2xl md:text-3xl font-mono font-bold text-slate-200 z-0">
                   {digit}
                 </span>
-                <div className="absolute top-0 w-full h-1/2 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
+                <div className="absolute top-0 w-full h-1/2 bg-linear-to-b from-white/5 to-transparent pointer-events-none"></div>
               </div>
             ))}
           </div>

@@ -31,7 +31,7 @@ export default function EDUAdmin() {
           </div>
           <h1 className="text-4xl font-extrabold tracking-tight text-slate-900 md:text-5xl dark:text-white">
             ทำเนียบ
-            <span className="bg-gradient-to-r from-yellow-600 to-yellow-400 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-yellow-600 to-yellow-400 bg-clip-text text-transparent">
               ผู้บริหาร
             </span>
           </h1>
@@ -50,7 +50,7 @@ export default function EDUAdmin() {
         >
           <div className="relative w-full max-w-lg">
             {/* Glow Effect Behind */}
-            <div className="absolute -inset-1 rounded-3xl bg-gradient-to-r from-yellow-400 via-orange-300 to-yellow-400 opacity-30 blur-2xl transition duration-1000 group-hover:opacity-60"></div>
+            <div className="absolute -inset-1 rounded-3xl bg-linear-to-r from-yellow-400 via-orange-300 to-yellow-400 opacity-30 blur-2xl transition duration-1000 group-hover:opacity-60"></div>
 
             <div className="relative overflow-hidden rounded-3xl border border-yellow-100 bg-white p-8 shadow-2xl dark:border-neutral-800 dark:bg-neutral-900">
               {/* Star Badge */}
@@ -132,7 +132,7 @@ export default function EDUAdmin() {
                     }}
                   />
                   {/* Overlay Gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                  <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 </div>
 
                 {/* Content */}

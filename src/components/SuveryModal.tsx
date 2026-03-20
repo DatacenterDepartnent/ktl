@@ -65,7 +65,7 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
         <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">
           {label}
         </span>
-        <span className="text-base font-medium text-gray-800 dark:text-gray-200 break-words leading-relaxed">
+        <span className="text-base font-medium text-gray-800 dark:text-gray-200 wrap-break-word leading-relaxed">
           {value}
         </span>
       </div>
@@ -103,14 +103,14 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
         {/* --- Header --- */}
         <div className="flex items-start justify-between p-6 pb-4 border-b border-gray-100 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md sticky top-0 z-10">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20 text-white">
+            <div className="h-12 w-12 rounded-2xl bg-linear-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/20 text-white">
               <FileText size={24} />
             </div>
             <div>
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                 รายละเอียดแบบสำรวจ
               </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                  <p className="mt-4 text-slate-600 dark:text-slate-400 text-lg leading-relaxed wrap-break-word">
                 <Calendar size={12} /> บันทึกเมื่อ:{" "}
                 {formatDate(suvery.submittedAt || suvery.createdAt)}
               </p>
@@ -128,7 +128,7 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
         {/* --- Scrollable Content --- */}
         <div className="flex-1 overflow-y-auto p-6 md:p-8 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-gray-700">
           {/* Status Badge Banner */}
-          <div className="mb-8 p-4 rounded-2xl bg-gradient-to-r from-gray-50 to-white border border-gray-100 dark:from-gray-800 dark:to-gray-800/50 dark:border-gray-700 flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="mb-8 p-4 rounded-2xl bg-linear-to-r from-gray-50 to-white border border-gray-100 dark:from-gray-800 dark:to-gray-800/50 dark:border-gray-700 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
                 ชื่อผู้ตอบแบบสำรวจ

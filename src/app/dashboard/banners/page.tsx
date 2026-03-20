@@ -244,7 +244,7 @@ function SortableItem({ banner, handleDelete, isDeleting }: any) {
       }`}
     >
       {/* Image Section */}
-      <div className="relative aspect-[16/9] w-full bg-slate-100 border-b border-slate-100 overflow-hidden">
+      <div className="relative aspect-video w-full bg-slate-100 border-b border-slate-100 overflow-hidden">
         {/* Drag Handle Overlay */}
         <div
           {...attributes}
@@ -277,7 +277,7 @@ function SortableItem({ banner, handleDelete, isDeleting }: any) {
       </div>
 
       {/* Content Section */}
-      <div className="p-7 flex-grow flex flex-col justify-between">
+      <div className="p-7 grow flex flex-col justify-between">
         <div>
           <div className="flex items-center gap-2 mb-2">
             <span className="text-[10px] font-black bg-slate-100 text-slate-500 px-2 py-1 rounded-lg uppercase">

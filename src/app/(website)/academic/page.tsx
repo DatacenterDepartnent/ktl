@@ -115,7 +115,7 @@ export default function AcademicAffairsPage() {
   return (
     <section className="relative min-h-screen py-20 overflow-hidden bg-slate-50/50 dark:bg-black">
       {/* Decorative Background: ใช้สี Sky/Blue ให้ความรู้สึกสว่างและกว้างขวาง */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-sky-100/40 to-transparent dark:from-sky-900/20 pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-linear-to-b from-sky-100/40 to-transparent dark:from-sky-900/20 pointer-events-none" />
 
       <motion.div
         initial="hidden"
@@ -133,7 +133,7 @@ export default function AcademicAffairsPage() {
 
           <h1 className="text-4xl md:text-5xl font-black text-slate-900 dark:text-white mb-4 tracking-tight">
             ฝ่าย
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-sky-500 to-blue-600 dark:from-sky-400 dark:to-blue-400">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-sky-500 to-blue-600 dark:from-sky-400 dark:to-blue-400">
               วิชาการ
             </span>
           </h1>
@@ -202,7 +202,7 @@ export default function AcademicAffairsPage() {
                   {/* Main Component Render */}
                   <div className="relative">
                     {/* Decorative line: สี Sky */}
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-sky-500/20 to-transparent rounded-full" />
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-linear-to-b from-sky-500/20 to-transparent rounded-full" />
                     <div className="pl-6">{job.component}</div>
                   </div>
                 </div>

@@ -42,7 +42,7 @@ export default function Marketing() {
           </div>
           <h1 className="text-4xl font-extrabold md:text-5xl">
             แผนกวิชา
-            <span className="bg-gradient-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-rose-500 to-pink-500 bg-clip-text text-transparent">
               การตลาด
             </span>
           </h1>
@@ -66,7 +66,7 @@ export default function Marketing() {
                 <div className="flex h-full flex-col">
                   {/* Image Container */}
                   <div className="relative mb-5 overflow-hidden rounded-xl bg-slate-100 dark:bg-zinc-800">
-                    <div className="aspect-[3/4] w-full">
+                    <div className="aspect-3/4 w-full">
                       <Image
                         src={item.img}
                         alt={item.name || "บุคลากรการตลาด"}

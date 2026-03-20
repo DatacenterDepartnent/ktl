@@ -172,7 +172,7 @@ export default function ProfilePage() {
           
           {/* Cover Banner */}
           <div 
-            className="relative h- sm:h-72 w-full overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 cursor-pointer group/cover"
+            className="relative h- sm:h-72 w-full overflow-hidden bg-linear-to-r from-blue-600 via-indigo-600 to-purple-600 cursor-pointer group/cover"
             onClick={() => coverInputRef.current?.click()}
           >
             {previewCover ? (
@@ -182,7 +182,7 @@ export default function ProfilePage() {
             )}
             
             {/* Animated Gradient Mesh Overlay */}
-            <div className="absolute inset-0 opacity-40 mix-blend-overlay bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/40 via-transparent to-black/40" />
+            <div className="absolute inset-0 opacity-40 mix-blend-overlay bg-[radial-gradient(ellipse_at_top_right,var(--tw-gradient-stops))] from-white/40 via-transparent to-black/40" />
             
             {/* Change Cover Label */}
             <div className="absolute inset-0  bg-black/20 opacity-0 group-hover/cover:opacity-100 flex items-center justify-center transition-opacity duration-300 backdrop-blur-[2px]">
@@ -237,10 +237,10 @@ export default function ProfilePage() {
                 {formData.username || "Super Admin"}
               </h2>
               <div className="mt-4 flex flex-wrap items-center justify-center sm:justify-start gap-3">
-                <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-[0.15em] shadow-sm">
+                <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-widest shadow-sm">
                   <SafetyCertificateOutlined /> {formData.role || "Member"}
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-100 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 text-xs font-bold uppercase tracking-[0.1em] shadow-sm">
+                <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-100 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 text-xs font-bold uppercase tracking-widest shadow-sm">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Active Member
                 </span>
               </div>
@@ -389,7 +389,7 @@ export default function ProfilePage() {
                 ? "bg-emerald-500 shadow-emerald-500/40 scale-105"
                 : saving
                   ? "bg-zinc-400 cursor-wait shadow-none"
-                  : "bg-gradient-to-r from-blue-600 to-indigo-700 hover:shadow-indigo-600/50 hover:-translate-y-1.5 active:scale-95 active:translate-y-0"
+                  : "bg-linear-to-r from-blue-600 to-indigo-700 hover:shadow-indigo-600/50 hover:-translate-y-1.5 active:scale-95 active:translate-y-0"
               }`}
             >
               {!saving && !saveSuccess && (

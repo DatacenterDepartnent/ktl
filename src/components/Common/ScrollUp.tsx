@@ -29,7 +29,7 @@ export default function ScrollUp() {
   };
 
   return (
-    <div className="fixed bottom-8 right-8 z-[999]">
+    <div className="fixed bottom-8 right-8 z-999">
       <AnimatePresence>
         {isVisible && (
           <motion.button
@@ -44,7 +44,7 @@ export default function ScrollUp() {
             }}
             whileTap={{ scale: 0.9 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
-            className="group relative flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-gradient-to-tr from-yellow-600 via-amber-500 to-yellow-400 text-white shadow-lg backdrop-blur-sm"
+            className="group relative flex h-14 w-14 items-center justify-center rounded-full border border-white/20 bg-linear-to-tr from-yellow-600 via-amber-500 to-yellow-400 text-white shadow-lg backdrop-blur-sm"
             aria-label="Scroll to top"
           >
             {/* วงแหวน Pulse Effect ตอน Hover */}

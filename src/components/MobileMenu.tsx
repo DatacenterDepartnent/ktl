@@ -97,7 +97,7 @@ export default function MobileMenu({
       </button>
 
       {isOpen && (
-        <div className="fixed top-16 left-0 w-full h-[calc(100vh-4rem)] z-[9999]">
+        <div className="fixed top-16 left-0 w-full h-[calc(100vh-4rem)] z-9999">
           <div className="w-full h-full bg-white dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-800 overflow-y-auto pb-24 animate-in slide-in-from-top-2 duration-200">
             <div className="flex flex-col p-2 space-y-3">
               <Link
@@ -195,7 +195,7 @@ export default function MobileMenu({
                 ) : user ? (
                   <div className="flex flex-col space-y-3">
                     <div className="flex items-center gap-3 px-4 mb-2">
-                      <div className="relative w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white border-2 border-white dark:border-zinc-800 shadow-md shrink-0">
+                      <div className="relative w-12 h-12 rounded-full overflow-hidden bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white border-2 border-white dark:border-zinc-800 shadow-md shrink-0">
                         {image ? (
                           <Image
                             src={image}

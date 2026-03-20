@@ -181,7 +181,7 @@ export default function NewsListClient({
                 href={`/news/${news._id}`}
                 className="group flex flex-col bg-white dark:bg-zinc-900/50 rounded-3xl overflow-hidden border border-slate-200 dark:border-zinc-800 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
               >
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
+                <div className="relative aspect-4/3 w-full overflow-hidden bg-slate-100">
                   <Image
                     src={coverImage}
                     alt={news.title}

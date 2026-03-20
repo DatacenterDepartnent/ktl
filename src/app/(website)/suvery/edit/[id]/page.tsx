@@ -132,7 +132,7 @@ export default async function EditSuveryPage(props: EditPageProps) {
   return (
     <div className="min-h-screen bg-slate-50 font-sans text-gray-900 transition-colors duration-300 dark:bg-gray-950 dark:text-gray-100">
       {/* Background decoration */}
-      <div className="absolute inset-x-0 top-0 h-80 bg-gradient-to-b from-emerald-600 to-slate-50 opacity-90 dark:from-emerald-900 dark:to-gray-950" />
+      <div className="absolute inset-x-0 top-0 h-80 bg-linear-to-b from-emerald-600 to-slate-50 opacity-90 dark:from-emerald-900 dark:to-gray-950" />
 
       <div className="relative mx-auto max-w-5xl px-4 py-12 sm:px-6 lg:px-8">
         {/* --- Breadcrumb & Back Button --- */}
@@ -153,7 +153,7 @@ export default async function EditSuveryPage(props: EditPageProps) {
         <div className="mb-8 overflow-hidden rounded-3xl bg-white shadow-xl dark:bg-gray-900">
           <div className="flex flex-col gap-6 p-8 md:flex-row md:items-center md:justify-between">
             <div className="flex items-start gap-5">
-              <div className="flex h-16 w-16 flex-shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
+              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
                 <Pencil className="h-8 w-8" />
               </div>
               <div>
