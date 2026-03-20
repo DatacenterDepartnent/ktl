@@ -153,11 +153,11 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="px-2">
+    <div className="px-3 min-h-screen overflow-x-hidden relative">
       {/* Background Ambient Glow */}
-      <div className="pointer-events-none absolute inset-0 z-0">
+      <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
         <div className="absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full bg-blue-400/10 blur-[120px] dark:bg-blue-600/10 transition-colors duration-1000" />
-        <div className="absolute top-1/2 right-[-20%] h-[500px] w-[500px] rounded-full bg-indigo-400/10 blur-[120px] dark:bg-purple-600/10 transition-colors duration-1000" />
+        <div className="absolute top-1/2 right-0 sm:right-[-20%] h-[500px] w-[500px] rounded-full bg-indigo-400/10 blur-[120px] dark:bg-purple-600/10 transition-colors duration-1000" />
       </div>
 
       <motion.div 
@@ -172,7 +172,7 @@ export default function ProfilePage() {
           
           {/* Cover Banner */}
           <div 
-            className="relative h- sm:h-72 w-full overflow-hidden bg-linear-to-r from-blue-600 via-indigo-600 to-purple-600 cursor-pointer group/cover"
+            className="relative h-40 sm:h-72 w-full overflow-hidden bg-linear-to-r from-blue-600 via-indigo-600 to-purple-600 cursor-pointer group/cover"
             onClick={() => coverInputRef.current?.click()}
           >
             {previewCover ? (
@@ -205,42 +205,42 @@ export default function ProfilePage() {
           </div>
 
           {/* Avatar & Role Floating Area */}
-          <div className="px-8 pb-10 sm:px-12 flex flex-col sm:flex-row items-center sm:items-end gap-6 sm:gap-10 -mt-20 sm:-mt-24 relative z-10 w-full">
+          <div className="px-6 pb-8 sm:px-12 flex flex-col sm:flex-row items-center sm:items-end gap-5 sm:gap-10 -mt-16 sm:-mt-24 relative z-10 w-full">
             
             {/* Avatar Upload */}
             <div 
               className="relative group/avatar cursor-pointer "
               onClick={() => fileInputRef.current?.click()}
             >
-              <div className="h-40 w-40 sm:h-48 sm:w-48  rounded-full overflow-hidden border-[6px] border-white dark:border-zinc-900 shadow-2xl shadow-black/20 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center transition-transform duration-300 group-hover/avatar:scale-105">
+              <div className="h-32 w-32 sm:h-48 sm:w-48 rounded-full overflow-hidden border-4 sm:border-[6px] border-white dark:border-zinc-900 shadow-2xl shadow-black/20 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center transition-transform duration-300 group-hover/avatar:scale-105">
                 {previewImage ? (
                   <img src={previewImage} alt="Profile" className="h-full w-full object-cover" />
                 ) : (
-                  <UserOutlined className="text-6xl text-zinc-300 dark:text-zinc-600" />
+                  <UserOutlined className="text-4xl sm:text-6xl text-zinc-300 dark:text-zinc-600" />
                 )}
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/avatar:opacity-100 flex flex-col items-center justify-center transition-opacity duration-300 backdrop-blur-sm">
-                  <CameraOutlined className="text-white text-3xl mb-2" />
-                  <span className="text-white text-xs font-bold uppercase tracking-widest">Change Photo</span>
+                  <CameraOutlined className="text-white text-3xl mb-1 sm:mb-2" />
+                  <span className="text-white text-[10px] sm:text-xs font-bold uppercase tracking-widest">Change Photo</span>
                 </div>
               </div>
               
               {/* Camera Badge Overlay */}
-              <div className="absolute bottom-1 right-4 h-10 w-10 text-white bg-blue-600 rounded-full flex items-center justify-center shadow-lg border-4 border-white dark:border-zinc-900 shadow-blue-900/30 transition-transform group-hover/avatar:scale-110">
-                <CameraOutlined className="text-lg" />
+              <div className="absolute bottom-1 right-2 sm:right-4 h-8 w-8 sm:h-10 sm:w-10 text-white bg-blue-600 rounded-full flex items-center justify-center shadow-lg border-2 sm:border-4 border-white dark:border-zinc-900 shadow-blue-900/30 transition-transform group-hover/avatar:scale-110">
+                <CameraOutlined className="text-sm sm:text-lg" />
               </div>
               <input type="file" ref={fileInputRef} onChange={handleImageChange} className="hidden" accept="image/*" />
             </div>
 
             {/* User Title & Badge */}
-            <div className=" text-center sm:text-left">
-              <h2 className="text-3xl sm:text-4xl font-black text-zinc-900 dark:text-white leading-none tracking-tight pt-12">
+            <div className="text-center sm:text-left flex-1">
+              <h2 className="text-2xl sm:text-4xl font-black text-zinc-900 dark:text-white leading-none tracking-tight pt-2 sm:pt-12">
                 {formData.username || "Super Admin"}
               </h2>
-              <div className="mt-4 flex flex-wrap items-center justify-center sm:justify-start gap-3">
-                <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-xs font-bold uppercase tracking-widest shadow-sm">
+              <div className="mt-3 sm:mt-4 flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-[10px] sm:text-xs font-bold uppercase tracking-widest shadow-sm">
                   <SafetyCertificateOutlined /> {formData.role || "Member"}
                 </span>
-                <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-100 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 text-xs font-bold uppercase tracking-widest shadow-sm">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-100 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest shadow-sm">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" /> Active Member
                 </span>
               </div>
@@ -249,22 +249,22 @@ export default function ProfilePage() {
           </div>
         </motion.div>
 
-        <form onSubmit={handleSubmit} className="space-y-10 pb-20">
+        <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-10 pb-20">
           
 {/* --- Personal Information Card --- */}
-<motion.div variants={itemVariants} className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 p-6 sm:p-8 rounded-3xl shadow-sm transition-all duration-300">
-  <div className="flex items-center gap-4 mb-8">
-    <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center text-lg">
+<motion.div variants={itemVariants} className="bg-white dark:bg-zinc-900/50 backdrop-blur-md border border-zinc-200 dark:border-zinc-800 p-5 sm:p-8 rounded-3xl shadow-sm transition-all duration-300">
+  <div className="flex items-center gap-4 mb-6 sm:mb-8">
+    <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center text-lg">
       <UserOutlined />
     </div>
-    <h3 className="text-sm font-bold uppercase tracking-widest text-zinc-900 dark:text-white">
+    <h3 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-zinc-900 dark:text-white">
       รายละเอียดส่วนบุคคล
     </h3>
   </div>
 
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-6">
     <div className="md:col-span-2 group">
-      <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 ml-1 mb-2 block transition-colors group-focus-within:text-blue-500">
+      <label className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 ml-1 mb-2 block transition-colors group-focus-within:text-blue-500">
         ชื่อ-นามสกุลจริง
       </label>
       <div className="relative">
@@ -273,7 +273,7 @@ export default function ProfilePage() {
           type="text"
           value={formData.name}
           onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/50 rounded-2xl pl-12 pr-5 py-4 text-zinc-800 dark:text-zinc-200 focus:bg-white dark:focus:bg-zinc-800 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all"
+          className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/50 rounded-2xl pl-12 pr-5 py-3.5 sm:py-4 text-zinc-800 dark:text-zinc-200 focus:bg-white dark:focus:bg-zinc-800 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all"
           placeholder="นายกมล เทคนิค"
         />
       </div>
@@ -380,11 +380,11 @@ export default function ProfilePage() {
 </motion.div>
 
           {/* --- Action Buttons --- */}
-          <motion.div variants={itemVariants} className="flex justify-end pt-6">
+          <motion.div variants={itemVariants} className="flex justify-center sm:justify-end pt-6">
             <button
               type="submit"
               disabled={saving}
-              className={`group relative overflow-hidden flex items-center justify-center gap-4 px-14 py-6 rounded-full font-black text-white transition-all duration-300 shadow-2xl ${
+              className={`group relative overflow-hidden flex items-center justify-center gap-4 w-full sm:w-auto px-8 sm:px-14 py-4 sm:py-6 rounded-full font-black text-white transition-all duration-300 shadow-2xl ${
                 saveSuccess 
                 ? "bg-emerald-500 shadow-emerald-500/40 scale-105"
                 : saving
@@ -396,21 +396,21 @@ export default function ProfilePage() {
                 <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
               )}
               
-              <span className="relative px-6 z-10 flex items-center gap-4 tracking-[0.15em] uppercase text-lg">
+              <span className="relative px-2 sm:px-6 z-10 flex items-center justify-center gap-3 sm:gap-4 tracking-widest sm:tracking-widest uppercase text-base sm:text-lg">
                 {saveSuccess ? (
                   <>
-                    <CheckCircleFilled className="text-2xl" />
-                    SUCCESSFULLY UPDATED!
+                    <CheckCircleFilled className="text-xl sm:text-2xl" />
+                    SUCCESS!
                   </>
                 ) : saving ? (
                   <>
-                    <div className="h-6 w-6 animate-spin rounded-full border-3 border-white border-t-transparent"></div>
-                    APPLYING CHANGES...
+                    <div className="h-5 w-5 sm:h-6 sm:w-6 animate-spin rounded-full border-3 border-white border-t-transparent"></div>
+                    SAVING...
                   </>
                 ) : (
                   <>
-                    CONFIRM & SAVE DATA
-                    <SaveOutlined className="text-xl group-hover:scale-125 transition-transform duration-300" />
+                    CONFIRM & SAVE
+                    <SaveOutlined className="text-lg sm:text-xl group-hover:scale-125 transition-transform duration-300" />
                   </>
                 )}
               </span>

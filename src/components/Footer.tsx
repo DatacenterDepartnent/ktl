@@ -63,7 +63,7 @@ export default async function Footer() {
     navItems.filter((item) => item.parentId === parentId);
 
   return (
-    <footer className="bg-linear-to-b from-[#0f172a] to-[#020617] text-slate-300 pt-16 pb-8 border-t border-slate-800">
+    <footer className="bg-linear-to-b from-[#0f172a] to-[#020617] text-slate-300 pt-16 pb-8 border-t border-slate-800 overflow-hidden">
       <VisitorTracker />
 
       <div className="max-w-[1600px] mx-auto px-2">

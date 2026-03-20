@@ -55,12 +55,12 @@ export default function DashboardHeader({ user }: DashboardHeaderProps) {
           </motion.div>
 
           <motion.div variants={itemVariants} className="space-y-1">
-            <h1 className="text-7xl font-black text-zinc-950 dark:text-white tracking-tighter leading-none flex flex-wrap items-center gap-x-4">
+            <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black text-zinc-950 dark:text-white tracking-tighter leading-none flex flex-wrap items-center gap-x-4">
               <span className="uppercase italic">Over</span>
               <span className="text-blue-600 uppercase">view</span>
-              <LayoutDashboard className="w-12 h-12 text-zinc-200 dark:text-zinc-800 hidden sm:block" />
+              <LayoutDashboard className="w-8 h-8 sm:w-12 sm:h-12 text-zinc-200 dark:text-zinc-800 hidden sm:block" />
             </h1>
-            <p className="text-zinc-500 dark:text-zinc-400 font-medium text-lg flex items-center gap-2">
+            <p className="text-zinc-500 dark:text-zinc-400 font-medium text-sm sm:text-lg flex items-center gap-2">
               <span className="w-1 h-5 bg-blue-600/20 rounded-full" />
               วิทยาลัยเทคนิคกันทรลักษ์ • แผงควบคุมระบบบริหารจัดการ
             </p>
