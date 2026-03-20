@@ -11,19 +11,23 @@ import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 
 export default function HomeBannerSwiper() {
-  const [banners, setBanners] = useState([]);
+  const [banners, setBanners] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     fetch("/api/banners?isActive=true")
-      .then((res) => res.json())
+      .then((res) => (res.ok ? res.json() : []))
       .then((data) => {
-        setBanners(data);
+        setBanners(Array.isArray(data) ? data : []);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((err) => {
+        console.error("Banner fetch error:", err);
+        setBanners([]);
+        setLoading(false);
+      });
   }, []);
 
   if (!mounted || loading) {

@@ -40,8 +40,15 @@ export async function GET(req: Request) {
 
     return NextResponse.json(banners);
   } catch (error: any) {
-    console.error("DEBUG API ERROR:", error);
-    return NextResponse.json({ error: "Server Error", details: error.message, stack: error.stack }, { status: 500 });
+    console.error("❌ [API BANNERS GET ERROR]:", {
+      message: error.message,
+      stack: error.stack,
+      cause: error.cause,
+    });
+    return NextResponse.json(
+      { error: "Server Error", details: error.message },
+      { status: 500 }
+    );
   }
 }
 

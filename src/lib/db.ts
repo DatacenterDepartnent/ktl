@@ -9,6 +9,8 @@ const options = {
   // ตั้งค่าเพิ่มเติมเพื่อความเสถียร (Optional)
   maxPoolSize: 10,
   minPoolSize: 5,
+  connectTimeoutMS: 10000, // 10 วินาที
+  serverSelectionTimeoutMS: 5000, // 5 วินาที
 };
 
 let client: MongoClient;

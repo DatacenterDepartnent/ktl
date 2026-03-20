@@ -13,6 +13,10 @@ export async function GET() {
       .toArray();
     return NextResponse.json(questions);
   } catch (error) {
+    console.error("❌ [API QUESTIONS PUBLIC GET ERROR]:", {
+      message: error.message,
+      stack: error.stack,
+    });
     return NextResponse.json({ error: "Failed to fetch" }, { status: 500 });
   }
 }
@@ -51,6 +55,10 @@ export async function POST(req) {
 
     return NextResponse.json({ success: true, id: result.insertedId });
   } catch (error) {
+    console.error("❌ [API QUESTIONS PUBLIC POST ERROR]:", {
+      message: error.message,
+      stack: error.stack,
+    });
     return NextResponse.json({ error: "Post failed" }, { status: 500 });
   }
 }

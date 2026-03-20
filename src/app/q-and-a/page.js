@@ -17,6 +17,7 @@ export default function QAPage() {
   const [loading, setLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [form, setForm] = useState({ guestName: "", subject: "", content: "" });
+  const [mounted, setMounted] = useState(false);
 
   const fetchQuestions = async () => {
     try {
@@ -25,12 +26,14 @@ export default function QAPage() {
       setQuestions(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error("Fetch error:", error);
+      setQuestions([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    setMounted(true);
     fetchQuestions();
   }, []);
 
@@ -68,7 +71,7 @@ export default function QAPage() {
     }
   };
 
-  if (loading)
+  if (!mounted || loading)
     return (
       <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 font-sans">
         <div className="w-10 h-10 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mb-4"></div>
