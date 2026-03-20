@@ -13,6 +13,8 @@ import HomeBannerSwiper from "@/components/HomeBannerSwiper";
 import StudentSupportSystem from "./StudentSupportSystem/page";
 import ExternalQualityAssurance from "./ExternalQualityAssurance";
 
+export const revalidate = 0; // บังคับให้หน้าเว็บดึงข้อมูลสดใหม่ตลอด (หลีกเลี่ยงชื่อตัวแปรซ้ำกับ dynamic import)
+
 // ✅ 1. เอา "use client" ออก และเปลี่ยนการเรียกใช้ dynamic ให้เหมาะสม
 const BackgroundBeamsWithCollisionDemo = dynamic(
   () => import("@/components/BackgroundBeamsWithCollisionDemo"),
