@@ -148,7 +148,7 @@ export default function BannerManagementPage() {
   }
 
   return (
-    <div className="p-2 py-12 min-h-screen animate-in fade-in duration-500">
+    <div className="p-2 py-12 max-w-[1600px] mx-auto animate-in fade-in duration-500">
       <Toaster position="bottom-right" />
 
       {/* --- Header --- */}

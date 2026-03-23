@@ -340,7 +340,7 @@ export default function GECCPage() {
   };
 
   return (
-    <section className="min-h-screen bg-slate-50 pb-20 ">
+    <section className="max-w-[1600px] mx-auto bg-slate-50 pb-20 ">
       {/* Header & Breadcrumb */}
       <div className="sticky top-0 z-40 border-b border-slate-200 ">
         <div className=" py-4">

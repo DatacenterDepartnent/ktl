@@ -114,7 +114,7 @@ export default function EditBannerPage() {
 
   if (loading)
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
+      <div className="flex flex-col items-center justify-center max-w-[1600px] mx-auto">
         <FiLoader className="w-10 h-10 animate-spin text-blue-600 mb-4" />
         <p className="text-slate-400 font-bold italic tracking-tighter">
           กำลังดึงข้อมูลแบนเนอร์...
@@ -123,7 +123,7 @@ export default function EditBannerPage() {
     );
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] pb-20 font-sans">
+    <div className="max-w-[1600px] mx-auto bg-[#f8fafc] pb-20 font-sans">
       <Toaster position="top-center" />
 
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-10 px-2 py-4">

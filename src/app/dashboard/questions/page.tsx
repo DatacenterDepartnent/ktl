@@ -127,7 +127,7 @@ export default function QuestionsPage() {
 
   if (loading)
     return (
-      <div className="flex items-center justify-center min-h-screen font-black italic  animate-pulse">
+      <div className="flex items-center justify-center max-w-[1600px] mx-auto font-black italic  animate-pulse">
         กำลังบูตระบบ...
       </div>
     );

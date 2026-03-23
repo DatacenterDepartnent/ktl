@@ -278,13 +278,13 @@ export default function CreateQRCode() {
         },
       }}
     >
-      <div className="py-24 min-h-screen relative flex items-center justify-center bg-gray-50 dark:bg-slate-950 overflow-hidden font-sans selection:bg-[#DAA520] selection:text-white">
+      <div className="py-24 max-w-[1600px] mx-auto relative flex items-center justify-center bg-gray-50 dark:bg-slate-950 overflow-hidden font-sans selection:bg-[#DAA520] selection:text-white">
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
           <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-400/20 dark:bg-blue-600/10 rounded-full blur-[120px]" />
           <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#DAA520]/20 dark:bg-[#DAA520]/10 rounded-full blur-[120px]" />
         </div>
 
-        <div className="relative z-10 w-full max-w-4xl px-4 py-12">
+        <div className="relative z-10 w-full max-w-[1600px] px-4 py-12">
           <nav className="flex justify-center mb-8">{/* Breadcrumb ... */}</nav>
 
           <div className="grid lg:grid-cols-2 gap-8 items-center">

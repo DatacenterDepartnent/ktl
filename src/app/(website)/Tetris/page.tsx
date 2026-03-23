@@ -190,7 +190,7 @@ export default function Tetris() {
   }, [move, gameOver]);
 
   return (
-    <div className="flex min-h-screen flex-col items-center bg-slate-950 p-4 font-sans text-white">
+    <div className="flex max-w-[1600px] mx-auto flex-col items-center bg-slate-950 p-4 font-sans text-white">
       {/* Score Header */}
       <div className="mt-4 mb-6 text-center">
         <h1 className="text-3xl font-black tracking-widest text-blue-500">

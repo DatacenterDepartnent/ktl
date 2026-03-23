@@ -134,13 +134,13 @@ export default function FeedManagementPage() {
 
   if (loading)
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="max-w-[1600px] mx-auto flex items-center justify-center">
         <FiLoader className="animate-spin text-blue-600 w-10 h-10" />
       </div>
     );
 
   return (
-    <div className="p-6 md:p-10 bg-slate-50 min-h-screen">
+    <div className="p-6 md:p-10 bg-slate-50 max-w-[1600px] mx-auto">
       <Toaster position="bottom-right" />
 
       <div className="max-w-6xl mx-auto">

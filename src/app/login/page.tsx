@@ -76,28 +76,33 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="max-w-[1600px] mx-auto w-full min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-slate-50 dark:bg-black">
+    <div className="max-w-[1600px] mx-auto w-full max-w-[1600px] mx-auto flex items-center justify-center p-4 relative overflow-hidden bg-slate-50 dark:bg-black">
       {/* Background Animated Effects */}
-      <motion.div 
+      <motion.div
         animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
         transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-        className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-200/40 rounded-full blur-[120px] dark:bg-blue-600/20" 
+        className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-200/40 rounded-full blur-[120px] dark:bg-blue-600/20"
       />
-      <motion.div 
+      <motion.div
         animate={{ scale: [1, 1.2, 1], rotate: [0, -10, 10, 0] }}
         transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-        className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-200/40 rounded-full blur-[120px] dark:bg-purple-600/20" 
+        className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-200/40 rounded-full blur-[120px] dark:bg-purple-600/20"
       />
 
       {/* Login Card */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.5, ease: "easeOut", type: "spring", bounce: 0.4 }}
+        transition={{
+          duration: 0.5,
+          ease: "easeOut",
+          type: "spring",
+          bounce: 0.4,
+        }}
         className="relative w-full max-w-md bg-white/70 backdrop-blur-xl border border-slate-200 p-8 rounded-[2.5rem] shadow-2xl dark:bg-zinc-900/50 dark:border-zinc-800"
       >
         <div className="text-center mb-10">
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -105,7 +110,7 @@ export default function LoginPage() {
           >
             KTLTC ADMIN
           </motion.h1>
-          <motion.p 
+          <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
@@ -117,7 +122,7 @@ export default function LoginPage() {
 
         <AnimatePresence>
           {error && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, height: 0, marginBottom: 0 }}
               animate={{ opacity: 1, height: "auto", marginBottom: 24 }}
               exit={{ opacity: 0, height: 0, marginBottom: 0 }}
@@ -203,39 +208,65 @@ export default function LoginPage() {
                 )}
               </button>
             </div>
-            <motion.div whileHover={{ scale: (loading || success) ? 1 : 1.01 }} whileTap={{ scale: (loading || success) ? 1 : 0.99 }}>
+            <motion.div
+              whileHover={{ scale: loading || success ? 1 : 1.01 }}
+              whileTap={{ scale: loading || success ? 1 : 0.99 }}
+            >
               <button
                 type="submit"
                 disabled={loading || success}
                 className={`relative w-full flex items-center justify-center gap-3 text-white font-bold py-4 rounded-2xl shadow-lg transition-all mt-4 overflow-hidden group ${
-                  success 
-                    ? "bg-emerald-500 shadow-emerald-500/40" 
+                  success
+                    ? "bg-emerald-500 shadow-emerald-500/40"
                     : "bg-blue-600 shadow-blue-600/20 hover:bg-blue-700 disabled:opacity-80 disabled:cursor-wait dark:hover:bg-blue-500"
                 }`}
               >
                 {/* Background Hover Effect */}
-                {!success && <div className="absolute inset-0 bg-blue-700 translate-y-full group-hover:translate-y-0 transition-transform duration-300 dark:bg-blue-500" />}
-                
+                {!success && (
+                  <div className="absolute inset-0 bg-blue-700 translate-y-full group-hover:translate-y-0 transition-transform duration-300 dark:bg-blue-500" />
+                )}
+
                 <span className="relative z-10 flex items-center gap-2">
                   {success ? (
                     <>
-                      <motion.svg 
-                        initial={{ scale: 0 }} 
-                        animate={{ scale: 1 }} 
-                        className="h-6 w-6 text-white" 
-                        fill="none" 
-                        viewBox="0 0 24 24" 
+                      <motion.svg
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="h-6 w-6 text-white"
+                        fill="none"
+                        viewBox="0 0 24 24"
                         stroke="currentColor"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={3}
+                          d="M5 13l4 4L19 7"
+                        />
                       </motion.svg>
                       เข้าสู่ระบบสำเร็จ!
                     </>
                   ) : loading ? (
                     <>
-                      <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      <svg
+                        className="animate-spin h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        ></path>
                       </svg>
                       กำลังยืนยันตัวตน...
                     </>
@@ -253,7 +284,7 @@ export default function LoginPage() {
           </div>
         </form>
 
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}

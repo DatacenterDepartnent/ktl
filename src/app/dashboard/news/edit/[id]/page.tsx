@@ -359,13 +359,13 @@ export default function EditNewsPage({
 
   if (loading)
     return (
-      <div className="min-h-screen flex items-center justify-center text-slate-400 font-bold dark:bg-black">
+      <div className="max-w-[1600px] mx-auto flex items-center justify-center text-slate-400 font-bold dark:bg-black">
         กำลังโหลด...
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-slate-50/50 pb-40 text-slate-800 antialiased dark:bg-black dark:text-slate-200">
+    <div className="max-w-[1600px] mx-auto bg-slate-50/50 pb-40 text-slate-800 antialiased dark:bg-black dark:text-slate-200">
       <style jsx global>{`
         @import url("https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap");
         body {

@@ -38,7 +38,7 @@ export default function PostersForm({
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-[1600px] mx-auto">
       {/* Top Navigation: ปุ่มย้อนกลับ */}
       <button
         type="button"

@@ -197,7 +197,7 @@ export default async function NewsDetailPage({
 
   if (!news) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-zinc-950 p-6 text-center">
+      <div className="max-w-7xl mx-auto flex flex-col items-center justify-center bg-slate-50 dark:bg-zinc-950 p-6 text-center">
         <div className="text-6xl mb-6 opacity-20">🔍</div>
         <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-4">
           ไม่พบข้อมูลข่าวสาร
@@ -220,11 +220,11 @@ export default async function NewsDetailPage({
       : ["ข่าวทั่วไป"];
 
   return (
-    <div className="min-h-screen bg-slate-50/50 dark:bg-zinc-950 text-slate-800 dark:text-slate-200 font-sans selection:bg-blue-100 dark:selection:bg-blue-900/30">
+    <div className="max-w-7xl mx-auto bg-slate-50/50 dark:bg-zinc-950 text-slate-800 dark:text-slate-200 font-sans selection:bg-blue-100 dark:selection:bg-blue-900/30">
       <main className="pb-16 md:pb-24">
         {/* --- Hero / Header Section --- */}
         <div className="bg-white dark:bg-zinc-900 border-b border-slate-200 dark:border-zinc-800 pt-12 pb-8 px-4">
-          <div className="max-w-4xl mx-auto space-y-8">
+          <div className="max-w-7xl mx-auto space-y-8">
             <Link
               href="/news"
               className="inline-flex items-center gap-2 text-sm font-medium text-slate-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400 transition-colors group"
@@ -282,7 +282,7 @@ export default async function NewsDetailPage({
           </div>
         </div>
 
-        <div className="max-w-4xl mx-auto px-4 mt-10 space-y-12">
+        <div className="max-w-7xl mx-auto px-4 mt-10 space-y-12">
           {/* --- Content Body --- */}
           <article
             className="prose prose-lg prose-slate dark:prose-invert max-w-none 
@@ -307,7 +307,9 @@ export default async function NewsDetailPage({
                   วิดีโอประกอบ
                 </h3>
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div
+                className={`grid gap-6 ${news.videoEmbeds.length === 1 ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"}`}
+              >
                 {news.videoEmbeds.map((embedCode, index) => (
                   <div
                     key={index}
@@ -330,7 +332,7 @@ export default async function NewsDetailPage({
                   เอกสารและลิงก์ที่เกี่ยวข้อง
                 </h3>
               </div>
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className=" ">
                 {news.links.map((link, idx) => (
                   <a
                     key={idx}

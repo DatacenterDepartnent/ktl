@@ -169,7 +169,7 @@ export default function CourseInformation() {
   };
 
   return (
-    <section className="min-h-screen font-sans py-24 px-4 bg-slate-50 dark:bg-black/50">
+    <section className="max-w-[1600px] mx-auto font-sans py-24 px-4 bg-slate-50 dark:bg-black/50">
       <motion.div
         initial="hidden"
         whileInView="visible"

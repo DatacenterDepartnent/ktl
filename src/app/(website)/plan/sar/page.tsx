@@ -54,7 +54,7 @@ export default function SarPage() {
   };
 
   return (
-    <section className="min-h-screen py-12">
+    <section className="max-w-[1600px] mx-auto py-12">
       <motion.div
         initial="hidden"
         whileInView="visible"

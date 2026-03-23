@@ -97,7 +97,7 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
     >
       {/* Modal Container */}
       <div
-        className="relative w-full max-w-4xl max-h-[90vh] flex flex-col bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+        className="relative w-full max-w-[1600px] max-h-[90vh] flex flex-col bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* --- Header --- */}
@@ -110,7 +110,7 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
               <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                 รายละเอียดแบบสำรวจ
               </h3>
-                  <p className="mt-4 text-slate-600 dark:text-slate-400 text-lg leading-relaxed wrap-break-word">
+              <p className="mt-4 text-slate-600 dark:text-slate-400 text-lg leading-relaxed wrap-break-word">
                 <Calendar size={12} /> บันทึกเมื่อ:{" "}
                 {formatDate(suvery.submittedAt || suvery.createdAt)}
               </p>

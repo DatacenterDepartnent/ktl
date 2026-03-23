@@ -43,7 +43,7 @@ export default function ResearchPage() {
   };
 
   return (
-    <section className="min-h-screen py-12 bg-slate-50/50 dark:bg-black">
+    <section className="max-w-[1600px] mx-auto py-12 bg-slate-50/50 dark:bg-black">
       <motion.div
         initial="hidden"
         whileInView="visible"

@@ -67,7 +67,7 @@ export default function ManageHomePage() {
     );
 
   return (
-    <div className="max-w-7xl py-12 mx-auto p-2 space-y-10 animate-in fade-in duration-500">
+    <div className="max-w-[1600px] py-12 mx-auto p-2 space-y-10 animate-in fade-in duration-500">
       <Toaster position="bottom-right" />
 
       {/* --- Header --- */}
@@ -81,7 +81,7 @@ export default function ManageHomePage() {
       </header>
 
       {/* --- Section 1: Component Visibility --- */}
-      <section className="bg-white dark:bg-zinc-900 rounded-[2rem] p-4 border border-zinc-200 dark:border-zinc-800 shadow-2xl shadow-blue-500/5">
+      <section className="bg-white dark:bg-zinc-900 rounded-4xl p-4 border border-zinc-200 dark:border-zinc-800 shadow-2xl shadow-blue-500/5">
         <h2 className="text-2xl font-black mb-8 flex items-center gap-3 uppercase tracking-tight">
           <Layout className="text-blue-600" />
           การมองเห็นส่วนประกอบ
@@ -90,7 +90,7 @@ export default function ManageHomePage() {
           {data.components.map((comp: any) => (
             <div
               key={comp.componentId}
-              className="flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-800/40 rounded-[2rem] border border-zinc-100 dark:border-zinc-800 transition-all hover:border-blue-300 group"
+              className="flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-800/40 rounded-4xl border border-zinc-100 dark:border-zinc-800 transition-all hover:border-blue-300 group"
             >
               <div>
                 <span className="font-black text-lg text-zinc-700 dark:text-zinc-200 group-hover:text-blue-600 transition-colors">
@@ -150,7 +150,7 @@ export default function ManageHomePage() {
         ].map((card, idx) => (
           <div
             key={idx}
-            className="bg-white dark:bg-zinc-900 rounded-[2rem] p-4 border border-zinc-200 dark:border-zinc-800 shadow-xl flex flex-col justify-between group hover:-translate-y-2 transition-all"
+            className="bg-white dark:bg-zinc-900 rounded-4xl p-4 border border-zinc-200 dark:border-zinc-800 shadow-xl flex flex-col justify-between group hover:-translate-y-2 transition-all"
           >
             <div className="flex items-center gap-4 mb-8">
               <div className="w-14 h-14 bg-zinc-100 dark:bg-zinc-800 rounded-2xl flex items-center justify-center text-2xl group-hover:rotate-12 transition-transform">

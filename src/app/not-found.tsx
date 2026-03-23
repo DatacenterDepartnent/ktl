@@ -19,7 +19,7 @@ const ErrorContent = () => {
         },
       }}
     >
-      <section className="relative flex min-h-screen items-center justify-center overflow-hidden bg-slate-50 dark:bg-zinc-950 transition-colors duration-300">
+      <section className="relative flex max-w-[1600px] mx-auto items-center justify-center overflow-hidden bg-slate-50 dark:bg-zinc-950 transition-colors duration-300">
         {/* --- Background Decoration --- */}
         <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 opacity-30 dark:opacity-20">
           <div className="h-[300px] w-[300px] rounded-full bg-blue-400/20 blur-[100px] sm:h-[500px] sm:w-[500px] dark:bg-blue-600/30" />

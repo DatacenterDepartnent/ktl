@@ -39,7 +39,6 @@ async function getNews(): Promise<NewsItem[]> {
         author: 1, // ✅ ดึงข้อมูลผู้โพสต์
       })
       .sort({ createdAt: -1 })
-      .limit(100)
       .toArray();
 
     return JSON.parse(JSON.stringify(news));
@@ -53,9 +52,9 @@ export default async function AllNewsPage() {
   const newsList = await getNews();
 
   return (
-    <main className="min-h-screen bg-slate-50/50 dark:bg-zinc-950 text-slate-900 dark:text-slate-200 font-sans selection:bg-blue-100 dark:selection:bg-blue-900/30">
+    <main className="max-w-[1600px] mx-auto bg-slate-50/50 dark:bg-zinc-950 text-slate-900 dark:text-slate-200 font-sans selection:bg-blue-100 dark:selection:bg-blue-900/30">
       <div className="relative z-10 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border-b border-slate-200/60 dark:border-zinc-800 pt-32 pb-12 md:pt-40 md:pb-20">
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] mx-auto px-2 sm:px-4 lg:px-6">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
             <div className="space-y-4 max-w-3xl">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 text-blue-600 dark:text-blue-400 text-xs font-bold uppercase tracking-wider">
@@ -94,7 +93,7 @@ export default async function AllNewsPage() {
 
       <div className="py-12 md:py-20 relative">
         <div className="absolute top-0 left-0 w-full h-px bg-linear-to-r from-transparent via-slate-200 dark:via-zinc-800 to-transparent"></div>
-        <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-[1600px] mx-auto px-2 sm:px-4 lg:px-6">
           <div className="mb-12 flex items-center justify-between gap-6">
             <div className="flex items-center gap-4 w-full">
               <div className="h-px flex-1 bg-linear-to-r from-slate-200 to-transparent dark:from-zinc-800"></div>

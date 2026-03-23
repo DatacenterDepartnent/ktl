@@ -95,7 +95,7 @@ export default async function EditSuveryPage(props: EditPageProps) {
   // --------------------------------------------------------
   if (!suvery) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4 dark:bg-gray-900">
+      <div className="flex max-w-[1600px] mx-auto items-center justify-center bg-gray-50 p-4 dark:bg-gray-900">
         <div className="w-full max-w-md overflow-hidden rounded-3xl bg-white shadow-2xl dark:bg-gray-800">
           <div className="bg-red-50 p-8 text-center dark:bg-red-900/20">
             <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-800 dark:text-red-200">
@@ -130,7 +130,7 @@ export default async function EditSuveryPage(props: EditPageProps) {
   // ✅ กรณีพบข้อมูล: แสดงฟอร์มแก้ไข (Success State)
   // --------------------------------------------------------
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-gray-900 transition-colors duration-300 dark:bg-gray-950 dark:text-gray-100">
+    <div className="max-w-[1600px] mx-auto bg-slate-50 font-sans text-gray-900 transition-colors duration-300 dark:bg-gray-950 dark:text-gray-100">
       {/* Background decoration */}
       <div className="absolute inset-x-0 top-0 h-80 bg-linear-to-b from-emerald-600 to-slate-50 opacity-90 dark:from-emerald-900 dark:to-gray-950" />
 

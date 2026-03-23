@@ -47,7 +47,7 @@ export default async function HomePage() {
   const latestNews = await getLatestNews();
 
   return (
-    <main className="min-h-screen bg-slate-50  text-slate-800">
+    <main className="max-w-[1600px] mx-auto bg-slate-50  text-slate-800">
       {/* --- Hero Section (แบนเนอร์ส่วนหัว) --- */}
       <section className="relative w-full h-100 md:h-125 bg-slate-900 overflow-hidden flex items-center justify-center text-center px-4">
         {/* Background Image Overlay */}

@@ -163,7 +163,7 @@ export default function TypingTestApp(): JSX.Element {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4 font-mono">
+    <div className="flex flex-col items-center justify-center max-w-[1600px] mx-auto bg-gray-900 text-white p-4 font-mono">
       <div className="container max-w-[1600px] mx-auto p-8 rounded-lg shadow-2xl bg-gray-800">
         <h1 className="text-4xl font-bold mb-6 text-center text-teal-400">
           เกมทดสอบความเร็วการพิมพ์

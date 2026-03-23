@@ -68,7 +68,7 @@ export default async function Home() {
   const { isShow, settings, activePosters, feeds } = await getHomeData();
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col max-w-[1600px] mx-auto">
       <main className="grow">
         {isShow.banner !== false && (
           <section className="w-full mb-8">

@@ -338,7 +338,7 @@ export default function GraduatesuveryForm() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-gray-900">
+    <div className="max-w-[1600px] mx-auto bg-slate-50 font-sans text-gray-900">
       {/* Background Graphic (Optional) */}
       <div className="absolute inset-0 z-0 h-96 w-full bg-linear-to-br from-emerald-600 to-teal-800 opacity-90" />
 

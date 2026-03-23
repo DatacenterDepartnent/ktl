@@ -31,7 +31,7 @@ export default function ExecutiveBoard() {
   };
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-slate-50 py-20 font-sans text-slate-800 dark:bg-neutral-950 dark:text-slate-200">
+    <section className="relative max-w-[1600px] mx-auto overflow-hidden bg-slate-50 py-20 font-sans text-slate-800 dark:bg-neutral-950 dark:text-slate-200">
       {/* Ambient Background */}
       <div className="pointer-events-none absolute top-0 left-1/2 -z-10 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-[#DAA520]/5 blur-[120px]" />
 

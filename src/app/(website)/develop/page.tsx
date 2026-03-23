@@ -139,7 +139,7 @@ export default function StudentActivitiesPage() {
   };
 
   return (
-    <section className="relative min-h-screen py-20 overflow-hidden bg-slate-50/50 dark:bg-black">
+    <section className="relative max-w-[1600px] mx-auto py-20 overflow-hidden bg-slate-50/50 dark:bg-black">
       {/* Decorative Background: ใช้สี Teal/Green ให้ความรู้สึกสดชื่นและ Active */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-linear-to-b from-teal-100/40 to-transparent dark:from-teal-900/20 pointer-events-none" />
 

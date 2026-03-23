@@ -141,7 +141,7 @@ export default async function EmploymentDashboard(props: PageProps) {
   }
 
   return (
-    <div className="container min-h-screen bg-gray-50/50 pb-20 pt-10 font-sans transition-colors duration-300 dark:bg-gray-950">
+    <div className="container max-w-[1600px] mx-auto bg-gray-50/50 pb-20 pt-10 font-sans transition-colors duration-300 dark:bg-gray-950">
       <div className="">
         {/* --- HEADER --- */}
         <div className="mb-10 flex flex-col justify-between gap-6 sm:flex-row sm:items-center">

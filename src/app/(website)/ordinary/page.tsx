@@ -28,7 +28,7 @@ export default function Ordinary() {
   };
 
   return (
-    <section className="min-h-screen bg-slate-50 py-16font-sans text-slate-800 dark:bg-neutral-950 dark:text-slate-200">
+    <section className="max-w-[1600px] mx-auto bg-slate-50 py-16font-sans text-slate-800 dark:bg-neutral-950 dark:text-slate-200">
       <div className="container">
         {/* --- Header Section --- */}
         <motion.div

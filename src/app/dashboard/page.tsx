@@ -106,7 +106,7 @@ export default async function DashboardPage() {
 
   if (!data) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center max-w-[1600px] mx-auto">
         <p className="text-zinc-500 font-bold italic">Unauthorized Access</p>
       </div>
     );
@@ -115,7 +115,7 @@ export default async function DashboardPage() {
   const { user, stats } = data;
 
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-zinc-950 transition-colors duration-500">
+    <div className="max-w-[1600px] mx-auto bg-[#fafafa] dark:bg-zinc-950 transition-colors duration-500">
       <div className="max-w-[1600px] mx-auto w-full px-2 py-12">
         {/* --- 1. HEADER SECTION --- */}
         <DashboardHeader user={user} />

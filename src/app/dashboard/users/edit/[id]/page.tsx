@@ -131,7 +131,7 @@ export default function EditUserPage() {
 
   if (loading)
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-white">
+      <div className="flex flex-col items-center justify-center max-w-[1600px] mx-auto bg-white">
         <FiLoader className="w-10 h-10 text-blue-600 animate-spin mb-4" />
         <p className="text-slate-500 font-medium animate-pulse">
           กำลังตรวจสอบข้อมูลอัตลักษณ์...
@@ -140,7 +140,7 @@ export default function EditUserPage() {
     );
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] pb-20">
+    <div className="max-w-[1600px] mx-auto bg-[#f8fafc] pb-20">
       <Toaster position="top-center" reverseOrder={false} />
 
       {/* Navigation Bar */}
@@ -166,7 +166,7 @@ export default function EditUserPage() {
         </div>
       </nav>
 
-      <div className="max-w-4xl mx-auto px-6 mt-10">
+      <div className="max-w-[1600px] mx-auto px-6 mt-10">
         <form
           onSubmit={handleSubmit}
           className="grid grid-cols-1 lg:grid-cols-12 gap-8"

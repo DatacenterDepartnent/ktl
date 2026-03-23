@@ -85,13 +85,13 @@ export default function PDCA() {
   };
 
   return (
-    <section className="min-h-screen font-sans">
+    <section className="max-w-[1600px] mx-auto font-sans">
       <motion.div
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
         variants={containerVar}
-        className="max-w-4xl mx-auto"
+        className="max-w-[1600px] mx-auto"
       >
         {/* --- Header & Breadcrumb --- */}
         <div className="mb-12 text-center">
@@ -140,12 +140,12 @@ export default function PDCA() {
               <Link href={doc.href} className="group block h-full">
                 <div className="relative h-full bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-slate-100 dark:border-neutral-800 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07)] hover:shadow-[0_8px_25px_-5px_rgba(218,165,32,0.15)] hover:border-[#DAA520]/50 transition-all duration-300 flex items-start gap-4">
                   {/* Icon Box */}
-                  <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 flex items-center justify-center text-2xl group-hover:bg-[#DAA520] group-hover:text-white transition-colors duration-300">
+                  <div className="shrink-0 w-12 h-12 rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-900/20 dark:text-blue-400 flex items-center justify-center text-2xl group-hover:bg-[#DAA520] group-hover:text-white transition-colors duration-300">
                     <FileWordOutlined />
                   </div>
 
                   {/* Text Content */}
-                  <div className="flex-grow">
+                  <div className="grow">
                     <h3 className="text-base font-semibold text-slate-700 dark:text-slate-200 group-hover:text-[#DAA520] transition-colors line-clamp-2">
                       {doc.title}
                     </h3>

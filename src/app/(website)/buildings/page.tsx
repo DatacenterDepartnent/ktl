@@ -215,7 +215,7 @@ const buildingsData = [
 
 export default function Buildings() {
   return (
-    <section className="min-h-screen  ">
+    <section className="max-w-[1600px] mx-auto  ">
       <div className="container mx-auto max-w-6xl px-4 md:px-8">
         {/* --- Header Section --- */}
         <motion.div

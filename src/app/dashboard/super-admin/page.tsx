@@ -226,13 +226,13 @@ export default function SuperAdminPage() {
   };
   if (loading)
     return (
-      <div className="flex items-center justify-center min-h-screen bg-slate-50 font-black text-slate-400 italic">
+      <div className="flex items-center justify-center max-w-[1600px] mx-auto bg-slate-50 font-black text-slate-400 italic">
         LOADING_SYSTEM_DATA...
       </div>
     );
 
   return (
-    <div className="max-w-[1600px] mx-auto p-2 bg-slate-50 min-h-screen">
+    <div className="max-w-[1600px] mx-auto p-2 bg-slate-50 max-w-[1600px] mx-auto">
       <Toaster position="top-right" />
 
       {/* Stats Summary */}

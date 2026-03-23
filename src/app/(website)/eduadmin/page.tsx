@@ -13,7 +13,7 @@ import {
 
 export default function EDUAdmin() {
   return (
-    <section className="relative min-h-screen overflow-hidden bg-slate-50 px-4 py-20 font-sans text-slate-800 dark:bg-neutral-950 dark:text-slate-200">
+    <section className="relative max-w-[1600px] mx-auto overflow-hidden bg-slate-50 px-4 py-20 font-sans text-slate-800 dark:bg-neutral-950 dark:text-slate-200">
       {/* --- Ambient Background --- */}
       <div className="pointer-events-none absolute top-0 left-1/2 -z-10 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-yellow-500/10 blur-[100px]" />
 

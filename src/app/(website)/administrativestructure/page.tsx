@@ -157,7 +157,7 @@ const DepartmentColumn = ({
 
 export default function AdministrativeStructure() {
   return (
-    <section className="min-h-screen overflow-x-hidden bg-slate-50 py-20 font-sans text-slate-800 dark:bg-zinc-950 dark:text-slate-200">
+    <section className="max-w-[1600px] mx-auto overflow-x-hidden bg-slate-50 py-20 font-sans text-slate-800 dark:bg-zinc-950 dark:text-slate-200">
       <div className="container mx-auto px-4 lg:px-8">
         {/* --- Header --- */}
         <motion.div

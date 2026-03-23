@@ -27,7 +27,7 @@ export default function Technique() {
   };
 
   return (
-    <section className="min-h-screen bg-slate-50 font-sans text-slate-800 dark:bg-neutral-950 dark:text-slate-200">
+    <section className="max-w-[1600px] mx-auto bg-slate-50 font-sans text-slate-800 dark:bg-neutral-950 dark:text-slate-200">
       <div className="container">
         {/* --- Header Section --- */}
         <motion.div

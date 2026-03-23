@@ -47,14 +47,10 @@ interface NewsItem {
   authorId?: string;
   author?: {
     name: string;
+    image?: string;
   };
 }
 
-function getGridClass(count: number) {
-  if (count === 1) return "grid-cols-1";
-  if (count === 2) return "grid-cols-1 md:grid-cols-2";
-  return "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4";
-}
 
 export default function NewsListClient({
   initialNews = [],
@@ -167,95 +163,91 @@ export default function NewsListClient({
 
       {/* --- News Grid --- */}
       {paginatedNews.length > 0 ? (
-        <div
-          className={`grid gap-8 md:gap-10 ${getGridClass(paginatedNews.length)}`}
-        >
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {paginatedNews.map((news) => {
             const coverImage =
-              news.announcementImages?.[0] ||
               news.images?.[0] ||
+              news.announcementImages?.[0] ||
               "/no-image.png";
+            const displayCategories = news.categories?.length
+              ? news.categories
+              : news.category
+                ? [news.category]
+                : [];
+            const authorName = (news.author?.name || "งานศูนย์ข้อมูล").split(
+              " ",
+            )[0];
+            const authorAvatar = news.author?.image || null;
+
             return (
               <Link
                 key={news._id}
                 href={`/news/${news._id}`}
-                className="group flex flex-col bg-white dark:bg-zinc-900/50 rounded-3xl overflow-hidden border border-slate-200 dark:border-zinc-800 shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
+                className="group relative flex flex-col bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300"
               >
-                <div className="relative aspect-4/3 w-full overflow-hidden bg-slate-100">
+                {/* Thumbnail */}
+                <div className="relative w-full aspect-video bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
                   <Image
                     src={coverImage}
                     alt={news.title}
                     fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                     unoptimized
                   />
+                  {/* Gradient overlay on hover */}
+                  <div className="absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  {/* Categories */}
+                  {displayCategories.length > 0 && (
+                    <div className="absolute top-2.5 left-2.5 flex flex-wrap gap-1 max-w-[90%]">
+                      {displayCategories.slice(0, 2).map((cat, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2 py-0.5 bg-white/90 backdrop-blur-sm text-blue-700 text-[10px] font-bold uppercase tracking-wider rounded-md shadow-sm dark:bg-zinc-900/90 dark:text-blue-400"
+                        >
+                          {cat}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                <div className="px-6 py-8 flex flex-col flex-1">
-                  <div className="flex flex-wrap items-center justify-between mb-5 gap-y-2">
-                    <div className="flex items-center gap-3">
-                      <div className="h-px w-8 bg-blue-600/30 group-hover:w-12 transition-all duration-700"></div>
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-wider dark:text-slate-500">
-                        {/* ✅ แสดงวันที่และเวลา */}
-                        {new Date(news.createdAt).toLocaleString("th-TH", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        }) + " น."}
-                      </span>
-                    </div>
-
-                    {/* ✅ ส่วนแสดงชื่อผู้เขียน */}
-                    {news.author?.name && (
-                      <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100/50 dark:border-blue-800/20 transition-colors group-hover:bg-blue-100/50">
-                        <svg
-                          className="w-3 h-3 text-blue-500/70"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                          />
-                        </svg>
-                        <span className="text-[9px] font-bold text-blue-600/80 dark:text-blue-400/80 uppercase">
-                          {news.author.name.split(" ")[0]}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-
-                  <h3 className="text-xl font-bold text-slate-800 line-clamp-2 leading-[1.35] group-hover:text-blue-600 transition-colors dark:text-slate-100 dark:group-hover:text-blue-400">
+                {/* Body */}
+                <div className="flex flex-col flex-1 py-8 px-4 gap-3">
+                  <h3 className="text-[14px] font-bold text-zinc-800 dark:text-zinc-100 line-clamp-2 leading-snug group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                     {news.title}
                   </h3>
-                  <p className="mt-4 text-slate-500 text-sm leading-relaxed line-clamp-2 opacity-70">
-                    คลิกเพื่ออ่านรายละเอียดกิจกรรมและความเคลื่อนไหว...
-                  </p>
 
-                  <div className="mt-auto pt-8 border-t border-slate-100 flex items-center justify-between dark:border-slate-800">
-                    <span className="text-[11px] font-black text-slate-900 uppercase tracking-widest group-hover:text-blue-600 transition-all transform group-hover:translate-x-2 dark:text-slate-300">
-                      อ่านบทความฉบับเต็ม
-                    </span>
-                    <div className="w-10 h-10 rounded-full border border-slate-200 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all">
-                      <svg
-                        className="w-4 h-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2.5}
-                          d="M17 8l4 4m0 0l-4 4m4-4H3"
-                        />
-                      </svg>
+                  {/* Meta */}
+                  <div className="flex items-center justify-between mt-auto pt-3 border-t border-dashed border-zinc-100 dark:border-zinc-800">
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-xs">ผู้เขียน</p>
+                      {authorAvatar ? (
+                        <div className="relative w-5 h-5 rounded-full overflow-hidden border border-zinc-200 dark:border-zinc-700 shrink-0">
+                          <Image
+                            src={authorAvatar}
+                            alt={authorName}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="w-5 h-5 rounded-full bg-linear-to-br from-blue-400 to-indigo-600 flex items-center justify-center text-[9px] text-white font-bold shrink-0">
+                          {authorName.charAt(0)}
+                        </div>
+                      )}
+                      <span className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate max-w-[80px]">
+                        {authorName}
+                      </span>
                     </div>
+                    <span className="text-[10px] text-zinc-400 dark:text-zinc-500 shrink-0">
+                      {new Date(news.createdAt).toLocaleString("th-TH", {
+                        day: "numeric",
+                        month: "short",
+                        year: "2-digit",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
+                    </span>
                   </div>
                 </div>
               </Link>
@@ -269,6 +261,60 @@ export default function NewsListClient({
           <h4 className="text-xl font-bold text-slate-800 dark:text-slate-200">
             ไม่พบข้อมูลที่คุณค้นหา
           </h4>
+        </div>
+      )}
+
+      {/* --- Load More --- */}
+      {filteredNews.length > 0 && (
+        <div className="mt-16 flex flex-col items-center gap-4">
+          {/* Count info */}
+          <p className="text-sm text-slate-400 dark:text-slate-500">
+            แสดง{" "}
+            <span className="font-bold text-slate-700 dark:text-slate-200">
+              {Math.min(visibleCount, filteredNews.length)}
+            </span>{" "}
+            จาก{" "}
+            <span className="font-bold text-slate-700 dark:text-slate-200">
+              {filteredNews.length}
+            </span>{" "}
+            รายการ
+          </p>
+
+          {/* Progress bar */}
+          <div className="w-full max-w-xs h-1 bg-slate-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+            <div
+              className="h-full bg-blue-500 rounded-full transition-all duration-500"
+              style={{
+                width: `${Math.min((Math.min(visibleCount, filteredNews.length) / filteredNews.length) * 100, 100)}%`,
+              }}
+            />
+          </div>
+
+          {/* Load More Button */}
+          {visibleCount < filteredNews.length && (
+            <button
+              onClick={handleLoadMore}
+              className="mt-2 inline-flex items-center gap-2 px-8 py-3 rounded-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-slate-200 font-bold text-sm shadow-sm hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 active:scale-95"
+            >
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.5}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+              โหลดเพิ่มเติม
+              <span className="ml-1 px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 text-xs font-black">
+                {filteredNews.length - visibleCount} รายการ
+              </span>
+            </button>
+          )}
         </div>
       )}
     </div>

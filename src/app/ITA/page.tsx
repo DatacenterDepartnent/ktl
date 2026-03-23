@@ -181,9 +181,7 @@ const MainDownloadCard = ({ year }: { year: string }) => {
           <div className="shrink-0">
             <Link
               href={
-                year === "2568"
-                  ? "/pdf/ITA/2568/ผลประเมินITA2568.pdf"
-                  : "#"
+                year === "2568" ? "/pdf/ITA/2568/ผลประเมินITA2568.pdf" : "#"
               }
               target="_blank"
               download
@@ -559,7 +557,7 @@ export default function ITA() {
   }, [selectedYear]);
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden font-sans">
+    <div className="relative max-w-[1600px] mx-auto overflow-x-hidden font-sans">
       <BackgroundDecor />
 
       {/* Hero Content */}

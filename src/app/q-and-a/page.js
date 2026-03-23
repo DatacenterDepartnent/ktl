@@ -73,7 +73,7 @@ export default function QAPage() {
 
   if (!mounted || loading)
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 font-sans">
+      <div className="flex flex-col items-center justify-center max-w-[1600px] mx-auto bg-slate-50 font-sans">
         <div className="w-10 h-10 border-4 border-cyan-500 border-t-transparent rounded-full animate-spin mb-4"></div>
         <p className="text-slate-400 font-bold tracking-[0.2em] animate-pulse">
           กำลังโหลดฐานข้อมูล...

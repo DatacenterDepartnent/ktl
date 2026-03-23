@@ -15,7 +15,7 @@ export default function BackgroundBeamsWithCollisionDemo({
   const hasContent = data.title || data.description;
 
   return (
-    <BackgroundBeamsWithCollision className="relative w-full max-w-4xl mx-auto rounded-3xl my-2 overflow-hidden shadow-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
+    <BackgroundBeamsWithCollision className="relative w-full max-w-[1600px] mx-auto rounded-3xl my-2 overflow-hidden shadow-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
       <div className="flex flex-col w-full">
         {/* 1. ส่วนรูปภาพ (อยู่ด้านบน) */}
         <div className="relative w-full overflow-hidden">
