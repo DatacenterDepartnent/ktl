@@ -233,7 +233,7 @@ export default function SuperAdminPage() {
     );
 
   return (
-    <div className="max-w-[1600px] mx-auto p-2 bg-slate-50 max-w-[1600px] mx-auto">
+    <div className="max-w-[1600px] mx-auto p-2 bg-slate-50">
       <Toaster position="top-right" />
 
       {/* Stats Summary */}
