@@ -669,19 +669,12 @@ export default function GECCPage() {
               </CardBody>
             </Card>
             <Card className="border border-slate-200 shadow-md">
-              <CardHeader className="border-b border-slate-100 bg-slate-50 pb-2 font-bold text-slate-700">
-                <FacebookFilled className="mr-2 text-xl text-blue-600" />
-                ประชาสัมพันธ์
-              </CardHeader>
-              <CardBody className="bg-white flex justify-center overflow-hidden p-0">
-                <iframe
-                  src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D100057326985699&tabs=timeline&width=340&height=500&small_header=false&adapt_container_width=true&hide_cover=false&show_facepile=true&appId=952832906928077"
-                  width="100%"
-                  height="400"
-                  style={{ border: "none", overflow: "hidden" }}
-                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                ></iframe>
-              </CardBody>
+              <Link href="https://www.facebook.com/profile.php?id=100057326985699&ref=embed_page">
+                <CardHeader className="border-b border-slate-100 bg-slate-50 pb-2 font-bold text-slate-700">
+                  <FacebookFilled className="mr-2 text-xl text-blue-600" />
+                  วิทยาลัยเทคนิคกันทรลักษ์
+                </CardHeader>
+              </Link>
             </Card>
             <Card className="border-none bg-linear-to-br from-[#DAA520] to-yellow-700 text-white shadow-xl">
               <CardBody className="px-6 py-10 text-center">

@@ -93,8 +93,7 @@ const ExternalQualityAssurance = () => {
 
           {/* Card 2: ITA (Transparency Style) */}
           <Link
-            href="https://ktltc.vercel.app/ITA"
-            target="_blank"
+            href="/ITA"
             rel="noopener noreferrer"
             className="group block h-full"
           >
