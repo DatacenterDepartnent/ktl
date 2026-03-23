@@ -14,9 +14,12 @@ interface NewsItem {
   images?: string[];
   announcementImages?: string[];
   createdAt: string;
+  userName?: string;
+  userImage?: string | null;
   // ✅ เพิ่ม author เพื่อส่งข้อมูลผู้โพสต์ไปยัง NewsListClient
   author?: {
     name: string;
+    image?: string;
   };
 }
 

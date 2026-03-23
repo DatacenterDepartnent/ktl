@@ -40,7 +40,7 @@ async function getHomeData() {
         .find({ isActive: true })
         .sort({ createdAt: -1 })
         .toArray(),
-      db.collection("feeds").find({}).sort({ createdAt: -1 }).toArray(),
+      db.collection("social_feeds").find({}).sort({ createdAt: -1 }).toArray(),
     ]);
 
     const isShow = visibilityData.reduce((acc: any, item: any) => {
@@ -133,9 +133,6 @@ export default async function Home() {
           </div>
           <div className="py-12">
             <ShowFacebookClient />
-          </div>
-          <div className="py-12">
-            <ShowYoutube />
           </div>
 
           {isShow.social_feed !== false && (feeds?.length ?? 0) > 0 && (

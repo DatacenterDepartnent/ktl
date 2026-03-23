@@ -124,7 +124,7 @@ export default function ManageHomePage() {
       </section>
 
       {/* --- Section 2: Quick Access Management --- */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
         {[
           {
             title: "Hero Banners",
@@ -145,6 +145,13 @@ export default function ManageHomePage() {
             sub: "ประชาสัมพันธ์หลัก/โปสเตอร์",
             link: "/dashboard/posters",
             icon: "⚡",
+            color: "bg-blue-600",
+          },
+          {
+            title: "Social Feeds",
+            sub: "YouTube / Facebook on homepage",
+            link: "/dashboard/feeds",
+            icon: "Feed",
             color: "bg-blue-600",
           },
         ].map((card, idx) => (

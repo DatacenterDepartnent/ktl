@@ -14,9 +14,12 @@ interface NewsItem {
   images?: string[];
   content?: string;
   createdAt: string;
+  userName?: string;
+  userImage?: string | null;
   // ✅ เพิ่ม author เข้ามาใน Interface
   author?: {
     name: string;
+    image?: string;
   };
 }
 
@@ -120,22 +123,34 @@ export default async function PressRelease() {
                     </div>
 
                     {/* ✅ Badge ผู้เขียน (ดึงชื่อแรกมาแสดงเหมือนหน้า NewsList) */}
-                    {news.author?.name && (
+                    {(news.userName || news.author?.name) && (
                       <div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-orange-50 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900/50 text-orange-600 dark:text-orange-400">
-                        <svg
-                          className="w-3 h-3"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2.5}
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                          />
-                        </svg>
-                        <span>{news.author.name.split(" ")[0]}</span>
+                        {news.userImage || news.author?.image ? (
+                          <div className="relative h-4 w-4 overflow-hidden rounded-full border border-orange-200 dark:border-orange-800">
+                            <Image
+                              src={news.userImage || news.author?.image || "/no-image.png"}
+                              alt={news.userName || news.author?.name || "Author"}
+                              fill
+                              unoptimized
+                              className="object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <svg
+                            className="w-3 h-3"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2.5}
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            />
+                          </svg>
+                        )}
+                        <span>{(news.userName || news.author?.name || "Author").split(" ")[0]}</span>
                       </div>
                     )}
                   </div>

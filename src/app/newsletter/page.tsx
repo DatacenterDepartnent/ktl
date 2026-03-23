@@ -14,9 +14,12 @@ interface NewsItem {
   images?: string[];
   announcementImages?: string[];
   createdAt: string;
+  userName?: string;
+  userImage?: string | null;
   // ✅ เพิ่ม author เข้ามาใน Interface
   author?: {
     name: string;
+    image?: string;
   };
 }
 
@@ -142,23 +145,35 @@ export default async function NewsletterPage() {
                       </h3>
 
                       {/* ✅ แสดงชื่อผู้โพสต์ (ตำแหน่งเดิมที่เพิ่มไว้) */}
-                      {news.author?.name && (
+                      {(news.userName || news.author?.name) && (
                         <div className="flex items-center gap-2 mb-4 text-[11px] text-slate-300 font-medium">
-                          <svg
-                            className="w-3 h-3"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
+                          {news.userImage || news.author?.image ? (
+                            <div className="relative h-5 w-5 overflow-hidden rounded-full border border-white/20">
+                              <Image
+                                src={news.userImage || news.author?.image || "/no-image.png"}
+                                alt={news.userName || news.author?.name || "Author"}
+                                fill
+                                unoptimized
+                                className="object-cover"
+                              />
+                            </div>
+                          ) : (
+                            <svg
+                              className="w-3 h-3"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
                           >
                             <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                             />
-                          </svg>
+                            </svg>
+                          )}
                           <span>
-                            ผู้เขียน: {news.author.name.split(" ")[0]}{" "}
+                            ผู้เขียน: {(news.userName || news.author?.name || "Author").split(" ")[0]}{" "}
                           </span>
                         </div>
                       )}

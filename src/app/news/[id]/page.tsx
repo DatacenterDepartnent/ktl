@@ -3,6 +3,7 @@ import { ObjectId } from "mongodb";
 import Link from "next/link";
 import Image from "next/image";
 import { FootTitle } from "@/components/FootTitle";
+import NewsShareBar from "@/components/news/NewsShareBar";
 
 // --- Icons (เพิ่ม Icon User สำหรับผู้โพสต์) ---
 const IconUser = () => (
@@ -109,6 +110,8 @@ interface NewsItem {
   links?: { label: string; url: string }[];
   videoEmbeds?: string[];
   createdAt: Date | string;
+  userName?: string;
+  userImage?: string | null;
   author?: {
     name: string;
     image?: string;
@@ -123,10 +126,38 @@ export async function generateMetadata({
 }) {
   const { id } = await params;
   const news = await getNewsDetail(id);
+  const baseUrl =
+    process.env.NEXT_PUBLIC_API_URL ||
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    "https://ktltc.vercel.app";
+  const pageUrl = `${baseUrl}/news/${id}`;
+  const plainTextContent = news?.content?.replace(/<[^>]+>/g, "").trim() || "";
+  const description =
+    plainTextContent.slice(0, 160) ||
+    "ข่าวสารและกิจกรรมจากวิทยาลัยเทคนิคกันทรลักษ์";
+  const imageUrl =
+    news?.images?.[0] ||
+    news?.announcementImages?.[0] ||
+    `${baseUrl}/og-image.png`;
   return {
-    title: news
-      ? `${news.title} | วิทยาลัยเทคนิคกันทรลักษ์`
-      : "ไม่พบข้อมูลข่าวสาร",
+    title: news ? news.title : "News Detail",
+    description,
+    alternates: {
+      canonical: pageUrl,
+    },
+    openGraph: {
+      title: news?.title || "News Detail",
+      description,
+      url: pageUrl,
+      type: "article",
+      images: [{ url: imageUrl }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: news?.title || "News Detail",
+      description,
+      images: [imageUrl],
+    },
   };
 }
 
@@ -219,6 +250,17 @@ export default async function NewsDetailPage({
       ? [news.category]
       : ["ข่าวทั่วไป"];
 
+  const authorName =
+    news.userName ||
+    news.author?.name ||
+    "เธเธฒเธเธจเธนเธเธขเนเธเนเธญเธกเธนเธฅ";
+  const authorImage = news.userImage || news.author?.image || null;
+  const baseUrl =
+    process.env.NEXT_PUBLIC_API_URL ||
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    "https://ktltc.vercel.app";
+  const pageUrl = `${baseUrl}/news/${id}`;
+
   return (
     <div className="max-w-7xl mx-auto bg-slate-50/50 dark:bg-zinc-950 text-slate-800 dark:text-slate-200 font-sans selection:bg-blue-100 dark:selection:bg-blue-900/30">
       <main className="pb-16 md:pb-24">
@@ -269,12 +311,35 @@ export default async function NewsDetailPage({
 
                 {/* แสดงชื่อผู้โพสต์ข่าว */}
                 <div className="flex items-center gap-2">
-                  <div className="p-1 rounded-md bg-slate-100 dark:bg-zinc-800 text-slate-400">
-                    <IconUser />
-                  </div>
+                  <div className="w-2 h-2 rounded-full bg-green-400 dark:bg-green-600"></div>
+                  <span className="font-medium">เวลา:</span>
+                  <time className="text-slate-700 dark:text-slate-300">
+                    {new Date(news.createdAt).toLocaleTimeString("th-TH", {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </time>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {authorImage ? (
+                    <div className="relative h-8 w-8 overflow-hidden rounded-full border border-slate-200 bg-slate-100 dark:border-zinc-700 dark:bg-zinc-800">
+                      <Image
+                        src={authorImage}
+                        alt={authorName}
+                        fill
+                        unoptimized
+                        className="object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="p-1 rounded-md bg-slate-100 dark:bg-zinc-800 text-slate-400">
+                      <IconUser />
+                    </div>
+                  )}
                   <span className="font-medium">ผู้เขียน:</span>
                   <span className="text-slate-700 dark:text-slate-300">
-                    {news.author?.name || "งานศูนย์ข้อมูล"}
+                    {authorName}
                   </span>
                 </div>
               </div>
@@ -283,6 +348,7 @@ export default async function NewsDetailPage({
         </div>
 
         <div className="max-w-7xl mx-auto px-4 mt-10 space-y-12">
+          <NewsShareBar title={news.title} url={pageUrl} />
           {/* --- Content Body --- */}
           <article
             className="prose prose-lg prose-slate dark:prose-invert max-w-none 
@@ -379,6 +445,7 @@ export default async function NewsDetailPage({
                       alt="Announcement"
                       width={1200}
                       height={1600}
+                      unoptimized
                       className="w-full h-auto"
                       priority={idx === 0}
                     />
@@ -413,6 +480,7 @@ export default async function NewsDetailPage({
                       alt={`Gallery ${idx + 1}`}
                       width={800}
                       height={600}
+                      unoptimized
                       className="w-full h-auto group-hover:scale-105 transition-transform duration-700"
                     />
                   </div>

@@ -5,6 +5,8 @@ import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { parseFacebookVideoInput } from "@/lib/facebook";
+import { parseYouTubeVideoInput } from "@/lib/youtube";
 import { uploadToCloudinary } from "@/lib/upload";
 import imageCompression from "browser-image-compression";
 import "suneditor/dist/css/suneditor.min.css";
@@ -27,6 +29,7 @@ import {
   useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { FiFacebook } from "react-icons/fi";
 
 // --- Config ---
 const CATEGORIES = [
@@ -119,6 +122,7 @@ function SortableImage({
           src={src}
           alt="preview"
           fill
+          unoptimized
           className={isVertical ? "object-contain" : "object-cover"}
         />
         {isNew && (
@@ -169,6 +173,7 @@ export default function EditNewsPage({
   const [currentLink, setCurrentLink] = useState({ label: "", url: "" });
   const [videoEmbeds, setVideoEmbeds] = useState<string[]>([]);
   const [currentEmbed, setCurrentEmbed] = useState("");
+  const [currentFacebookEmbed, setCurrentFacebookEmbed] = useState("");
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
@@ -215,6 +220,10 @@ export default function EditNewsPage({
   }, [id]);
 
   const compressImage = async (file: File) => {
+    const isGif =
+      file.type === "image/gif" || file.name.toLowerCase().endsWith(".gif");
+    if (isGif) return file;
+
     const options = {
       maxSizeMB: 0.8,
       maxWidthOrHeight: 1920,
@@ -222,6 +231,11 @@ export default function EditNewsPage({
     };
     return await imageCompression(file, options);
   };
+
+  const normalizeEmbedHtml = (embedCode: string) =>
+    embedCode
+      .replace(/width="\d+"/g, 'width="100%"')
+      .replace(/height="\d+"/g, 'height="100%"');
 
   const generateTitleFromContent = (htmlContent: string) => {
     if (typeof window === "undefined") return "";
@@ -300,6 +314,43 @@ export default function EditNewsPage({
       return alert("โค้ด Embed ไม่ถูกต้อง");
     setVideoEmbeds([...videoEmbeds, currentEmbed]);
     setCurrentEmbed("");
+  };
+
+  const addFacebookEmbed = () => {
+    if (
+      !currentFacebookEmbed.trim() ||
+      !currentFacebookEmbed.includes("<iframe")
+    ) {
+      return alert("โค้ด Embed ไม่ถูกต้อง");
+    }
+    setVideoEmbeds([...videoEmbeds, currentFacebookEmbed]);
+    setCurrentFacebookEmbed("");
+  };
+
+  const addYouTubeEmbedFromInput = () => {
+    const result = parseYouTubeVideoInput(currentEmbed);
+
+    if (!result.ok || !result.iframeHtml) {
+      return alert(result.error || "ไม่สามารถแปลงลิงก์ YouTube ได้");
+    }
+
+    setVideoEmbeds([...videoEmbeds, result.iframeHtml]);
+    setCurrentEmbed("");
+  };
+
+  const addFacebookEmbedFromInput = () => {
+    const result = parseFacebookVideoInput(currentFacebookEmbed);
+
+    if (!result.ok || !result.iframeHtml) {
+      return alert(result.error || "ไม่สามารถแปลงลิงก์ Facebook ได้");
+    }
+
+    setVideoEmbeds([...videoEmbeds, result.iframeHtml]);
+    setCurrentFacebookEmbed("");
+
+    if (result.warning) {
+      alert(result.warning);
+    }
   };
 
   // --- Submit Logic ---
@@ -488,7 +539,7 @@ export default function EditNewsPage({
                 <input
                   type="file"
                   multiple
-                  accept="image/*"
+                  accept="image/*,.gif"
                   className="hidden"
                   onChange={handleNewFilesChange}
                 />
@@ -535,7 +586,7 @@ export default function EditNewsPage({
                 <input
                   type="file"
                   multiple
-                  accept="image/*"
+                  accept="image/*,.gif"
                   className="hidden"
                   onChange={handleNewNewsletterChange}
                 />
@@ -623,11 +674,30 @@ export default function EditNewsPage({
           />
           <button
             type="button"
-            onClick={addEmbed}
+            onClick={addYouTubeEmbedFromInput}
             className="self-end bg-red-600 text-white px-8 py-3 rounded-2xl font-bold"
           >
             เพิ่มวิดีโอ
           </button>
+          <div className="space-y-3">
+            <label className="text-sm font-bold text-blue-600 flex items-center gap-2">
+              <FiFacebook /> Facebook Embed
+            </label>
+            <textarea
+              rows={3}
+              placeholder="วางโค้ด Facebook iframe ที่นี่..."
+              value={currentFacebookEmbed}
+              onChange={(e) => setCurrentFacebookEmbed(e.target.value)}
+              className="w-full bg-slate-50 p-4 rounded-2xl border dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
+            />
+            <button
+              type="button"
+              onClick={addFacebookEmbedFromInput}
+              className="w-full bg-blue-600 text-white px-8 py-3 rounded-2xl font-bold"
+            >
+              เพิ่มวิดีโอ Facebook
+            </button>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
             {videoEmbeds.map((code, i) => (
               <div
@@ -645,7 +715,7 @@ export default function EditNewsPage({
                 </button>
                 <div
                   className="aspect-video w-full overflow-hidden rounded-lg bg-black/5 [&>iframe]:w-full [&>iframe]:h-full"
-                  dangerouslySetInnerHTML={{ __html: code }}
+                  dangerouslySetInnerHTML={{ __html: normalizeEmbedHtml(code) }}
                 />
               </div>
             ))}

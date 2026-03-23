@@ -44,6 +44,8 @@ interface NewsItem {
   images?: string[];
   announcementImages?: string[];
   createdAt: string;
+  userName?: string;
+  userImage?: string | null;
   authorId?: string;
   author?: {
     name: string;
@@ -177,7 +179,7 @@ export default function NewsListClient({
             const authorName = (news.author?.name || "งานศูนย์ข้อมูล").split(
               " ",
             )[0];
-            const authorAvatar = news.author?.image || null;
+            const authorAvatar = news.userImage || news.author?.image || null;
 
             return (
               <Link

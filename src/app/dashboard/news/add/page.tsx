@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { parseFacebookVideoInput } from "@/lib/facebook";
+import { parseYouTubeVideoInput } from "@/lib/youtube";
 import { uploadToCloudinary } from "@/lib/upload";
 import imageCompression from "browser-image-compression";
 import "suneditor/dist/css/suneditor.min.css";
@@ -29,6 +31,7 @@ import { CSS } from "@dnd-kit/utilities";
 import {
   FiArrowLeft,
   FiCalendar,
+  FiFacebook,
   FiImage,
   FiFileText,
   FiLink,
@@ -150,6 +153,7 @@ export default function AddNewsPage() {
   const [currentLink, setCurrentLink] = useState({ label: "", url: "" });
   const [videoEmbeds, setVideoEmbeds] = useState<string[]>([]);
   const [currentEmbed, setCurrentEmbed] = useState("");
+  const [currentFacebookEmbed, setCurrentFacebookEmbed] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isCompressing, setIsCompressing] = useState(false);
 
@@ -191,6 +195,10 @@ export default function AddNewsPage() {
   }, []);
 
   const compressImage = async (file: File) => {
+    const isGif =
+      file.type === "image/gif" || file.name.toLowerCase().endsWith(".gif");
+    if (isGif) return file;
+
     const options = {
       maxSizeMB: 0.8,
       maxWidthOrHeight: 1920,
@@ -200,6 +208,41 @@ export default function AddNewsPage() {
       return await imageCompression(file, options);
     } catch (error) {
       return file;
+    }
+  };
+
+  const normalizeEmbedHtml = (embedCode: string) =>
+    embedCode
+      .replace(/width="\d+"/g, 'width="100%"')
+      .replace(/height="\d+"/g, 'height="100%"');
+
+  const addVideoEmbed = () => {
+    const result = parseYouTubeVideoInput(currentEmbed);
+
+    if (!result.ok || !result.iframeHtml) {
+      alert(result.error || "ไม่สามารถแปลงลิงก์ YouTube ได้");
+      return;
+    }
+
+    const { iframeHtml } = result;
+    setVideoEmbeds((prev) => [...prev, iframeHtml]);
+    setCurrentEmbed("");
+  };
+
+  const addFacebookEmbed = () => {
+    const result = parseFacebookVideoInput(currentFacebookEmbed);
+
+    if (!result.ok || !result.iframeHtml) {
+      alert(result.error || "ไม่สามารถแปลงลิงก์ Facebook ได้");
+      return;
+    }
+
+    const { iframeHtml } = result;
+    setVideoEmbeds((prev) => [...prev, iframeHtml]);
+    setCurrentFacebookEmbed("");
+
+    if (result.warning) {
+      alert(result.warning);
     }
   };
 
@@ -504,7 +547,7 @@ export default function AddNewsPage() {
                 <input
                   type="file"
                   multiple
-                  accept="image/*"
+                  accept="image/*,.gif"
                   className="hidden"
                   onChange={(e) => handleFileChange(e, "general")}
                 />
@@ -556,7 +599,7 @@ export default function AddNewsPage() {
                 <input
                   type="file"
                   multiple
-                  accept="image/*"
+                  accept="image/*,.gif"
                   className="hidden"
                   onChange={(e) => handleFileChange(e, "newsletter")}
                 />
@@ -630,10 +673,10 @@ export default function AddNewsPage() {
           </button>
         </section>
 
-        {/* YouTube Section */}
+        {/* Video Section */}
         <section className="space-y-4">
           <h3 className="text-lg font-black flex items-center gap-2">
-            <FiYoutube className="text-red-500" /> วิดีโอ YouTube
+            <FiYoutube className="text-red-500" /> วิดีโอ YouTube / Facebook
           </h3>
           {videoEmbeds.length > 0 && (
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 rounded-2xl bg-slate-50 dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800">
@@ -656,9 +699,7 @@ export default function AddNewsPage() {
                   </div>
                   <div
                     dangerouslySetInnerHTML={{
-                      __html: v
-                        .replace(/width="\d+"/, 'width="100%"')
-                        .replace(/height="\d+"/, 'height="100%"'),
+                      __html: normalizeEmbedHtml(v),
                     }}
                     className="w-full h-full pointer-events-none"
                   />
@@ -666,24 +707,44 @@ export default function AddNewsPage() {
               ))}
             </div>
           )}
-          <textarea
-            placeholder="วาง <iframe> code จาก YouTube"
-            value={currentEmbed}
-            onChange={(e) => setCurrentEmbed(e.target.value)}
-            className="w-full bg-white dark:bg-zinc-900 p-4 rounded-2xl text-xs border border-slate-200 dark:border-zinc-800 h-28 outline-none"
-          />
-          <button
-            type="button"
-            onClick={() => {
-              if (currentEmbed.includes("<iframe")) {
-                setVideoEmbeds([...videoEmbeds, currentEmbed]);
-                setCurrentEmbed("");
-              }
-            }}
-            className="w-full bg-red-50 text-red-600 dark:bg-red-900/20 py-4 rounded-2xl text-[11px] font-black hover:bg-red-100 transition-all"
-          >
-            เพิ่มวิดีโอ
-          </button>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-3">
+              <label className="text-[11px] font-black uppercase tracking-widest text-red-500 flex items-center gap-2">
+                <FiYoutube /> YouTube Embed
+              </label>
+              <textarea
+                placeholder="วาง <iframe> code จาก YouTube"
+                value={currentEmbed}
+                onChange={(e) => setCurrentEmbed(e.target.value)}
+                className="w-full bg-white dark:bg-zinc-900 p-4 rounded-2xl text-xs border border-slate-200 dark:border-zinc-800 h-28 outline-none"
+              />
+              <button
+                type="button"
+                onClick={addVideoEmbed}
+                className="w-full bg-red-50 text-red-600 dark:bg-red-900/20 py-4 rounded-2xl text-[11px] font-black hover:bg-red-100 transition-all"
+              >
+                เพิ่มวิดีโอ YouTube
+              </button>
+            </div>
+            <div className="space-y-3">
+              <label className="text-[11px] font-black uppercase tracking-widest text-blue-600 flex items-center gap-2">
+                <FiFacebook /> Facebook Embed
+              </label>
+              <textarea
+                placeholder="วาง <iframe> code จาก Facebook Video"
+                value={currentFacebookEmbed}
+                onChange={(e) => setCurrentFacebookEmbed(e.target.value)}
+                className="w-full bg-white dark:bg-zinc-900 p-4 rounded-2xl text-xs border border-slate-200 dark:border-zinc-800 h-28 outline-none"
+              />
+              <button
+                type="button"
+                onClick={addFacebookEmbed}
+                className="w-full bg-blue-50 text-blue-600 dark:bg-blue-900/20 py-4 rounded-2xl text-[11px] font-black hover:bg-blue-100 transition-all"
+              >
+                เพิ่มวิดีโอ Facebook
+              </button>
+            </div>
+          </div>
         </section>
 
         {/* Submit Button */}

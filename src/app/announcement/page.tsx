@@ -14,9 +14,12 @@ interface NewsItem {
   images?: string[];
   announcementImages?: string[];
   createdAt: string;
+  userName?: string;
+  userImage?: string | null;
   // ✅ เพิ่ม author เพื่อรองรับการแสดงชื่อผู้โพสต์
   author?: {
     name: string;
+    image?: string;
   };
 }
 
@@ -158,11 +161,23 @@ export default async function AnnouncementPage() {
                         </h4>
 
                         {/* ✅ แสดงชื่อผู้เขียน */}
-                        {news.author?.name && (
+                        {(news.userName || news.author?.name) && (
                           <div className="flex items-center gap-1.5 text-[10px] text-slate-400 px-2 py-1 rounded-lg dark:bg-slate-800/50 dark:text-slate-500">
-                            <div className="w-1.5 h-1.5 rounded-full bg-red-400/50"></div>
+                            {news.userImage || news.author?.image ? (
+                              <div className="relative h-4 w-4 overflow-hidden rounded-full border border-slate-200 dark:border-slate-700">
+                                <Image
+                                  src={news.userImage || news.author?.image || "/no-image.png"}
+                                  alt={news.userName || news.author?.name || "Author"}
+                                  fill
+                                  unoptimized
+                                  className="object-cover"
+                                />
+                              </div>
+                            ) : (
+                              <div className="w-1.5 h-1.5 rounded-full bg-red-400/50"></div>
+                            )}
                             <span>
-                              ผู้เขียน: {news.author.name.split(" ")[0]}{" "}
+                              ผู้เขียน: {(news.userName || news.author?.name || "Author").split(" ")[0]}{" "}
                             </span>
                           </div>
                         )}

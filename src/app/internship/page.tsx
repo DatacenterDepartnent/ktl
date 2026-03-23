@@ -13,9 +13,12 @@ interface NewsItem {
   images?: string[];
   announcementImages?: string[];
   createdAt: string;
+  userName?: string;
+  userImage?: string | null;
   // ✅ เพิ่ม author เพื่อรองรับการแสดงผลชื่อผู้ลงข่าว
   author?: {
     name: string;
+    image?: string;
   };
 }
 
