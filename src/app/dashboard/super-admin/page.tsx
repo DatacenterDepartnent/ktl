@@ -32,6 +32,7 @@ interface ActivityLog {
   timestamp: string;
   duration: number;
   ip: string;
+  module?: string;
 }
 
 export default function SuperAdminPage() {
@@ -422,6 +423,11 @@ export default function SuperAdminPage() {
                       >
                         {log.action}
                       </span>
+                      {log.module && (
+                        <span className="text-[9px] font-black px-3 py-1 rounded-lg uppercase tracking-widest border border-cyan-500/30 bg-cyan-500/10 text-cyan-300">
+                          {log.module}
+                        </span>
+                      )}
                     </div>
                     <div className="text-sm font-bold leading-relaxed text-slate-400">
                       {log.link ? (
@@ -441,6 +447,9 @@ export default function SuperAdminPage() {
                       )}
                     </div>
                     <div className="flex items-center gap-4 pt-2">
+                      <p className="text-[9px] text-slate-500 font-black uppercase tracking-widest">
+                        DATE: {new Date(log.timestamp).toLocaleDateString("th-TH")}
+                      </p>
                       <p className="text-[9px] text-slate-600 font-black uppercase tracking-widest">
                         IP: {log.ip || "UNKNOWN"}
                       </p>

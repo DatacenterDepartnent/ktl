@@ -73,6 +73,79 @@ export async function PATCH(req) {
   }
 }
 
+export async function PUT(req) {
+  try {
+    const session = await auth();
+
+    if (!session || !session.user || session.user.role !== "super_admin") {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
+    const { questionId, guestName, subject, content, createdAt } =
+      await req.json();
+
+    if (!questionId || !guestName || !subject || !content || !createdAt) {
+      return NextResponse.json({ error: "Missing data" }, { status: 400 });
+    }
+
+    const parsedCreatedAt = new Date(createdAt);
+    if (Number.isNaN(parsedCreatedAt.getTime())) {
+      return NextResponse.json(
+        { error: "Invalid createdAt value" },
+        { status: 400 },
+      );
+    }
+
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+    const targetId = new ObjectId(questionId);
+
+    const originalQuestion = await db
+      .collection("questions")
+      .findOne({ _id: targetId });
+
+    if (!originalQuestion) {
+      return NextResponse.json(
+        { error: "Question not found" },
+        { status: 404 },
+      );
+    }
+
+    const updateResult = await db.collection("questions").updateOne(
+      { _id: targetId },
+      {
+        $set: {
+          guestName: guestName.trim(),
+          subject: subject.trim(),
+          content: content.trim(),
+          createdAt: parsedCreatedAt,
+          updatedAt: new Date(),
+        },
+      },
+    );
+
+    if (updateResult.matchedCount !== 1) {
+      return NextResponse.json({ error: "Update failed" }, { status: 400 });
+    }
+
+    await db.collection("logs").insertOne({
+      userName: session.user.name,
+      action: "EDIT_QUESTION",
+      details: `แก้ไขคำถามของ: ${originalQuestion.guestName || "Unknown"} (หัวข้อเดิม: ${originalQuestion.subject})`,
+      link: `/dashboard/questions#${questionId}`,
+      module: "Q&A",
+      timestamp: new Date(),
+      ip: req.headers.get("x-forwarded-for") || "127.0.0.1",
+      targetId,
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("EDIT_QUESTION_API_ERROR:", error);
+    return NextResponse.json({ error: "Server Error" }, { status: 500 });
+  }
+}
+
 // ---------------------------------------------------------
 // 🗑️ แถม: API สำหรับลบคำถาม (มึงถามหาเมื่อกี้)
 // ---------------------------------------------------------

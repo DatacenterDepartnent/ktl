@@ -26,6 +26,8 @@ export async function POST(req) {
     const { guestName, subject, content } = await req.json();
     const client = await clientPromise;
     const db = client.db("ktltc_db");
+    const forwarded = req.headers.get("x-forwarded-for");
+    const posterIp = forwarded ? forwarded.split(/, /)[0] : "127.0.0.1";
 
     const displayName = guestName || "บุคคลทั่วไป";
 
@@ -37,6 +39,7 @@ export async function POST(req) {
       answer: null,
       repliedBy: null,
       createdAt: new Date(),
+      posterIp,
     };
 
     const result = await db.collection("questions").insertOne(newQuestion);
@@ -50,7 +53,7 @@ export async function POST(req) {
       module: "Q&A",
       targetId: result.insertedId,
       timestamp: new Date(),
-      ip: req.headers.get("x-forwarded-for") || "127.0.0.1",
+      ip: posterIp,
     });
 
     return NextResponse.json({ success: true, id: result.insertedId });
