@@ -23,6 +23,7 @@ const SocialFeedDisplay = dynamic(
   () => import("@/components/home/SocialFeedDisplay"),
 );
 import ShowFacebookClient from "@/components/ShowFacebookClient";
+import ShowYoutube from "./ShowYoutube/page";
 const CalendarPage = dynamic(() => import("@/components/Calendar"));
 const QAPage = dynamic(() => import("./q-and-a/page"));
 
@@ -68,7 +69,7 @@ export default async function Home() {
   const { isShow, settings, activePosters, feeds } = await getHomeData();
 
   return (
-    <div className="flex flex-col max-w-[1600px] mx-auto">
+    <div className="flex flex-col min-h-screen">
       <main className="grow">
         {isShow.banner !== false && (
           <section className="w-full mb-8">
@@ -97,7 +98,7 @@ export default async function Home() {
           )}
         </div>
 
-        <div className="max-w-[1600px] mx-auto w-full px-2">
+        <div className="max-w-7xl mx-auto w-full px-2">
           {isShow.background_effect !== false && activePosters.length > 0 && (
             <div className="flex flex-col gap-10 my-10 py-12">
               {Array.isArray(activePosters) &&
@@ -109,7 +110,9 @@ export default async function Home() {
                 ))}
             </div>
           )}
+        </div>
 
+        <div className="max-w-[1600px] mx-auto w-full px-2">
           <div className="py-12">
             {isShow.press_release !== false && <PressRelease />}
           </div>
@@ -130,6 +133,9 @@ export default async function Home() {
           </div>
           <div className="py-12">
             <ShowFacebookClient />
+          </div>
+          <div className="py-12">
+            <ShowYoutube />
           </div>
 
           {isShow.social_feed !== false && (feeds?.length ?? 0) > 0 && (

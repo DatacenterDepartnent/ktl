@@ -179,6 +179,22 @@ export default async function Footer() {
               All M Min
             </a>
           </p>
+          {/* --- Policy & Service Links --- */}
+          <div className="flex items-center gap-4 pt-2">
+            <Link
+              href="/service"
+              className="hover:text-slate-300 transition-colors"
+            >
+              เงื่อนไขการให้บริการ
+            </Link>
+            <span className="text-slate-700">·</span>
+            <Link
+              href="/policy"
+              className="hover:text-slate-300 transition-colors"
+            >
+              นโยบายความเป็นส่วนตัว
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

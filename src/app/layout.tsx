@@ -13,6 +13,7 @@ import "../styles/globals.css";
 import { SessionProvider } from "next-auth/react";
 import ScrollUp from "@/components/Common/ScrollUp";
 import SessionWatcher from "@/components/SessionWatcher";
+import CookieConsent from "@/components/CookieConsent";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
 
 // 1. ตั้งค่าฟอนต์หลักของเว็บ (Prompt) จาก Google Fonts
@@ -85,8 +86,8 @@ export default function RootLayout({
             {/* ThemeProvider: ตัวจัดการ Dark Mode / Light Mode */}
             <ThemeProvider
               attribute="class"
-              defaultTheme="system" // เริ่มต้นตามการตั้งค่าของเครื่องผู้ใช้
-              enableSystem
+              defaultTheme="light" // เริ่มต้นเป็น light mode เสมอ
+              enableSystem={false}
               disableTransitionOnChange
             >
               {/* Navbar: เมนูด้านบน (จะแสดงทุกหน้า) */}
@@ -98,6 +99,7 @@ export default function RootLayout({
               <Analytics /> {/* วัดจำนวนคนเข้าชม */}
               {/* Footer: ส่วนท้ายเว็บ (จะแสดงทุกหน้า) */}
               <ScrollUp />
+              <CookieConsent />
               <Footer />
             </ThemeProvider>
           </SessionProvider>
