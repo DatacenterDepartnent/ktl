@@ -1,20 +1,20 @@
-import type { Metadata } from "next";
-import { Prompt } from "next/font/google";
-import { Analytics } from "@vercel/analytics/next";
-import { SpeedInsights } from "@vercel/speed-insights/next";
-import { ThemeProvider } from "@/components/ThemeProvider";
-import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar";
 // นำเข้า CSS สำหรับ Ant Design patch, Syntax Highlight, และ Global Styles
 import "@ant-design/v5-patch-for-react-19";
 import "../styles/prism-vsc-dark-plus.css";
 import "../styles/index.css";
 import "../styles/globals.css";
+import type { Metadata } from "next";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
+import { Prompt } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
+import { Analytics } from "@vercel/analytics/next";
 import ScrollUp from "@/components/Common/ScrollUp";
-import SessionWatcher from "@/components/SessionWatcher";
 import CookieConsent from "@/components/CookieConsent";
+import SessionWatcher from "@/components/SessionWatcher";
+import { ThemeProvider } from "@/components/ThemeProvider";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // 1. ตั้งค่าฟอนต์หลักของเว็บ (Prompt) จาก Google Fonts
 // การใช้ next/font ช่วยลด Layout Shift และโหลดฟอนต์ได้รวดเร็ว
