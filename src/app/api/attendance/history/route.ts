@@ -18,7 +18,12 @@ export async function GET(req: Request) {
     const limitParam = searchParams.get("limit") || "30";
     const limit = parseInt(limitParam);
 
-    const attendances = await Attendance.find({ userId: new mongoose.Types.ObjectId(userId) })
+    const attendances = await Attendance.find({ 
+      $or: [
+        { userId: userId },
+        { userId: new mongoose.Types.ObjectId(userId) }
+      ]
+    })
       .sort({ date: -1 })
       .limit(limit)
       .lean();

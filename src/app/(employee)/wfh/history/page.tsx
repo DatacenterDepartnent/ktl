@@ -25,10 +25,14 @@ export default function WFHHistoryPage() {
         if (attRes.ok) {
           const attData = await attRes.json();
           setAttendances(attData.data || []);
+        } else {
+          console.error("Attendance history fetch failed");
         }
         if (leaveRes.ok) {
           const leaveData = await leaveRes.json();
           setLeaves(leaveData);
+        } else {
+          console.error("Leave history fetch failed");
         }
       } catch (error) {
         console.error("Error fetching history", error);

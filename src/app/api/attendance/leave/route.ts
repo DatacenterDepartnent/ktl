@@ -74,7 +74,12 @@ export async function GET(req: Request) {
 
     const leaves = await db
       .collection("leave_requests")
-      .find({ userId: new ObjectId(userId) })
+      .find({ 
+        $or: [
+          { userId: userId },
+          { userId: new ObjectId(userId) }
+        ]
+      })
       .sort({ createdAt: -1 })
       .toArray();
 

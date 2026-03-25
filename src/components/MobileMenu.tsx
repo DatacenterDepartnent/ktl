@@ -187,7 +187,7 @@ export default function MobileMenu({
               </div>
 
               {/* ส่วนจัดการสมาชิก */}
-              {/* <div className="pt-4 pb-8 space-y-3 border-t border-zinc-100 dark:border-zinc-800 mt-4">
+              <div className="pt-4 pb-8 space-y-3 border-t border-zinc-100 dark:border-zinc-800 mt-4">
                 {status === "loading" ? (
                   <div className="text-center py-4 text-zinc-500">
                     กำลังโหลด...
@@ -228,6 +228,16 @@ export default function MobileMenu({
                       🚀 ไปที่ Dashboard
                     </Link>
 
+                    {(userRole === "super_admin" || userRole === "admin" || userRole === "hr" || userRole === "director") && (
+                      <Link
+                        href="/attendance-report"
+                        onClick={closeMenu}
+                        className="mx-1 block text-center py-3.5 rounded-xl bg-emerald-50 text-emerald-700 font-bold border border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300 transition-colors"
+                      >
+                        📊 ระบบรายงานการเข้างาน
+                      </Link>
+                    )}
+
                     {userRole === "super_admin" && (
                       <Link
                         href="/dashboard/super-admin"
@@ -262,7 +272,7 @@ export default function MobileMenu({
                     เข้าสู่ระบบ / Admin
                   </Link>
                 )}
-              </div> */}
+              </div>
             </div>
           </div>
         </div>
