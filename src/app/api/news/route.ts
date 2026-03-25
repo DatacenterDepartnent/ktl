@@ -15,6 +15,10 @@ function generateSlug(title: string) {
 export async function POST(request: Request) {
   try {
     const session = await auth(); // เช็ค session ที่นี่เลย
+    if (!session?.user) {
+      return NextResponse.json({ error: "กรุณาเข้าสู่ระบบ" }, { status: 401 });
+    }
+
     const data = await request.json();
 
     const {
@@ -25,8 +29,8 @@ export async function POST(request: Request) {
       announcementImages,
       links,
       videoEmbeds,
-      userName, // ✅ รับชื่อคนโพสต์จาก Frontend โดยตรง
-      userImage, // ✅ รับรูป (ถ้ามี)
+      userName,
+      userImage,
     } = data;
 
     // Validation เบื้องต้น
@@ -53,10 +57,15 @@ export async function POST(request: Request) {
 
       // ✅ บันทึกชื่อคนโพสต์ที่ส่งมาจากหน้า Add News
       author: {
-        // ถ้ามี session ให้ใช้ชื่อจากระบบ ถ้าไม่มีค่อยใช้ที่ส่งมา หรือ default
-        name: session?.user?.name || data.userName || "งานศูนย์ข้อมูล",
-        image: session?.user?.image || data.userImage || null,
+        // ใช้ข้อมูลจาก session เป็นหลัก เพื่อป้องกันปลอมตัวจากฝั่ง client
+        id: (session.user as any).id || null,
+        username: (session.user as any).username || null,
+        name: session.user.name || userName || "งานศูนย์ข้อมูล",
+        email: session.user.email || null,
+        image: session.user.image || userImage || null,
       },
+      authorId: (session.user as any).id || null,
+      authorEmail: session.user.email || null,
 
       createdAt: new Date(),
       updatedAt: new Date(),

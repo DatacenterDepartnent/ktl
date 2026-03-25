@@ -3,6 +3,39 @@ import { ObjectId } from "mongodb";
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 
+function getAuthorId(news: any): string {
+  if (!news || typeof news !== "object") return "";
+  if (typeof news.authorId === "string") return news.authorId;
+  if (news.author && typeof news.author === "object") {
+    if (typeof news.author.id === "string") return news.author.id;
+  }
+  return "";
+}
+
+function getLegacyAuthorName(news: any): string {
+  if (!news || typeof news !== "object") return "";
+  if (news.author && typeof news.author === "object") {
+    return news.author.name?.name || news.author.name || "";
+  }
+  if (typeof news.author === "string") return news.author;
+  return "";
+}
+
+function isLegacyOwner(news: any, session: any): boolean {
+  const sessionName = session?.user?.name || "";
+  const sessionEmail = session?.user?.email || "";
+  const legacyAuthorName = getLegacyAuthorName(news);
+  const legacyAuthorEmail =
+    (news?.author && typeof news.author === "object" ? news.author.email : "") ||
+    news?.authorEmail ||
+    "";
+
+  return (
+    (Boolean(legacyAuthorName) && sessionName === legacyAuthorName) ||
+    (Boolean(legacyAuthorEmail) && sessionEmail === legacyAuthorEmail)
+  );
+}
+
 // --- GET: ดึงข้อมูลรายตัว (ทุกคนดูได้) ---
 export async function GET(
   req: Request,
@@ -55,30 +88,17 @@ export async function PUT(
     }
 
     // --- ตรวจสอบสิทธิ์แก้ไข ---
-    const userEmail = session.user.email;
-    const userNameInSession = session.user.name;
     const userRole = (session.user as any).role;
+    const userId = (session.user as any).id;
 
-    let authorNameFromDB = "";
-    if (
-      typeof existingNews.author === "object" &&
-      existingNews.author !== null
-    ) {
-      authorNameFromDB =
-        existingNews.author.name?.name || existingNews.author.name || "";
-    } else {
-      authorNameFromDB = existingNews.author || "";
-    }
-
-    // สิทธิ์การแก้ไข: ชื่อตรงกัน OR อีเมลตรงกัน OR เป็น Admin
+    // สิทธิ์การแก้ไข: เจ้าของโพสต์ หรือ super_admin
+    const ownerId = getAuthorId(existingNews);
     const isOwner =
-      (Boolean(authorNameFromDB) && userNameInSession === authorNameFromDB) ||
-      (Boolean(existingNews.authorEmail) &&
-        userEmail === existingNews.authorEmail);
+      (Boolean(ownerId) && Boolean(userId) && ownerId === userId) ||
+      (!ownerId && isLegacyOwner(existingNews, session));
+    const isSuperAdmin = userRole === "super_admin";
 
-    const isAdmin = userRole === "super_admin" || userRole === "admin";
-
-    if (!isOwner && !isAdmin) {
+    if (!isOwner && !isSuperAdmin) {
       return NextResponse.json(
         { error: "คุณไม่มีสิทธิ์แก้ไขโพสต์ของผู้อื่น" },
         { status: 403 },
@@ -145,49 +165,22 @@ export async function DELETE(
     }
 
     // --- 3. ส่วนตรวจสอบสิทธิ์ (Logic ปรับปรุงใหม่) ---
-    const userEmail = session.user.email;
-    const userNameInSession = session.user.name; // ค่าจาก Session (ภาษาไทย)
     const userRole = (session.user as any).role;
-
-    let authorNameFromDB = "";
-    // เจาะโครงสร้าง Object ตาม Log: { author: { name: 'สิริปัญญ์...' } }
-    if (
-      typeof existingNews.author === "object" &&
-      existingNews.author !== null
-    ) {
-      authorNameFromDB =
-        existingNews.author.name?.name || existingNews.author.name || "";
-    } else {
-      authorNameFromDB = existingNews.author || "";
-    }
-
-    console.log("--- Deleting Process ---");
-    console.log("Logged In Name:", userNameInSession);
-    console.log("DB Author Name:", authorNameFromDB);
-
-    // ✅ เงื่อนไข: ชื่อตรงกันเป๊ะ OR Email ตรงกัน OR เป็น Admin
+    const userId = (session.user as any).id;
+    const ownerId = getAuthorId(existingNews);
     const isOwner =
-      (Boolean(authorNameFromDB) && userNameInSession === authorNameFromDB) ||
-      (Boolean(existingNews.authorEmail) &&
-        userEmail === existingNews.authorEmail);
+      (Boolean(ownerId) && Boolean(userId) && ownerId === userId) ||
+      (!ownerId && isLegacyOwner(existingNews, session));
+    const isSuperAdmin = userRole === "super_admin";
 
-    const isAdmin = userRole === "super_admin" || userRole === "admin";
-
-    if (!isOwner && !isAdmin) {
-      console.log(
-        "❌ Access Denied: mismatch between",
-        userNameInSession,
-        "and",
-        authorNameFromDB,
-      );
+    if (!isOwner && !isSuperAdmin) {
       return NextResponse.json(
-        { error: `คุณไม่มีสิทธิ์ลบโพสต์ของ ${authorNameFromDB || "ผู้อื่น"}` },
+        { error: "คุณไม่มีสิทธิ์ลบโพสต์ของผู้อื่น" },
         { status: 403 },
       );
     }
 
     // --- 4. ดำเนินการลบ ---
-    console.log("✅ Access Granted: Deleting ID", id);
     const result = await db
       .collection("news")
       .deleteOne({ _id: new ObjectId(id) });
