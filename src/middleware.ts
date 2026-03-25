@@ -96,8 +96,8 @@ export default auth((req) => {
   }
 
   // 4. การจัดการสิทธิ์ระบบ Attendance (WFH & Reports)
-  const isWfhPage = nextUrl.pathname.startsWith("/wfh") || nextUrl.pathname.startsWith("/check-in");
-  const isAdminAttendancePage = nextUrl.pathname.startsWith("/attendance-dashboard") || nextUrl.pathname.startsWith("/attendance-report");
+  const isWfhPage = nextUrl.pathname.startsWith("/wfh") || nextUrl.pathname.startsWith("/check-in") || nextUrl.pathname.startsWith("/leave-request");
+  const isAdminAttendancePage = nextUrl.pathname.startsWith("/attendance-dashboard") || nextUrl.pathname.startsWith("/attendance-report") || nextUrl.pathname.startsWith("/leave-approvals");
 
   if ((isWfhPage || isAdminAttendancePage) && !isLoggedIn) {
      return NextResponse.redirect(new URL("/login", nextUrl));

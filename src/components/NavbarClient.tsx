@@ -189,6 +189,35 @@ export default function NavbarClient({
                       </p>
                     </div>
 
+                    {/* ✅ เมนูเฉพาะ Super Admin / Admin / Director / HR */}
+                    {isAdmin && (
+                      <>
+                        <div className="px-3 py-1">
+                          <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest pl-1 mt-1 mb-1">
+                            Attendance & HR
+                          </p>
+                        </div>
+                        <Link
+                          href="/attendance-dashboard"
+                          className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all group"
+                        >
+                          <div className="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 group-hover:bg-emerald-200 transition-colors">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                          </div>
+                          เมนูภาพรวมการลงเวลา
+                        </Link>
+                        <Link
+                          href="/leave-approvals"
+                          className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all group mb-1 border-b border-zinc-100 dark:border-zinc-800/50 pb-3"
+                        >
+                          <div className="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 group-hover:bg-emerald-200 transition-colors">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                          </div>
+                          จัดการอนุมัติใบลา
+                        </Link>
+                      </>
+                    )}
+
                     {/* ✅ เมนูเฉพาะ Super Admin */}
                     {isSuperAdmin && (
                       <Link

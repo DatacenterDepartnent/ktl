@@ -1,0 +1,79 @@
+import { NextResponse } from "next/server";
+import { auth } from "@/lib/auth";
+import clientPromise from "@/lib/db";
+import { ObjectId } from "mongodb";
+
+export async function GET(req: Request) {
+  try {
+    const session = await auth();
+    const userRole = (session?.user as any)?.role;
+    
+    if (!["super_admin", "hr", "director"].includes(userRole)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const status = searchParams.get("status") || "pending";
+
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+    
+    const query = status === "all" ? {} : { status };
+
+    const leaves = await db.collection("leave_requests").aggregate([
+      { $match: query },
+      { $sort: { createdAt: -1 } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user"
+        }
+      },
+      { $unwind: "$user" },
+      {
+        $project: {
+          "user.password": 0,
+        }
+      }
+    ]).toArray();
+
+    return NextResponse.json(leaves, { status: 200 });
+  } catch (error: any) {
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: Request) {
+  try {
+    const session = await auth();
+    const userRole = (session?.user as any)?.role;
+    const adminId = (session?.user as any)?.id;
+    
+    if (!["super_admin", "hr", "director"].includes(userRole)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
+    const { id, status } = await req.json();
+    if (!id || !status) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
+    const result = await db.collection("leave_requests").updateOne(
+      { _id: new ObjectId(id) },
+      { 
+        $set: { 
+          status, 
+          approvedBy: new ObjectId(adminId),
+          updatedAt: new Date()
+        } 
+      }
+    );
+
+    return NextResponse.json({ success: true, result });
+  } catch (error: any) {
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  }
+}

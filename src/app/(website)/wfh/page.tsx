@@ -152,24 +152,33 @@ export default function WFHHubPage() {
         </Link>
       </div>
 
-      {/* Leave Request Option */}
-      <div className="w-full max-w-xl mt-6">
-        <Link href="#" className="block">
-          <div className="bg-white border-2 border-slate-100 hover:border-slate-200 text-slate-700 p-5 rounded-2xl flex items-center justify-between transition shadow-md active:scale-[0.98] group">
-            <div className="flex items-center space-x-4">
-              <div className="bg-slate-50 p-3 rounded-xl group-hover:bg-slate-100 transition text-slate-400 group-hover:text-slate-600 border border-slate-100">
-                <CalendarDays size={24} />
+      {/* Leave & History Options */}
+      <div className="w-full max-w-xl mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Link href="/leave-request" className="block w-full">
+          <div className="bg-white border-2 border-slate-100 hover:border-slate-200 text-slate-700 p-5 rounded-2xl flex items-center justify-between transition shadow-md active:scale-[0.98] group h-full">
+              <div className="flex items-center space-x-3">
+                <div className="bg-slate-50 p-2.5 rounded-xl group-hover:bg-slate-100 transition text-indigo-400 group-hover:text-indigo-600 border border-slate-100">
+                  <CalendarDays size={20} />
+                </div>
+                <div className="text-left">
+                  <h2 className="font-bold text-lg text-slate-800">แจ้งลางาน</h2>
+                  <p className="text-slate-500 text-xs mt-0.5">ป่วย กิจ พักร้อน</p>
+                </div>
               </div>
-              <div className="text-left">
-                <h2 className="font-bold text-xl text-slate-800">แจ้งลางาน</h2>
-                <p className="text-slate-500 text-sm">
-                  แบบฟอร์มลาป่วย ลากิจ พักร้อน ฯลฯ
-                </p>
+          </div>
+        </Link>
+        
+        <Link href="/wfh/history" className="block w-full">
+          <div className="bg-white border-2 border-slate-100 hover:border-slate-200 text-slate-700 p-5 rounded-2xl flex items-center justify-between transition shadow-md active:scale-[0.98] group h-full">
+              <div className="flex items-center space-x-3">
+                <div className="bg-slate-50 p-2.5 rounded-xl group-hover:bg-slate-100 transition text-pink-400 group-hover:text-pink-600 border border-slate-100">
+                  <Clock size={20} />
+                </div>
+                <div className="text-left">
+                  <h2 className="font-bold text-lg text-slate-800">ประวัติของฉัน</h2>
+                  <p className="text-slate-500 text-xs mt-0.5">การลงเวลา/ลางาน</p>
+                </div>
               </div>
-            </div>
-            <div className="text-slate-300 font-bold group-hover:text-slate-400 group-hover:translate-x-1 transition-transform">
-              &rarr;
-            </div>
           </div>
         </Link>
       </div>
