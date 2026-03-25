@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
-import { Calendar, CheckCircle, XCircle, Clock, FileText, ExternalLink, ShieldCheck } from "lucide-react";
+import { Calendar, CheckCircle, XCircle, Clock, FileText, ExternalLink, ShieldCheck, Download } from "lucide-react";
 
 export default function LeaveApprovalsPage() {
   const [leaves, setLeaves] = useState<any[]>([]);
@@ -61,32 +61,66 @@ export default function LeaveApprovalsPage() {
     return "bg-amber-100 text-amber-700 border-amber-200";
   };
 
+  const exportToCSV = () => {
+    if (leaves.length === 0) return alert("ไม่มีข้อมูลสำหรับ Export");
+
+    const headers = ["ชื่อพนักงาน", "ประเภทการลา", "สถานะ", "เริ่มวันที่", "ถึงวันที่", "เหตุผล", "วันที่ส่งคำขอ"];
+    const csvData = leaves.map(leave => [
+      `"${leave.user?.name || leave.user?.username || 'Unknown Employee'}"`,
+      `"${getTypeLabel(leave.leaveType)}"`,
+      `"${leave.status === 'pending' ? 'รออนุมัติ' : leave.status === 'approved' ? 'อนุมัติ' : 'ปฏิเสธ'}"`,
+      `"${format(new Date(leave.startDate), 'dd/MM/yyyy', { locale: th })}"`,
+      `"${format(new Date(leave.endDate), 'dd/MM/yyyy', { locale: th })}"`,
+      `"${leave.reason.replace(/"/g, '""').replace(/\n/g, ' ')}"`, 
+      `"${format(new Date(leave.createdAt), 'dd/MM/yyyy HH:mm', { locale: th })}"`
+    ].join(","));
+
+    const csvContent = [headers.join(","), ...csvData].join("\n");
+    const blob = new Blob(["\uFEFF" + csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `leave_report_${format(new Date(), 'yyyyMMdd_HHmm')}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 p-4 md:p-8 font-sans">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="bg-white dark:bg-zinc-900 rounded-3xl p-6 shadow-sm border border-slate-200 dark:border-zinc-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
+          <div className="flex-1">
             <h1 className="text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2">
               <ShieldCheck className="text-indigo-500" /> ระบบอนุมัติการลางาน
             </h1>
             <p className="text-slate-500 text-sm mt-1">จัดการคำขอลาป่วย ลากิจ ทบทวนและอนุมัติใบรับรองแพทย์</p>
           </div>
           
-          <div className="flex bg-slate-100 dark:bg-zinc-800 p-1 rounded-xl">
-            {["pending", "approved", "rejected", "all"].map((f) => (
-              <button
-                key={f}
-                onClick={() => setFilter(f)}
-                className={`px-4 py-2 rounded-lg text-sm font-bold transition-all ${
-                  filter === f
-                    ? "bg-white dark:bg-zinc-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
-                    : "text-slate-500 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200"
-                }`}
-              >
-                {f === "pending" ? "รออนุมัติ" : f === "approved" ? "อนุมัติแล้ว" : f === "rejected" ? "ปฏิเสธ" : "ทั้งหมด"}
-              </button>
-            ))}
+          <div className="flex items-center gap-3">
+            <div className="flex bg-slate-100 dark:bg-zinc-800 p-1 rounded-xl overflow-x-auto hide-scrollbar">
+              {["pending", "approved", "rejected", "all"].map((f) => (
+                <button
+                  key={f}
+                  onClick={() => setFilter(f)}
+                  className={`px-4 py-2 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${
+                    filter === f
+                      ? "bg-white dark:bg-zinc-700 text-indigo-600 dark:text-indigo-400 shadow-sm"
+                      : "text-slate-500 hover:text-slate-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+                  }`}
+                >
+                  {f === "pending" ? "รออนุมัติ" : f === "approved" ? "อนุมัติแล้ว" : f === "rejected" ? "ปฏิเสธ" : "ทั้งหมด"}
+                </button>
+              ))}
+            </div>
+            <button
+              onClick={exportToCSV}
+              className="flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-sm font-bold transition-all shadow-sm shadow-emerald-500/20 active:scale-95 shrink-0"
+              title="Export ข้อมูลเป็นไฟล์ CSV/Excel"
+            >
+              <Download size={18} /> <span className="hidden sm:inline">Export</span>
+            </button>
           </div>
         </div>
 

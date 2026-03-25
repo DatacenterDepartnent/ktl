@@ -2,10 +2,15 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Attendance from '@/models/Attendance';
 import { calculateDistance } from '@/lib/geoDistance';
+import User from '@/models/User';
+import { sendLineNotify } from '@/lib/lineNotify';
+import { format } from 'date-fns';
+import { th } from 'date-fns/locale';
 
 // สมมติพิกัดวิทยาลัย (College Location)
-const COLLEGE_LOCATION = { lat: 13.7563, lng: 100.5018 };
-const ALLOWED_RADIUS = 500; // 500 meters
+// พิกัดวิทยาลัย KTLTC
+const COLLEGE_LOCATION = { lat: 14.636681, lng: 104.6469 };
+const ALLOWED_RADIUS = 500; // 500 meters (0.5 km)
 
 export async function POST(req: Request) {
   try {
@@ -57,6 +62,17 @@ export async function POST(req: Request) {
       },
       { upsert: true, new: true }
     );
+
+    try {
+      const user = await User.findById(userId);
+      const userName = user?.name || user?.username || "พนักงาน";
+      const timeStr = format(serverTime, 'HH:mm', { locale: th });
+      const statusEmoji = status === "Late" ? "⚠️" : "✅";
+      const lineMessage = `\n${statusEmoji} แจ้งเข้างาน\nพนักงาน: ${userName}\nเวลาเข้า: ${timeStr} น.\nพิกัด: ${statusTag} (${address || 'ไม่ระบุ'})`;
+      await sendLineNotify(lineMessage);
+    } catch (lineErr) {
+      console.error("Line Notify fail:", lineErr);
+    }
 
     return NextResponse.json({ success: true, data: newCheckIn, distance, statusTag });
   } catch (error: any) {

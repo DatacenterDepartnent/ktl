@@ -63,7 +63,7 @@ export default function AdminAttendanceDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-neutral-950 p-6 font-sans">
-      <div className="max-w-6xl mx-auto space-y-6">
+      <div className="max-w-7xl mx-auto space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-800 dark:text-neutral-100">

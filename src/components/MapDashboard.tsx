@@ -1,7 +1,7 @@
 // @ts-nocheck
 'use client';
 
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 
@@ -14,14 +14,17 @@ const icon = L.icon({
   iconAnchor: [12, 41],
 });
 
+const COLLEGE_LOCATION = [14.636681, 104.6469];
+const ALLOWED_RADIUS = 500; // 500 meters
+
 export default function MapDashboard({ markers }: { markers: any[] }) {
   if (typeof window === 'undefined') return null;
 
   return (
     <div className="w-full h-full rounded-xl overflow-hidden z-0 bg-slate-100">
       <MapContainer 
-        center={[14.636681, 104.6469]} // จุดศูนย์กลางเริ่มต้น (KTLTC)
-        zoom={13} 
+        center={COLLEGE_LOCATION} // จุดศูนย์กลางเริ่มต้น (KTLTC)
+        zoom={15} 
         scrollWheelZoom={true} 
         style={{ height: '100%', width: '100%', zIndex: 0 }}
       >
@@ -29,6 +32,23 @@ export default function MapDashboard({ markers }: { markers: any[] }) {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        
+        {/* Geofencing Radius */}
+        <Circle
+          center={COLLEGE_LOCATION}
+          radius={ALLOWED_RADIUS}
+          pathOptions={{ 
+            color: '#3b82f6', 
+            fillColor: '#3b82f6', 
+            fillOpacity: 0.15,
+            weight: 2,
+            dashArray: '5, 10'
+          }}
+        />
+        
+        <Marker position={COLLEGE_LOCATION} icon={icon}>
+          <Popup>จุดลงเวลาสำนักงานใหญ่ KTLTC</Popup>
+        </Marker>
         {markers.map((m, i) => (
           <Marker key={i} position={[m.lat, m.lng]} icon={icon}>
             <Popup className="rounded-xl overflow-hidden p-0">
