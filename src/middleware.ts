@@ -75,7 +75,7 @@ export default auth((req) => {
     return NextResponse.redirect(new URL("/login", nextUrl));
   }
 
-  // 3. การจัดการสิทธิ์ (RBAC)
+  // 3. การจัดการสิทธิ์ (RBAC) สำหรับ Dashboard เดิม
   if (isDashboardPage && isLoggedIn) {
     // กั้นหน้าเฉพาะ super_admin
     if (
@@ -95,12 +95,32 @@ export default auth((req) => {
     }
   }
 
+  // 4. การจัดการสิทธิ์ระบบ Attendance (WFH & Reports)
+  const isWfhPage = nextUrl.pathname.startsWith("/wfh") || nextUrl.pathname.startsWith("/check-in");
+  const isAdminAttendancePage = nextUrl.pathname.startsWith("/attendance-dashboard") || nextUrl.pathname.startsWith("/attendance-report");
+
+  if ((isWfhPage || isAdminAttendancePage) && !isLoggedIn) {
+     return NextResponse.redirect(new URL("/login", nextUrl));
+  }
+
+  if (isAdminAttendancePage && isLoggedIn) {
+    // อนุญาตเฉพาะ super_admin, hr, director (ผู้บริหาร) เท่านั้น
+    const allowedAdminRoles = ["super_admin", "hr", "director"];
+    if (!allowedAdminRoles.includes(userRole)) {
+      return NextResponse.redirect(new URL("/wfh", nextUrl)); // ถ้า general แอบเข้า ให้เด้งกลับไปหน้าลงเวลาปกติ
+    }
+  }
+
   return NextResponse.next();
 });
 
 export const config = {
   matcher: [
     "/dashboard/:path*",
+    "/wfh/:path*",
+    "/check-in/:path*",
+    "/attendance-dashboard/:path*",
+    "/attendance-report/:path*",
     "/login",
     "/register",
     "/((?!api|_next/static|_next/image|favicon.ico|images).*)",

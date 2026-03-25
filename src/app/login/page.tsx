@@ -5,11 +5,8 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
+import { User, Lock, Command, Eye, EyeOff, ArrowRight } from "lucide-react";
 
-/**
- * ฟังก์ชัน Helper สำหรับบันทึก Log กิจกรรม
- * ส่งข้อมูลไปที่ API: /api/admin/logs (ฟังก์ชัน POST ที่เราเพิ่มเข้าไป)
- */
 async function recordActivity(data: {
   userName: string;
   action: string;
@@ -41,15 +38,12 @@ export default function LoginPage() {
     setError("");
 
     try {
-      // ✅ ใช้ signIn ของ NextAuth
       const result = await signIn("credentials", {
         username,
         password,
         redirect: false,
       });
-
       if (result?.error) {
-        // ❌ กรณี Login ไม่สำเร็จ: บันทึก Log แจ้งเตือนความพยายามที่ผิดพลาด
         await recordActivity({
           userName: username || "Unknown User",
           action: "LOGIN_FAILED",
@@ -58,13 +52,11 @@ export default function LoginPage() {
         setError("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
         setLoading(false);
       } else {
-        // ✅ กรณี Login สำเร็จ: บันทึก Log เข้าสู่ระบบ
         await recordActivity({
           userName: username,
           action: "LOGIN",
           details: "เข้าสู่ระบบจัดการเนื้อหา (CMS) สำเร็จ",
         });
-
         setSuccess(true);
         router.refresh();
         router.push("/dashboard");
@@ -76,228 +68,214 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="max-w-[1600px] mx-auto w-full max-w-[1600px] mx-auto flex items-center justify-center p-4 relative overflow-hidden bg-slate-50 dark:bg-black">
-      {/* Background Animated Effects */}
-      <motion.div
-        animate={{ scale: [1, 1.1, 1], rotate: [0, 5, -5, 0] }}
-        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-        className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-200/40 rounded-full blur-[120px] dark:bg-blue-600/20"
-      />
-      <motion.div
-        animate={{ scale: [1, 1.2, 1], rotate: [0, -10, 10, 0] }}
-        transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-        className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-200/40 rounded-full blur-[120px] dark:bg-purple-600/20"
-      />
+    <div className="min-h-screen flex flex-col md:flex-row bg-slate-50 dark:bg-zinc-950 font-sans selection:bg-blue-500/30">
+      {/* Left Decoration Panel */}
+      <div className="hidden md:flex flex-col justify-between w-1/2 bg-slate-900 border-r border-slate-800 p-12 relative overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <div className="absolute top-0 left-[-20%] w-[80%] h-[80%] bg-blue-600/20 blur-[120px] rounded-full mix-blend-screen" />
+          <div className="absolute bottom-[-20%] right-[-20%] w-[80%] h-[80%] bg-indigo-600/30 blur-[120px] rounded-full mix-blend-screen" />
+        </div>
 
-      {/* Login Card */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{
-          duration: 0.5,
-          ease: "easeOut",
-          type: "spring",
-          bounce: 0.4,
-        }}
-        className="relative w-full max-w-md bg-white/70 backdrop-blur-xl border border-slate-200 p-8 rounded-[2.5rem] shadow-2xl dark:bg-zinc-900/50 dark:border-zinc-800"
-      >
-        <div className="text-center mb-10">
-          <motion.h1
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="text-4xl font-black bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2 dark:from-blue-400 dark:to-indigo-500"
+        <div className="relative z-10">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-3 text-white/80 hover:text-white transition group"
           >
-            KTLTC ADMIN
+            <div className="p-3 bg-white/10 rounded-xl backdrop-blur-md group-hover:bg-white/20 transition">
+              <Command size={24} className="text-blue-400" />
+            </div>
+            <span className="font-bold text-xl tracking-wide uppercase">
+              KTLTC System
+            </span>
+          </Link>
+        </div>
+
+        <div className="relative z-10 max-w-lg">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-5xl font-black text-white leading-tight mb-6 tracking-tighter"
+          >
+            Welcome back to your{" "}
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-indigo-400">
+              workspace.
+            </span>
           </motion.h1>
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-slate-500 font-medium dark:text-zinc-400"
+            transition={{ delay: 0.2, duration: 0.8 }}
+            className="text-slate-400 text-lg font-medium leading-relaxed"
           >
-            เข้าสู่ระบบจัดการเว็บไซต์
+            Secure, fast, and comprehensive management system designed for
+            operational excellence. Log in to manage administrative tools.
           </motion.p>
         </div>
 
-        <AnimatePresence>
-          {error && (
-            <motion.div
-              initial={{ opacity: 0, height: 0, marginBottom: 0 }}
-              animate={{ opacity: 1, height: "auto", marginBottom: 24 }}
-              exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-              className="p-4 bg-red-50 border border-red-200 rounded-2xl text-red-600 text-sm font-bold text-center dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-400 overflow-hidden"
-            >
-              {error}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <div className="relative z-10 text-slate-500 text-sm font-semibold tracking-wide"></div>
+      </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-500 uppercase ml-2 dark:text-zinc-500">
-              Username
-            </label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full bg-slate-50 border border-slate-200 text-slate-800 p-4 rounded-2xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder:text-slate-400 dark:bg-zinc-950/80 dark:border-zinc-800 dark:text-white dark:placeholder:text-zinc-700"
-              placeholder="กรอกชื่อผู้ใช้งาน"
-              autoComplete="username"
-              required
-            />
+      {/* Right Login Form */}
+      <div className="w-full md:w-1/2 flex items-center justify-center p-8 sm:p-12 relative">
+        <div className="w-full max-w-md relative z-10">
+          <div className="md:hidden flex items-center gap-3 mb-10 pb-6 border-b border-slate-200 dark:border-zinc-800">
+            <div className="p-2.5 bg-blue-600 rounded-xl shadow-lg shadow-blue-500/30">
+              <Command size={20} className="text-white" />
+            </div>
+            <span className="font-black text-2xl text-slate-800 dark:text-white uppercase tracking-tighter">
+              KTLTC
+            </span>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-500 uppercase ml-2 dark:text-zinc-500">
-              Password
-            </label>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-4xl font-black text-slate-900 dark:text-white mb-3">
+              Sign In
+            </h2>
+            <p className="text-slate-500 dark:text-zinc-400 font-medium mb-10 text-lg">
+              กรุณาเข้าสู่ระบบเพื่อดำเนินการต่อ
+            </p>
+          </motion.div>
 
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-slate-50 border border-slate-200 text-slate-800 p-4 pr-12 rounded-2xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all placeholder:text-slate-400 dark:bg-zinc-950/80 dark:border-zinc-800 dark:text-white dark:placeholder:text-zinc-700"
-                placeholder="กรอกรหัสผ่าน"
-                autoComplete="current-password"
-                required
-              />
-
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-blue-600 transition-colors dark:text-zinc-500 dark:hover:text-blue-400"
+          <AnimatePresence>
+            {error && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="mb-6 overflow-hidden"
               >
-                {showPassword ? (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88"
-                    />
-                  </svg>
-                ) : (
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={1.5}
-                    stroke="currentColor"
-                    className="w-6 h-6"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
-                  </svg>
-                )}
-              </button>
-            </div>
+                <div className="p-4 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 rounded-2xl text-red-600 dark:text-red-400 text-sm font-bold text-center">
+                  &#9888; {error}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
             <motion.div
-              whileHover={{ scale: loading || success ? 1 : 1.01 }}
-              whileTap={{ scale: loading || success ? 1 : 0.99 }}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.1 }}
+            >
+              <label className="text-xs font-bold text-slate-500 dark:text-zinc-500 uppercase tracking-widest pl-1 mb-2 block">
+                Username
+              </label>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                  <User size={18} />
+                </div>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full pl-11 pr-4 py-4 bg-white dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600 font-medium shadow-sm hover:shadow-md"
+                  placeholder="กรอกชื่อผู้ใช้งาน"
+                  autoComplete="username"
+                  required
+                />
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <div className="flex justify-between items-end mb-2">
+                <label className="text-xs font-bold text-slate-500 dark:text-zinc-500 uppercase tracking-widest pl-1 block">
+                  Password
+                </label>
+                <Link
+                  href="#"
+                  className="text-xs font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 transition-colors pr-1"
+                >
+                  ลืมรหัสผ่าน?
+                </Link>
+              </div>
+              <div className="relative group">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                  <Lock size={18} />
+                </div>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full pl-11 pr-12 py-4 bg-white dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-2xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-600 font-medium shadow-sm hover:shadow-md tracking-wide max-w-full"
+                  placeholder="••••••••"
+                  autoComplete="current-password"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-blue-600 dark:text-zinc-500 dark:hover:text-blue-400 transition-colors"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="pt-2"
             >
               <button
                 type="submit"
                 disabled={loading || success}
-                className={`relative w-full flex items-center justify-center gap-3 text-white font-bold py-4 rounded-2xl shadow-lg transition-all mt-4 overflow-hidden group ${
-                  success
-                    ? "bg-emerald-500 shadow-emerald-500/40"
-                    : "bg-blue-600 shadow-blue-600/20 hover:bg-blue-700 disabled:opacity-80 disabled:cursor-wait dark:hover:bg-blue-500"
-                }`}
+                className="w-full relative flex items-center justify-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-black py-4 rounded-2xl font-bold shadow-xl shadow-slate-900/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-70 disabled:cursor-not-allowed group overflow-hidden"
               >
-                {/* Background Hover Effect */}
-                {!success && (
-                  <div className="absolute inset-0 bg-blue-700 translate-y-full group-hover:translate-y-0 transition-transform duration-300 dark:bg-blue-500" />
+                {!loading && !success && (
+                  <div className="absolute inset-0 bg-linear-to-r from-blue-600 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 )}
 
-                <span className="relative z-10 flex items-center gap-2">
-                  {success ? (
-                    <>
-                      <motion.svg
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        className="h-6 w-6 text-white"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={3}
-                          d="M5 13l4 4L19 7"
-                        />
-                      </motion.svg>
-                      เข้าสู่ระบบสำเร็จ!
-                    </>
-                  ) : loading ? (
-                    <>
-                      <svg
-                        className="animate-spin h-5 w-5 text-white"
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          className="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          strokeWidth="4"
-                        ></circle>
-                        <path
-                          className="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      กำลังยืนยันตัวตน...
-                    </>
+                <span className="relative text-white dark:text-black group-hover:text-white flex items-center gap-2 transition-colors">
+                  {loading ? (
+                    <div className="h-5 w-5 border-2 border-slate-400 border-t-white dark:border-slate-500 dark:border-t-black rounded-full animate-spin" />
+                  ) : success ? (
+                    "เข้าสู่ระบบสำเร็จ!"
                   ) : (
-                    "เข้าสู่ระบบ"
+                    <>
+                      Sign In <ArrowRight size={18} />
+                    </>
                   )}
                 </span>
-
-                {/* Loading Pulse Overlay */}
-                {(loading || success) && (
-                  <div className="absolute inset-0 bg-white/20 animate-pulse z-0" />
-                )}
               </button>
             </motion.div>
-          </div>
-        </form>
+          </form>
 
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="mt-8 text-center"
-        >
-          <Link
-            href="/"
-            className="text-slate-400 text-sm hover:text-slate-600 transition-colors dark:text-zinc-500 dark:hover:text-white"
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.5 }}
+            className="mt-10 text-center space-y-4"
           >
-            ← กลับไปหน้าเว็บไซต์หลัก
-          </Link>
-        </motion.div>
-      </motion.div>
+            <p className="text-slate-500 dark:text-zinc-400 text-sm font-medium">
+              ยังไม่มีบัญชีใช่หรือไม่?{" "}
+              <Link
+                href="/register"
+                className="text-blue-600 dark:text-blue-400 font-bold hover:underline underline-offset-4 ml-1 transition-all"
+              >
+                สมัครสมาชิก
+              </Link>
+            </p>
+            <div className="md:hidden">
+              <Link
+                href="/"
+                className="text-slate-400 text-xs font-bold hover:text-slate-600 transition-colors dark:text-zinc-500 dark:hover:text-white uppercase tracking-widest"
+              >
+                &larr; Return Home
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+      </div>
     </div>
   );
 }

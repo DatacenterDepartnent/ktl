@@ -9,7 +9,8 @@ interface User {
   username: string;
   name: string;
   email: string;
-  role: "super_admin" | "admin" | "editor";
+  role: string;
+  department?: string;
   isActive: boolean;
   phone?: string;
   lineId?: string;
@@ -90,6 +91,27 @@ export default function SuperAdminPage() {
 
   // --- Functions สำหรับจัดการ User ---
 
+  const changeDepartment = async (
+    targetId: string,
+    newDept: string,
+    targetName: string,
+  ) => {
+    if (!adminProfile) return toast.error("ACCESS_DENIED");
+    try {
+      const res = await fetch(`/api/users/${targetId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ department: newDept }), 
+      });
+      if (res.ok) {
+        toast.success(`UPDATED: เปลี่ยนสังกัด ${targetName} สำเร็จ`);
+        fetchData();
+      }
+    } catch (error) {
+      toast.error("UPDATE_FAILED");
+    }
+  };
+
   const changeRole = async (
     targetId: string,
     newRole: string,
@@ -169,6 +191,11 @@ export default function SuperAdminPage() {
     switch (role) {
       case "super_admin":
         return "bg-rose-50 text-rose-600 border-rose-200";
+      case "director":
+      case "deputy_director":
+        return "bg-purple-50 text-purple-600 border-purple-200";
+      case "hr":
+        return "bg-emerald-50 text-emerald-600 border-emerald-200";
       case "admin":
         return "bg-amber-50 text-amber-600 border-amber-200";
       default:
@@ -297,8 +324,9 @@ export default function SuperAdminPage() {
                 <th className="p-6 text-center w-20">ลำดับ</th>
                 <th className="p-6">ข้อมูลประจำตัวผู้ใช้</th>
                 <th className="p-6 text-center">ระดับการอนุญาต</th>
-                <th className="p-6 text-center">ถานะโปรโตคอล</th>
-                <th className="p-6 text-right">การดำเนินการ</th>
+                <th className="p-6 text-center">สังกัด / แผนก</th>
+                <th className="p-6 text-center">สถานะ</th>
+                <th className="p-6 text-right">จัดการ</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
@@ -338,15 +366,43 @@ export default function SuperAdminPage() {
                   </td>
                   <td className="p-6 text-center">
                     <select
-                      value={user.role}
+                      value={user.role || "user"}
                       onChange={(e) =>
                         changeRole(user._id, e.target.value, user.name)
                       }
-                      className={`text-[10px] font-black border-2 rounded-xl px-4 py-2 outline-none uppercase ${getRoleStyle(user.role)}`}
+                      className={`text-[10px] font-black border-2 rounded-xl px-2 py-2 outline-none uppercase ${getRoleStyle(user.role || "user")}`}
                     >
                       <option value="super_admin">SUPER_ADMIN</option>
+                      <option value="director">ผอ (DIRECTOR)</option>
+                      <option value="deputy_director">รอง ผอ (DEPUTY)</option>
+                      <option value="hr">บุคคล (HR)</option>
+                      <option value="general">พนักงาน (GENERAL)</option>
                       <option value="admin">ADMIN</option>
-                      <option value="editor">EDITOR</option>
+                      <option value="user">USER (เดิม)</option>
+                    </select>
+                  </td>
+                  <td className="p-6 text-center">
+                    <select
+                      value={user.department || "ไม่มีสังกัด"}
+                      onChange={(e) =>
+                        changeDepartment(user._id, e.target.value, user.name)
+                      }
+                      className="text-[10px] font-black border-2 rounded-xl px-2 py-2 outline-none text-slate-600 bg-slate-50 max-w-[140px]"
+                    >
+                      <option value="ไม่มีสังกัด">- ไม่มี -</option>
+                      <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
+                      <option value="แผนกวิชาช่างยนต์">ช่างยนต์</option>
+                      <option value="แผนกวิชาช่างกลโรงงาน">ช่างกลโรงงาน</option>
+                      <option value="แผนกวิชาช่างเชื่อมโลหะ">ช่างเชื่อมโลหะ</option>
+                      <option value="แผนกวิชาช่างไฟฟ้ากำลัง">ช่างไฟฟ้ากำลัง</option>
+                      <option value="แผนกวิชาช่างอิเล็กทรอนิกส์">ช่างอิเล็กทรอนิกส์</option>
+                      <option value="แผนกวิชาช่างเทคนิคพื้นฐาน">ช่างเทคนิคพื้นฐาน</option>
+                      <option value="แผนกวิชาช่างก่อสร้าง">ช่างก่อสร้าง</option>
+                      <option value="แผนกวิชาการบัญชี">การบัญชี</option>
+                      <option value="แผนกวิชาการตลาด">การตลาด</option>
+                      <option value="แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล">ธุรกิจดิจิทัล</option>
+                      <option value="แผนกวิชาการโรงแรม">การโรงแรม</option>
+                      <option value="แผนกวิชาสามัญสัมพันธ์">สามัญสัมพันธ์</option>
                     </select>
                   </td>
                   <td className="p-6 text-center">
@@ -408,7 +464,7 @@ export default function SuperAdminPage() {
                   className={`absolute -left-[5px] top-0 h-2 w-2 rounded-full ${log.action.includes("DELETE") ? "bg-rose-500 shadow-[0_0_8px_rose]" : "bg-slate-700 group-hover:bg-blue-500"}`}
                 ></div>
                 <div className="flex flex-col md:flex-row md:items-start gap-6">
-                  <div className="text-center bg-white/5 p-4 rounded-[1.5rem] min-w-[100px] border border-white/10">
+                  <div className="text-center bg-white/5 p-4 rounded-3xl min-w-[100px] border border-white/10">
                     <p className="text-sm font-black text-white italic tabular-nums leading-none">
                       {new Date(log.timestamp).toLocaleTimeString("th-TH")}
                     </p>

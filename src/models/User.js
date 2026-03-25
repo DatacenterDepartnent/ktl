@@ -19,13 +19,21 @@ const UserSchema = new mongoose.Schema(
     },
     role: {
       type: String,
-      // เพิ่ม super_admin และเปลี่ยน staff เป็น user ตามโจทย์
-      enum: ["super_admin", "admin", "user"],
+      // เพิ่ม role รองรับระบบงานใหม่ WFH ตามโจทย์
+      enum: ["super_admin", "director", "deputy_director", "hr", "admin", "general", "editor", "user"],
       default: "user", // ค่าเริ่มต้นเมื่อสมัครสมาชิกใหม่
+    },
+    department: {
+      type: String,
+      default: "ไม่มีสังกัด",
     },
     image: {
       type: String,
       default: "/images/default-avatar.png",
+    },
+    deviceId: {
+      type: String,
+      default: null,
     },
   },
   { timestamps: true },
