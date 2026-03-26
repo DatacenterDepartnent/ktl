@@ -191,7 +191,7 @@ export default function LoginPage() {
                   Password
                 </label>
                 <Link
-                  href="#"
+                  href="https://www.allmaster.store/contactus"
                   className="text-xs font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 transition-colors pr-1"
                 >
                   ลืมรหัสผ่าน?

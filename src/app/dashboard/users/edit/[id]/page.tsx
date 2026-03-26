@@ -14,32 +14,48 @@ import {
   FiShield,
   FiActivity,
   FiLoader,
-  FiLock, // เพิ่มไอคอนกุญแจ
-  FiEye, // เพิ่มไอคอนตา
-  FiEyeOff, // เพิ่มไอคอนปิดตา
+  FiLock,
+  FiEye,
+  FiEyeOff,
 } from "react-icons/fi";
+import {
+  UserOutlined,
+  CameraOutlined,
+  SafetyCertificateOutlined,
+  PictureOutlined,
+} from "@ant-design/icons";
+import { motion } from "framer-motion";
+import { useRef } from "react";
 
 interface UserFormData {
   name: string;
   email: string;
   role: "super_admin" | "admin" | "hr" | "director" | "editor" | "user";
+  department: string;
   phone: string;
   lineId: string;
   isActive: boolean;
+  image?: string; // Added image
+  coverImage?: string; // Added coverImage
 }
 
 export default function EditUserPage() {
   const router = useRouter();
   const params = useParams();
   const userId = params.id;
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState<UserFormData>({
     name: "",
     email: "",
     role: "editor",
+    department: "ไม่มีสังกัด",
     phone: "",
     lineId: "",
     isActive: true,
+    image: "",
+    coverImage: "",
   });
 
   const [username, setUsername] = useState("");
@@ -72,9 +88,12 @@ export default function EditUserPage() {
             name: data.name || "",
             email: data.email || "",
             role: data.role || "editor",
+            department: data.department || "ไม่มีสังกัด",
             phone: data.phone || "",
             lineId: data.lineId || "",
             isActive: data.isActive ?? true,
+            image: data.image || "",
+            coverImage: data.coverImage || "",
           });
           setUsername(data.username || "ไม่ระบุ");
         } else {
@@ -90,6 +109,31 @@ export default function EditUserPage() {
 
     if (userId) fetchInitialData();
   }, [userId, router]);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({ ...prev, image: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setFormData((prev) => ({
+          ...prev,
+          coverImage: reader.result as string,
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -108,10 +152,6 @@ export default function EditUserPage() {
         body: JSON.stringify({
           ...formData,
           password: newPassword || undefined, // ส่งรหัสผ่านใหม่ไปถ้ามีการกรอก
-          logAction: "แก้ไขข้อมูลผู้ใช้",
-          logDetails: `แก้ไขข้อมูลผู้ใช้: ${formData.name} (@${username})${newPassword ? " (มีการเปลี่ยนรหัสผ่าน)" : ""}`,
-          adminId: adminProfile._id,
-          adminName: adminProfile.name,
         }),
       });
 
@@ -165,6 +205,113 @@ export default function EditUserPage() {
           </Link>
         </div>
       </nav>
+
+      {/* Profile & Cover Header Area */}
+      <div className="max-w-[1600px] mx-auto px-6 mt-8">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative bg-white dark:bg-zinc-900 rounded-[2.5rem] overflow-hidden shadow-2xl shadow-blue-900/5 border border-white/50 dark:border-zinc-800/50"
+        >
+          {/* Cover Photo */}
+          <div
+            className="relative h-48 sm:h-72 bg-linear-to-r from-blue-600 via-indigo-600 to-purple-600 cursor-pointer group/cover"
+            onClick={() => coverInputRef.current?.click()}
+          >
+            {formData.coverImage ? (
+              <img
+                src={formData.coverImage}
+                alt="Cover"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover/cover:scale-105"
+              />
+            ) : (
+              <div className="absolute inset-0 bg-black/10" />
+            )}
+            
+            {/* Animated Gradient Mesh Overlay */}
+            <div className="absolute inset-0 opacity-40 mix-blend-overlay bg-[radial-gradient(ellipse_at_top_right,var(--tw-gradient-stops))] from-white/40 via-transparent to-black/40" />
+
+            {/* Change Cover Label */}
+            <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/cover:opacity-100 flex items-center justify-center transition-opacity duration-300 backdrop-blur-[2px]">
+              <div className="bg-white/20 backdrop-blur-md border border-white/30 px-6 py-2 rounded-full flex items-center gap-2 text-white font-bold">
+                <PictureOutlined className="text-xl" />
+                <span>CHANGE COVER</span>
+              </div>
+            </div>
+
+            <input
+              type="file"
+              ref={coverInputRef}
+              onChange={handleCoverChange}
+              className="hidden"
+              accept="image/*"
+            />
+          </div>
+
+          {/* Profile Photo Area */}
+          <div className="px-6 pb-8 sm:px-12 flex flex-col sm:flex-row items-center sm:items-end gap-5 sm:gap-10 -mt-16 sm:-mt-24 relative z-10 w-full">
+            {/* Avatar Upload */}
+            <div
+              className="relative group/avatar cursor-pointer "
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <div className="h-32 w-32 sm:h-48 sm:w-48 rounded-full overflow-hidden border-4 sm:border-[6px] border-white dark:border-zinc-900 shadow-2xl shadow-black/20 bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center transition-transform duration-300 group-hover/avatar:scale-105">
+                {formData.image ? (
+                  <img
+                    src={formData.image}
+                    alt="Profile"
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <UserOutlined className="text-4xl sm:text-6xl text-zinc-300 dark:text-zinc-600" />
+                )}
+                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/avatar:opacity-100 flex flex-col items-center justify-center transition-opacity duration-300 backdrop-blur-sm">
+                  <CameraOutlined className="text-white text-3xl mb-1 sm:mb-2" />
+                  <span className="text-white text-[10px] sm:text-xs font-bold uppercase tracking-widest">
+                    Change Photo
+                  </span>
+                </div>
+              </div>
+
+              {/* Camera Badge Overlay */}
+              <div className="absolute bottom-1 right-2 sm:right-4 h-8 w-8 sm:h-10 sm:w-10 text-white bg-blue-600 rounded-full flex items-center justify-center shadow-lg border-2 sm:border-4 border-white dark:border-zinc-900 shadow-blue-900/30 transition-transform group-hover/avatar:scale-110">
+                <CameraOutlined className="text-sm sm:text-lg" />
+              </div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleImageChange}
+                className="hidden"
+                accept="image/*"
+              />
+            </div>
+
+            {/* User Title & Badge */}
+            <div className="text-center sm:text-left flex-1">
+              <h2 className="text-2xl sm:text-4xl font-black text-zinc-900 dark:text-white leading-none tracking-tight pt-2 sm:pt-12">
+                {formData.name || "ผู้ใช้งานระบบ"}
+              </h2>
+              <div className="mt-3 sm:mt-4 flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-[10px] sm:text-xs font-bold uppercase tracking-widest shadow-sm">
+                  <SafetyCertificateOutlined /> {formData.role || "Member"}
+                </span>
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-[10px] sm:text-xs font-bold uppercase tracking-widest shadow-sm">
+                  <span className="text-blue-500 italic mr-1">@</span>
+                  {username}
+                </span>
+                <span
+                  className={`inline-flex items-center gap-1.5 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full border text-[10px] sm:text-xs font-bold uppercase tracking-widest shadow-sm ${formData.isActive ? "bg-emerald-50 dark:bg-emerald-900/30 border-emerald-100 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400" : "bg-rose-50 dark:bg-rose-900/30 border-rose-100 dark:border-rose-800 text-rose-700 dark:text-rose-400"}`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${formData.isActive ? "bg-emerald-500 animate-pulse" : "bg-rose-500"}`}
+                  />
+                  {formData.isActive ? "Active Account" : "Suspended"}
+                </span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      </div>
 
       <div className="max-w-[1600px] mx-auto px-6 mt-10">
         <form
@@ -341,6 +488,129 @@ export default function EditUserPage() {
                     <option value="super_admin">
                       ผู้ดูแลระบบสูงสุด (Super Admin)
                     </option>
+                  </select>
+                </div>
+
+                <div className="pt-6 border-t border-slate-100">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-2">
+                    สังกัด / แผนก
+                  </label>
+                  <select
+                    value={formData.department}
+                    onChange={(e) =>
+                      setFormData({ ...formData, department: e.target.value })
+                    }
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 font-bold text-slate-700 outline-none focus:border-blue-500 transition-all cursor-pointer appearance-none"
+                  >
+                    <option value="ไม่มีสังกัด">- ไม่มีสังกัด -</option>
+                    <option value="ผู้บริหารสถานศึกษา">
+                      ผู้บริหารสถานศึกษา
+                    </option>
+
+                    <optgroup label="ฝ่ายบริหารทรัพยากร">
+                      <option value="งานบริหารงานทั่วไป">
+                        งานบริหารงานทั่วไป
+                      </option>
+                      <option value="งานบริหารและพัฒนาทรัพยากรบุคคล">
+                        งานบริหารและพัฒนาทรัพยากรบุคคล
+                      </option>
+                      <option value="งานการเงิน">งานการเงิน</option>
+                      <option value="งานการบัญชี">งานการบัญชี</option>
+                      <option value="งานพัสดุ">งานพัสดุ</option>
+                      <option value="งานอาคารสถานที่">งานอาคารสถานที่</option>
+                      <option value="งานทะเบียน">งานทะเบียน</option>
+                    </optgroup>
+
+                    <optgroup label="ฝ่ายยุทธศาสตร์และแผนงาน">
+                      <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ">
+                        งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ
+                      </option>
+                      <option value="งานมาตรฐานและการประกันคุณภาพ">
+                        งานมาตรฐานและการประกันคุณภาพ
+                      </option>
+                      <option value="งานศูนย์ดิจิทัลและสื่อสารองค์กร">
+                        งานศูนย์ดิจิทัลและสื่อสารองค์กร
+                      </option>
+                      <option value="งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์">
+                        งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์
+                      </option>
+                      <option value="งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ">
+                        งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ
+                      </option>
+                      <option value="งานติดตามและประเมินผล">
+                        งานติดตามและประเมินผล
+                      </option>
+                    </optgroup>
+
+                    <optgroup label="ฝ่ายกิจการนักเรียน นักศึกษา">
+                      <option value="งานกิจกรรมนักเรียนนักศึกษา">
+                        งานกิจกรรมนักเรียนนักศึกษา
+                      </option>
+                      <option value="งานครูที่ปรึกษาและการแนะแนว">
+                        งานครูที่ปรึกษาและการแนะแนว
+                      </option>
+                      <option value="งานปกครองและความปลอดภัยนักเรียนนักศึกษา">
+                        งานปกครองและความปลอดภัยนักเรียนนักศึกษา
+                      </option>
+                      <option value="งานสวัสดิการนักเรียนนักศึกษา">
+                        งานสวัสดิการนักเรียนนักศึกษา
+                      </option>
+                      <option value="งานโครงการพิเศษและการบริการ">
+                        งานโครงการพิเศษและการบริการ
+                      </option>
+                    </optgroup>
+
+                    <optgroup label="ฝ่ายวิชาการ">
+                      <option value="งานพัฒนาหลักสูตรและการจัดการเรียนรู้">
+                        งานพัฒนาหลักสูตรและการจัดการเรียนรู้
+                      </option>
+                      <option value="งานวัดผลและประเมินผล">
+                        งานวัดผลและประเมินผล
+                      </option>
+                      <option value="งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ">
+                        งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ
+                      </option>
+                      <option value="งานวิทยบริการและเทคโนโลยีการศึกษา">
+                        งานวิทยบริการและเทคโนโลยีการศึกษา
+                      </option>
+                      <option value="งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา">
+                        งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา
+                      </option>
+                      <option value="งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ">
+                        งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ
+                      </option>
+                      {/* แผนกวิชา */}
+                      <option value="แผนกวิชาช่างยนต์">แผนกวิชาช่างยนต์</option>
+                      <option value="แผนกวิชาช่างกลโรงงาน">
+                        แผนกวิชาช่างกลโรงงาน
+                      </option>
+                      <option value="แผนกวิชาช่างเชื่อมโลหะ">
+                        แผนกวิชาช่างเชื่อมโลหะ
+                      </option>
+                      <option value="แผนกวิชาช่างไฟฟ้ากำลัง">
+                        แผนกวิชาช่างไฟฟ้ากำลัง
+                      </option>
+                      <option value="แผนกวิชาช่างอิเล็กทรอนิกส์">
+                        แผนกวิชาช่างอิเล็กทรอนิกส์
+                      </option>
+                      <option value="แผนกวิชาช่างเทคนิคพื้นฐาน">
+                        แผนกวิชาช่างเทคนิคพื้นฐาน
+                      </option>
+                      <option value="แผนกวิชาช่างก่อสร้าง">
+                        แผนกวิชาช่างก่อสร้าง
+                      </option>
+                      <option value="แผนกวิชาการบัญชี">แผนกวิชาการบัญชี</option>
+                      <option value="แผนกวิชาการตลาด">แผนกวิชาการตลาด</option>
+                      <option value="แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล">
+                        แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล
+                      </option>
+                      <option value="แผนกวิชาการโรงแรม">
+                        แผนกวิชาการโรงแรม
+                      </option>
+                      <option value="แผนกวิชาสามัญสัมพันธ์">
+                        แผนกวิชาสามัญสัมพันธ์
+                      </option>
+                    </optgroup>
                   </select>
                 </div>
 

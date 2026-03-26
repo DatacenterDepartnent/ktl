@@ -34,6 +34,7 @@ export default function ProfilePage() {
     phone: "",
     lineId: "",
     role: "",
+    department: "", // Added department
     image: "",
     coverImage: "",
     password: "",
@@ -53,6 +54,7 @@ export default function ProfilePage() {
             phone: data.phone || "",
             lineId: data.lineId || "",
             role: data.role || "",
+            department: data.department || "ไม่มีสังกัด", // Added department
             image: data.image || "",
             coverImage: data.coverImage || "",
             password: "",
@@ -302,6 +304,25 @@ export default function ProfilePage() {
                     className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/50 rounded-2xl pl-12 pr-5 py-3.5 sm:py-4 text-zinc-800 dark:text-zinc-200 focus:bg-white dark:focus:bg-zinc-800 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all"
                     placeholder="นายกมล เทคนิค"
                   />
+                </div>
+              </div>
+
+              <div className="md:col-span-2 group">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 ml-1 mb-2 block transition-colors group-focus-within:text-blue-500">
+                  สังกัด / แผนก
+                </label>
+                <div className="relative">
+                  <SafetyCertificateOutlined className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-blue-500 transition-colors" />
+                  <input
+                    type="text"
+                    value={formData.department}
+                    readOnly
+                    className="w-full bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700/50 rounded-2xl pl-12 pr-5 py-4 text-zinc-500 dark:text-zinc-400 cursor-not-allowed outline-none transition-all font-bold"
+                    placeholder="ไม่มีสังกัด"
+                  />
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 bg-zinc-200 dark:bg-zinc-700 rounded-md text-[9px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-tighter">
+                    Read-Only
+                  </div>
                 </div>
               </div>
 

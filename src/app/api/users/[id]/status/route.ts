@@ -20,6 +20,11 @@ export async function PATCH(
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
+    // ✅ หาชื่อผู้ใช้ก่อน (เพื่อบันทึก Log ให้ชัดเจน)
+    const targetUser = await db
+      .collection("users")
+      .findOne({ _id: new ObjectId(id) }, { projection: { name: 1, username: 1 } });
+
     const updateData: any = { updatedAt: new Date() };
     if (typeof isActive === "boolean") updateData.isActive = isActive;
     if (role) updateData.role = role;
@@ -36,13 +41,15 @@ export async function PATCH(
     let action = "UPDATE_USER";
     let actionDesc = "แก้ไขข้อมูลสมาชิก";
 
+    const targetName = targetUser?.name || targetUser?.username || id;
+
     if (typeof isActive === "boolean") {
       action = isActive ? "APPROVE_USER" : "SUSPEND_USER";
-      actionDesc = isActive ? "✅ อนุมัติบัญชีสมาชิก" : "🚫 ระงับบัญชีสมาชิก";
+      actionDesc = isActive ? `✅ อนุมัติบัญชีสมาชิก: ${targetName}` : `🚫 ระงับบัญชีสมาชิก: ${targetName}`;
     }
     if (role) {
       action = "CHANGE_ROLE";
-      actionDesc = `เปลี่ยนสิทธิ์เป็น: ${role}`;
+      actionDesc = `เปลี่ยนสิทธิ์ของ ${targetName} เป็น: ${role}`;
     }
 
     await db.collection("logs").insertOne({

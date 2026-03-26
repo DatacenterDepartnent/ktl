@@ -3,6 +3,14 @@ import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs"; // อย่าลืม npm install bcryptjs
 import { auth } from "@/lib/auth";
+import { v2 as cloudinary } from "cloudinary";
+
+// ✅ Config Cloudinary
+cloudinary.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export async function GET(
   req: Request,
@@ -56,6 +64,40 @@ export async function PATCH(
     // เตรียมข้อมูลสำหรับอัปเดต
     const updatePayload: any = { ...updateData, updatedAt: new Date() };
 
+    // ✅ Manage Profile Image (Cloudinary)
+    if (updateData.image && updateData.image.startsWith("data:image")) {
+      try {
+        const uploadResponse = await cloudinary.uploader.upload(updateData.image, {
+          folder: "user_profiles",
+          transformation: [
+            { width: 200, height: 200, crop: "fill", gravity: "face" },
+          ],
+        });
+        updatePayload.image = uploadResponse.secure_url;
+      } catch (error) {
+        console.error("Cloudinary upload error:", error);
+      }
+    }
+
+    // ✅ Manage Cover Image (Cloudinary)
+    if (
+      updateData.coverImage &&
+      updateData.coverImage.startsWith("data:image")
+    ) {
+      try {
+        const coverUploadResponse = await cloudinary.uploader.upload(
+          updateData.coverImage,
+          {
+            folder: "user_covers",
+            transformation: [{ width: 1200, height: 400, crop: "fill" }],
+          },
+        );
+        updatePayload.coverImage = coverUploadResponse.secure_url;
+      } catch (error) {
+        console.error("Cloudinary cover upload error:", error);
+      }
+    }
+
     // ถ้ามีการส่งรหัสผ่านใหม่มา ให้เข้ารหัสก่อน
     if (password && password.length >= 6) {
       updatePayload.password = await bcrypt.hash(password, 10);
@@ -72,17 +114,23 @@ export async function PATCH(
     // Automatic Unified Logging
     const adminName = (session?.user as any)?.name || "Super_Admin";
     const adminId = (session?.user as any)?.id;
+
+    // หาชื่อผู้ใช้เป้าหมาย
+    const targetUser = await db
+      .collection("users")
+      .findOne({ _id: new ObjectId(id) }, { projection: { name: 1, username: 1 } });
+    const targetName = targetUser?.name || targetUser?.username || id;
     
     // Determine action description based on what was updated
-    let actionDesc = "เเก้ไขข้อมูลผู้ใช้";
-    if (updateData.role) actionDesc = `เปลี่ยนสิทธิ์เป็น ${updateData.role}`;
-    if (updateData.status === "inactive") actionDesc = "ระงับการใช้งานผู้ใช้";
-    if (updateData.status === "active") actionDesc = "เปิดใช้งานผู้ใช้";
+    let actionDesc = `เเก้ไขข้อมูลผู้ใช้: ${targetName}`;
+    if (updateData.role) actionDesc = `เปลี่ยนสิทธิ์ของ ${targetName} เป็น ${updateData.role}`;
+    if (updateData.isActive === false) actionDesc = `🚫 ระงับการใช้งานผู้ใช้: ${targetName}`;
+    if (updateData.isActive === true) actionDesc = `✅ เปิดใช้งานผู้ใช้: ${targetName}`;
     if (password) actionDesc += " (มีการเปลี่ยนรหัสผ่าน)";
 
     await db.collection("logs").insertOne({
       adminId: adminId ? new ObjectId(adminId as string) : null,
-      adminName: adminName,
+      userName: adminName, // Fixed from adminName to userName for consistency
       action: "UPDATE_USER",
       details: `${actionDesc} (Target ID: ${id})`,
       targetId: new ObjectId(id),

@@ -20,6 +20,7 @@ export async function GET() {
         },
         {
           $group: {
+            _id: null,
             totalActions: { $sum: 1 },
             approvals: {
               $sum: {
@@ -33,7 +34,21 @@ export async function GET() {
             roleChanges: {
               $sum: {
                 $cond: [
-                  { $regexMatch: { input: { $ifNull: ["$action", ""] }, regex: "ROLE|PERMISSION", options: "i" } },
+                  {
+                    $or: [
+                      { $regexMatch: { input: { $ifNull: ["$action", ""] }, regex: "ROLE|PERMISSION", options: "i" } },
+                      { $regexMatch: { input: { $ifNull: ["$details", ""] }, regex: "เปลี่ยนสิทธิ์", options: "i" } },
+                    ],
+                  },
+                  1,
+                  0,
+                ],
+              },
+            },
+            newMembers: {
+              $sum: {
+                $cond: [
+                  { $regexMatch: { input: { $ifNull: ["$action", ""] }, regex: "REGISTER", options: "i" } },
                   1,
                   0,
                 ],
@@ -57,6 +72,7 @@ export async function GET() {
       totalActions: 0,
       approvals: 0,
       roleChanges: 0,
+      newMembers: 0,
       updates: 0,
     };
 
@@ -64,6 +80,7 @@ export async function GET() {
       totalActions: result.totalActions,
       approvals: result.approvals,
       roleChanges: result.roleChanges,
+      newMembers: result.newMembers,
       updates: result.updates,
     });
   } catch (error) {
