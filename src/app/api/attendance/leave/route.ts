@@ -60,6 +60,9 @@ export async function POST(req: Request) {
   }
 }
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET(req: Request) {
   try {
     const session = await auth();
@@ -72,14 +75,16 @@ export async function GET(req: Request) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
+    let queryConditions = [];
+    queryConditions.push({ userId: userId });
+    
+    if (ObjectId.isValid(userId)) {
+      queryConditions.push({ userId: new ObjectId(userId) });
+    }
+
     const leaves = await db
       .collection("leave_requests")
-      .find({ 
-        $or: [
-          { userId: userId },
-          { userId: new ObjectId(userId) }
-        ]
-      })
+      .find({ $or: queryConditions })
       .sort({ createdAt: -1 })
       .toArray();
 

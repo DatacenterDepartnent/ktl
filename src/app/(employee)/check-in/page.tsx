@@ -97,7 +97,6 @@ function CheckInContent() {
       }
 
       const payload = {
-        userId: "60d0fe4f5311236168a109ca",
         lat: location?.lat,
         lng: location?.lng,
         photoUrl: cloudinaryUrl,

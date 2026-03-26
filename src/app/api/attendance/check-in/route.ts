@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import Attendance from '@/models/Attendance';
 import { calculateDistance } from '@/lib/geoDistance';
+import { auth } from '@/lib/auth';
 import User from '@/models/User';
 import { sendLineNotify } from '@/lib/lineNotify';
 import { format } from 'date-fns';
@@ -14,13 +15,15 @@ const ALLOWED_RADIUS = 500; // 500 meters (0.5 km)
 
 export async function POST(req: Request) {
   try {
-    await connectDB();
-    const data = await req.json();
-    const { userId, lat, lng, photoUrl, deviceId, address } = data;
-
+    const session = await auth();
+    const userId = (session?.user as any)?.id;
+    
     if (!userId) {
-      return NextResponse.json({ success: false, message: 'Missing userId' }, { status: 400 });
+      return NextResponse.json({ success: false, message: 'Unauthorized. Please login again.' }, { status: 401 });
     }
+
+    const data = await req.json();
+    const { lat, lng, photoUrl, deviceId, address } = data;
 
     const serverTime = new Date();
     

@@ -239,13 +239,22 @@ export default function MobileMenu({
                     )}
 
                     {userRole === "super_admin" && (
-                      <Link
-                        href="/dashboard/super-admin"
-                        onClick={closeMenu}
-                        className="mx-1 block text-center py-3.5 rounded-xl bg-purple-50 text-purple-700 font-bold border border-purple-100 dark:bg-purple-900/20 dark:text-purple-300 transition-colors"
-                      >
-                        🛡️ ระบบจัดการ Super Admin
-                      </Link>
+                      <>
+                        <Link
+                          href="/dashboard/super-admin"
+                          onClick={closeMenu}
+                          className="mx-1 block text-center py-3.5 rounded-xl bg-purple-50 text-purple-700 font-bold border border-purple-100 dark:bg-purple-900/20 dark:text-purple-300 transition-colors"
+                        >
+                          🛡️ ระบบจัดการ Super Admin
+                        </Link>
+                        <Link
+                          href="/dashboard/data-management"
+                          onClick={closeMenu}
+                          className="mx-1 mt-2 block text-center py-3.5 rounded-xl bg-rose-50 text-rose-700 font-bold border border-rose-100 dark:bg-rose-900/20 dark:text-rose-300 transition-colors"
+                        >
+                          🗄️ ระบบจัดการข้อมูลเรคคอร์ดทั้งหมด
+                        </Link>
+                      </>
                     )}
 
                     <Link
