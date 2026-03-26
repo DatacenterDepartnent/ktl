@@ -77,32 +77,12 @@ export default function MobileMenu({
         }`}
       >
         {isOpen ? (
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M6 18L18 6M6 6l12 12"
-            />
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
           </svg>
         ) : (
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4 6h16M4 12h16M4 18h16"
-            />
+          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         )}
       </button>
@@ -119,7 +99,6 @@ export default function MobileMenu({
                 หน้าแรก
               </Link>
 
-              {/* ✅ ส่วนที่แก้ไข: จัดการแสดงผลเมนูย่อย */}
               {safeMenuTree.map((item) => {
                 const hasChildren = item.children && item.children.length > 0;
                 const isSubMenuOpen = openSubMenuId === item._id;
@@ -134,7 +113,6 @@ export default function MobileMenu({
                     }`}
                   >
                     {hasChildren ? (
-                      // 📌 กรณีมีเมนูย่อย (แสดงปุ่มกดเพื่อ Dropdown)
                       <>
                         <button
                           onClick={() => toggleSubMenu(item._id)}
@@ -151,16 +129,10 @@ export default function MobileMenu({
                             viewBox="0 0 24 24"
                             stroke="currentColor"
                           >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M19 9l-7 7-7-7"
-                            />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                           </svg>
                         </button>
 
-                        {/* 📌 รายการเมนูย่อยที่จะแสดงเมื่อกด */}
                         {isSubMenuOpen && (
                           <div className="flex flex-col bg-white/50 dark:bg-black/20 border-t border-zinc-100 dark:border-zinc-800/50">
                             {item.children!.map((subItem) => (
@@ -177,7 +149,6 @@ export default function MobileMenu({
                         )}
                       </>
                     ) : (
-                      // 📌 กรณีไม่มีเมนูย่อย (สามารถคลิกลิงก์ได้เลย)
                       <Link
                         href={ensureAbsolute(item.path)}
                         onClick={closeMenu}
@@ -198,7 +169,7 @@ export default function MobileMenu({
               </div>
 
               {/* ส่วนจัดการสมาชิก */}
-              {/* <div className="pt-4 pb-8 space-y-3 border-t border-zinc-100 dark:border-zinc-800 mt-4">
+              <div className="pt-4 pb-8 space-y-3 border-t border-zinc-100 dark:border-zinc-800 mt-4">
                 {status === "loading" ? (
                   <div className="text-center py-4 text-zinc-500">
                     กำลังโหลด...
@@ -208,16 +179,9 @@ export default function MobileMenu({
                     <div className="flex items-center gap-3 px-4 mb-2">
                       <div className="relative w-12 h-12 rounded-full overflow-hidden bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white border-2 border-white dark:border-zinc-800 shadow-md shrink-0">
                         {image ? (
-                          <Image
-                            src={image}
-                            alt={user.name || "User"}
-                            fill
-                            className="object-cover"
-                          />
+                          <Image src={image} alt={user.name || "User"} fill className="object-cover" />
                         ) : (
-                          <span className="font-bold text-xl uppercase">
-                            {user.name?.charAt(0) || "U"}
-                          </span>
+                          <span className="font-bold text-xl uppercase">{user.name?.charAt(0) || "U"}</span>
                         )}
                       </div>
 
@@ -239,14 +203,23 @@ export default function MobileMenu({
                       🚀 ไปที่ Dashboard
                     </Link>
 
-                    {(["super_admin", "admin", "hr", "director", "editor"].includes(userRole)) && (
-                      <Link
-                        href="/attendance-report"
-                        onClick={closeMenu}
-                        className="mx-1 block text-center py-3.5 rounded-xl bg-emerald-50 text-emerald-700 font-bold border border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300 transition-colors"
-                      >
-                        📊 ระบบรายงานการเข้างาน
-                      </Link>
+                    {(["super_admin", "admin", "hr", "director", "editor", "deputy_director"].includes(userRole)) && (
+                      <div className="flex flex-col gap-2">
+                        <Link
+                          href="/attendance-report"
+                          onClick={closeMenu}
+                          className="mx-1 block text-center py-3.5 rounded-xl bg-emerald-50 text-emerald-700 font-bold border border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300 transition-colors"
+                        >
+                          📊 ระบบรายงานการเข้างาน
+                        </Link>
+                        <Link
+                          href="/work-reports"
+                          onClick={closeMenu}
+                          className="mx-1 block text-center py-3.5 rounded-xl bg-indigo-50 text-indigo-700 font-bold border border-indigo-100 dark:bg-indigo-900/20 dark:text-indigo-300 transition-colors"
+                        >
+                          📝 ระบบรายงานการปฏิบัติงาน
+                        </Link>
+                      </div>
                     )}
 
                     {userRole === "super_admin" && (
@@ -264,6 +237,13 @@ export default function MobileMenu({
                           className="mx-1 mt-2 block text-center py-3.5 rounded-xl bg-rose-50 text-rose-700 font-bold border border-rose-100 dark:bg-rose-900/20 dark:text-rose-300 transition-colors"
                         >
                           🗄️ ระบบจัดการข้อมูลเรคคอร์ดทั้งหมด
+                        </Link>
+                        <Link
+                          href="/work-reports-management"
+                          onClick={closeMenu}
+                          className="mx-1 mt-2 block text-center py-3.5 rounded-xl bg-indigo-50 text-indigo-700 font-bold border border-indigo-100 dark:bg-indigo-900/20 dark:text-indigo-300 transition-colors"
+                        >
+                          📝 ระบบจัดการรายงาน (Super Admin)
                         </Link>
                       </>
                     )}
@@ -292,7 +272,7 @@ export default function MobileMenu({
                     เข้าสู่ระบบ / Admin
                   </Link>
                 )}
-              </div> */}
+              </div>
             </div>
           </div>
         </div>

@@ -8,6 +8,7 @@ import MobileMenu from "./MobileMenu";
 import { NavItem } from "@/types/nav";
 import ThemeToggle from "./ThemeToggle";
 import { signOut } from "next-auth/react";
+import { FileText } from "lucide-react";
 
 // กำหนด Type ให้รองรับ _id ที่บังคับใช้ใน MobileMenu
 type MenuItem = NavItem & {
@@ -201,7 +202,7 @@ export default function NavbarClient({
               {/* Enhanced Dropdown Menu */}
               {isUserDropdownOpen && (
                 <div className="absolute right-0 top-full pt-2 w-56 animate-in fade-in zoom-in-95 slide-in-from-top-2 duration-200 z-60">
-                  <div className="bg-white/80 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl backdrop-blur-xl overflow-hidden p-1.5">
+                  <div className="bg-white/80 dark:bg-zinc-900/90 border border-zinc-200 dark:border-zinc-800 rounded-2xl shadow-2xl backdrop-blur-xl overflow-y-auto max-h-[80vh] p-1.5 custom-scrollbar-thin">
                     <div className="px-3 py-2 mb-1 border-b border-zinc-100 dark:border-zinc-800/50">
                       <p className="text-[11px] text-zinc-400 font-medium">
                         จัดการบัญชี
@@ -261,6 +262,15 @@ export default function NavbarClient({
                             </svg>
                           </div>
                           ระบบรายงานการเข้างาน
+                        </Link>
+                        <Link
+                          href="/work-reports"
+                          className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-all group"
+                        >
+                          <div className="p-1.5 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 group-hover:bg-indigo-200 transition-colors">
+                            <FileText size={16} />
+                          </div>
+                          ระบบรายงานการทำงาน
                         </Link>
                         {(isSuperAdmin || role?.toLowerCase() === "hr") && (
                           <Link
@@ -331,7 +341,16 @@ export default function NavbarClient({
                               />
                             </svg>
                           </div>
-                          ระบบจัดการข้อมูลเรคคอร์ดทั้งหมด
+                          🗄️ ระบบจัดการข้อมูลเรคคอร์ดทั้งหมด
+                        </Link>
+                        <Link
+                          href="/work-reports-management"
+                          className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-all group"
+                        >
+                          <div className="p-1.5 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 group-hover:bg-indigo-200 transition-colors">
+                            <FileText size={16} />
+                          </div>
+                          จัดการรายงานการทำงาน (Admin)
                         </Link>
 
                         <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/50"></div>
@@ -431,4 +450,28 @@ export default function NavbarClient({
       </div>
     </nav>
   );
+}
+
+// ✅ Add custom styles for thin scrollbar in the dropdown
+const customScrollbarStyles = `
+  .custom-scrollbar-thin::-webkit-scrollbar {
+    width: 5px;
+  }
+  .custom-scrollbar-thin::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+  }
+  .dark .custom-scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #3f3f46;
+  }
+`;
+
+if (typeof document !== 'undefined' && !document.getElementById('navbar-custom-styles')) {
+  const style = document.createElement('style');
+  style.id = 'navbar-custom-styles';
+  style.innerHTML = customScrollbarStyles;
+  document.head.appendChild(style);
 }

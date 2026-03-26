@@ -2,7 +2,15 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { LogIn, LogOut, Clock, CalendarDays, User } from "lucide-react";
+import {
+  LogIn,
+  LogOut,
+  Clock,
+  CalendarDays,
+  User,
+  FileText,
+  Plus,
+} from "lucide-react";
 import { useSession } from "next-auth/react";
 
 export default function WFHHubPage() {
@@ -46,7 +54,7 @@ export default function WFHHubPage() {
   const userImage = profileData.image || session?.user?.image || null;
 
   return (
-    <div className="max-w-7xl mx-auto bg-slate-50 flex flex-col items-center py-12 px-5 font-sans text-slate-800">
+    <div className="max-w-7xl mx-auto flex flex-col items-center py-12 px-5 font-sans text-slate-800">
       {/* Header Panel (Adapted from Profile Page) */}
       <div className="w-full max-w-xl bg-white rounded-3xl shadow-xl shadow-slate-200/50 overflow-hidden border border-slate-100 p-6 mb-8 mt-2 relative">
         <div className="flex items-center space-x-5">
@@ -156,29 +164,56 @@ export default function WFHHubPage() {
       <div className="w-full max-w-xl mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Link href="/leave-request" className="block w-full">
           <div className="bg-white border-2 border-slate-100 hover:border-slate-200 text-slate-700 p-5 rounded-2xl flex items-center justify-between transition shadow-md active:scale-[0.98] group h-full">
-              <div className="flex items-center space-x-3">
-                <div className="bg-slate-50 p-2.5 rounded-xl group-hover:bg-slate-100 transition text-indigo-400 group-hover:text-indigo-600 border border-slate-100">
-                  <CalendarDays size={20} />
-                </div>
-                <div className="text-left">
-                  <h2 className="font-bold text-lg text-slate-800">แจ้งลางาน</h2>
-                  <p className="text-slate-500 text-xs mt-0.5">ป่วย กิจ พักร้อน</p>
-                </div>
+            <div className="flex items-center space-x-3">
+              <div className="bg-slate-50 p-2.5 rounded-xl group-hover:bg-slate-100 transition text-indigo-400 group-hover:text-indigo-600 border border-slate-100">
+                <CalendarDays size={20} />
               </div>
+              <div className="text-left">
+                <h2 className="font-bold text-lg text-slate-800">แจ้งลางาน</h2>
+                <p className="text-slate-500 text-xs mt-0.5">
+                  ป่วย กิจ พักร้อน
+                </p>
+              </div>
+            </div>
           </div>
         </Link>
-        
+
         <Link href="/wfh/history" className="block w-full">
-          <div className="bg-white border-2 border-slate-100 hover:border-slate-200 text-slate-700 p-5 rounded-2xl flex items-center justify-between transition shadow-md active:scale-[0.98] group h-full">
-              <div className="flex items-center space-x-3">
-                <div className="bg-slate-50 p-2.5 rounded-xl group-hover:bg-slate-100 transition text-pink-400 group-hover:text-pink-600 border border-slate-100">
-                  <Clock size={20} />
-                </div>
-                <div className="text-left">
-                  <h2 className="font-bold text-lg text-slate-800">ประวัติของฉัน</h2>
-                  <p className="text-slate-500 text-xs mt-0.5">การลงเวลา/ลางาน</p>
-                </div>
+          <div className="bg-white border-2 border-slate-100 dark:border-zinc-800 hover:border-slate-200 text-slate-700 p-5 rounded-2xl flex items-center justify-between transition shadow-md active:scale-[0.98] group h-full">
+            <div className="flex items-center space-x-3">
+              <div className="bg-slate-50 dark:bg-zinc-900 p-2.5 rounded-xl group-hover:bg-slate-100 transition text-pink-400 group-hover:text-pink-600 border border-slate-100 dark:border-zinc-800">
+                <Clock size={20} />
               </div>
+              <div className="text-left">
+                <h2 className="font-bold text-lg text-slate-800">
+                  ประวัติของฉัน
+                </h2>
+                <p className="text-slate-500 dark:text-zinc-400 text-xs mt-0.5">
+                  การลงเวลา/ลางาน
+                </p>
+              </div>
+            </div>
+          </div>
+        </Link>
+
+        <Link href="/work-report" className="block w-full sm:col-span-2">
+          <div className="bg-white dark:bg-zinc-900 border-2 border-slate-100 dark:border-zinc-800 hover:border-blue-200 dark:hover:border-blue-900/50 text-slate-700 p-5 rounded-2xl flex items-center justify-between transition shadow-md active:scale-[0.98] group h-full">
+            <div className="flex items-center space-x-3">
+              <div className="bg-blue-50 dark:bg-blue-900/20 p-2.5 rounded-xl group-hover:bg-blue-100 dark:group-hover:bg-blue-900/40 transition text-blue-500 group-hover:text-blue-600 border border-blue-100 dark:border-blue-900/30">
+                <FileText size={20} />
+              </div>
+              <div className="text-left">
+                <h2 className="font-bold text-lg text-slate-800 dark:text-zinc-200">
+                  รายงานการปฏิบัติงาน
+                </h2>
+                <p className="text-slate-500 dark:text-zinc-400 text-xs mt-0.5">
+                  บันทึกสรุปงานที่ทำประจำวัน
+                </p>
+              </div>
+            </div>
+            <div className="bg-blue-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+              <Plus size={16} />
+            </div>
           </div>
         </Link>
       </div>
