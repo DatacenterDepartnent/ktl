@@ -9,7 +9,8 @@ import { ObjectId } from 'mongodb';
 
 // พิกัดวิทยาลัย KTLTC (82 หมู่ 1 ต.จานใหญ่ อ.กันทรลักษ์ จ.ศรีสะเกษ)
 const COLLEGE_LOCATION = { lat: 14.754043, lng: 104.65807 };
-const ALLOWED_RADIUS = 200; // 200 Meters (within 200m = In-Site, else = Remote)
+const IN_SITE_THRESHOLD = 200; // 200 Meters
+const MAX_ALLOWED_DISTANCE = 200000; // 200 Kilometers (WFH/Remote Limit)
 
 export async function POST(req: Request) {
   try {
@@ -30,17 +31,12 @@ export async function POST(req: Request) {
     let distance = -1;
     if (lat && lng) {
       distance = calculateDistance(COLLEGE_LOCATION.lat, COLLEGE_LOCATION.lng, lat, lng);
-      // ในระยะ 200 เมตรคืออยู่ในพื้นที่ (In-Site) นอกเหนือจากนั้นคือ Remote
-      // แต่อนุญาตให้ลงเวลาได้สูงสุดในระยะ 200 กิโลเมตร
-      if (distance <= 200) {
-        statusTag = 'In-Site';
-      } else if (distance <= ALLOWED_RADIUS) {
-        statusTag = 'Remote';
+      // ในระยะ 200 กิโลเมตร ระบุเป็น อยู่ในพื้นที่
+      // อยู่นอกระยะ 200 กิโลเมตร ให้ระบุว่า อยู่นอกพื้นที่
+      if (distance <= MAX_ALLOWED_DISTANCE) {
+        statusTag = 'อยู่ในพื้นที่';
       } else {
-        return NextResponse.json({ 
-          success: false, 
-          message: `พิกัดของคุณอยู่นอกระยะที่กำหนด (${(distance / 1000).toFixed(2)} กม. จากสำนักงานใหญ่)` 
-        }, { status: 400 });
+        statusTag = 'อยู่นอกพื้นที่';
       }
     }
 

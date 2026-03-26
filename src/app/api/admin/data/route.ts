@@ -23,14 +23,50 @@ export async function GET(req: Request) {
     const limit = parseInt(searchParams.get("limit") || "20");
     const skip = parseInt(searchParams.get("skip") || "0");
     const search = searchParams.get("search") || "";
+    const day = searchParams.get("day");
+    const month = searchParams.get("month");
+    const year = searchParams.get("year");
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
     let matchQuery: any = {};
+    
+    // 1. กรองด้วยตัวเลือก วัน/เดือน/ปี
+    if (day || month || year) {
+      const dateFilter: any = {};
+      const targetField = type === "attendance" ? "date" : type === "leave" ? "startDate" : null;
+
+      if (targetField) {
+        if (year) dateFilter[`$expr`] = { $eq: [{ $year: `$${targetField}` }, parseInt(year)] };
+        if (month) {
+          const mFilter = { $eq: [{ $month: `$${targetField}` }, parseInt(month)] };
+          dateFilter[`$expr`] = dateFilter[`$expr`] ? { $and: [dateFilter[`$expr`], mFilter] } : mFilter;
+        }
+        if (day) {
+          const dFilter = { $eq: [{ $dayOfMonth: `$${targetField}` }, parseInt(day)] };
+          dateFilter[`$expr`] = dateFilter[`$expr`] ? { $and: [dateFilter[`$expr`], dFilter] } : dFilter;
+        }
+      } else if (type === "suvery") {
+        // สำหรับ suvery ใช้ _id (Timestamp)
+        if (year) dateFilter[`$expr`] = { $eq: [{ $year: { $toDate: "$_id" } }, parseInt(year)] };
+        if (month) {
+          const mFilter = { $eq: [{ $month: { $toDate: "$_id" } }, parseInt(month)] };
+          dateFilter[`$expr`] = dateFilter[`$expr`] ? { $and: [dateFilter[`$expr`], mFilter] } : mFilter;
+        }
+        if (day) {
+          const dFilter = { $eq: [{ $dayOfMonth: { $toDate: "$_id" } }, parseInt(day)] };
+          dateFilter[`$expr`] = dateFilter[`$expr`] ? { $and: [dateFilter[`$expr`], dFilter] } : dFilter;
+        }
+      }
+      matchQuery = { ...dateFilter };
+    }
+
+    // 2. กรองด้วยคำค้นหา (Search)
     if (search) {
+      let searchMatch: any = {};
       if (ObjectId.isValid(search)) {
-        matchQuery = { 
+        searchMatch = { 
           $or: [
             { _id: new ObjectId(search) }, 
             { userId: new ObjectId(search) }, 
@@ -38,7 +74,6 @@ export async function GET(req: Request) {
           ] 
         };
       } else {
-        // ค้นหา User ก่อนเพื่อเอา ID มาใช้ใน matchQuery
         const matchingUsers = await db.collection("users").find({
           $or: [
             { name: { $regex: search, $options: "i" } },
@@ -50,7 +85,7 @@ export async function GET(req: Request) {
         const userIds = matchingUsers.map(u => u._id);
         const userIdsStrings = userIds.map(id => id.toString());
         
-        matchQuery = {
+        searchMatch = {
           $or: [
             { userId: { $in: userIds } },
             { userId: { $in: userIdsStrings } },
@@ -58,6 +93,12 @@ export async function GET(req: Request) {
             { studentId: { $regex: search, $options: "i" } }
           ]
         };
+      }
+      // รวม MatchQuery
+      if (Object.keys(matchQuery).length > 0) {
+        matchQuery = { $and: [matchQuery, searchMatch] };
+      } else {
+        matchQuery = searchMatch;
       }
     }
 

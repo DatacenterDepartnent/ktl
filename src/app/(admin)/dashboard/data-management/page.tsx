@@ -38,6 +38,10 @@ export default function DataManagementPage() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [filterDay, setFilterDay] = useState("");
+  const [filterMonth, setFilterMonth] = useState("");
+  const [filterYear, setFilterYear] = useState(new Date().getFullYear().toString());
+
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editFormData, setEditFormData] = useState<any>({});
 
@@ -63,6 +67,63 @@ export default function DataManagementPage() {
     }
   };
 
+  const formatDateParts = (dateStr: any) => {
+    if (!dateStr) return { day: "-", month: "-", year: "-" };
+    try {
+      const d = new Date(dateStr);
+      return {
+        day: format(d, "dd"),
+        month: format(d, "MMM", { locale: th }),
+        year: format(d, "yyyy", { locale: th }),
+        full: format(d, "yyyy-MM-dd") // สำหรับ Input "date"
+      };
+    } catch (e) {
+      return { day: "-", month: "-", year: "-" };
+    }
+  };
+
+  // ดึงเวลาสำหรับ Input "time" (HH:mm) ในเขตเวลาไทย (UTC+7)
+  const getTHTime = (dateStr: any) => {
+    if (!dateStr) return "";
+    try {
+      const d = new Date(dateStr);
+      // ปรับเป็นเวลาไทย (UTC+7)
+      const thTime = new Date(d.getTime() + 7 * 60 * 60 * 1000);
+      return format(thTime, "HH:mm");
+    } catch (e) {
+      return "";
+    }
+  };
+
+  // รวมเวลา HH:mm กับวันที่เดิม (Date) เพื่อบันทึกกลับเป็น UTC
+  const mergeTimeWithDate = (originalDateStr: any, thTimeStr: string) => {
+    if (!thTimeStr || !originalDateStr) return null;
+    try {
+      const d = new Date(originalDateStr);
+      const [hours, minutes] = thTimeStr.split(":").map(Number);
+      
+      // ตั้งเวลาในเขตเวลาไทย (เราหักลบ 7 ชม. เพื่อเป็น UTC)
+      const utcDate = new Date(d.getTime());
+      utcDate.setUTCHours(hours - 7, minutes, 0, 0);
+      return utcDate.toISOString();
+    } catch (e) {
+      return null;
+    }
+  };
+
+  // แผนผังการแปลสถานะเป็นภาษาไทย
+  const STATUS_TH: Record<string, string> = {
+    // Attendance
+    Present: "มาทำงาน",
+    Late: "มาสาย",
+    Leave: "ลาพักผ่อน",
+    Absent: "ขาดงาน",
+    // Leave Requests
+    pending: "รออนุมัติ",
+    approved: "อนุมัติแล้ว",
+    rejected: "ปฏิเสธ",
+  };
+
   /**
    * Fetch Data (Optimized)
    */
@@ -84,7 +145,11 @@ export default function DataManagementPage() {
 
     try {
       const currentSkip = isLoadMore ? skip + LIMIT : 0;
-      const url = `/api/admin/data?type=${tab}&limit=${LIMIT}&skip=${currentSkip}&search=${encodeURIComponent(search)}&_t=${Date.now()}`;
+      let url = `/api/admin/data?type=${tab}&limit=${LIMIT}&skip=${currentSkip}&search=${encodeURIComponent(search)}&_t=${Date.now()}`;
+      
+      if (filterDay) url += `&day=${filterDay}`;
+      if (filterMonth) url += `&month=${filterMonth}`;
+      if (filterYear) url += `&year=${filterYear}`;
 
       const res = await fetch(url, { signal: controller.signal });
       if (!res.ok) throw new Error("Fetch failed");
@@ -115,11 +180,11 @@ export default function DataManagementPage() {
     return () => clearTimeout(timer);
   }, [searchQuery]);
 
-  // Initial Load & Tab/Search Change
+  // Initial Load & Tab/Search/Filter Change
   useEffect(() => {
     fetchData(false, activeTab, debouncedSearch);
     return () => abortControllerRef.current?.abort();
-  }, [activeTab, debouncedSearch]);
+  }, [activeTab, debouncedSearch, filterDay, filterMonth, filterYear]);
 
   /**
    * Action Handlers
@@ -142,19 +207,57 @@ export default function DataManagementPage() {
 
   const handleEdit = (record: any) => {
     setEditingId(record._id);
-    setEditFormData({ ...record });
+    // เตรียมข้อมูลสำหรับการแก้ไข - แปลงเวลาเป็น HH:mm สำหรับ Input "time"
+    setEditFormData({ 
+      ...record,
+      checkInTimeOnly: getTHTime(record.checkIn?.time),
+      checkOutTimeOnly: getTHTime(record.checkOut?.time),
+      dateOnly: formatDateParts(record.date || record.startDate).full
+    });
   };
 
   const handleSaveEdit = async () => {
     const toastId = toast.loading("กำลังบันทึก...");
     try {
+      // รวมเวลาที่แก้ไขเข้ากับวันที่เดิม
+      const finalUpdates = { ...editFormData };
+      
+      if (activeTab === "attendance") {
+        if (finalUpdates.dateOnly) {
+          finalUpdates.date = new Date(finalUpdates.dateOnly);
+        }
+        if (finalUpdates.checkInTimeOnly) {
+          finalUpdates.checkIn = {
+            ...finalUpdates.checkIn,
+            time: mergeTimeWithDate(finalUpdates.date || finalUpdates.checkIn?.time, finalUpdates.checkInTimeOnly)
+          };
+        }
+        if (finalUpdates.checkOutTimeOnly) {
+          finalUpdates.checkOut = {
+            ...finalUpdates.checkOut,
+            time: mergeTimeWithDate(finalUpdates.date || finalUpdates.checkOut?.time || finalUpdates.checkIn?.time, finalUpdates.checkOutTimeOnly)
+          };
+        }
+        // ลบฟิลด์ชั่วคราวออกก่อนส่ง API
+        delete finalUpdates.checkInTimeOnly;
+        delete finalUpdates.checkOutTimeOnly;
+        delete finalUpdates.dateOnly;
+      }
+
+      if (activeTab === "leave") {
+        if (finalUpdates.dateOnly) {
+          finalUpdates.startDate = new Date(finalUpdates.dateOnly);
+          delete finalUpdates.dateOnly;
+        }
+      }
+
       const res = await fetch(`/api/admin/data`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id: editingId,
           type: activeTab,
-          updates: editFormData,
+          updates: finalUpdates,
         }),
       });
       const json = await res.json();
@@ -260,6 +363,70 @@ export default function DataManagementPage() {
           ))}
         </div>
 
+        {/* Filter Bar */}
+        <div className="flex flex-wrap items-center gap-4 bg-white dark:bg-zinc-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-zinc-800">
+          <div className="flex items-center gap-2">
+            <ShieldCheck size={18} className="text-rose-500" />
+            <span className="text-sm font-black text-slate-700 dark:text-zinc-200 uppercase tracking-tight">
+              กรองตามวันที่:
+            </span>
+          </div>
+          
+          <div className="flex gap-2">
+            {/* Day */}
+            <select
+              value={filterDay}
+              onChange={(e) => setFilterDay(e.target.value)}
+              className="px-4 py-2 bg-slate-50 dark:bg-zinc-800 border-none rounded-xl text-sm font-bold text-slate-600 dark:text-zinc-300 outline-none focus:ring-2 focus:ring-rose-500/20"
+            >
+              <option value="">ทุกวัน</option>
+              {Array.from({ length: 31 }, (_, i) => (
+                <option key={i + 1} value={i + 1}>
+                  วันที่ {i + 1}
+                </option>
+              ))}
+            </select>
+
+            {/* Month */}
+            <select
+              value={filterMonth}
+              onChange={(e) => setFilterMonth(e.target.value)}
+              className="px-4 py-2 bg-slate-50 dark:bg-zinc-800 border-none rounded-xl text-sm font-bold text-slate-600 dark:text-zinc-300 outline-none focus:ring-2 focus:ring-rose-500/20"
+            >
+              <option value="">ทุกเดือน</option>
+              {[
+                "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+                "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+              ].map((m, i) => (
+                <option key={i + 1} value={i + 1}>{m}</option>
+              ))}
+            </select>
+
+            {/* Year */}
+            <select
+              value={filterYear}
+              onChange={(e) => setFilterYear(e.target.value)}
+              className="px-4 py-2 bg-slate-50 dark:bg-zinc-800 border-none rounded-xl text-sm font-bold text-slate-600 dark:text-zinc-300 outline-none focus:ring-2 focus:ring-rose-500/20"
+            >
+              {[2024, 2025, 2026].map(y => (
+                <option key={y} value={y}>พ.ศ. {y + 543}</option>
+              ))}
+            </select>
+          </div>
+
+          <button
+            onClick={() => {
+              setFilterDay("");
+              setFilterMonth("");
+              setFilterYear(new Date().getFullYear().toString());
+              setSearchQuery("");
+            }}
+            className="ml-auto px-6 py-2 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-500 dark:text-zinc-400 rounded-xl text-xs font-black uppercase tracking-widest transition-colors flex items-center gap-2"
+          >
+            <X size={14} /> ล้างการกรอง
+          </button>
+        </div>
+
         {/* DATA TABLE */}
         <div className="bg-white dark:bg-zinc-900 rounded-4xl shadow-2xl border border-slate-100 dark:border-zinc-800 overflow-hidden">
           <div className="overflow-x-auto">
@@ -327,6 +494,23 @@ export default function DataManagementPage() {
                               </button>
                             </div>
 
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-black text-slate-400 uppercase ml-1">
+                                วันที่
+                              </label>
+                              <input
+                                type="date"
+                                value={editFormData.dateOnly || ""}
+                                onChange={(e) =>
+                                  setEditFormData({
+                                    ...editFormData,
+                                    dateOnly: e.target.value,
+                                  })
+                                }
+                                className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none focus:border-rose-500 font-bold"
+                              />
+                            </div>
+
                             {activeTab === "attendance" ? (
                               <>
                                 <div className="space-y-1">
@@ -343,48 +527,42 @@ export default function DataManagementPage() {
                                     }
                                     className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none focus:border-rose-500 font-bold"
                                   >
-                                    <option value="Present">Present</option>
-                                    <option value="Late">Late</option>
-                                    <option value="Leave">Leave</option>
-                                    <option value="Absent">Absent</option>
+                                    <option value="Present">มาทำงาน (Present)</option>
+                                    <option value="Late">มาสาย (Late)</option>
+                                    <option value="Leave">ลา (Leave)</option>
+                                    <option value="Absent">ขาดงาน (Absent)</option>
                                   </select>
                                 </div>
                                 <div className="space-y-1">
                                   <label className="text-[10px] font-black text-slate-400 uppercase ml-1">
-                                    เวลาเข้า
+                                    เวลาเข้า (TH)
                                   </label>
                                   <input
-                                    type="text"
-                                    value={editFormData.checkIn?.time || ""}
+                                    type="time"
+                                    value={editFormData.checkInTimeOnly || ""}
                                     onChange={(e) =>
                                       setEditFormData({
                                         ...editFormData,
-                                        checkIn: {
-                                          ...editFormData.checkIn,
-                                          time: e.target.value,
-                                        },
+                                        checkInTimeOnly: e.target.value,
                                       })
                                     }
-                                    className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none font-mono text-sm"
+                                    className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none focus:border-rose-500 font-bold"
                                   />
                                 </div>
                                 <div className="space-y-1">
                                   <label className="text-[10px] font-black text-slate-400 uppercase ml-1">
-                                    เวลาออก
+                                    เวลาออก (TH)
                                   </label>
                                   <input
-                                    type="text"
-                                    value={editFormData.checkOut?.time || ""}
+                                    type="time"
+                                    value={editFormData.checkOutTimeOnly || ""}
                                     onChange={(e) =>
                                       setEditFormData({
                                         ...editFormData,
-                                        checkOut: {
-                                          ...editFormData.checkOut,
-                                          time: e.target.value,
-                                        },
+                                        checkOutTimeOnly: e.target.value,
                                       })
                                     }
-                                    className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none font-mono text-sm"
+                                    className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none focus:border-rose-500 font-bold"
                                   />
                                 </div>
                               </>
@@ -404,9 +582,9 @@ export default function DataManagementPage() {
                                     }
                                     className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none"
                                   >
-                                    <option value="pending">pending</option>
-                                    <option value="approved">approved</option>
-                                    <option value="rejected">rejected</option>
+                                    <option value="pending">รออนุมัติ (pending)</option>
+                                    <option value="approved">อนุมัติแล้ว (approved)</option>
+                                    <option value="rejected">ปฏิเสธ (rejected)</option>
                                   </select>
                                 </div>
                                 <div className="space-y-1 md:col-span-3">
@@ -518,12 +696,23 @@ export default function DataManagementPage() {
                             </div>
                           </td>
                           <td className="px-8 py-5">
-                            <div className="font-bold text-slate-600 dark:text-zinc-400 text-sm">
-                              {activeTab === "attendance"
-                                ? formatDate(record.date)
-                                : activeTab === "leave"
-                                  ? formatDate(record.startDate)
-                                  : "N/A"}
+                            <div className="flex items-center gap-3">
+                              <div className="flex flex-col items-center justify-center w-12 h-12 bg-slate-50 dark:bg-zinc-800 rounded-2xl border border-slate-100 dark:border-zinc-700/50 shadow-sm group-hover:bg-white dark:group-hover:bg-zinc-700 transition-colors">
+                                <span className="text-lg font-black text-slate-700 dark:text-zinc-200 leading-none">
+                                  {formatDateParts(activeTab === "attendance" ? record.date : record.startDate).day}
+                                </span>
+                                <span className="text-[9px] font-black text-slate-400 uppercase mt-0.5">
+                                  {formatDateParts(activeTab === "attendance" ? record.date : record.startDate).month}
+                                </span>
+                              </div>
+                              <div className="flex flex-col">
+                                <span className="text-[11px] font-black text-slate-400 uppercase leading-none">
+                                  ปี พ.ศ.
+                                </span>
+                                <span className="text-sm font-bold text-slate-600 dark:text-zinc-300">
+                                  {formatDateParts(activeTab === "attendance" ? record.date : record.startDate).year}
+                                </span>
+                              </div>
                             </div>
                           </td>
                           <td className="px-8 py-5">
@@ -568,7 +757,7 @@ export default function DataManagementPage() {
                             >
                               {activeTab === "suvery"
                                 ? record.currentStatus || "ไม่ทราบ"
-                                : record.status}
+                                : STATUS_TH[record.status] || record.status}
                             </span>
                           </td>
                           <td className="px-8 py-5">

@@ -14,9 +14,10 @@ const icon = L.icon({
   iconAnchor: [12, 41],
 });
 
-// พิกัดวิทยาลัยเทคนิคกันทรลักษ์ (82 หมู่ 1 ต.จานใหญ่ อ.กันทรลักษ์ จ.ศรีสะเกษ 33110)
+// พิกัดวิทยาลัยเทคนิคกันทรลักษ์
 const COLLEGE_LOCATION = [14.754043, 104.65807];
-const ALLOWED_RADIUS = 200; // 200 meters
+const IN_SITE_RADIUS = 200; // 200 Meters (Office Boundary)
+const MAX_RADIUS = 200000; // 200 Kilometers (Allowed Area)
 
 export default function MapDashboard({ markers }: { markers: any[] }) {
   if (typeof window === 'undefined') return null;
@@ -34,12 +35,25 @@ export default function MapDashboard({ markers }: { markers: any[] }) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         
-        {/* Geofencing Radius */}
+        {/* 200 KM Radius (Outer Area) */}
         <Circle
           center={COLLEGE_LOCATION}
-          radius={ALLOWED_RADIUS}
+          radius={MAX_RADIUS}
           pathOptions={{ 
-            color: '#3b82f6', 
+            color: '#10b981', // emerald-500
+            fillColor: '#10b981', 
+            fillOpacity: 0.05,
+            weight: 2,
+            dashArray: '10, 10'
+          }}
+        />
+
+        {/* 200 M Radius (Office Boundary) */}
+        <Circle
+          center={COLLEGE_LOCATION}
+          radius={IN_SITE_RADIUS}
+          pathOptions={{ 
+            color: '#3b82f6', // blue-500
             fillColor: '#3b82f6', 
             fillOpacity: 0.15,
             weight: 2,

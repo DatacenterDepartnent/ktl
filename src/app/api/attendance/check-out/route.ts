@@ -2,6 +2,13 @@ import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { ObjectId } from 'mongodb';
+import { calculateDistance } from '@/lib/geoDistance';
+import { format } from 'date-fns';
+import { th } from 'date-fns/locale';
+
+// พิกัดวิทยาลัย KTLTC
+const COLLEGE_LOCATION = { lat: 14.754043, lng: 104.65807 };
+const MAX_ALLOWED_DISTANCE = 200000; // 200 Kilometers
 
 export async function POST(req: Request) {
   try {
@@ -14,6 +21,14 @@ export async function POST(req: Request) {
 
     const data = await req.json();
     const { lat, lng, photoUrl, address } = data;
+
+    // Note: We process distance but no longer block check-outs if they are > 200km.
+    // The policy is to label them, but check-out doesn't store a statusTag right now.
+    // If needed, we can store checkout statusTag in the future.
+    if (lat && lng) {
+      const distance = calculateDistance(COLLEGE_LOCATION.lat, COLLEGE_LOCATION.lng, lat, lng);
+      // Just allowing it through based on requirements.
+    }
 
     const serverTime = new Date();
     const client = await clientPromise;
