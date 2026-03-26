@@ -45,7 +45,16 @@ export async function POST(req: Request) {
       const startStr = format(new Date(startDate), 'dd MMM yy', { locale: th });
       const endStr = format(new Date(endDate), 'dd MMM yy', { locale: th });
       
-      const typeLabel = leaveType === 'sick' ? 'ลาป่วย' : leaveType === 'personal' ? 'ลากิจ' : leaveType === 'vacation' ? 'ลาพักร้อน' : leaveType === 'maternity' ? 'ลาคลอด' : 'อื่นๆ';
+      const typeLabels: Record<string, string> = {
+        sick: "ลาป่วย",
+        personal: "ลากิจส่วนตัว",
+        paternity: "ลาช่วยเหลือภริยาที่คลอดบุตร",
+        maternity: "ลาคลอด",
+        ordination: "ลาอุปสมบท",
+        official: "ไปราชการ",
+        other: "อื่นๆ"
+      };
+      const typeLabel = typeLabels[leaveType] || leaveType;
 
       const lineMessage = `\n📝 แจ้งฝากใบลา\nพนักงาน: ${userName}\nประเภท: ${typeLabel}\nตั้งแต่วันที่: ${startStr} ถึง ${endStr}\nเหตุผล: ${reason}`;
       await sendLineNotify(lineMessage);

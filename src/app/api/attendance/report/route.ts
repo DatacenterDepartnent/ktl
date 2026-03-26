@@ -2,7 +2,10 @@ import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/db';
 import { auth } from '@/lib/auth';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: Request) {
+  console.log(`[API] Attendance Report Request: ${req.url}`);
   const start = Date.now();
   try {
     const session = await auth();
@@ -24,7 +27,7 @@ export async function GET(req: Request) {
       };
     } else {
       const today = new Date();
-      today.setHours(0, 0, 0, 0);
+      today.setUTCHours(0, 0, 0, 0);
       dateQuery = today;
     }
 

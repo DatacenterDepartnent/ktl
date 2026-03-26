@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/db';
 import { auth } from '@/lib/auth';
-
+ 
+export const dynamic = 'force-dynamic';
+ 
 export async function GET(req: Request) {
+  console.log(`[API] Dashboard Stats Request: ${req.url}`);
   const start = Date.now();
   try {
     const session = await auth();
@@ -15,8 +18,16 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const dateParam = searchParams.get('date');
 
-    const targetDate = dateParam ? new Date(dateParam) : new Date();
+    // จัดการเรื่องวันที่ให้แม่นยำ (เป้าหมายคือ ISO 00:00:00.000Z)
+    let targetDate: Date;
+    if (dateParam) {
+      targetDate = new Date(dateParam);
+    } else {
+      targetDate = new Date();
+    }
     targetDate.setUTCHours(0, 0, 0, 0);
+    
+    console.log(`[API] Filtering by date: ${targetDate.toISOString()}`);
 
     // 1. Aggregate Stats using Native Driver
     const stats = await db.collection("attendances").aggregate([

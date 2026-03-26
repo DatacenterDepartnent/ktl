@@ -85,11 +85,16 @@ export default function LeaveRequestPage() {
     if (quotas && formData.leaveType !== "other") {
       const remaining = quotas[formData.leaveType]?.remaining || 0;
       if (requestedDays > remaining) {
-        return alert(`❌ ไม่สามารถลางานได้ เนื่องจากสิทธิ์ลา${
-          formData.leaveType === "sick" ? "ป่วย" : 
-          formData.leaveType === "personal" ? "กิจ" : 
-          formData.leaveType === "vacation" ? "พักร้อน" : "คลอด"
-        } คงเหลือเพียง ${remaining} วัน (คุณร้องขอ ${requestedDays} วัน)`);
+        const typeLabels: any = {
+          sick: "ลาป่วย",
+          personal: "ลากิจส่วนตัว",
+          paternity: "ลาช่วยเหลือภริยาที่คลอดบุตร",
+          maternity: "ลาคลอด",
+          ordination: "ลาอุปสมบท",
+          official: "ไปราชการ",
+          other: "อื่นๆ"
+        };
+        return alert(`❌ ไม่สามารถลางานได้ เนื่องจากสิทธิ์${typeLabels[formData.leaveType] || 'ลา'} คงเหลือเพียง ${remaining} วัน (คุณร้องขอ ${requestedDays} วัน)`);
       }
     }
     
@@ -143,9 +148,12 @@ export default function LeaveRequestPage() {
             <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex overflow-x-auto pb-2 gap-3 snap-x hide-scrollbar">
               {[
                 { key: "sick", label: "ลาป่วย", color: "bg-rose-50 text-rose-600 border-rose-200" },
-                { key: "personal", label: "ลากิจ", color: "bg-blue-50 text-blue-600 border-blue-200" },
-                { key: "vacation", label: "ลาพักร้อน", color: "bg-emerald-50 text-emerald-600 border-emerald-200" }
-              ].map(q => (
+                { key: "personal", label: "ลากิจส่วนตัว", color: "bg-blue-50 text-blue-600 border-blue-200" },
+                { key: "paternity", label: "ลาช่วยเหลือภริยา", color: "bg-indigo-50 text-indigo-600 border-indigo-200" },
+                { key: "maternity", label: "ลาคลอด", color: "bg-pink-50 text-pink-600 border-pink-200" },
+                { key: "ordination", label: "ลาอุปสมบท", color: "bg-amber-50 text-amber-600 border-amber-200" },
+                { key: "official", label: "ไปราชการ", color: "bg-slate-50 text-slate-600 border-slate-200" }
+              ].map(q => quotas[q.key] && (
                 <div key={q.key} className={`flex-none snap-start min-w-[140px] px-4 py-3 rounded-2xl border ${q.color} bg-white/60 dark:bg-zinc-900 backdrop-blur-sm shadow-sm`}>
                    <div className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-1">{q.label}</div>
                    <div className="flex items-baseline gap-1">
@@ -186,9 +194,11 @@ export default function LeaveRequestPage() {
                     className="w-full p-4 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-slate-800 dark:text-white font-medium"
                   >
                     <option value="sick">ลาป่วย (Sick Leave)</option>
-                    <option value="personal">ลากิจ (Personal Leave)</option>
-                    <option value="vacation">ลาพักร้อน (Vacation Leave)</option>
+                    <option value="personal">ลากิจส่วนตัว (Personal Leave)</option>
+                    <option value="paternity">ลาช่วยเหลือภริยาที่คลอดบุตร (Paternity Leave)</option>
                     <option value="maternity">ลาคลอด (Maternity Leave)</option>
+                    <option value="ordination">ลาอุปสมบท (Ordination Leave)</option>
+                    <option value="official">ไปราชการ (Official Business)</option>
                     <option value="other">อื่นๆ (Other)</option>
                   </select>
                 </div>

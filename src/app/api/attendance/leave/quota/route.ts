@@ -5,10 +5,12 @@ import { ObjectId } from "mongodb";
 // Fixed Quotas per year (in days)
 const QUOTAS = {
   sick: 30, // ลาป่วย
-  personal: 15, // ลากิจ
-  vacation: 10, // ลาพักร้อน
-  maternity: 90, // ลาคลอด
-  other: 0 // ไม่มีโควตา/ไม่จำกัด
+  personal: 15, // ลากิจส่วนตัว
+  paternity: 15, // ลาช่วยเหลือภริยาที่คลอดบุตร
+  maternity: 98, // ลาคลอด
+  ordination: 120, // ลาอุปสมบท
+  official: 999, // ไปราชการ
+  other: 999 // อื่นๆ
 };
 
 export async function GET() {
@@ -35,7 +37,15 @@ export async function GET() {
     }).toArray();
 
     // Calculate usage
-    const usage = { sick: 0, personal: 0, vacation: 0, maternity: 0, other: 0 };
+    const usage = { 
+      sick: 0, 
+      personal: 0, 
+      paternity: 0, 
+      maternity: 0, 
+      ordination: 0, 
+      official: 0, 
+      other: 0 
+    };
 
     leaves.forEach(leave => {
       const start = new Date(leave.startDate);

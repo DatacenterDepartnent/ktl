@@ -153,10 +153,10 @@ export default function AttendanceReportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-neutral-950 p-6 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-neutral-950 py-4 px-2 font-sans">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-neutral-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-neutral-800">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-neutral-900 p-3 rounded-3xl shadow-sm border border-slate-100 dark:border-neutral-800">
           <div className="flex items-center gap-4">
             <div className="p-4 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-2xl">
               <FileText size={28} />
@@ -180,7 +180,7 @@ export default function AttendanceReportPage() {
         </div>
 
         {/* Filter Section */}
-        <div className="bg-white dark:bg-neutral-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-neutral-800 grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+        <div className="bg-white dark:bg-neutral-900 p-3 rounded-3xl shadow-sm border border-slate-100 dark:border-neutral-800 grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
           <div className="w-full">
             <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">
               ค้นหารายชื่อพนักงาน
@@ -231,118 +231,126 @@ export default function AttendanceReportPage() {
         </p>
 
         {/* Table Section */}
-        <div className="bg-white dark:bg-neutral-900 rounded-3xl shadow-sm border border-slate-100 dark:border-neutral-800 overflow-hidden">
+        <div className="bg-white dark:bg-neutral-900 rounded-2xl md:rounded-3xl shadow-sm border border-slate-100 dark:border-neutral-800 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-left border-collapse min-w-[700px] md:min-w-full">
               <thead>
-                <tr className="bg-slate-50 dark:bg-neutral-800/50 border-b border-slate-100 dark:border-neutral-800 text-slate-500 dark:text-neutral-400">
-                  <th className="px-6 py-4 font-bold text-sm">วันที่</th>
-                  <th className="px-6 py-4 font-bold text-sm">
-                    ชื่อ-นามสกุลพนักงาน
+                <tr className="bg-slate-50/50 dark:bg-neutral-800/50 border-b border-slate-100 dark:border-neutral-800 text-slate-500 dark:text-neutral-400">
+                  {/* ปรับ text-xs สำหรับมือถือ และ text-sm สำหรับจอใหญ่ */}
+                  <th className="px-3 md:px-4 py-3 font-bold text-xs md:text-sm whitespace-nowrap">
+                    วันที่
                   </th>
-                  <th className="px-6 py-4 font-bold text-sm">
-                    เวลาเข้างาน
-                    <span className="ml-1 text-sky-600 font-normal text-xs">
-                      (📷 = มีรูป)
+                  <th className="px-3 md:px-4 py-3 font-bold text-xs md:text-sm whitespace-nowrap">
+                    พนักงาน
+                  </th>
+                  <th className="px-3 md:px-4 py-3 font-bold text-xs md:text-sm whitespace-nowrap">
+                    เข้างาน{" "}
+                    <span className="hidden sm:inline text-[10px] text-sky-600 font-normal">
+                      (📷=มีรูป)
                     </span>
                   </th>
-                  <th className="px-6 py-4 font-bold text-sm">
-                    เวลาออกงาน
-                    <span className="ml-1 text-sky-600 font-normal text-xs">
-                      (📷 = มีรูป)
+                  <th className="px-3 md:px-4 py-3 font-bold text-xs md:text-sm whitespace-nowrap">
+                    ออกงาน{" "}
+                    <span className="hidden sm:inline text-[10px] text-sky-600 font-normal">
+                      (📷=มีรูป)
                     </span>
                   </th>
-                  <th className="px-6 py-4 font-bold text-sm text-center">
-                    ชั่วโมง OT
+                  <th className="px-3 md:px-4 py-3 font-bold text-xs md:text-sm text-center">
+                    OT
                   </th>
-                  <th className="px-6 py-4 font-bold text-sm">สถานะการทำงาน</th>
+                  <th className="px-3 md:px-4 py-3 font-bold text-xs md:text-sm">
+                    สถานะ
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-neutral-800">
                 {loading ? (
                   <tr>
-                    <td
-                      colSpan={6}
-                      className="px-6 py-12 text-center text-slate-400"
-                    >
+                    <td colSpan={6} className="px-6 py-12 text-center">
                       <Loader2
-                        size={32}
+                        size={24}
                         className="animate-spin mx-auto mb-2 text-blue-500"
                       />
-                      กำลังโหลดข้อมูล...
+                      <span className="text-xs md:text-sm text-slate-400">
+                        กำลังโหลด...
+                      </span>
                     </td>
                   </tr>
                 ) : filteredRecords.length === 0 ? (
                   <tr>
                     <td
                       colSpan={6}
-                      className="px-6 py-12 text-center text-slate-400 font-medium"
+                      className="px-6 py-12 text-center text-xs md:text-sm text-slate-400 font-medium"
                     >
-                      ไม่พบข้อมูลการลงเวลาในช่วงนี้
+                      ไม่พบข้อมูลการลงเวลา
                     </td>
                   </tr>
                 ) : (
                   filteredRecords.map((r) => (
                     <tr
                       key={r.id}
-                      className="hover:bg-slate-50 dark:hover:bg-neutral-800/50 transition"
+                      className="hover:bg-slate-50/80 dark:hover:bg-neutral-800/40 transition-colors"
                     >
-                      <td className="px-6 py-4 text-sm font-semibold text-slate-700 dark:text-neutral-300">
+                      {/* วันที่: ปรับขนาดฟอนต์ให้เล็กลงในมือถือ */}
+                      <td className="px-3 md:px-4 py-3 text-xs md:text-sm font-medium text-slate-700 dark:text-neutral-300 whitespace-nowrap">
                         {new Date(r.date).toLocaleDateString("th-TH", {
                           day: "numeric",
                           month: "short",
-                          year: "numeric",
+                          year: "2-digit", // ใช้ปีแบบสั้นเพื่อประหยัดพื้นที่
                         })}
                       </td>
-                      <td className="px-6 py-4 flex items-center gap-3">
-                        <div>
-                          <p className="font-bold text-slate-800 dark:text-neutral-200">
+
+                      {/* ข้อมูลพนักงาน: ใช้ลอจิกซ่อน Email ในจอเล็กเพื่อประหยัดพื้นที่ */}
+                      <td className="px-3 md:px-4 py-3">
+                        <div className="max-w-[120px] md:max-w-none">
+                          <p className="font-bold text-xs md:text-sm text-slate-800 dark:text-neutral-200 truncate">
                             {r.user.name}
                           </p>
-                          <p className="text-xs text-slate-500">
-                            {r.user.email || "No email"}
+                          <p className="text-[10px] md:text-xs text-slate-500 truncate hidden md:block">
+                            {r.user.email}
                           </p>
                         </div>
                       </td>
 
-                      {/* เวลาเข้า — กดได้ถ้ามีรูป */}
-                      <td className="px-6 py-4">
+                      {/* เวลาเข้า/ออก: ใช้ขนาดตัวอักษรที่ยืดหยุ่น */}
+                      <td className="px-3 md:px-4 py-3">
                         <TimeCell
                           time={r.checkInTime}
                           photoUrl={r.photoUrl}
-                          label="เข้างาน"
-                          colorClass="text-green-600 dark:text-green-400"
+                          label="เข้า"
+                          colorClass="text-green-600 dark:text-green-400 text-xs md:text-sm"
                         />
                       </td>
 
-                      {/* เวลาออก — กดได้ถ้ามีรูป */}
-                      <td className="px-6 py-4">
+                      <td className="px-3 md:px-4 py-3">
                         <TimeCell
                           time={r.checkOutTime}
                           photoUrl={r.checkOutPhotoUrl}
-                          label="ออกงาน"
-                          colorClass="text-orange-500 dark:text-orange-400"
+                          label="ออก"
+                          colorClass="text-orange-500 dark:text-orange-400 text-xs md:text-sm"
                         />
                       </td>
 
-                      <td className="px-6 py-4 text-sm font-bold text-center text-slate-500">
+                      {/* OT: ปรับ Badge ให้เล็กลง */}
+                      <td className="px-3 md:px-4 py-3 text-center">
                         {r.otHours ? (
-                          <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full">
+                          <span className="bg-orange-50 dark:bg-orange-950/30 text-orange-600 dark:text-orange-400 px-2 py-0.5 rounded-full text-[10px] md:text-xs font-bold border border-orange-100 dark:border-orange-900/50">
                             {r.otHours} ชม.
                           </span>
                         ) : (
-                          "-"
+                          <span className="text-slate-300">-</span>
                         )}
                       </td>
 
-                      <td className="px-6 py-4">
+                      {/* สถานะ: ปรับ Padding และ Text Size */}
+                      <td className="px-3 md:px-4 py-3 text-right md:text-left">
                         <span
-                          className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full ${
+                          className={`inline-block px-2 py-0.5 text-[10px] md:text-xs font-bold uppercase tracking-tight rounded-md border ${
                             r.status === "Present"
-                              ? "bg-green-100 text-green-700 border border-green-200"
+                              ? "bg-green-50 text-green-700 border-green-100"
                               : r.status === "Late"
-                                ? "bg-yellow-100 text-yellow-700 border border-yellow-200"
-                                : "bg-red-100 text-red-700 border border-red-200"
+                                ? "bg-yellow-50 text-yellow-700 border-yellow-100"
+                                : "bg-red-50 text-red-700 border-red-100"
                           }`}
                         >
                           {STATUS_TH[r.status] || r.status}

@@ -43,7 +43,7 @@ export default function AdminAttendanceDashboard() {
       setLoading(true);
       try {
         const res = await fetch(
-          `/api/attendance/dashboard?date=${selectedDate}`,
+          `/api/attendance/dashboard?date=${selectedDate}&_t=${Date.now()}`,
         );
         const json = await res.json();
         if (json.success) {
@@ -62,9 +62,9 @@ export default function AdminAttendanceDashboard() {
   const total = data.reduce((acc, curr) => acc + curr.value, 0);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-neutral-950 p-6 font-sans">
+    <div className="min-h-screen bg-gray-50 dark:bg-neutral-950 py-4 px-2 font-sans">
       <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="flex flex-col sm:flex-row py-4 justify-between items-start sm:items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-800 dark:text-neutral-100">
               Attendance Dashboard
@@ -89,7 +89,7 @@ export default function AdminAttendanceDashboard() {
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {/* Stat Cards */}
-          <div className="bg-white dark:bg-neutral-900 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center space-x-4">
+          <div className="bg-white dark:bg-neutral-900 p-2 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center space-x-4">
             <div className="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl">
               <Users size={24} />
             </div>
@@ -98,7 +98,7 @@ export default function AdminAttendanceDashboard() {
               <p className="text-2xl font-bold">{total}</p>
             </div>
           </div>
-          <div className="bg-white dark:bg-neutral-900 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center space-x-4">
+          <div className="bg-white dark:bg-neutral-900 p-2 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center space-x-4">
             <div className="p-3 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-xl">
               <Activity size={24} />
             </div>
@@ -107,7 +107,7 @@ export default function AdminAttendanceDashboard() {
               <p className="text-2xl font-bold">{data[0].value}</p>
             </div>
           </div>
-          <div className="bg-white dark:bg-neutral-900 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center space-x-4">
+          <div className="bg-white dark:bg-neutral-900 p-2 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center space-x-4">
             <div className="p-3 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 rounded-xl">
               <Clock size={24} />
             </div>
@@ -116,7 +116,7 @@ export default function AdminAttendanceDashboard() {
               <p className="text-2xl font-bold">{data[1].value}</p>
             </div>
           </div>
-          <div className="bg-white dark:bg-neutral-900 p-5 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center space-x-4">
+          <div className="bg-white dark:bg-neutral-900 p-2 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center space-x-4">
             <div className="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-xl">
               <AlertTriangle size={24} />
             </div>
