@@ -11,7 +11,9 @@ import {
   AlertCircle,
   ArrowLeft,
   X,
+  Loader2,
 } from "lucide-react";
+import { uploadToCloudinary } from "@/lib/upload";
 
 interface PostersFormProps {
   initialData?: any;
@@ -31,6 +33,26 @@ export default function PostersForm({
     imageUrl: initialData?.imageUrl || "",
     isActive: initialData?.isActive ?? true,
   });
+
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const url = await uploadToCloudinary(file, "ktltc_posters");
+      if (url) {
+        setFormData({ ...formData, imageUrl: url });
+      }
+    } catch (error) {
+      console.error("Upload failed:", error);
+      alert("อัปโหลดรูปภาพไม่สำเร็จ กรุณาลองใหม่อีกครั้ง");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,27 +103,23 @@ export default function PostersForm({
                   </div>
                 </div>
               ) : (
-                <CldUploadWidget
-                  uploadPreset={
-                    process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
-                  }
-                  onSuccess={(result: any) => {
-                    setFormData({
-                      ...formData,
-                      imageUrl: result.info.secure_url,
-                    });
-                    document.body.style.overflow = "auto";
-                  }}
-                  onClose={() => {
-                    document.body.style.overflow = "auto";
-                  }}
-                >
-                  {({ open }) => (
-                    <button
-                      type="button"
-                      onClick={() => open()}
-                      className="w-full aspect-3/4 flex flex-col items-center justify-center gap-4 transition-all"
-                    >
+                <label className="w-full aspect-3/4 flex flex-col items-center justify-center gap-4 transition-all cursor-pointer">
+                  <input
+                    type="file"
+                    className="hidden"
+                    accept="image/*"
+                    disabled={uploading}
+                    onChange={handleFileChange}
+                  />
+                  {uploading ? (
+                    <div className="flex flex-col items-center gap-2">
+                      <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
+                      <p className="text-sm font-bold text-zinc-500">
+                        กำลังอัปโหลด...
+                      </p>
+                    </div>
+                  ) : (
+                    <>
                       <div className="w-16 h-16 rounded-full bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 group-hover:scale-110 transition-transform">
                         <Plus size={32} />
                       </div>
@@ -110,12 +128,12 @@ export default function PostersForm({
                           คลิกเพื่ออัปโหลด
                         </p>
                         <p className="text-xs text-zinc-400 mt-1 text-balance">
-                          รองรับ JPG, PNG (แนะนำขนาดเดิมของภาพ)
+                          รองรับ JPG, PNG (ระบบจะบีบอัดให้อัตโนมัติ)
                         </p>
                       </div>
-                    </button>
+                    </>
                   )}
-                </CldUploadWidget>
+                </label>
               )}
             </div>
           </div>

@@ -75,9 +75,13 @@ async function getDashboardData() {
     const dbStats = await db.stats();
     const dbSizeMB = (dbStats.storageSize / (1024 * 1024)).toFixed(2);
     let cloudUsageMB = "0.00";
+    let cloudLimitMB = 15000; // Default fallback (15GB)
     try {
       const cloudResult = await cloudinary.api.usage();
       cloudUsageMB = (cloudResult.storage.usage / (1024 * 1024)).toFixed(2);
+      if (cloudResult.storage.limit) {
+        cloudLimitMB = Math.round(cloudResult.storage.limit / (1024 * 1024));
+      }
     } catch (err) {
       console.error("Cloudinary Error:", err);
     }
@@ -92,6 +96,7 @@ async function getDashboardData() {
         totalImagesCount,
         dbSizeMB,
         cloudUsageMB,
+        cloudLimitMB,
         totalPendingQA, // ✅ ส่งค่าที่ดึงได้กลับไป (Error จะหายไป)
       },
     };
@@ -162,7 +167,7 @@ export default async function DashboardPage() {
           <UsageCard
             title="Cloudinary"
             value={stats.cloudUsageMB}
-            max={15000}
+            max={stats.cloudLimitMB}
             unit="MB"
             icon="☁️"
             color="blue"
