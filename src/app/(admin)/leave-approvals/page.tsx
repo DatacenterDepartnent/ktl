@@ -9,25 +9,43 @@ import { Calendar, CheckCircle, XCircle, Clock, FileText, ExternalLink, ShieldCh
 export default function LeaveApprovalsPage() {
   const [leaves, setLeaves] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [skip, setSkip] = useState(0);
+  const [hasMore, setHasMore] = useState(true);
   const [filter, setFilter] = useState("pending"); // pending, approved, rejected, all
 
-  const fetchLeaves = async () => {
-    setLoading(true);
+  const LIMIT = 20;
+
+  const fetchLeaves = async (isLoadMore = false) => {
+    if (isLoadMore) setLoadingMore(true);
+    else {
+      setLoading(true);
+      setSkip(0);
+    }
+
     try {
-      const res = await fetch(`/api/admin/leave?status=${filter}`);
+      const currentSkip = isLoadMore ? skip + LIMIT : 0;
+      const res = await fetch(`/api/admin/leave?status=${filter}&limit=${LIMIT}&skip=${currentSkip}`);
       if (res.ok) {
         const data = await res.json();
-        setLeaves(data);
+        if (isLoadMore) {
+          setLeaves(prev => [...prev, ...data]);
+        } else {
+          setLeaves(data);
+        }
+        setSkip(currentSkip);
+        setHasMore(data.length === LIMIT);
       }
     } catch (error) {
       console.error("Failed to fetch leaves", error);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
   useEffect(() => {
-    fetchLeaves();
+    fetchLeaves(false);
   }, [filter]);
 
   const handleStatusUpdate = async (id: string, newStatus: string) => {
@@ -39,7 +57,10 @@ export default function LeaveApprovalsPage() {
         body: JSON.stringify({ id, status: newStatus }),
       });
       if (res.ok) {
-        fetchLeaves(); // Refresh data
+        // Simple way to refresh: refetch first page or remove from current list
+        // For better UX, we'll just refetch the whole visible set or a subset
+        // Here we just refetch the initial state for simplicity
+        fetchLeaves(false); 
       } else {
         alert("ไม่สามารถอัปเดตสถานะได้");
       }
@@ -135,74 +156,100 @@ export default function LeaveApprovalsPage() {
               <p className="text-slate-500 mt-1">ไม่พบคำขอลาในสถานะที่คุณเลือก</p>
             </div>
           ) : (
-            leaves.map((leave, idx) => (
-              <motion.div
-                key={leave._id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.05 }}
-                className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-slate-200 dark:border-zinc-800 shadow-sm flex flex-col lg:flex-row gap-6 hover:shadow-md transition-shadow"
-              >
-                {/* User Info & Dates */}
-                <div className="flex-1 space-y-4">
-                  <div className="flex items-start justify-between">
+            <>
+              {leaves.map((leave, idx) => (
+                <motion.div
+                  key={leave._id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: idx * 0.05 }}
+                  className="bg-white dark:bg-zinc-900 rounded-2xl p-6 border border-slate-200 dark:border-zinc-800 shadow-sm flex flex-col lg:flex-row gap-6 hover:shadow-md transition-shadow"
+                >
+                  {/* User Info & Dates */}
+                  <div className="flex-1 space-y-4">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
+                          {leave.user?.name || leave.user?.username || "Unknown Employee"}
+                          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest border ${getStatusColor(leave.status)}`}>
+                            {leave.status}
+                          </span>
+                        </h3>
+                        <p className="text-sm text-slate-500 mt-1 flex items-center gap-1.5 hover:text-slate-700 transition-colors">
+                          <span className="font-semibold text-indigo-600 dark:text-indigo-400">{getTypeLabel(leave.leaveType)}</span>
+                          &bull; ขอเอกสารเมื่อ {format(new Date(leave.createdAt), "dd MMM yyyy HH:mm", { locale: th })}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-wrap gap-4 text-sm bg-slate-50 dark:bg-zinc-950 p-4 rounded-xl border border-slate-100 dark:border-zinc-800">
+                      <div className="flex items-center gap-2 text-slate-600 dark:text-zinc-300">
+                        <Clock size={16} className="text-indigo-500" />
+                        <strong>เริ่มลา:</strong> {format(new Date(leave.startDate), "dd MMM yyyy", { locale: th })}
+                      </div>
+                      <div className="flex items-center gap-2 text-slate-600 dark:text-zinc-300">
+                        <Clock size={16} className="text-indigo-500" />
+                        <strong>ถึง:</strong> {format(new Date(leave.endDate), "dd MMM yyyy", { locale: th })}
+                      </div>
+                    </div>
+
                     <div>
-                      <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                        {leave.user?.name || leave.user?.username || "Unknown Employee"}
-                        <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest border ${getStatusColor(leave.status)}`}>
-                          {leave.status}
-                        </span>
-                      </h3>
-                      <p className="text-sm text-slate-500 mt-1 flex items-center gap-1.5 hover:text-slate-700 transition-colors">
-                        <span className="font-semibold text-indigo-600 dark:text-indigo-400">{getTypeLabel(leave.leaveType)}</span>
-                        &bull; ขอเอกสารเมื่อ {format(new Date(leave.createdAt), "dd MMM yyyy HH:mm", { locale: th })}
-                      </p>
+                      <strong className="text-xs text-slate-400 uppercase tracking-widest">เหตุผล</strong>
+                      <p className="mt-1 text-slate-700 dark:text-zinc-300">{leave.reason}</p>
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap gap-4 text-sm bg-slate-50 dark:bg-zinc-950 p-4 rounded-xl border border-slate-100 dark:border-zinc-800">
-                    <div className="flex items-center gap-2 text-slate-600 dark:text-zinc-300">
-                      <Clock size={16} className="text-indigo-500" />
-                      <strong>เริ่มลา:</strong> {format(new Date(leave.startDate), "dd MMM yyyy", { locale: th })}
+                  {/* Attachments & Actions */}
+                  <div className="lg:w-64 flex flex-col justify-between gap-4 border-t lg:border-t-0 lg:border-l border-slate-100 dark:border-zinc-800 pt-4 lg:pt-0 lg:pl-6">
+                    <div>
+                      <strong className="text-xs text-slate-400 uppercase tracking-widest block mb-2">เอกสารแนบ</strong>
+                      {leave.attachmentUrl ? (
+                        <a href={leave.attachmentUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 p-3 rounded-xl transition-colors font-medium border border-blue-100">
+                          <FileText size={16} /> ดูรูปถ่าย/เอกสาร <ExternalLink size={14} />
+                        </a>
+                      ) : (
+                        <div className="text-sm text-slate-400 italic bg-slate-50 dark:bg-zinc-950 p-3 rounded-xl border border-slate-100 dark:border-zinc-800">ไม่มีไฟล์แนบส่งมา</div>
+                      )}
                     </div>
-                    <div className="flex items-center gap-2 text-slate-600 dark:text-zinc-300">
-                      <Clock size={16} className="text-indigo-500" />
-                      <strong>ถึง:</strong> {format(new Date(leave.endDate), "dd MMM yyyy", { locale: th })}
-                    </div>
-                  </div>
 
-                  <div>
-                    <strong className="text-xs text-slate-400 uppercase tracking-widest">เหตุผล</strong>
-                    <p className="mt-1 text-slate-700 dark:text-zinc-300">{leave.reason}</p>
-                  </div>
-                </div>
-
-                {/* Attachments & Actions */}
-                <div className="lg:w-64 flex flex-col justify-between gap-4 border-t lg:border-t-0 lg:border-l border-slate-100 dark:border-zinc-800 pt-4 lg:pt-0 lg:pl-6">
-                  <div>
-                    <strong className="text-xs text-slate-400 uppercase tracking-widest block mb-2">เอกสารแนบ</strong>
-                    {leave.attachmentUrl ? (
-                      <a href={leave.attachmentUrl} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 p-3 rounded-xl transition-colors font-medium border border-blue-100">
-                        <FileText size={16} /> ดูรูปถ่าย/เอกสาร <ExternalLink size={14} />
-                      </a>
-                    ) : (
-                      <div className="text-sm text-slate-400 italic bg-slate-50 dark:bg-zinc-950 p-3 rounded-xl border border-slate-100 dark:border-zinc-800">ไม่มีไฟล์แนบส่งมา</div>
+                    {leave.status === "pending" && (
+                      <div className="flex gap-2 mt-auto">
+                        <button onClick={() => handleStatusUpdate(leave._id, "approved")} className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 transition-colors shadow-sm shadow-emerald-500/20 active:scale-95">
+                          <CheckCircle size={16} /> อนุมัติ
+                        </button>
+                        <button onClick={() => handleStatusUpdate(leave._id, "rejected")} className="flex-1 bg-rose-500 hover:bg-rose-600 text-white py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 transition-colors shadow-sm shadow-rose-500/20 active:scale-95">
+                          <XCircle size={16} /> ปฏิเสธ
+                        </button>
+                      </div>
                     )}
                   </div>
+                </motion.div>
+              ))}
 
-                  {leave.status === "pending" && (
-                    <div className="flex gap-2 mt-auto">
-                      <button onClick={() => handleStatusUpdate(leave._id, "approved")} className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 transition-colors shadow-sm shadow-emerald-500/20 active:scale-95">
-                        <CheckCircle size={16} /> อนุมัติ
-                      </button>
-                      <button onClick={() => handleStatusUpdate(leave._id, "rejected")} className="flex-1 bg-rose-500 hover:bg-rose-600 text-white py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 transition-colors shadow-sm shadow-rose-500/20 active:scale-95">
-                        <XCircle size={16} /> ปฏิเสธ
-                      </button>
-                    </div>
-                  )}
+              {/* Load More Button */}
+              {hasMore && (
+                <div className="flex justify-center pt-8">
+                  <button
+                    onClick={() => fetchLeaves(true)}
+                    disabled={loadingMore}
+                    className={`flex items-center gap-2 px-10 py-3.5 rounded-2xl font-black text-sm transition-all shadow-lg active:scale-95 ${
+                      loadingMore
+                        ? "bg-slate-200 text-slate-400 cursor-not-allowed"
+                        : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/20"
+                    }`}
+                  >
+                    {loadingMore ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          กำลังโหลดเพิ่มเติม...
+                        </>
+                    ) : (
+                      "แสดงข้อมูลเพิ่มเติม (Load 20 More)"
+                    )}
+                  </button>
                 </div>
-              </motion.div>
-            ))
+              )}
+            </>
           )}
         </div>
       </div>

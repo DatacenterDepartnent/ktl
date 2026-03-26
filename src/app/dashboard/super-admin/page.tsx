@@ -101,7 +101,7 @@ export default function SuperAdminPage() {
       const res = await fetch(`/api/users/${targetId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ department: newDept }), 
+        body: JSON.stringify({ department: newDept }),
       });
       if (res.ok) {
         toast.success(`UPDATED: เปลี่ยนสังกัด ${targetName} สำเร็จ`);
@@ -373,11 +373,12 @@ export default function SuperAdminPage() {
                       className={`text-[10px] font-black border-2 rounded-xl px-2 py-2 outline-none uppercase ${getRoleStyle(user.role || "user")}`}
                     >
                       <option value="super_admin">SUPER_ADMIN</option>
+                      <option value="editor">EDITOR</option>
+                      <option value="admin">ADMIN</option>
                       <option value="director">ผอ (DIRECTOR)</option>
                       <option value="deputy_director">รอง ผอ (DEPUTY)</option>
                       <option value="hr">บุคคล (HR)</option>
                       <option value="general">พนักงาน (GENERAL)</option>
-                      <option value="admin">ADMIN</option>
                       <option value="user">USER (เดิม)</option>
                     </select>
                   </td>
@@ -390,19 +391,33 @@ export default function SuperAdminPage() {
                       className="text-[10px] font-black border-2 rounded-xl px-2 py-2 outline-none text-slate-600 bg-slate-50 max-w-[140px]"
                     >
                       <option value="ไม่มีสังกัด">- ไม่มี -</option>
-                      <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
+                      <option value="ผู้บริหารสถานศึกษา">
+                        ผู้บริหารสถานศึกษา
+                      </option>
                       <option value="แผนกวิชาช่างยนต์">ช่างยนต์</option>
                       <option value="แผนกวิชาช่างกลโรงงาน">ช่างกลโรงงาน</option>
-                      <option value="แผนกวิชาช่างเชื่อมโลหะ">ช่างเชื่อมโลหะ</option>
-                      <option value="แผนกวิชาช่างไฟฟ้ากำลัง">ช่างไฟฟ้ากำลัง</option>
-                      <option value="แผนกวิชาช่างอิเล็กทรอนิกส์">ช่างอิเล็กทรอนิกส์</option>
-                      <option value="แผนกวิชาช่างเทคนิคพื้นฐาน">ช่างเทคนิคพื้นฐาน</option>
+                      <option value="แผนกวิชาช่างเชื่อมโลหะ">
+                        ช่างเชื่อมโลหะ
+                      </option>
+                      <option value="แผนกวิชาช่างไฟฟ้ากำลัง">
+                        ช่างไฟฟ้ากำลัง
+                      </option>
+                      <option value="แผนกวิชาช่างอิเล็กทรอนิกส์">
+                        ช่างอิเล็กทรอนิกส์
+                      </option>
+                      <option value="แผนกวิชาช่างเทคนิคพื้นฐาน">
+                        ช่างเทคนิคพื้นฐาน
+                      </option>
                       <option value="แผนกวิชาช่างก่อสร้าง">ช่างก่อสร้าง</option>
                       <option value="แผนกวิชาการบัญชี">การบัญชี</option>
                       <option value="แผนกวิชาการตลาด">การตลาด</option>
-                      <option value="แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล">ธุรกิจดิจิทัล</option>
+                      <option value="แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล">
+                        ธุรกิจดิจิทัล
+                      </option>
                       <option value="แผนกวิชาการโรงแรม">การโรงแรม</option>
-                      <option value="แผนกวิชาสามัญสัมพันธ์">สามัญสัมพันธ์</option>
+                      <option value="แผนกวิชาสามัญสัมพันธ์">
+                        สามัญสัมพันธ์
+                      </option>
                     </select>
                   </td>
                   <td className="p-6 text-center">
@@ -504,7 +519,8 @@ export default function SuperAdminPage() {
                     </div>
                     <div className="flex items-center gap-4 pt-2">
                       <p className="text-[9px] text-slate-500 font-black uppercase tracking-widest">
-                        DATE: {new Date(log.timestamp).toLocaleDateString("th-TH")}
+                        DATE:{" "}
+                        {new Date(log.timestamp).toLocaleDateString("th-TH")}
                       </p>
                       <p className="text-[9px] text-slate-600 font-black uppercase tracking-widest">
                         IP: {log.ip || "UNKNOWN"}

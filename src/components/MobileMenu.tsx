@@ -228,7 +228,7 @@ export default function MobileMenu({
                       🚀 ไปที่ Dashboard
                     </Link>
 
-                    {(userRole === "super_admin" || userRole === "admin" || userRole === "hr" || userRole === "director") && (
+                    {(["super_admin", "admin", "hr", "director", "editor"].includes(userRole)) && (
                       <Link
                         href="/attendance-report"
                         onClick={closeMenu}

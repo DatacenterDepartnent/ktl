@@ -21,6 +21,7 @@ export default function DataManagementPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editFormData, setEditFormData] = useState<any>({});
 
@@ -30,13 +31,53 @@ export default function DataManagementPage() {
   const skip = activeTab === "attendance" ? attSkip : leaveSkip;
   const hasMore = activeTab === "attendance" ? attHasMore : leaveHasMore;
 
-  const fetchData = async (isLoadMore = false, tab = activeTab) => {
+  // Search Debounce Effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchQuery);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const abortControllerRef = (require("react").useRef(null) as { current: AbortController | null });
+
+  const fetchData = async (isLoadMore = false, tab = activeTab, forceSearch = debouncedSearch) => {
+    let currentUrl = "";
+    // 1. ยกเลิก Request เดิมที่ค้างอยู่ (ถ้ามี)
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    // 2. สร้าง Controller ใหม่สำหรับ Request นี้
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     if (isLoadMore) setLoadingMore(true);
-    else setLoading(true);
+    else {
+      setLoading(true);
+      if (tab === "attendance") {
+        setAttSkip(0);
+        if (!isLoadMore) setAttRecords([]);
+      } else {
+        setLeaveSkip(0);
+        if (!isLoadMore) setLeaveRecords([]);
+      }
+    }
 
     try {
       const currentSkip = isLoadMore ? (tab === "attendance" ? attSkip : leaveSkip) + LIMIT : 0;
-      const res = await fetch(`/api/admin/data?type=${tab}&limit=${LIMIT}&skip=${currentSkip}`);
+      currentUrl = `/api/admin/data?type=${tab}&limit=${LIMIT}&skip=${currentSkip}&search=${encodeURIComponent(forceSearch)}&_t=${Date.now()}`;
+      
+      const timeoutId = setTimeout(() => controller.abort(), 30000); 
+
+      const res = await fetch(currentUrl, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText || `HTTP error! status: ${res.status}`);
+      }
+
       const json = await res.json();
       
       if (json.success) {
@@ -53,29 +94,36 @@ export default function DataManagementPage() {
       } else {
         toast.error("ดึงข้อมูลล้มเหลว: " + json.error);
       }
-    } catch (err) {
-      toast.error("SYSTEM_ERROR");
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+         // ไม่ต้องแสดง Toast ถ้าเป็นการกดยกเลิกแบบตั้งใจ (เช่น Tab เปลี่ยน)
+         console.warn("[Frontend] Fetch aborted:", currentUrl);
+      } else {
+         console.error("Fetch error:", err);
+         toast.error("เกิดข้อผิดพลาดในการเชื่อมต่อ: " + (err.message || "SYSTEM_ERROR"));
+      }
     } finally {
-      setLoading(false);
-      setLoadingMore(false);
+      // ตรวจสอบว่ายังเป็น Request ล่าสุดอยู่หรือไม่ก่อนปิด Loading
+      if (abortControllerRef.current === controller) {
+        setLoading(false);
+        setLoadingMore(false);
+      }
     }
   };
 
   useEffect(() => {
-    // Only fetch if we don't have records for the active tab yet
-    if (activeTab === "attendance" && attRecords.length === 0) {
-      fetchData(false, "attendance");
-    } else if (activeTab === "leave" && leaveRecords.length === 0) {
-      fetchData(false, "leave");
-    } else {
-        setLoading(false);
-    }
-  }, [activeTab]);
+    fetchData(false, activeTab, debouncedSearch);
+    // Cleanup on unmount
+    return () => {
+      if (abortControllerRef.current) abortControllerRef.current.abort();
+    };
+  }, [activeTab, debouncedSearch]);
 
   const handleDelete = async (id: string) => {
     if (!confirm("⚠️ ระวัง: คุณกำลังจะลบข้อมูลนี้อย่างถาวร ยืนยันการลบใช่หรือไม่?")) return;
     try {
       const res = await fetch(`/api/admin/data?id=${id}&type=${activeTab}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Delete request failed");
       const json = await res.json();
       if (json.success) {
         toast.success("ลบข้อมูลสำเร็จ");
@@ -84,7 +132,7 @@ export default function DataManagementPage() {
         toast.error("ลบข้อมูลไม่สำเร็จ: " + json.error);
       }
     } catch (err) {
-      toast.error("DELETE_FAILED");
+      toast.error("ไม่สามารถลบข้อมูลได้ในขณะนี้");
     }
   };
 
@@ -104,6 +152,7 @@ export default function DataManagementPage() {
           updates: editFormData
         })
       });
+      if (!res.ok) throw new Error("Update request failed");
       const json = await res.json();
       if (json.success) {
         toast.success("อัปเดตข้อมูลสำเร็จ");
@@ -113,7 +162,7 @@ export default function DataManagementPage() {
         toast.error("อัปเดตล้มเหลว: " + json.error);
       }
     } catch (err) {
-      toast.error("UPDATE_FAILED");
+      toast.error("ไม่สามารถอัปเดตข้อมูลได้");
     }
   };
 
@@ -135,11 +184,6 @@ export default function DataManagementPage() {
     });
   };
 
-  const filteredRecords = records.filter(r => 
-    r.user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    r.user?.username?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    r._id.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 p-6 font-sans">
@@ -159,6 +203,30 @@ export default function DataManagementPage() {
               </p>
             </div>
           </div>
+          
+          <button 
+            onClick={async () => {
+              if (confirm("🚨 คุณแน่ใจหรือไม่ว่าต้องการ 'ล้างข้อมูลทดสอบทั้งหมด' (Attendances, Leaves, Logs) เพื่อเริ่มใช้งานระบบจริง? \n\n**ขั้นตอนนี้ไม่สามารถย้อนกลับได้!**")) {
+                const toastId = toast.loading("กำลังล้างข้อมูลทดสอบ...");
+                try {
+                  const res = await fetch("/api/admin/purge");
+                  const json = await res.json();
+                  if (json.success) {
+                    toast.success("ล้างข้อมูลสำเร็จ! ระบบเข้าสู่โหมดใช้งานจริง 100%", { id: toastId });
+                    fetchData(false);
+                  } else {
+                    toast.error("ล้มเหลว: " + json.error, { id: toastId });
+                  }
+                } catch (e) {
+                  toast.error("เกิดข้อผิดพลาดในการเรียกใช้ระบบล้างข้อมูล", { id: toastId });
+                }
+              }
+            }}
+            className="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-black text-xs rounded-2xl shadow-lg shadow-red-500/20 transition-all flex items-center gap-2 uppercase tracking-tight"
+          >
+            <Trash2 size={16} /> 
+            เปิดโหมดใช้งานจริง (ล้างข้อมูลทั้งหมด)
+          </button>
         </div>
 
         {/* Action Bar */}
@@ -184,7 +252,7 @@ export default function DataManagementPage() {
               </div>
               <input 
                 type="text" 
-                placeholder="ค้นหาชื่อ, username, หรือ ID..."
+                placeholder="ค้นหาชื่อ หรือ username..."
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 className="pl-11 pr-4 py-2.5 w-full rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-50 dark:bg-zinc-950 focus:bg-white focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 outline-none transition-all font-medium text-slate-700 dark:text-zinc-200 text-sm"
@@ -198,7 +266,6 @@ export default function DataManagementPage() {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50 dark:bg-zinc-950/50 border-b border-slate-100 dark:border-zinc-800 text-slate-500 dark:text-zinc-400 uppercase tracking-wider">
-                  <th className="px-6 py-4 font-black text-xs">Record ID</th>
                   <th className="px-6 py-4 font-black text-xs">พนักงาน</th>
                   <th className="px-6 py-4 font-black text-xs">{activeTab === "attendance" ? "วันที่ / เวลาเข้า-ออก" : "ช่วงเวลาที่ลา"}</th>
                   <th className="px-6 py-4 font-black text-xs text-center">สถานะ</th>
@@ -209,21 +276,37 @@ export default function DataManagementPage() {
               <tbody className="divide-y divide-slate-100 dark:divide-zinc-800/50">
                 {loading && records.length === 0 ? (
                   <tr>
-                     <td colSpan={6} className="px-6 py-16 text-center text-slate-400 font-bold italic tracking-widest animate-pulse">CONNECTING TO DATABASE...</td>
+                     <td colSpan={5} className="px-6 py-16 text-center">
+                        <div className="flex flex-col items-center gap-3">
+                          <div className="w-10 h-10 border-4 border-rose-500 border-t-transparent rounded-full animate-spin"></div>
+                          <div className="text-slate-400 font-bold italic tracking-widest animate-pulse uppercase text-sm">
+                            กำลังเชื่อมต่อฐานข้อมูล (Connecting to Database...)
+                          </div>
+                          <div className="text-xs text-slate-400 max-w-sm mt-2 opacity-70">
+                            *หากค้างนานเกินไป อาจเกิดจากความล่าช้าของอินเทอร์เน็ตในการเชื่อมต่อกับ MongoDB Atlas
+                          </div>
+                        </div>
+                     </td>
                   </tr>
                 ) : records.length === 0 ? (
                   <tr>
-                     <td colSpan={6} className="px-6 py-16 text-center text-rose-400 font-bold italic tracking-widest">NO RECORDS FOUND</td>
+                     <td colSpan={5} className="px-6 py-16 text-center">
+                        <div className="flex flex-col items-center gap-2">
+                           <AlertCircle size={40} className="text-rose-200 mb-2" />
+                           <div className="text-rose-400 font-bold italic tracking-widest uppercase text-sm">ไม่พบข้อมูลที่ค้นหา (NO RECORDS FOUND)</div>
+                           <button onClick={() => fetchData(false)} className="mt-4 text-xs font-bold text-slate-500 hover:text-slate-800 underline">ลองใหม่อีกครั้ง</button>
+                        </div>
+                     </td>
                   </tr>
                 ) : (
-                  filteredRecords.map(r => (
+                  records.map(r => (
                     <tr key={r._id} className={`transition-colors ${editingId === r._id ? "bg-orange-50/50 dark:bg-orange-900/10" : "hover:bg-slate-50 dark:hover:bg-zinc-900"}`}>
                       {editingId === r._id ? (
                         /* EDIT MODE ROW */
-                        <td colSpan={activeTab === "leave" ? 6 : 5} className="px-6 py-4">
+                        <td colSpan={activeTab === "leave" ? 5 : 4} className="px-6 py-4">
                           <div className="flex flex-col space-y-4 max-w-4xl bg-white dark:bg-zinc-900 p-4 rounded-xl shadow-inner border border-orange-100 dark:border-orange-500/20">
                             <div className="flex justify-between items-center border-b border-slate-100 dark:border-zinc-800 pb-2">
-                               <h4 className="font-bold text-slate-800 dark:text-zinc-100 text-sm">กำลังแก้ไขข้อมูล ID: {r._id}</h4>
+                               <h4 className="font-bold text-slate-800 dark:text-zinc-100 text-sm">กำลังแก้ไขข้อมูลพนักงาน</h4>
                                <button onClick={() => setEditingId(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-zinc-200">
                                  <X size={20} />
                                </button>
@@ -287,9 +370,6 @@ export default function DataManagementPage() {
                       ) : (
                         /* NORMAL ROW */
                         <>
-                          <td className="px-6 py-4">
-                            <span className="text-[10px] font-mono text-slate-400 bg-slate-100 dark:bg-zinc-800 px-2 py-1 rounded">{r._id}</span>
-                          </td>
                           <td className="px-6 py-4">
                             <div className="font-bold text-slate-800 dark:text-zinc-200 text-sm">{r.user?.name || "Unknown"}</div>
                             <div className="text-xs text-slate-500">{r.user?.email || r.user?.username || "no-contact"}</div>

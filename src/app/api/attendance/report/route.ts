@@ -1,11 +1,17 @@
 import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import Attendance from '@/models/Attendance';
-import '@/models/User'; // Ensure User model is loaded
+import clientPromise from '@/lib/db';
+import { auth } from '@/lib/auth';
 
 export async function GET(req: Request) {
+  const start = Date.now();
   try {
-    await connectDB();
+    const session = await auth();
+    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+    const midConn = Date.now();
+
     const { searchParams } = new URL(req.url);
     const startDateParam = searchParams.get('startDate');
     const endDateParam = searchParams.get('endDate');
@@ -22,24 +28,53 @@ export async function GET(req: Request) {
       dateQuery = today;
     }
 
-    const records = await Attendance.find({ date: dateQuery })
-      .populate('userId', 'name email username role')
-      .sort({ date: -1, 'checkIn.time': -1 })
-      .lean();
+    const records = await db.collection("attendances").aggregate([
+      { $match: { date: dateQuery } },
+      { $sort: { date: -1, 'checkIn.time': -1 } },
+      {
+        $addFields: {
+          uId: { 
+            $cond: {
+              if: { $ne: [{ $type: "$userId" }, "missing"] },
+              then: { $toObjectId: "$userId" },
+              else: null
+            }
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "uId",
+          foreignField: "_id",
+          as: "userDetails"
+        }
+      },
+      { $unwind: { path: "$userDetails", preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          id: { $toString: "$_id" },
+          date: 1,
+          user: {
+            name: { $ifNull: ["$userDetails.name", { $ifNull: ["$userDetails.username", "Unknown User"] }] },
+            email: { $ifNull: ["$userDetails.email", ""] }
+          },
+          checkInTime: "$checkIn.time",
+          checkOutTime: "$checkOut.time",
+          status: "$status",
+          otHours: { $ifNull: ["$checkOut.otHours", 0] },
+          photoUrl: "$checkIn.photoUrl"
+        }
+      }
+    ]).toArray();
 
     const formattedData = records.map((r: any) => ({
-      id: r._id.toString(),
-      date: typeof r.date === 'string' ? r.date : r.date.toISOString(),
-      user: {
-        name: r.userId?.name || r.userId?.username || 'Unknown User',
-        email: r.userId?.email || ''
-      },
-      checkInTime: r.checkIn?.time || null,
-      checkOutTime: r.checkOut?.time || null,
-      status: r.status,
-      otHours: r.checkOut?.otHours || 0,
-      photoUrl: r.checkIn?.photoUrl || null
+      ...r,
+      date: typeof r.date === 'string' ? r.date : r.date.toISOString()
     }));
+
+    const end = Date.now();
+    console.log(`[API] Attendance Report took ${end - start}ms (DB: ${end - midConn}ms). Records: ${formattedData.length}`);
 
     return NextResponse.json({ success: true, data: formattedData });
   } catch (error: any) {

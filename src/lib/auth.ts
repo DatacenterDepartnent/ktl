@@ -157,17 +157,45 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       // 3. ตรวจสอบการเข้าสู่ระบบซ้อนกัน (เช็ค Device ที่เข้าหลังสุด)
       if (token.id && token.sessionId && !token.error) {
-        try {
-          const client = await clientPromise;
-          const db = client.db("ktltc_db");
-          const currentUser = await db.collection("users").findOne({ _id: new ObjectId(token.id as string) });
-          // หาก session id ของ token เก่า ไม่ตรงกับในฐานข้อมูล แสดงว่ามีเครื่องอื่นล็อกอินเข้ามาใช้งานแทนที่แล้ว
-          if (!currentUser || currentUser.currentSessionId !== token.sessionId) {
-            token.error = "ConcurrentLogin";
-            return token;
-          }
-        } catch (error) {
-          console.error("JWT Session validation error:", error);
+        // --- High Performance Cache Layer ---
+        const cacheKey = `sess_${token.id}_${token.sessionId}`;
+        const now = Date.now();
+        const cached = (global as any)._sessionCache?.[cacheKey];
+        
+        if (cached && (now - cached.timestamp < 60000)) { // 60s cache
+           if (cached.error) {
+             token.error = cached.error;
+             return token;
+           }
+           // Valid cache, skip DB
+        } else {
+            const authStart = Date.now();
+            try {
+              const client = await clientPromise;
+              const db = client.db("ktltc_db");
+              const currentUser = await db.collection("users").findOne({ _id: new ObjectId(token.id as string) });
+              const authEnd = Date.now();
+              
+              if (authEnd - authStart > 100) {
+                 console.log(`[AUTH] DB Session Check took ${authEnd - authStart}ms for user ${token.id}`);
+              }
+
+              // Initialize global cache if not exists
+              if (!(global as any)._sessionCache) (global as any)._sessionCache = {};
+              
+              // หาก session id ของ token เก่า ไม่ตรงกับในฐานข้อมูล แสดงว่ามีเครื่องอื่นล็อกอินเข้ามาใช้งานแทนที่แล้ว
+              if (!currentUser || currentUser.currentSessionId !== token.sessionId) {
+                const err = "ConcurrentLogin";
+                (global as any)._sessionCache[cacheKey] = { error: err, timestamp: now };
+                token.error = err;
+                return token;
+              }
+
+              // Valid session, cache it
+              (global as any)._sessionCache[cacheKey] = { timestamp: now };
+            } catch (error) {
+              console.error("JWT Session validation error:", error);
+            }
         }
       }
 

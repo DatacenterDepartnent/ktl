@@ -14,6 +14,8 @@ export async function GET(req: Request) {
 
     const { searchParams } = new URL(req.url);
     const status = searchParams.get("status") || "pending";
+    const limit = parseInt(searchParams.get("limit") || "20");
+    const skip = parseInt(searchParams.get("skip") || "0");
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
@@ -23,18 +25,32 @@ export async function GET(req: Request) {
     const leaves = await db.collection("leave_requests").aggregate([
       { $match: query },
       { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+      {
+        $addFields: {
+          uId: { 
+            $cond: {
+              if: { $ne: [{ $type: "$userId" }, "missing"] },
+              then: { $toObjectId: "$userId" },
+              else: null
+            }
+          }
+        }
+      },
       {
         $lookup: {
           from: "users",
-          localField: "userId",
+          localField: "uId",
           foreignField: "_id",
           as: "user"
         }
       },
-      { $unwind: "$user" },
+      { $unwind: { path: "$user", preserveNullAndEmptyArrays: true } },
       {
         $project: {
           "user.password": 0,
+          "uId": 0
         }
       }
     ]).toArray();

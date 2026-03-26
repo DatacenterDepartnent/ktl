@@ -180,8 +180,11 @@ export default function UsersPage() {
                         backgroundSize: "1.5em",
                       }}
                     >
-                      <option value="editor">EDITOR</option>
-                      <option value="admin">ADMIN</option>
+                      <option value="user">USER (พนักงาน)</option>
+                      <option value="editor">EDITOR (บรรณาธิการ)</option>
+                      <option value="hr">HR (ฝ่ายบุคคล)</option>
+                      <option value="director">DIRECTOR (ผู้บริหาร)</option>
+                      <option value="admin">ADMIN (ผู้ดูแล)</option>
                       <option value="super_admin">SUPER_ADMIN</option>
                     </select>
                   </td>

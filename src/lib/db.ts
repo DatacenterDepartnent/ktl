@@ -6,11 +6,11 @@ if (!process.env.MONGODB_URI) {
 
 const uri = process.env.MONGODB_URI;
 const options = {
-  // ตั้งค่าเพิ่มเติมเพื่อความเสถียร (Optional)
-  maxPoolSize: 10,
-  minPoolSize: 5,
-  connectTimeoutMS: 10000, // 10 วินาที
-  serverSelectionTimeoutMS: 5000, // 5 วินาที
+  maxPoolSize: 50,
+  minPoolSize: 10,
+  connectTimeoutMS: 10000,
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 45000,
 };
 
 let client: MongoClient;
@@ -33,6 +33,15 @@ async function createIndexes(promise: Promise<MongoClient>) {
 
     // 3. Index สำหรับการจัดลำดับ User ในหน้า Dashboard
     await db.collection("users").createIndex({ orderIndex: 1 });
+
+    // 4. Index สำหรับ Attendance (เพิ่มเข้ามาเพื่อความเร็วหน้า Data Management)
+    await db.collection("attendances").createIndex({ date: -1 });
+    await db.collection("attendances").createIndex({ userId: 1 });
+
+    // 5. Index สำหรับ Leave Requests
+    await db.collection("leave_requests").createIndex({ createdAt: -1 });
+    await db.collection("leave_requests").createIndex({ userId: 1 });
+    await db.collection("leave_requests").createIndex({ startDate: -1 });
 
     console.log("✅ [MongoDB] Indexes created/verified successfully");
   } catch (error) {
@@ -60,6 +69,5 @@ if (process.env.NODE_ENV === "development") {
   // รันการสร้าง Index เพื่อความชัวร์ในฝั่ง Production
   createIndexes(clientPromise);
 }
-
 
 export default clientPromise;

@@ -22,7 +22,7 @@ import {
 interface UserFormData {
   name: string;
   email: string;
-  role: "super_admin" | "admin" | "editor";
+  role: "super_admin" | "admin" | "hr" | "director" | "editor" | "user";
   phone: string;
   lineId: string;
   isActive: boolean;
@@ -333,7 +333,10 @@ export default function EditUserPage() {
                     }
                     className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 font-bold text-slate-700 outline-none focus:border-blue-500 transition-all cursor-pointer appearance-none"
                   >
+                    <option value="user">พนักงานทั่วไป (User)</option>
                     <option value="editor">บรรณาธิการ (Editor)</option>
+                    <option value="hr">ฝ่ายบุคคล (HR)</option>
+                    <option value="director">ผู้บริหาร (Director)</option>
                     <option value="admin">ผู้ดูแลระบบ (Admin)</option>
                     <option value="super_admin">
                       ผู้ดูแลระบบสูงสุด (Super Admin)

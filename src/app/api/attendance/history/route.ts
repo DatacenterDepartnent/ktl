@@ -39,42 +39,8 @@ export async function GET(req: Request) {
       .limit(limit)
       .toArray();
 
-    // ✅ สร้าง Mock Data ทันทีหากผู้ใช้งานยังไม่มีประวัติการลงเวลา
     if (attendances.length === 0) {
-      const today = new Date();
-      
-      const dummy1Date = new Date(today);
-      dummy1Date.setDate(dummy1Date.getDate() - 1);
-      
-      const dummy2Date = new Date(today);
-      dummy2Date.setDate(dummy2Date.getDate() - 2);
-
-      const dummyAttendances = [
-        {
-          _id: new ObjectId(),
-          userId: new ObjectId(userId),
-          date: dummy1Date,
-          checkIn: { time: new Date(dummy1Date.setHours(8, 15, 0)), statusTag: "Remote" },
-          checkOut: { time: new Date(dummy1Date.setHours(17, 30, 0)) },
-          status: "Present",
-          createdAt: dummy1Date
-        },
-        {
-          _id: new ObjectId(),
-          userId: new ObjectId(userId),
-          date: dummy2Date,
-          checkIn: { time: new Date(dummy2Date.setHours(8, 25, 0)), statusTag: "In-Site" },
-          checkOut: { time: new Date(dummy2Date.setHours(18, 0, 0)) },
-          status: "Present",
-          createdAt: dummy2Date
-        }
-      ];
-
-      // Insert mock data into database so it persists
-      await db.collection("attendances").insertMany(dummyAttendances);
-      attendances = dummyAttendances;
-      
-      console.log(`[API /history] Automatically seeded 2 dummy records for User ${userId}.`);
+      console.log(`[API /history] User ${userId} has no history.`);
     } else {
       console.log(`[API /history] User ${userId} requested history. Found ${attendances.length} records.`);
     }
