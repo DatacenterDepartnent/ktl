@@ -6,11 +6,9 @@ if (!process.env.MONGODB_URI) {
 
 const uri = process.env.MONGODB_URI;
 const options = {
-  maxPoolSize: 50,
-  minPoolSize: 10,
-  connectTimeoutMS: 10000,
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 45000,
+  // Use defaults for now to isolate the hang issue
+  connectTimeoutMS: 30000, // Increase timeout for slow connections
+  serverSelectionTimeoutMS: 30000,
 };
 
 let client: MongoClient;
@@ -58,7 +56,7 @@ if (process.env.NODE_ENV === "development") {
   if (!globalWithMongo._mongoClientPromise) {
     client = new MongoClient(uri, options);
     globalWithMongo._mongoClientPromise = client.connect();
-    // รันการสร้าง Index เฉพาะครั้งแรกที่เริ่มโปรเจกต์
+    // ⚡ Re-enable automatic indexing in non-blocking background task
     createIndexes(globalWithMongo._mongoClientPromise);
   }
   clientPromise = globalWithMongo._mongoClientPromise;
@@ -66,7 +64,7 @@ if (process.env.NODE_ENV === "development") {
   // ในโหมด Production สร้าง connection ใหม่ปกติ
   client = new MongoClient(uri, options);
   clientPromise = client.connect();
-  // รันการสร้าง Index เพื่อความชัวร์ในฝั่ง Production
+  // ⚡ Re-enable automatic indexing in non-blocking background task
   createIndexes(clientPromise);
 }
 

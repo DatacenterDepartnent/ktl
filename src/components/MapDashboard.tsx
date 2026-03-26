@@ -14,8 +14,9 @@ const icon = L.icon({
   iconAnchor: [12, 41],
 });
 
-const COLLEGE_LOCATION = [14.636681, 104.6469];
-const ALLOWED_RADIUS = 500; // 500 meters
+// พิกัดวิทยาลัยเทคนิคกันทรลักษ์ (82 หมู่ 1 ต.จานใหญ่ อ.กันทรลักษ์ จ.ศรีสะเกษ 33110)
+const COLLEGE_LOCATION = [14.754043, 104.65807];
+const ALLOWED_RADIUS = 200; // 200 meters
 
 export default function MapDashboard({ markers }: { markers: any[] }) {
   if (typeof window === 'undefined') return null;
@@ -47,7 +48,13 @@ export default function MapDashboard({ markers }: { markers: any[] }) {
         />
         
         <Marker position={COLLEGE_LOCATION} icon={icon}>
-          <Popup>จุดลงเวลาสำนักงานใหญ่ KTLTC</Popup>
+          <Popup>
+            <div className="text-center">
+              <p className="font-bold text-blue-600">วิทยาลัยเทคนิคกันทรลักษ์</p>
+              <p className="text-[10px] text-slate-500 line-clamp-2">82 หมู่ 1 ต.จานใหญ่ อ.กันทรลักษ์ จ.ศรีสะเกษ 33110</p>
+              <p className="text-[9px] mt-1 bg-blue-50 text-blue-500 px-2 py-0.5 rounded-full inline-block font-bold uppercase">Official Office</p>
+            </div>
+          </Popup>
         </Marker>
         {markers.map((m, i) => (
           <Marker key={i} position={[m.lat, m.lng]} icon={icon}>

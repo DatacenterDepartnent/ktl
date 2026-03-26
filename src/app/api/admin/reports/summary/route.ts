@@ -24,7 +24,7 @@ export async function GET() {
             approvals: {
               $sum: {
                 $cond: [
-                  { $regexMatch: { input: "$action", regex: "APPROVE|ACCEPT", options: "i" } },
+                  { $regexMatch: { input: { $ifNull: ["$action", ""] }, regex: "APPROVE|ACCEPT", options: "i" } },
                   1,
                   0,
                 ],
@@ -33,7 +33,7 @@ export async function GET() {
             roleChanges: {
               $sum: {
                 $cond: [
-                  { $regexMatch: { input: "$action", regex: "ROLE|PERMISSION", options: "i" } },
+                  { $regexMatch: { input: { $ifNull: ["$action", ""] }, regex: "ROLE|PERMISSION", options: "i" } },
                   1,
                   0,
                 ],
@@ -42,7 +42,7 @@ export async function GET() {
             updates: {
               $sum: {
                 $cond: [
-                  { $regexMatch: { input: "$action", regex: "UPDATE|EDIT|PATCH", options: "i" } },
+                  { $regexMatch: { input: { $ifNull: ["$action", ""] }, regex: "UPDATE|EDIT|PATCH", options: "i" } },
                   1,
                   0,
                 ],
