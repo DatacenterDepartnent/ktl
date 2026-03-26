@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
+import { auth } from "@/lib/auth";
 
 export async function POST(req: Request) {
   try {
@@ -17,6 +18,18 @@ export async function POST(req: Request) {
     }));
 
     await db.collection("users").bulkWrite(operations);
+
+    // Automatic Unified Logging
+    const session = await auth();
+    const adminName = (session?.user as any)?.name || "Super_Admin";
+    await db.collection("logs").insertOne({
+      userName: adminName,
+      action: "REORDER_USERS",
+      details: "จัดลำดับการเเสดงผลสมาชิกใหม่",
+      timestamp: new Date(),
+      ip: req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1",
+      role: "super_admin"
+    });
 
     return NextResponse.json({ message: "อัปเดตลำดับสำเร็จ" });
   } catch (error) {

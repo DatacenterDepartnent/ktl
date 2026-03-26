@@ -48,6 +48,11 @@ export default function NavbarClient({
     await signOut({ callbackUrl: "/login" });
   };
 
+  const ensureAbsolute = (path: string) => {
+    if (!path || path.startsWith("/") || path.startsWith("http") || path.startsWith("#")) return path;
+    return `/${path}`;
+  };
+
   return (
     <nav
       className={`sticky top-0 z-50 w-full transition-all duration-300 border-b ${
@@ -77,7 +82,7 @@ export default function NavbarClient({
           {menuTree.map((item) => (
             <div key={item._id} className="relative group">
               <Link
-                href={item.path || "#"}
+                href={ensureAbsolute(item.path) || "#"}
                 className={`px-2.5 py-2 flex items-center gap-1 text-[16px] font-bold transition-all whitespace-nowrap ${
                   pathname === item.path
                     ? "text-blue-600"
@@ -108,7 +113,7 @@ export default function NavbarClient({
                     {item.children.map((child) => (
                       <Link
                         key={child._id}
-                        href={child.path || "#"}
+                        href={ensureAbsolute(child.path) || "#"}
                         className="block px-4 py-2.5 text-[14px] font-medium text-zinc-600 dark:text-zinc-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:text-blue-600 rounded-lg transition-colors"
                       >
                         {child.label}

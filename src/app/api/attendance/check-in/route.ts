@@ -7,10 +7,9 @@ import { format } from 'date-fns';
 import { th } from 'date-fns/locale';
 import { ObjectId } from 'mongodb';
 
-// สมมติพิกัดวิทยาลัย (College Location)
-// พิกัดวิทยาลัย KTLTC
-const COLLEGE_LOCATION = { lat: 14.636681, lng: 104.6469 };
-const ALLOWED_RADIUS = 500; // 500 meters (0.5 km)
+// พิกัดวิทยาลัย KTLTC (82 หมู่ 1 ต.จานใหญ่ อ.กันทรลักษ์ จ.ศรีสะเกษ)
+const COLLEGE_LOCATION = { lat: 14.754043, lng: 104.65807 };
+const ALLOWED_RADIUS = 200000; // 200 Kilometers (as per user request)
 
 export async function POST(req: Request) {
   try {
@@ -34,15 +33,22 @@ export async function POST(req: Request) {
       statusTag = distance <= ALLOWED_RADIUS ? 'In-Site' : 'Remote';
     }
 
-    // Checking Late status (e.g. after 08:30)
-    const isLate = serverTime.getHours() > 8 || (serverTime.getHours() === 8 && serverTime.getMinutes() > 30);
+    // Thailand is UTC+7
+    const thTime = new Date(serverTime.getTime() + (7 * 60 * 60 * 1000));
+    const thHours = thTime.getUTCHours();
+    const thMinutes = thTime.getUTCMinutes();
+    const thSeconds = thTime.getUTCSeconds();
+
+    // Checking Late status (e.g. after 08:00)
+    // 08:00:00 is on time, 08:00:01+ is late
+    const isLate = thHours > 8 || (thHours === 8 && (thMinutes > 0 || thSeconds > 0));
     const status = isLate ? 'Late' : 'Present';
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setUTCHours(0, 0, 0, 0);
 
     const userObjId = new ObjectId(userId);
 

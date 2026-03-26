@@ -20,16 +20,33 @@ export async function GET() {
         },
         {
           $group: {
-            _id: null,
             totalActions: { $sum: 1 },
             approvals: {
-              $sum: { $cond: [{ $eq: ["$action", "APPROVE"] }, 1, 0] }, // แก้ชื่อ Action ให้ตรงกับหน้า PATCH
+              $sum: {
+                $cond: [
+                  { $regexMatch: { input: "$action", regex: "APPROVE|ACCEPT", options: "i" } },
+                  1,
+                  0,
+                ],
+              },
             },
             roleChanges: {
-              $sum: { $cond: [{ $eq: ["$action", "CHANGE_ROLE"] }, 1, 0] },
+              $sum: {
+                $cond: [
+                  { $regexMatch: { input: "$action", regex: "ROLE|PERMISSION", options: "i" } },
+                  1,
+                  0,
+                ],
+              },
             },
             updates: {
-              $sum: { $cond: [{ $eq: ["$action", "UPDATE_PROFILE"] }, 1, 0] },
+              $sum: {
+                $cond: [
+                  { $regexMatch: { input: "$action", regex: "UPDATE|EDIT|PATCH", options: "i" } },
+                  1,
+                  0,
+                ],
+              },
             },
           },
         },

@@ -3,8 +3,7 @@
 import Link from "next/link";
 import SuveryList from "@/components/SuveryList";
 import { Isuvery } from "@/components/Isuvery";
-import connectDB from "@/lib/mongodb"; // ✅ ใช้ Direct DB Connection
-import Suvery from "@/lib/models/suvery"; // ✅ เรียก Model โดยตรง
+import clientPromise from "@/lib/db";
 import {
   Briefcase,
   GraduationCap,
@@ -26,9 +25,9 @@ interface PageProps {
 // ✅ 2. ฟังก์ชันดึงข้อมูลจาก DB โดยตรง (เร็วกว่า fetch)
 async function getSurveysDirectly() {
   try {
-    await connectDB();
-    // .lean() ช่วยให้แปลงเป็น JSON Object เร็วขึ้น
-    const suverys = await Suvery.find({}).sort({ _id: -1 }).lean();
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+    const suverys = await db.collection("suvery").find({}).sort({ _id: -1 }).toArray();
     return JSON.parse(JSON.stringify(suverys));
   } catch (error) {
     console.error("❌ Database Error:", error);

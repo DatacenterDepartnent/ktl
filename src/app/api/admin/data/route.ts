@@ -5,29 +5,27 @@ import { ObjectId } from "mongodb";
 
 export const dynamic = "force-dynamic";
 
+/**
+ * [GET] ดึงข้อมูล Attendance, Leave, Survey สำหรับ Super Admin
+ */
 export async function GET(req: Request) {
   try {
+    const session = await auth();
+    const role = (session?.user as any)?.role;
+
+    // เงื่อนไข: super_admin เท่านั้นที่เข้าถึงได้
+    if (role !== "super_admin") {
+      return NextResponse.json({ error: "Unauthorized Access" }, { status: 403 });
+    }
+
     const { searchParams } = new URL(req.url);
     const type = searchParams.get("type") || "attendance";
     const limit = parseInt(searchParams.get("limit") || "20");
     const skip = parseInt(searchParams.get("skip") || "0");
     const search = searchParams.get("search") || "";
-    console.log(`[API] GET Data Start: type=${type}, search=${search}`);
-    const start = Date.now();
-
-    const session = await auth();
-    const midAuth = Date.now();
-    console.log(`[API] Auth took ${midAuth - start}ms`);
-
-    const role = (session?.user as any)?.role;
-    if (role !== "super_admin") {
-      return NextResponse.json({ error: "Unauthorized Access" }, { status: 403 });
-    }
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    const midConn = Date.now();
-    console.log(`[API] DB Connect took ${midConn - midAuth}ms`);
 
     let matchQuery: any = {};
     if (search) {
@@ -40,13 +38,14 @@ export async function GET(req: Request) {
           ] 
         };
       } else {
+        // ค้นหา User ก่อนเพื่อเอา ID มาใช้ใน matchQuery
         const matchingUsers = await db.collection("users").find({
           $or: [
             { name: { $regex: search, $options: "i" } },
             { username: { $regex: search, $options: "i" } },
             { email: { $regex: search, $options: "i" } }
           ]
-        }).project({ _id: 1 }).limit(10).toArray(); // Limit user search for speed
+        }).project({ _id: 1 }).limit(20).toArray();
         
         const userIds = matchingUsers.map(u => u._id);
         const userIdsStrings = userIds.map(id => id.toString());
@@ -55,12 +54,12 @@ export async function GET(req: Request) {
           $or: [
             { userId: { $in: userIds } },
             { userId: { $in: userIdsStrings } },
-            { _id: search }
+            { fullName: { $regex: search, $options: "i" } },
+            { studentId: { $regex: search, $options: "i" } }
           ]
         };
       }
     }
-    console.log(`[API] matchQuery: ${JSON.stringify(matchQuery)}`);
 
     if (type === "attendance") {
       const attendances = await db
@@ -110,16 +109,13 @@ export async function GET(req: Request) {
               user: 1
             },
           },
-        ], { maxTimeMS: 5000 }) 
+        ])
         .toArray();
       
-      const end = Date.now();
-      console.log(`[API] Attendance Query took ${end - midConn}ms. Found: ${attendances.length}`);
       return NextResponse.json({ success: true, data: attendances });
     } 
 
     if (type === "leave") {
-      console.log(`[API] Leave Query Start: match=${JSON.stringify(matchQuery)}`);
       const leaves = await db
         .collection("leave_requests")
         .aggregate([
@@ -167,62 +163,65 @@ export async function GET(req: Request) {
               user: 1
             },
           },
-        ], { maxTimeMS: 5000 }) 
+        ])
         .toArray();
       
-      const end = Date.now();
-      console.log(`[API] Leave Query took ${end - midConn}ms. Found: ${leaves.length}`);
       return NextResponse.json({ success: true, data: leaves });
+    }
+
+    if (type === "suvery") {
+       const suverys = await db
+        .collection("suvery")
+        .find(matchQuery)
+        .sort({ _id: -1 })
+        .skip(skip)
+        .limit(limit)
+        .toArray();
+      
+      return NextResponse.json({ success: true, data: suverys });
     }
 
     return NextResponse.json({ error: "Invalid type" }, { status: 400 });
   } catch (err: any) {
+    console.error("[API] Error:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
 
+/**
+ * [DELETE] ลบข้อมูล
+ */
 export async function DELETE(req: Request) {
   try {
     const session = await auth();
-    const role = (session?.user as any)?.role;
-    if (role !== "super_admin")
+    if ((session?.user as any)?.role !== "super_admin")
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
     const type = searchParams.get("type");
 
-    if (!id || !type)
-      return NextResponse.json(
-        { error: "Missing parameters" },
-        { status: 400 },
-      );
+    if (!id || !type) return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    const collection = type === "attendance" ? "attendances" : "leave_requests";
+    const collection = type === "attendance" ? "attendances" : type === "leave" ? "leave_requests" : "suvery";
 
-    // Handle both ObjectId and String ID scenarios
     let query: any = { _id: id };
     if (ObjectId.isValid(id)) {
       query = { $or: [{ _id: new ObjectId(id) }, { _id: id }] };
     }
 
-    const result = await db
-      .collection(collection)
-      .deleteOne(query);
+    const result = await db.collection(collection).deleteOne(query);
 
-    // Log the deletion action
-    await db.collection("activity_logs").insertOne({
-      userName:
-        (session?.user as any)?.name ||
-        (session?.user as any)?.username ||
-        "Super_Admin",
+    // Logging Unified
+    await db.collection("logs").insertOne({
+      userName: (session?.user as any)?.name || "Super_Admin",
       action: `DELETE_${type.toUpperCase()}`,
-      details: `Deleted ${type} record ID: ${id}`,
-      ip: req.headers.get("x-forwarded-for") || "unknown",
-      timestamp: new Date().toISOString(),
-      duration: 0,
+      details: `ลบข้อมูล ${type} ID: ${id}`,
+      timestamp: new Date(),
+      ip: req.headers.get("x-forwarded-for") || "127.0.0.1",
+      role: "super_admin"
     });
 
     return NextResponse.json({ success: true, result });
@@ -231,65 +230,52 @@ export async function DELETE(req: Request) {
   }
 }
 
+/**
+ * [PATCH] แก้ไขข้อมูล
+ */
 export async function PATCH(req: Request) {
   try {
     const session = await auth();
-    const role = (session?.user as any)?.role;
-    if (role !== "super_admin")
+    if ((session?.user as any)?.role !== "super_admin")
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
 
     const body = await req.json();
     const { id, type, updates } = body;
 
-    if (!id || !type || !updates)
-      return NextResponse.json(
-        { error: "Missing parameters" },
-        { status: 400 },
-      );
+    if (!id || !type || !updates) return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
-    const collection = type === "attendance" ? "attendances" : "leave_requests";
+    const collection = type === "attendance" ? "attendances" : type === "leave" ? "leave_requests" : "suvery";
 
     delete updates._id;
 
-    // Fix nested date fields for attendance
+    // มาตรฐาน Date
     if (updates.date) updates.date = new Date(updates.date);
-    if (updates.checkIn?.time)
-      updates.checkIn.time = new Date(updates.checkIn.time);
-    if (updates.checkOut?.time)
-      updates.checkOut.time = new Date(updates.checkOut.time);
-
-    // Fix date fields for leave requests
+    if (updates.checkIn?.time) updates.checkIn.time = new Date(updates.checkIn.time);
+    if (updates.checkOut?.time) updates.checkOut.time = new Date(updates.checkOut.time);
     if (updates.startDate) updates.startDate = new Date(updates.startDate);
     if (updates.endDate) updates.endDate = new Date(updates.endDate);
 
-    // Handle both ObjectId and String ID scenarios
     let query: any = { _id: id };
     if (ObjectId.isValid(id)) {
       query = { $or: [{ _id: new ObjectId(id) }, { _id: id }] };
     }
 
-    const result = await db
-      .collection(collection)
-      .updateOne(query, { $set: updates });
+    const result = await db.collection(collection).updateOne(query, { $set: updates });
 
-    // Log the update action
-    await db.collection("activity_logs").insertOne({
-      userName:
-        (session?.user as any)?.name ||
-        (session?.user as any)?.username ||
-        "Super_Admin",
+    // Logging Unified
+    await db.collection("logs").insertOne({
+      userName: (session?.user as any)?.name || "Super_Admin",
       action: `UPDATE_${type.toUpperCase()}`,
-      details: `Updated ${type} record ID: ${id}`,
-      ip: req.headers.get("x-forwarded-for") || "unknown",
-      timestamp: new Date().toISOString(),
-      duration: 0,
+      details: `แก้ไขข้อมูล ${type} ID: ${id}`,
+      timestamp: new Date(),
+      ip: req.headers.get("x-forwarded-for") || "127.0.0.1",
+      role: "super_admin"
     });
 
     return NextResponse.json({ success: true, result });
   } catch (err: any) {
-    console.error("PATCH error:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

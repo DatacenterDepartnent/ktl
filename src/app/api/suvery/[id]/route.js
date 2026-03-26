@@ -1,21 +1,25 @@
 // src/app/api/suvery/[id]/route.js
 
 import { NextResponse } from "next/server";
-import connectDB from "@/lib/mongodb";
-import Suvery from "@/lib/models/suvery"; // ตรวจสอบว่าชื่อไฟล์ model ตรงกับที่มีอยู่จริง
+import clientPromise from "@/lib/db";
+import { ObjectId } from "mongodb";
 
 // =======================================================
 // 🚀 GET: ดึงข้อมูลแบบสำรวจรายบุคคล (By ID)
 // =======================================================
 export async function GET(request, { params }) {
     try {
-        await connectDB();
+        const client = await clientPromise;
+        const db = client.db("ktltc_db");
 
         // ✅ รองรับ Next.js 15: ต้อง await params ก่อน
         const { id } = await params;
 
-        // ใช้ findById สั้นและตรงความหมายกว่า findOne({ _id: id })
-        const suvery = await Suvery.findById(id);
+        if (!ObjectId.isValid(id)) {
+            return NextResponse.json({ message: "Invalid ID format" }, { status: 400 });
+        }
+
+        const suvery = await db.collection("suvery").findOne({ _id: new ObjectId(id) });
 
         if (!suvery) {
             return NextResponse.json({ message: "ไม่พบข้อมูลแบบสำรวจ" }, { status: 404 });
@@ -37,42 +41,39 @@ export async function GET(request, { params }) {
 // =======================================================
 export async function PUT(request, { params }) {
     try {
-        await connectDB();
+        const client = await clientPromise;
+        const db = client.db("ktltc_db");
 
         // ✅ รองรับ Next.js 15
         const { id } = await params;
 
-        const body = await request.json();
-
-        // ตรวจสอบว่า ID ถูกต้องตาม format ของ MongoDB ก่อน query
-        // เพื่อป้องกัน Server Crash ถ้าส่ง ID มั่วๆ มา
-        const mongoose = require('mongoose');
-        if (!mongoose.Types.ObjectId.isValid(id)) {
+        if (!ObjectId.isValid(id)) {
             return NextResponse.json({ message: "Invalid ID format" }, { status: 400 });
         }
 
-        const updatedSuvery = await Suvery.findByIdAndUpdate(
-            id,
+        const body = await request.json();
+        // ลบ _id ออกจาก body ถ้ามี เพื่อป้องกัน error ตอนอัปเดต
+        delete body._id;
+
+        const result = await db.collection("suvery").findOneAndUpdate(
+            { _id: new ObjectId(id) },
             { $set: body },
-            {
-                new: true, // คืนค่าข้อมูลใหม่หลังอัปเดต
-                runValidators: true // ✅ บังคับตรวจสอบกฎ (Validation) ใน Schema อีกครั้ง
-            }
+            { returnDocument: 'after' }
         );
 
-        if (!updatedSuvery) {
+        if (!result) {
             return NextResponse.json({ message: "ไม่พบข้อมูลที่จะอัปเดต" }, { status: 404 });
         }
 
         return NextResponse.json({
             message: "อัปเดตข้อมูลสำเร็จ",
-            suvery: updatedSuvery
+            suvery: result
         }, { status: 200 });
 
     } catch (error) {
         console.error("Error updating suvery:", error);
 
-        // จัดการ Error กรณีข้อมูลซ้ำ (เช่น แก้ไปซ้ำกับ StudentID คนอื่น)
+        // จัดการ Error กรณีข้อมูลซ้ำ
         if (error.code === 11000) {
             return NextResponse.json(
                 { message: "ข้อมูลซ้ำ: รหัสนักศึกษานี้มีอยู่แล้ว" },
@@ -92,15 +93,19 @@ export async function PUT(request, { params }) {
 // =======================================================
 export async function DELETE(request, { params }) {
     try {
-        await connectDB();
+        const client = await clientPromise;
+        const db = client.db("ktltc_db");
 
-        // ✅ รองรับ Next.js 15 (ถูกต้องแล้ว)
+        // ✅ รองรับ Next.js 15
         const { id } = await params;
 
-        // เชื่อมต่อ Database และลบข้อมูลโดยตรง
-        const deletedSuvery = await Suvery.findByIdAndDelete(id);
+        if (!ObjectId.isValid(id)) {
+            return NextResponse.json({ message: "Invalid ID format" }, { status: 400 });
+        }
 
-        if (!deletedSuvery) {
+        const result = await db.collection("suvery").deleteOne({ _id: new ObjectId(id) });
+
+        if (result.deletedCount === 0) {
             return NextResponse.json({ message: "ไม่พบข้อมูลที่จะลบ" }, { status: 404 });
         }
 

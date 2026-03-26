@@ -16,7 +16,7 @@ export async function GET(req: Request) {
     const dateParam = searchParams.get('date');
 
     const targetDate = dateParam ? new Date(dateParam) : new Date();
-    targetDate.setHours(0, 0, 0, 0);
+    targetDate.setUTCHours(0, 0, 0, 0);
 
     // 1. Aggregate Stats using Native Driver
     const stats = await db.collection("attendances").aggregate([

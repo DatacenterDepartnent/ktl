@@ -32,6 +32,17 @@ export default function MobileMenu({
     await signOut({ callbackUrl: "/login" });
   };
 
+  const ensureAbsolute = (path?: string) => {
+    if (
+      !path ||
+      path.startsWith("/") ||
+      path.startsWith("http") ||
+      path.startsWith("#")
+    )
+      return path || "#";
+    return `/${path}`;
+  };
+
   const closeMenu = () => {
     setIsOpen(false);
     setOpenSubMenuId(null);
@@ -155,7 +166,7 @@ export default function MobileMenu({
                             {item.children!.map((subItem) => (
                               <Link
                                 key={subItem._id}
-                                href={subItem.path}
+                                href={ensureAbsolute(subItem.path)}
                                 onClick={closeMenu}
                                 className="p-3 pl-8 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors"
                               >
@@ -168,7 +179,7 @@ export default function MobileMenu({
                     ) : (
                       // 📌 กรณีไม่มีเมนูย่อย (สามารถคลิกลิงก์ได้เลย)
                       <Link
-                        href={item.path}
+                        href={ensureAbsolute(item.path)}
                         onClick={closeMenu}
                         className="p-4 font-bold text-base block w-full"
                       >
@@ -187,7 +198,7 @@ export default function MobileMenu({
               </div>
 
               {/* ส่วนจัดการสมาชิก */}
-              <div className="pt-4 pb-8 space-y-3 border-t border-zinc-100 dark:border-zinc-800 mt-4">
+              {/* <div className="pt-4 pb-8 space-y-3 border-t border-zinc-100 dark:border-zinc-800 mt-4">
                 {status === "loading" ? (
                   <div className="text-center py-4 text-zinc-500">
                     กำลังโหลด...
@@ -281,7 +292,7 @@ export default function MobileMenu({
                     เข้าสู่ระบบ / Admin
                   </Link>
                 )}
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import mongoose from "mongoose";
+import { ObjectId } from "mongodb";
 
 // Fixed Quotas per year (in days)
 const QUOTAS = {
@@ -29,7 +29,7 @@ export async function GET() {
 
     // Fetch approved/pending leaves for strict balance reduction
     const leaves = await db.collection("leave_requests").find({
-      userId: new mongoose.Types.ObjectId(userId),
+      userId: new ObjectId(userId),
       startDate: { $gte: startOfYear, $lte: endOfYear },
       status: { $in: ["approved", "pending"] }
     }).toArray();

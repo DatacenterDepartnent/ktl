@@ -6,7 +6,7 @@ export async function GET(req) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    const report = await db.collection("activity_logs").aggregate([
+    const report = await db.collection("logs").aggregate([
       {
         $group: {
           _id: {

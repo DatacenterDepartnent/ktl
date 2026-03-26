@@ -46,10 +46,6 @@ export async function PATCH(
     const { id } = await params;
     const body = await req.json();
     const {
-      logAction,
-      logDetails,
-      adminId,
-      adminName,
       password,
       ...updateData
     } = body;
@@ -73,18 +69,27 @@ export async function PATCH(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    // บันทึก Log
-    if (logAction) {
-      await db.collection("logs").insertOne({
-        adminId: adminId ? new ObjectId(adminId) : null,
-        adminName: adminName || "System",
-        action: logAction,
-        details: password ? `${logDetails} (มีการเปลี่ยนรหัสผ่าน)` : logDetails,
-        targetId: new ObjectId(id),
-        timestamp: new Date(),
-        ip: req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1",
-      });
-    }
+    // Automatic Unified Logging
+    const adminName = (session?.user as any)?.name || "Super_Admin";
+    const adminId = (session?.user as any)?.id;
+    
+    // Determine action description based on what was updated
+    let actionDesc = "เเก้ไขข้อมูลผู้ใช้";
+    if (updateData.role) actionDesc = `เปลี่ยนสิทธิ์เป็น ${updateData.role}`;
+    if (updateData.status === "inactive") actionDesc = "ระงับการใช้งานผู้ใช้";
+    if (updateData.status === "active") actionDesc = "เปิดใช้งานผู้ใช้";
+    if (password) actionDesc += " (มีการเปลี่ยนรหัสผ่าน)";
+
+    await db.collection("logs").insertOne({
+      adminId: adminId ? new ObjectId(adminId as string) : null,
+      adminName: adminName,
+      action: "UPDATE_USER",
+      details: `${actionDesc} (Target ID: ${id})`,
+      targetId: new ObjectId(id),
+      timestamp: new Date(),
+      ip: req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1",
+      role: "super_admin"
+    });
 
     return NextResponse.json({ success: true });
   } catch (error) {

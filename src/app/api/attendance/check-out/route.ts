@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     const db = client.db("ktltc_db");
 
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    today.setUTCHours(0, 0, 0, 0);
 
     const userObjId = new ObjectId(userId);
 
@@ -45,13 +45,17 @@ export async function POST(req: Request) {
       }, { status: 400 });
     }
 
-    // Calculate OT (Overtime) - assumes standard end time is 16:30
-    const standardEndOfDay = new Date(serverTime);
-    standardEndOfDay.setHours(16, 30, 0, 0);
+    // Thailand is UTC+7
+    const thTime = new Date(serverTime.getTime() + (7 * 60 * 60 * 1000));
+    
+    // Create standard end of day in Thailand timezone
+    // 16:30 in Thailand is 09:30 UTC
+    const standardEndOfDayUTC = new Date(serverTime);
+    standardEndOfDayUTC.setUTCHours(9, 30, 0, 0);
 
     let otHours = 0;
-    if (serverTime.getTime() > standardEndOfDay.getTime()) {
-      const diffInMs = serverTime.getTime() - standardEndOfDay.getTime();
+    if (serverTime.getTime() > standardEndOfDayUTC.getTime()) {
+      const diffInMs = serverTime.getTime() - standardEndOfDayUTC.getTime();
       otHours = Number((diffInMs / (1000 * 60 * 60)).toFixed(2));
     }
 

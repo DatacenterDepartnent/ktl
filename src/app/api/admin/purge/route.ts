@@ -18,7 +18,7 @@ export async function GET() {
 
     const attResult = await db.collection("attendances").deleteMany({});
     const leaveResult = await db.collection("leave_requests").deleteMany({});
-    const logResult = await db.collection("activity_logs").deleteMany({});
+    const logResult = await db.collection("logs").deleteMany({});
 
     return NextResponse.json({ 
       success: true, 
@@ -26,7 +26,7 @@ export async function GET() {
       deleted: {
         attendances: attResult.deletedCount,
         leave_requests: leaveResult.deletedCount,
-        activity_logs: logResult.deletedCount
+        logs: logResult.deletedCount
       }
     });
   } catch (err: any) {

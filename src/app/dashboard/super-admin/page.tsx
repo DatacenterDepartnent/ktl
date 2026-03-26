@@ -62,9 +62,9 @@ export default function SuperAdminPage() {
     try {
       setLoading(true);
       const [usersRes, summaryRes, logsRes] = await Promise.all([
-        fetch("/api/admin/users"),
-        fetch("/api/admin/reports/summary"),
-        fetch("/api/admin/logs"),
+        fetch("/api/admin/users?_t=" + Date.now()),
+        fetch("/api/admin/reports/summary?_t=" + Date.now()),
+        fetch("/api/admin/logs?_t=" + Date.now()), // Backend now limits to 50 for max speed
       ]);
 
       if (usersRes.ok) {
@@ -254,7 +254,7 @@ export default function SuperAdminPage() {
   };
   if (loading)
     return (
-      <div className="flex items-center justify-center max-w-[1600px] mx-auto bg-slate-50 font-black text-slate-400 italic">
+      <div className="flex items-center py-60 justify-center max-w-[1600px] mx-auto bg-slate-50 font-black text-slate-400 italic">
         LOADING_SYSTEM_DATA...
       </div>
     );
@@ -465,6 +465,10 @@ export default function SuperAdminPage() {
         </div>
 
         <div className="p-6 max-h-[800px] overflow-y-auto space-y-8 custom-scrollbar">
+          <div className="mb-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2 ml-6">
+            Showing Latest 50 Activities (Performance Optimized)
+          </div>
+          ข/ภ{" "}
           {logs.length === 0 ? (
             <p className="text-center text-slate-600 font-black italic uppercase py-20 tracking-widest">
               No_Activity_Detected

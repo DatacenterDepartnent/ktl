@@ -1,9 +1,8 @@
 // src/app/suvery/edit/[id]/page.tsx
 
 import SuveryEditForm from "@/components/SuveryEditForm"; // ต้องมั่นใจว่าไฟล์นี้มีอยู่จริง
-import connectDB from "@/lib/mongodb";
-import Suvery from "@/lib/models/suvery";
-import { Types } from "mongoose";
+import clientPromise from "@/lib/db";
+import { ObjectId } from "mongodb";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -27,13 +26,14 @@ interface EditPageProps {
 // 🚀 ฟังก์ชันดึงข้อมูลจาก DB โดยตรง (Server Action Style)
 async function getSuveryById(encodedId: string) {
   try {
-    await connectDB();
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
 
     // 1. 🔓 ถอดรหัส Base64 (ถ้า ID ถูก encode มาจากหน้า List)
     let id = encodedId;
     try {
       // เช็คเบื้องต้นว่าเป็น Base64 ไหม (ถ้า encodedId ไม่ใช่ ObjectId ปกติ)
-      if (!Types.ObjectId.isValid(encodedId)) {
+      if (!ObjectId.isValid(encodedId)) {
         id = atob(encodedId);
       }
     } catch (e) {
@@ -41,14 +41,13 @@ async function getSuveryById(encodedId: string) {
     }
 
     // 2. ตรวจสอบความถูกต้องของ ObjectId ของ MongoDB
-    if (!Types.ObjectId.isValid(id)) {
+    if (!ObjectId.isValid(id)) {
       console.error("Invalid ObjectId:", id);
       return null;
     }
 
     // 3. Query ข้อมูลจาก Database
-    // .lean() จะแปลง Mongoose Object เป็น Plain JS Object เพื่อประสิทธิภาพ
-    const suveryData = await Suvery.findById(id).lean();
+    const suveryData = await db.collection("suvery").findOne({ _id: new ObjectId(id) });
 
     if (!suveryData) return null;
 

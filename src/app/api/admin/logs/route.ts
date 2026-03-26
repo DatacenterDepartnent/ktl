@@ -16,6 +16,7 @@ export async function GET() {
       .collection("logs")
       .find({})
       .sort({ timestamp: -1 })
+      .limit(50)
       .toArray();
 
     return NextResponse.json(logs);

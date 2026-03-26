@@ -1,17 +1,22 @@
-import Log from "@/models/Log";
-import dbConnect from "@/lib/mongodb";
+import clientPromise from "@/lib/db";
 
 export async function recordLog({ userId, userName, action, details, req }) {
-  await dbConnect();
+  try {
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
 
-  // พยายามดึง IP จาก Header (รองรับการรันบน Vercel)
-  const ip = req.headers.get("x-forwarded-for") || req.ip || "unknown";
+    // พยายามดึง IP จาก Header (รองรับการรันบน Vercel)
+    const ip = req?.headers?.get("x-forwarded-for") || req?.ip || "unknown";
 
-  await Log.create({
-    userId,
-    userName,
-    action,
-    details,
-    ip,
-  });
+    await db.collection("logs").insertOne({
+      userId,
+      userName,
+      action,
+      details,
+      ip,
+      timestamp: new Date()
+    });
+  } catch (err) {
+    console.error("Failed to record log:", err);
+  }
 }
