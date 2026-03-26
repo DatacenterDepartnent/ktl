@@ -42,6 +42,7 @@ export default function SuperAdminPage() {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
   const [adminProfile, setAdminProfile] = useState<{
     _id: string;
     name: string;
@@ -69,10 +70,14 @@ export default function SuperAdminPage() {
 
       if (usersRes.ok) {
         const data = await usersRes.json();
+        // เรียงลำดับ: orderIndex > newest (_id)
         setUsers(
-          data.sort(
-            (a: User, b: User) => (a.orderIndex || 0) - (b.orderIndex || 0),
-          ),
+          data.sort((a: User, b: User) => {
+            if (a.orderIndex !== b.orderIndex) {
+              return (a.orderIndex || 0) - (b.orderIndex || 0);
+            }
+            return b._id.localeCompare(a._id);
+          }),
         );
       }
       if (summaryRes.ok) setSummary(await summaryRes.json());
@@ -83,6 +88,12 @@ export default function SuperAdminPage() {
       setLoading(false);
     }
   };
+
+  const filteredUsers = users.filter(
+    (u) =>
+      u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      u.username.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
 
   useEffect(() => {
     fetchAdminProfile();
@@ -326,12 +337,36 @@ export default function SuperAdminPage() {
           <h1 className="text-3xl font-black text-slate-900 italic uppercase tracking-tighter">
             การจัดการสมาชิก
           </h1>
-          <button
-            onClick={fetchData}
-            className="bg-slate-900 text-white text-[11px] font-black px-8 py-4 rounded-2xl hover:bg-blue-600 transition-all uppercase italic"
-          >
-            รีเฟรชฐานข้อมูล
-          </button>
+          <div className="flex items-center gap-4">
+            <div className="relative group/search">
+              <input
+                type="text"
+                placeholder="ค้นหาชื่อสมาชิกหรือ @username..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="bg-slate-50 border-2 border-slate-100 rounded-2xl px-6 py-4 text-sm font-bold text-slate-900 outline-none focus:border-blue-500 focus:bg-white transition-all w-[300px] shadow-sm"
+              />
+              <svg
+                className="w-5 h-5 absolute right-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within/search:text-blue-500 transition-colors"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2.5}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+            <button
+              onClick={fetchData}
+              className="bg-slate-900 text-white text-[11px] font-black px-8 py-4 rounded-2xl hover:bg-blue-600 transition-all uppercase italic shadow-lg shadow-slate-900/10"
+            >
+              รีเฟรชฐานข้อมูล
+            </button>
+          </div>
         </div>
 
         <div className="overflow-x-auto">
@@ -347,7 +382,7 @@ export default function SuperAdminPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {users.map((user, index) => (
+              {filteredUsers.map((user, index) => (
                 <tr
                   key={user._id}
                   className="hover:bg-blue-50/30 transition-all group"

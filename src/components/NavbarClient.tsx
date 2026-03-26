@@ -53,6 +53,20 @@ export default function NavbarClient({
     return `/${path}`;
   };
 
+  const filteredMenuTree = menuTree.filter((item) => {
+    const r = role?.toLowerCase();
+    if (r === "user" || r === "general") {
+      const restrictedPaths = [
+        "/dashboard",
+        "/attendance-dashboard",
+        "/attendance-report",
+        "/leave-approvals",
+      ];
+      return !restrictedPaths.some((p) => item.path?.startsWith(p));
+    }
+    return true;
+  });
+
   return (
     <nav
       className={`sticky top-0 z-50 w-full transition-all duration-300 border-b ${
@@ -79,7 +93,7 @@ export default function NavbarClient({
 
         {/* --- 2. DESKTOP MENU --- */}
         <div className="hidden xl:flex items-center gap-0.5">
-          {menuTree.map((item) => (
+          {filteredMenuTree.map((item) => (
             <div key={item._id} className="relative group">
               <Link
                 href={ensureAbsolute(item.path) || "#"}
@@ -194,10 +208,12 @@ export default function NavbarClient({
                       </p>
                     </div>
 
-                    {/* ✅ เมนูเฉพาะ Super Admin / Admin / Director / HR */}
-                    {(isAdmin ||
+                    {/* ✅ เมนูเฉพาะ Super Admin / Admin / Director / HR / Deputy */}
+                    {(isSuperAdmin ||
+                      role?.toLowerCase() === "admin" ||
                       role?.toLowerCase() === "hr" ||
-                      role?.toLowerCase() === "director") && (
+                      role?.toLowerCase() === "director" ||
+                      role?.toLowerCase() === "deputy_director") && (
                       <>
                         <div className="px-3 py-1">
                           <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest pl-1 mt-1 mb-1">
@@ -246,27 +262,29 @@ export default function NavbarClient({
                           </div>
                           ระบบรายงานการเข้างาน
                         </Link>
-                        <Link
-                          href="/leave-approvals"
-                          className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all group mb-1 border-b border-zinc-100 dark:border-zinc-800/50 pb-3"
-                        >
-                          <div className="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 group-hover:bg-emerald-200 transition-colors">
-                            <svg
-                              className="w-4 h-4"
-                              fill="none"
-                              stroke="currentColor"
-                              viewBox="0 0 24 24"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                              />
-                            </svg>
-                          </div>
-                          จัดการอนุมัติใบลา
-                        </Link>
+                        {(isSuperAdmin || role?.toLowerCase() === "hr") && (
+                          <Link
+                            href="/leave-approvals"
+                            className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all group mb-1 border-b border-zinc-100 dark:border-zinc-800/50 pb-3"
+                          >
+                            <div className="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 group-hover:bg-emerald-200 transition-colors">
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                              </svg>
+                            </div>
+                            จัดการอนุมัติใบลา
+                          </Link>
+                        )}
                       </>
                     )}
 
@@ -320,27 +338,31 @@ export default function NavbarClient({
                       </>
                     )}
 
-                    <Link
-                      href="/dashboard"
-                      className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-all group"
-                    >
-                      <div className="p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 transition-colors">
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-                          />
-                        </svg>
-                      </div>
-                      Dashboard
-                    </Link>
+                    {(isSuperAdmin ||
+                      role?.toLowerCase() === "admin" ||
+                      role?.toLowerCase() === "editor") && (
+                      <Link
+                        href="/dashboard"
+                        className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-all group"
+                      >
+                        <div className="p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 transition-colors">
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                            />
+                          </svg>
+                        </div>
+                        Dashboard
+                      </Link>
+                    )}
 
                     <Link
                       href="/dashboard/profile"
@@ -403,7 +425,7 @@ export default function NavbarClient({
           )}
 
           <div className="xl:hidden">
-            <MobileMenu menuTree={menuTree} image={image} />
+            <MobileMenu menuTree={filteredMenuTree} image={image} />
           </div>
         </div>
       </div>
