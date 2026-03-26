@@ -78,7 +78,7 @@ export default function SuperAdminPage() {
       if (summaryRes.ok) setSummary(await summaryRes.json());
       if (logsRes.ok) setLogs(await logsRes.json());
     } catch (error) {
-      toast.error("SYSTEM_ERROR: โหลดข้อมูลล้มเหลว");
+      toast.error("โหลดข้อมูลไม่สำเร็จ กรุณาลองใหม่");
     } finally {
       setLoading(false);
     }
@@ -104,11 +104,11 @@ export default function SuperAdminPage() {
         body: JSON.stringify({ department: newDept }),
       });
       if (res.ok) {
-        toast.success(`UPDATED: เปลี่ยนสังกัด ${targetName} สำเร็จ`);
+        toast.success(`เปลี่ยนสังกัด ${targetName} เรียบร้อย`);
         fetchData();
       }
     } catch (error) {
-      toast.error("UPDATE_FAILED");
+      toast.error("เปลี่ยนสังกัดไม่สำเร็จ");
     }
   };
 
@@ -122,14 +122,14 @@ export default function SuperAdminPage() {
       const res = await fetch(`/api/users/${targetId}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ role: newRole }), // ส่งแค่ข้อมูลที่แก้ Log ให้ API จัดการเอง
+        body: JSON.stringify({ role: newRole }),
       });
       if (res.ok) {
-        toast.success(`UPDATED: เปลี่ยนสิทธิ์ ${targetName} สำเร็จ`);
+        toast.success(`เปลี่ยนสิทธิ์ ${targetName} เรียบร้อย`);
         fetchData();
       }
     } catch (error) {
-      toast.error("UPDATE_FAILED");
+      toast.error("เปลี่ยนสิทธิ์ไม่สำเร็จ");
     }
   };
 
@@ -140,17 +140,34 @@ export default function SuperAdminPage() {
   ) => {
     if (!adminProfile) return;
     try {
-      const res = await fetch(`/api/users/${targetId}`, {
+      const res = await fetch(`/api/users/${targetId}/status`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ isActive: !currentStatus }),
       });
       if (res.ok) {
-        toast.success(!currentStatus ? "USER_ACTIVATED" : "USER_SUSPENDED");
+        toast.success(!currentStatus ? "เปิดใช้งานผู้ใช้เรียบร้อย" : "ระงับการใช้งานเรียบร้อย");
         fetchData();
       }
     } catch (error) {
-      toast.error("TOGGLE_ERROR");
+      toast.error("ไม่สามารถเปลี่ยนสถานะได้");
+    }
+  };
+
+  const deleteUser = async (targetId: string, targetName: string) => {
+    if (!confirm(`⚠️ ต้องการลบสมาชิก "${targetName}" ออกจากระบบใช่หรือไม่? ไม่สามารถย้อนกลับได้`)) return;
+    try {
+      const res = await fetch(`/api/users/${targetId}/status`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        toast.success(`ลบ "${targetName}" เรียบร้อย`);
+        fetchData();
+      } else {
+        toast.error("ลบสมาชิกไม่สำเร็จ");
+      }
+    } catch (error) {
+      toast.error("เกิดข้อผิดพลาด");
     }
   };
 
@@ -168,7 +185,7 @@ export default function SuperAdminPage() {
       });
       if (res.ok) fetchData();
     } catch (error) {
-      toast.error("MOVE_FAILED");
+      toast.error("ไม่สามารถเปลี่ยนลำดับได้");
     }
   };
 
@@ -177,11 +194,11 @@ export default function SuperAdminPage() {
     try {
       const res = await fetch("/api/admin/logs", { method: "DELETE" });
       if (res.ok) {
-        toast.success("LOGS_CLEARED");
+        toast.success("ล้างประวัติเรียบร้อย");
         fetchData();
       }
     } catch (error) {
-      toast.error("CLEAR_FAILED");
+      toast.error("ไม่สามารถล้างประวัติได้");
     }
   };
 
@@ -363,6 +380,11 @@ export default function SuperAdminPage() {
                     <div className="text-[10px] font-black text-blue-600 lowercase italic">
                       @{user.username}
                     </div>
+                    {!user.isActive && (
+                      <span className="inline-block mt-1 text-[9px] font-black px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 border border-amber-200 uppercase tracking-widest">
+                        ⏳ รออนุมัติ
+                      </span>
+                    )}
                   </td>
                   <td className="p-6 text-center">
                     <select
@@ -433,14 +455,22 @@ export default function SuperAdminPage() {
                     </button>
                   </td>
                   <td className="p-6 text-right">
-                    <button
-                      onClick={() =>
-                        router.push(`/dashboard/users/edit/${user._id}`)
-                      }
-                      className="text-[10px] font-black bg-slate-100 text-slate-500 px-6 py-3 rounded-2xl hover:bg-slate-900 hover:text-white transition-all uppercase italic border border-transparent hover:border-blue-500"
-                    >
-                      Edit_User
-                    </button>
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        onClick={() =>
+                          router.push(`/dashboard/users/edit/${user._id}`)
+                        }
+                        className="text-[10px] font-black bg-slate-100 text-slate-500 px-4 py-3 rounded-2xl hover:bg-slate-900 hover:text-white transition-all uppercase italic border border-transparent hover:border-blue-500"
+                      >
+                        แก้ไขข้อมูล
+                      </button>
+                      <button
+                        onClick={() => deleteUser(user._id, user.name)}
+                        className="text-[10px] font-black bg-rose-50 text-rose-500 px-4 py-3 rounded-2xl hover:bg-rose-600 hover:text-white transition-all uppercase italic border border-rose-100"
+                      >
+                        ลบ
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -466,12 +496,11 @@ export default function SuperAdminPage() {
 
         <div className="p-6 max-h-[800px] overflow-y-auto space-y-8 custom-scrollbar">
           <div className="mb-4 text-[10px] font-black text-slate-500 uppercase tracking-widest border-b border-white/5 pb-2 ml-6">
-            Showing Latest 50 Activities (Performance Optimized)
+            แสดง 50 รายการล่าสุด
           </div>
-          ข/ภ{" "}
           {logs.length === 0 ? (
             <p className="text-center text-slate-600 font-black italic uppercase py-20 tracking-widest">
-              No_Activity_Detected
+              ยังไม่มีบันทึกกิจกรรม
             </p>
           ) : (
             logs.map((log) => (
@@ -523,11 +552,11 @@ export default function SuperAdminPage() {
                     </div>
                     <div className="flex items-center gap-4 pt-2">
                       <p className="text-[9px] text-slate-500 font-black uppercase tracking-widest">
-                        DATE:{" "}
+                        วันที่:{" "}
                         {new Date(log.timestamp).toLocaleDateString("th-TH")}
                       </p>
                       <p className="text-[9px] text-slate-600 font-black uppercase tracking-widest">
-                        IP: {log.ip || "UNKNOWN"}
+                        IP: {log.ip || "ไม่ปรากฏ"}
                       </p>
                     </div>
                   </div>

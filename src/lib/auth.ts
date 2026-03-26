@@ -115,8 +115,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         );
         if (!isPasswordCorrect) throw new Error("รหัสผ่านไม่ถูกต้อง");
 
+        // ✅ ตรวจสอบว่า Super Admin อนุมัติบัญชีแล้วหรือยัง
+        if (user.isActive === false) {
+          throw new Error("บัญชีของคุณยังรอการอนุมัติจาก Super Admin กรุณาติดต่อผู้ดูแลระบบ");
+        }
+
         // ✅ สร้างเลข session ID ใหม่ทุกครั้งที่ล็อกอิน
         const sessionId = crypto.randomUUID();
+
 
         // ✅ บันทึก sessionId ของปัจจุบันทับลงในฐานข้อมูล
         await db.collection("users").updateOne(

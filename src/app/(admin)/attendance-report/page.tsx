@@ -1,11 +1,19 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Download, Search, FileText, Loader2, Filter } from "lucide-react";
+import { Download, Search, FileText, Loader2, X } from "lucide-react";
+
+const STATUS_TH: Record<string, string> = {
+  Present: "มาทำงาน",
+  Late: "มาสาย",
+  Absent: "ขาดงาน",
+  Leave: "ลางาน",
+};
 
 export default function AttendanceReportPage() {
   const [records, setRecords] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
   const [startDate, setStartDate] = useState(() => {
     const d = new Date();
     d.setDate(1); // Default to start of current month
@@ -262,35 +270,36 @@ export default function AttendanceReportPage() {
                           "-"
                         )}
                       </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full ${
-                            r.status === "Present"
-                              ? "bg-green-100 text-green-700 border border-green-200"
-                              : r.status === "Late"
-                                ? "bg-yellow-100 text-yellow-700 border border-yellow-200"
-                                : "bg-red-100 text-red-700 border border-red-200"
-                          }`}
-                        >
-                          {r.status}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        {r.photoUrl ? (
-                          <a
-                            href={r.photoUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-blue-500 hover:underline font-medium text-sm"
+                <td className="px-6 py-4">
+                          <span
+                            className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full ${
+                              r.status === "Present"
+                                ? "bg-green-100 text-green-700 border border-green-200"
+                                : r.status === "Late"
+                                  ? "bg-yellow-100 text-yellow-700 border border-yellow-200"
+                                  : "bg-red-100 text-red-700 border border-red-200"
+                            }`}
                           >
-                            ดูรูปภาพประกอบ
-                          </a>
-                        ) : (
-                          <span className="text-slate-300 text-sm">
-                            ไม่มีรูป
+                            {STATUS_TH[r.status] || r.status}
                           </span>
-                        )}
-                      </td>
+                        </td>
+                        <td className="px-6 py-4">
+                          {r.photoUrl ? (
+                            <button
+                              onClick={() => setPreviewPhoto(r.photoUrl)}
+                              className="relative group"
+                              title="คลิกเพื่อดูรูปขนาดใหญ่"
+                            >
+                              <img
+                                src={r.photoUrl}
+                                alt="หลักฐานรูปถ่าย"
+                                className="w-12 h-12 object-cover rounded-lg border-2 border-slate-200 group-hover:border-blue-400 transition shadow-sm"
+                              />
+                            </button>
+                          ) : (
+                            <span className="text-slate-300 text-sm">ไม่มีรูป</span>
+                          )}
+                        </td>
                     </tr>
                   ))
                 )}
@@ -299,6 +308,29 @@ export default function AttendanceReportPage() {
           </div>
         </div>
       </div>
+
+      {/* Photo Preview Modal */}
+      {previewPhoto && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+          onClick={() => setPreviewPhoto(null)}
+        >
+          <div className="relative max-w-lg w-full mx-4">
+            <button
+              onClick={() => setPreviewPhoto(null)}
+              className="absolute -top-4 -right-4 w-10 h-10 bg-white rounded-full shadow-xl flex items-center justify-center text-slate-700 hover:bg-slate-100 transition"
+            >
+              <X size={20} />
+            </button>
+            <img
+              src={previewPhoto}
+              alt="หลักฐานรูปถ่าย (ขนาดเต็ม)"
+              className="w-full rounded-2xl shadow-2xl border-4 border-white"
+            />
+            <p className="text-center text-white/70 text-xs mt-3">คลิกนอกรูปเพื่อปิด</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -97,3 +97,51 @@ export async function PATCH(
     return NextResponse.json({ error: "Update failed" }, { status: 500 });
   }
 }
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    const session = await auth();
+    if (!session || (session.user as any).role !== "super_admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await params;
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
+    // หาชื่อผู้ใช้ก่อนลบ
+    const targetUser = await db
+      .collection("users")
+      .findOne({ _id: new ObjectId(id) }, { projection: { name: 1, username: 1 } });
+
+    const result = await db.collection("users").deleteOne({ _id: new ObjectId(id) });
+
+    if (result.deletedCount === 0) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+
+    // บันทึก Log การลบสมาชิก
+    const adminName = (session?.user as any)?.name || "Super_Admin";
+    const adminId = (session?.user as any)?.id;
+    const targetName = targetUser?.name || targetUser?.username || `ID: ${id}`;
+
+    await db.collection("logs").insertOne({
+      adminId: adminId ? new ObjectId(adminId as string) : null,
+      userName: adminName,
+      action: "DELETE_USER",
+      details: `ลบสมาชิก: ${targetName}`,
+      targetId: new ObjectId(id),
+      timestamp: new Date(),
+      ip: req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1",
+      role: "super_admin"
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Delete Error:", error);
+    return NextResponse.json({ error: "Delete failed" }, { status: 500 });
+  }
+}

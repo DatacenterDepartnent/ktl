@@ -306,6 +306,24 @@ export default function ProfilePage() {
               </div>
 
               <div className="group">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 ml-1 mb-2 block">
+                  อีเมล
+                </label>
+                <div className="relative">
+                  <MailOutlined className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-400" />
+                  <input
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) =>
+                      setFormData({ ...formData, email: e.target.value })
+                    }
+                    className="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700/50 rounded-2xl pl-12 pr-5 py-4 text-zinc-800 dark:text-zinc-200 focus:bg-white dark:focus:bg-zinc-800 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all"
+                    placeholder="name@ktltc.ac.th"
+                  />
+                </div>
+              </div>
+
+              <div className="group">
                 <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 ml-1 mb-2 block transition-colors group-focus-within:text-blue-500">
                   เบอร์ติดต่อ
                 </label>

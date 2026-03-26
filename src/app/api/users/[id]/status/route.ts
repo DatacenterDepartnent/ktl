@@ -1,18 +1,21 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { ObjectId } from "mongodb";
+import { auth } from "@/lib/auth";
 
-// ✅ PATCH: แก้ไขสถานะ
+// ✅ PATCH: แก้ไขสถานะ + บันทึก Log
 export async function PATCH(
   req: Request,
-  { params }: { params: Promise<{ id: string }> }, // รองรับ Next.js 15
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const { id } = await params; // แกะ ID ออกมา
+    const session = await auth();
+    const adminName = (session?.user as any)?.name || "Super_Admin";
+    const adminId = (session?.user as any)?.id;
+
+    const { id } = await params;
     const body = await req.json();
     const { isActive, role } = body;
-
-    console.log(`⚡ Updating User: ${id}`, body); // ดู Log ใน Terminal
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
@@ -21,7 +24,6 @@ export async function PATCH(
     if (typeof isActive === "boolean") updateData.isActive = isActive;
     if (role) updateData.role = role;
 
-    // อัปเดตข้อมูล
     const result = await db
       .collection("users")
       .updateOne({ _id: new ObjectId(id) }, { $set: updateData });
@@ -30,6 +32,30 @@ export async function PATCH(
       console.warn("⚠️ No documents updated. ID might be wrong.");
     }
 
+    // ✅ บันทึก Audit Log ทุกครั้ง
+    let action = "UPDATE_USER";
+    let actionDesc = "แก้ไขข้อมูลสมาชิก";
+
+    if (typeof isActive === "boolean") {
+      action = isActive ? "APPROVE_USER" : "SUSPEND_USER";
+      actionDesc = isActive ? "✅ อนุมัติบัญชีสมาชิก" : "🚫 ระงับบัญชีสมาชิก";
+    }
+    if (role) {
+      action = "CHANGE_ROLE";
+      actionDesc = `เปลี่ยนสิทธิ์เป็น: ${role}`;
+    }
+
+    await db.collection("logs").insertOne({
+      adminId: adminId ? new ObjectId(adminId as string) : null,
+      userName: adminName,
+      action,
+      details: `${actionDesc} (Target ID: ${id})`,
+      targetId: new ObjectId(id),
+      timestamp: new Date(),
+      ip: req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1",
+      role: (session?.user as any)?.role || "super_admin",
+    });
+
     return NextResponse.json({ message: "Success" });
   } catch (error) {
     console.error("❌ Update Error:", error);
@@ -37,17 +63,37 @@ export async function PATCH(
   }
 }
 
-// ✅ DELETE: ลบผู้ใช้
+// ✅ DELETE: ลบผู้ใช้ พร้อม Log
 export async function DELETE(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const session = await auth();
+    const adminName = (session?.user as any)?.name || "Super_Admin";
+    const adminId = (session?.user as any)?.id;
+
     const { id } = await params;
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
+    const targetUser = await db
+      .collection("users")
+      .findOne({ _id: new ObjectId(id) }, { projection: { name: 1, username: 1 } });
+
     await db.collection("users").deleteOne({ _id: new ObjectId(id) });
+
+    const targetName = targetUser?.name || targetUser?.username || `ID: ${id}`;
+    await db.collection("logs").insertOne({
+      adminId: adminId ? new ObjectId(adminId as string) : null,
+      userName: adminName,
+      action: "DELETE_USER",
+      details: `ลบสมาชิก: ${targetName}`,
+      targetId: new ObjectId(id),
+      timestamp: new Date(),
+      ip: req.headers.get("x-forwarded-for")?.split(",")[0] || "127.0.0.1",
+      role: (session?.user as any)?.role || "super_admin",
+    });
 
     return NextResponse.json({ message: "Deleted" });
   } catch (error) {
