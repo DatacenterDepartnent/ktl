@@ -3,7 +3,7 @@ const path = require('path');
 const https = require('https');
 
 const BASE_URL = 'https://raw.githubusercontent.com/vladmandic/face-api/master/model/';
-const OUT_DIR = path.join(__dirname, 'public', 'models');
+const OUT_DIR = path.join(__dirname, '..', 'public', 'models');
 
 const FILES = [
   'ssd_mobilenetv1_model-weights_manifest.json',

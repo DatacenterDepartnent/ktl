@@ -63,7 +63,8 @@ export async function GET(req: Request) {
           checkOutTime: "$checkOut.time",
           status: "$status",
           otHours: { $ifNull: ["$checkOut.otHours", 0] },
-          photoUrl: "$checkIn.photoUrl"
+          photoUrl: "$checkIn.photoUrl",
+          checkOutPhotoUrl: "$checkOut.photoUrl"
         }
       }
     ]).toArray();

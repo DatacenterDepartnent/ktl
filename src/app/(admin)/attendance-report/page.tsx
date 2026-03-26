@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Download, Search, FileText, Loader2, X } from "lucide-react";
+import { Download, Search, FileText, Loader2, X, Camera } from "lucide-react";
 
 const STATUS_TH: Record<string, string> = {
   Present: "มาทำงาน",
@@ -10,13 +10,18 @@ const STATUS_TH: Record<string, string> = {
   Leave: "ลางาน",
 };
 
+type PhotoPreview = {
+  url: string;
+  label: string; // "เข้างาน" | "ออกงาน"
+};
+
 export default function AttendanceReportPage() {
   const [records, setRecords] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [previewPhoto, setPreviewPhoto] = useState<string | null>(null);
+  const [preview, setPreview] = useState<PhotoPreview | null>(null);
   const [startDate, setStartDate] = useState(() => {
     const d = new Date();
-    d.setDate(1); // Default to start of current month
+    d.setDate(1);
     const offset = d.getTimezoneOffset();
     d.setMinutes(d.getMinutes() - offset);
     return d.toISOString().split("T")[0];
@@ -25,7 +30,7 @@ export default function AttendanceReportPage() {
     const d = new Date();
     const offset = d.getTimezoneOffset();
     d.setMinutes(d.getMinutes() - offset);
-    return d.toISOString().split("T")[0]; // Default to today
+    return d.toISOString().split("T")[0];
   });
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -108,6 +113,45 @@ export default function AttendanceReportPage() {
     r.user.name.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
+  /** แสดงเวลา — ถ้ามีรูปให้กดได้ */
+  const TimeCell = ({
+    time,
+    photoUrl,
+    label,
+    colorClass,
+  }: {
+    time: string | null;
+    photoUrl?: string | null;
+    label: string;
+    colorClass: string;
+  }) => {
+    if (!time) return <span className="text-slate-300 text-sm">-</span>;
+
+    const timeStr = new Date(time).toLocaleTimeString("th-TH") + " น.";
+
+    if (photoUrl) {
+      return (
+        <button
+          onClick={() => setPreview({ url: photoUrl, label })}
+          title={`คลิกดูรูปหลักฐาน${label}`}
+          className={`group inline-flex items-center gap-1.5 font-semibold text-sm ${colorClass} hover:underline underline-offset-2 transition-all`}
+        >
+          <Camera
+            size={13}
+            className="opacity-60 group-hover:opacity-100 transition-opacity shrink-0"
+          />
+          {timeStr}
+        </button>
+      );
+    }
+
+    return (
+      <span className="text-sm font-medium text-slate-500 dark:text-neutral-400">
+        {timeStr}
+      </span>
+    );
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-neutral-950 p-6 font-sans">
       <div className="max-w-7xl mx-auto space-y-6">
@@ -180,6 +224,12 @@ export default function AttendanceReportPage() {
           </div>
         </div>
 
+        {/* Legend */}
+        <p className="text-xs text-slate-400 dark:text-neutral-500 flex items-center gap-1.5 px-1">
+          <Camera size={12} />
+          เวลาที่มีไอคอนกล้อง = คลิกเพื่อดูรูปหลักฐาน
+        </p>
+
         {/* Table Section */}
         <div className="bg-white dark:bg-neutral-900 rounded-3xl shadow-sm border border-slate-100 dark:border-neutral-800 overflow-hidden">
           <div className="overflow-x-auto">
@@ -190,22 +240,29 @@ export default function AttendanceReportPage() {
                   <th className="px-6 py-4 font-bold text-sm">
                     ชื่อ-นามสกุลพนักงาน
                   </th>
-                  <th className="px-6 py-4 font-bold text-sm">เวลาเข้างาน</th>
-                  <th className="px-6 py-4 font-bold text-sm">เวลาออกงาน</th>
+                  <th className="px-6 py-4 font-bold text-sm">
+                    เวลาเข้างาน
+                    <span className="ml-1 text-sky-600 font-normal text-xs">
+                      (📷 = มีรูป)
+                    </span>
+                  </th>
+                  <th className="px-6 py-4 font-bold text-sm">
+                    เวลาออกงาน
+                    <span className="ml-1 text-sky-600 font-normal text-xs">
+                      (📷 = มีรูป)
+                    </span>
+                  </th>
                   <th className="px-6 py-4 font-bold text-sm text-center">
                     ชั่วโมง OT
                   </th>
                   <th className="px-6 py-4 font-bold text-sm">สถานะการทำงาน</th>
-                  <th className="px-6 py-4 font-bold text-sm">
-                    หลักฐานรูปถ่าย
-                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-neutral-800">
                 {loading ? (
                   <tr>
                     <td
-                      colSpan={7}
+                      colSpan={6}
                       className="px-6 py-12 text-center text-slate-400"
                     >
                       <Loader2
@@ -218,7 +275,7 @@ export default function AttendanceReportPage() {
                 ) : filteredRecords.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={7}
+                      colSpan={6}
                       className="px-6 py-12 text-center text-slate-400 font-medium"
                     >
                       ไม่พบข้อมูลการลงเวลาในช่วงนี้
@@ -247,20 +304,27 @@ export default function AttendanceReportPage() {
                           </p>
                         </div>
                       </td>
-                      <td className="px-6 py-4 text-sm font-medium text-slate-600 dark:text-neutral-400">
-                        {r.checkInTime
-                          ? new Date(r.checkInTime).toLocaleTimeString(
-                              "th-TH",
-                            ) + " น."
-                          : "-"}
+
+                      {/* เวลาเข้า — กดได้ถ้ามีรูป */}
+                      <td className="px-6 py-4">
+                        <TimeCell
+                          time={r.checkInTime}
+                          photoUrl={r.photoUrl}
+                          label="เข้างาน"
+                          colorClass="text-green-600 dark:text-green-400"
+                        />
                       </td>
-                      <td className="px-6 py-4 text-sm font-medium text-slate-600 dark:text-neutral-400">
-                        {r.checkOutTime
-                          ? new Date(r.checkOutTime).toLocaleTimeString(
-                              "th-TH",
-                            ) + " น."
-                          : "-"}
+
+                      {/* เวลาออก — กดได้ถ้ามีรูป */}
+                      <td className="px-6 py-4">
+                        <TimeCell
+                          time={r.checkOutTime}
+                          photoUrl={r.checkOutPhotoUrl}
+                          label="ออกงาน"
+                          colorClass="text-orange-500 dark:text-orange-400"
+                        />
                       </td>
+
                       <td className="px-6 py-4 text-sm font-bold text-center text-slate-500">
                         {r.otHours ? (
                           <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full">
@@ -270,36 +334,20 @@ export default function AttendanceReportPage() {
                           "-"
                         )}
                       </td>
-                <td className="px-6 py-4">
-                          <span
-                            className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full ${
-                              r.status === "Present"
-                                ? "bg-green-100 text-green-700 border border-green-200"
-                                : r.status === "Late"
-                                  ? "bg-yellow-100 text-yellow-700 border border-yellow-200"
-                                  : "bg-red-100 text-red-700 border border-red-200"
-                            }`}
-                          >
-                            {STATUS_TH[r.status] || r.status}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4">
-                          {r.photoUrl ? (
-                            <button
-                              onClick={() => setPreviewPhoto(r.photoUrl)}
-                              className="relative group"
-                              title="คลิกเพื่อดูรูปขนาดใหญ่"
-                            >
-                              <img
-                                src={r.photoUrl}
-                                alt="หลักฐานรูปถ่าย"
-                                className="w-12 h-12 object-cover rounded-lg border-2 border-slate-200 group-hover:border-blue-400 transition shadow-sm"
-                              />
-                            </button>
-                          ) : (
-                            <span className="text-slate-300 text-sm">ไม่มีรูป</span>
-                          )}
-                        </td>
+
+                      <td className="px-6 py-4">
+                        <span
+                          className={`px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full ${
+                            r.status === "Present"
+                              ? "bg-green-100 text-green-700 border border-green-200"
+                              : r.status === "Late"
+                                ? "bg-yellow-100 text-yellow-700 border border-yellow-200"
+                                : "bg-red-100 text-red-700 border border-red-200"
+                          }`}
+                        >
+                          {STATUS_TH[r.status] || r.status}
+                        </span>
+                      </td>
                     </tr>
                   ))
                 )}
@@ -310,24 +358,42 @@ export default function AttendanceReportPage() {
       </div>
 
       {/* Photo Preview Modal */}
-      {previewPhoto && (
+      {preview && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
-          onClick={() => setPreviewPhoto(null)}
+          onClick={() => setPreview(null)}
         >
-          <div className="relative max-w-lg w-full mx-4">
+          <div
+            className="relative max-w-lg w-full mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
-              onClick={() => setPreviewPhoto(null)}
-              className="absolute -top-4 -right-4 w-10 h-10 bg-white rounded-full shadow-xl flex items-center justify-center text-slate-700 hover:bg-slate-100 transition"
+              onClick={() => setPreview(null)}
+              className="absolute -top-4 -right-4 w-10 h-10 bg-white rounded-full shadow-xl flex items-center justify-center text-slate-700 hover:bg-slate-100 transition z-10"
             >
               <X size={20} />
             </button>
+
+            {/* Label badge */}
+            <div
+              className={`absolute top-3 left-3 z-10 flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold shadow ${
+                preview.label === "เข้างาน"
+                  ? "bg-green-500 text-white"
+                  : "bg-orange-500 text-white"
+              }`}
+            >
+              <Camera size={11} />
+              หลักฐาน{preview.label}
+            </div>
+
             <img
-              src={previewPhoto}
-              alt="หลักฐานรูปถ่าย (ขนาดเต็ม)"
+              src={preview.url}
+              alt={`หลักฐานรูปถ่าย${preview.label}`}
               className="w-full rounded-2xl shadow-2xl border-4 border-white"
             />
-            <p className="text-center text-white/70 text-xs mt-3">คลิกนอกรูปเพื่อปิด</p>
+            <p className="text-center text-white/70 text-xs mt-3">
+              คลิกนอกรูปเพื่อปิด
+            </p>
           </div>
         </div>
       )}

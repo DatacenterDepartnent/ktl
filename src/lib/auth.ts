@@ -123,6 +123,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // ✅ สร้างเลข session ID ใหม่ทุกครั้งที่ล็อกอิน
         const sessionId = crypto.randomUUID();
 
+        // ✅ ล้าง global session cache ของ user คนนี้ออกทั้งหมด
+        // เพื่อป้องกัน cache เก่าที่มี ConcurrentLogin error มา block session ใหม่
+        if ((global as any)._sessionCache) {
+          const userId = user._id.toString();
+          Object.keys((global as any)._sessionCache).forEach((key) => {
+            if (key.startsWith(`sess_${userId}_`)) {
+              delete (global as any)._sessionCache[key];
+            }
+          });
+        }
 
         // ✅ บันทึก sessionId ของปัจจุบันทับลงในฐานข้อมูล
         await db.collection("users").updateOne(
@@ -179,7 +189,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             try {
               const client = await clientPromise;
               const db = client.db("ktltc_db");
-              const currentUser = await db.collection("users").findOne({ _id: new ObjectId(token.id as string) });
+              const currentUser = await db.collection("users").findOne(
+                { _id: new ObjectId(token.id as string) },
+                { projection: { currentSessionId: 1 } }
+              );
               const authEnd = Date.now();
               
               if (authEnd - authStart > 100) {

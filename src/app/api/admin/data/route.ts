@@ -107,7 +107,7 @@ export async function GET(req: Request) {
         .collection("attendances")
         .aggregate([
           { $match: matchQuery },
-          { $sort: { date: -1 } },
+          { $sort: { date: -1, "checkIn.time": -1 } },
           { $skip: skip },
           { $limit: limit },
           {
@@ -161,7 +161,7 @@ export async function GET(req: Request) {
         .collection("leave_requests")
         .aggregate([
           { $match: matchQuery },
-          { $sort: { createdAt: -1 } },
+          { $sort: { createdAt: -1, _id: -1 } },
           { $skip: skip },
           { $limit: limit },
           {
