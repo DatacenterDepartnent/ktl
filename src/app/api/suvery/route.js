@@ -1,13 +1,10 @@
-// import connectDB from "@/lib/mongodb";
-import connectDB from "../../../lib/mongodb";
-import Suvery from "../../../lib/models/suvery";
+import clientPromise from "@/lib/db";
 import { NextResponse } from "next/server";
-import mongoose from "mongoose"; // 💡 เพิ่มการ import Mongoose เพื่อตรวจสอบ ObjectId
+import { ObjectId } from "mongodb";
 
 // =======================================================
 // 💡 POST Handler: สำหรับรับข้อมูลสำรวจใหม่ (Create)
 // =======================================================
-// ในไฟล์ route.js/ts (เฉพาะฟังก์ชัน POST)
 export async function POST(request) {
   try {
     const body = await request.json();
@@ -19,8 +16,13 @@ export async function POST(request) {
       );
     }
 
-    await connectDB();
-    await Suvery.create(body);
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+    
+    // Convert ID if present (unlikely for new POST but safe)
+    if (body._id) delete body._id;
+
+    await db.collection("suvery").insertOne(body);
 
     return NextResponse.json(
       { message: "บันทึกข้อมูลสำรวจสำเร็จ" },
@@ -29,9 +31,7 @@ export async function POST(request) {
   } catch (error) {
     console.error("Error creating suvery entry:", error);
 
-    // ✅ การจัดการ E11000 Duplicate Key Error
     if (error.code === 11000) {
-      // ดึงชื่อฟิลด์ที่มีปัญหาจาก error (เช่น studentId)
       const field = Object.keys(error.keyValue)[0];
       return NextResponse.json(
         {
@@ -39,37 +39,36 @@ export async function POST(request) {
           field: field,
           value: error.keyValue[field],
         },
-        { status: 409 }, // 409 Conflict เป็นสถานะที่เหมาะสมสำหรับการขัดแย้งของทรัพยากร
+        { status: 409 },
       );
     }
 
-    // ข้อผิดพลาด Server อื่นๆ ที่ไม่ได้เกิดจาก E11000
     return NextResponse.json(
       { message: "เกิดข้อผิดพลาดในการบันทึกข้อมูลสำรวจ", error: error.message },
       { status: 500 },
     );
   }
 }
+
 // =======================================================
 // 🚀 GET Handler: ดึงข้อมูลทั้งหมด หรือ ดึงข้อมูลเดียวตาม ID
 // =======================================================
 export async function GET(request) {
   try {
-    await connectDB();
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
     const url = new URL(request.url);
     const id = url.searchParams.get("id");
 
     if (id) {
-      // --- 1. GET by ID (สำหรับหน้าแก้ไข) ---
-      // ตรวจสอบ ID format ก่อนเพื่อป้องกัน Mongoose error
-      if (!mongoose.Types.ObjectId.isValid(id)) {
+      if (!ObjectId.isValid(id)) {
         return NextResponse.json(
           { message: "Invalid ID format" },
           { status: 400 },
         );
       }
 
-      const suvery = await Suvery.findById(id);
+      const suvery = await db.collection("suvery").findOne({ _id: new ObjectId(id) });
 
       if (!suvery) {
         return NextResponse.json(
@@ -79,8 +78,7 @@ export async function GET(request) {
       }
       return NextResponse.json({ suvery }, { status: 200 });
     } else {
-      // --- 2. GET All (สำหรับหน้า Dashboard/รายการ) ---
-      const suverys = await Suvery.find();
+      const suverys = await db.collection("suvery").find().toArray();
       return NextResponse.json({ suverys }, { status: 200 });
     }
   } catch (error) {
@@ -100,7 +98,8 @@ export async function GET(request) {
 // =======================================================
 export async function DELETE(request) {
   try {
-    await connectDB();
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
     const url = new URL(request.url);
     const id = url.searchParams.get("id");
 
@@ -110,17 +109,17 @@ export async function DELETE(request) {
         { status: 400 },
       );
     }
-    // ตรวจสอบ ID format
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    
+    if (!ObjectId.isValid(id)) {
       return NextResponse.json(
         { message: "Invalid ID format" },
         { status: 400 },
       );
     }
 
-    const result = await Suvery.findByIdAndDelete(id);
+    const result = await db.collection("suvery").deleteOne({ _id: new ObjectId(id) });
 
-    if (!result) {
+    if (result.deletedCount === 0) {
       return NextResponse.json(
         { message: `Suvery with ID ${id} not found.` },
         { status: 404 },
@@ -147,6 +146,8 @@ export async function DELETE(request) {
 // =======================================================
 export async function PUT(request) {
   try {
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
     const url = new URL(request.url);
     const id = url.searchParams.get("id");
     const updatedData = await request.json();
@@ -163,20 +164,21 @@ export async function PUT(request) {
         { status: 400 },
       );
     }
-    // ตรวจสอบ ID format
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    
+    if (!ObjectId.isValid(id)) {
       return NextResponse.json(
         { message: "Invalid ID format" },
         { status: 400 },
       );
     }
 
-    await connectDB();
+    delete updatedData._id;
 
-    const result = await Suvery.findByIdAndUpdate(id, updatedData, {
-      new: true, // คืนค่าข้อมูลใหม่
-      runValidators: true, // ✅ บังคับใช้กฎ Validation ใน Schema อีกครั้งตอนอัปเดต
-    });
+    const result = await db.collection("suvery").findOneAndUpdate(
+      { _id: new ObjectId(id) },
+      { $set: updatedData },
+      { returnDocument: 'after' }
+    );
 
     if (!result) {
       return NextResponse.json(

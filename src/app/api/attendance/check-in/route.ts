@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import Attendance from '@/models/Attendance';
+import clientPromise from '@/lib/db';
 import { calculateDistance } from '@/lib/geoDistance';
 import { auth } from '@/lib/auth';
-import User from '@/models/User';
 import { sendLineNotify } from '@/lib/lineNotify';
 import { format } from 'date-fns';
 import { th } from 'date-fns/locale';
+import { ObjectId } from 'mongodb';
 
 // สมมติพิกัดวิทยาลัย (College Location)
 // พิกัดวิทยาลัย KTLTC
@@ -39,35 +38,48 @@ export async function POST(req: Request) {
     const isLate = serverTime.getHours() > 8 || (serverTime.getHours() === 8 && serverTime.getMinutes() > 30);
     const status = isLate ? 'Late' : 'Present';
 
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
+    const userObjId = new ObjectId(userId);
+
     // ป้องกันการลงเวลาเข้างานซ้ำ
-    const existingAttendance = await Attendance.findOne({ userId, date: today });
-    if (existingAttendance && existingAttendance.checkIn?.time) {
+    const existingAttendance = await db.collection("attendances").findOne({ 
+      userId: { $in: [userId, userObjId] }, 
+      date: today 
+    });
+
+    if (existingAttendance && (existingAttendance as any).checkIn?.time) {
       return NextResponse.json({ 
         success: false, 
         message: 'คุณได้ลงเวลาเข้างานของวันนี้ไปแล้ว ไม่สามารถลงซ้ำได้' 
       }, { status: 400 });
     }
 
-    const newCheckIn = await Attendance.findOneAndUpdate(
-      { userId, date: today },
-      {
-        $setOnInsert: { userId, date: today, status },
-        $set: {
-          'checkIn.time': serverTime,
-          'checkIn.location': { lat, lng, address },
-          'checkIn.photoUrl': photoUrl,
-          'checkIn.statusTag': statusTag,
-          'checkIn.deviceId': deviceId
-        }
-      },
-      { upsert: true, new: true }
+    const updateDoc = {
+      $setOnInsert: { userId: userObjId, date: today, status },
+      $set: {
+        'checkIn.time': serverTime,
+        'checkIn.location': { lat, lng, address },
+        'checkIn.photoUrl': photoUrl,
+        'checkIn.statusTag': statusTag,
+        'checkIn.deviceId': deviceId
+      }
+    };
+
+    const result = await db.collection("attendances").findOneAndUpdate(
+      { userId: { $in: [userId, userObjId] }, date: today },
+      updateDoc,
+      { upsert: true, returnDocument: 'after' }
     );
 
+    const newCheckIn = result;
+
     try {
-      const user = await User.findById(userId);
+      const user = await db.collection("users").findOne({ _id: userObjId });
       const userName = user?.name || user?.username || "พนักงาน";
       const timeStr = format(serverTime, 'HH:mm', { locale: th });
       const statusEmoji = status === "Late" ? "⚠️" : "✅";

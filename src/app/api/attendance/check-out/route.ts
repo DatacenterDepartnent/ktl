@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import connectDB from '@/lib/mongodb';
-import Attendance from '@/models/Attendance';
+import clientPromise from '@/lib/db';
 import { auth } from '@/lib/auth';
+import { ObjectId } from 'mongodb';
 
 export async function POST(req: Request) {
   try {
@@ -16,13 +16,21 @@ export async function POST(req: Request) {
     const { lat, lng, photoUrl, address } = data;
 
     const serverTime = new Date();
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const existingAttendance = await Attendance.findOne({ userId, date: today });
+    const userObjId = new ObjectId(userId);
+
+    const existingAttendance = await db.collection("attendances").findOne({ 
+      userId: { $in: [userId, userObjId] }, 
+      date: today 
+    });
     
     // ตรวจสอบว่าเช็คอินหรือยัง
-    if (!existingAttendance || !existingAttendance.checkIn?.time) {
+    if (!existingAttendance || !(existingAttendance as any).checkIn?.time) {
       return NextResponse.json({ 
         success: false, 
         message: 'ไม่พบข้อมูลเข้างาน กรุณาลงเวลาเข้างานก่อนครับ' 
@@ -30,7 +38,7 @@ export async function POST(req: Request) {
     }
 
     // ป้องกันการลงเวลาออกงานซ้ำ
-    if (existingAttendance.checkOut?.time) {
+    if ((existingAttendance as any).checkOut?.time) {
       return NextResponse.json({ 
         success: false, 
         message: 'คุณได้ลงเวลาออกงานของวันนี้ไปแล้ว ไม่สามารถลงซ้ำได้' 
@@ -47,8 +55,8 @@ export async function POST(req: Request) {
       otHours = Number((diffInMs / (1000 * 60 * 60)).toFixed(2));
     }
 
-    const updatedCheckOut = await Attendance.findOneAndUpdate(
-      { userId, date: today },
+    const result = await db.collection("attendances").findOneAndUpdate(
+      { userId: { $in: [userId, userObjId] }, date: today },
       {
         $set: {
           'checkOut.time': serverTime,
@@ -57,8 +65,10 @@ export async function POST(req: Request) {
           'checkOut.otHours': otHours
         }
       },
-      { new: true }
+      { returnDocument: 'after' }
     );
+
+    const updatedCheckOut = result;
 
     if (!updatedCheckOut) {
       return NextResponse.json({ success: false, message: 'No check-in record found for today.' }, { status: 404 });

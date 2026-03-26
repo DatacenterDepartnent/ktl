@@ -20,6 +20,8 @@ function CheckInContent() {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [statusMsg, setStatusMsg] = useState('');
+  const [locationStatus, setLocationStatus] = useState<'idle' | 'searching' | 'found' | 'error'>('idle');
+  const [locationError, setLocationError] = useState('');
   
   const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -30,13 +32,35 @@ function CheckInContent() {
   }, []);
 
   const getLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-        (err) => console.error("GPS error", err),
-        { enableHighAccuracy: true }
-      );
+    if (!navigator.geolocation) {
+      setLocationStatus('error');
+      setLocationError('เบราว์เซอร์ของคุณไม่รองรับการระบุตำแหน่ง GPS');
+      return;
     }
+
+    setLocationStatus('searching');
+    setLocationError('');
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+        setLocationStatus('found');
+        console.log("GPS found:", pos.coords.latitude, pos.coords.longitude);
+      },
+      (err) => {
+        console.error("GPS error", err);
+        setLocationStatus('error');
+        if (err.code === 1) setLocationError('กรุณาอนุญาตการเข้าถึงตำแหน่งงาน (Location Permission)');
+        else if (err.code === 2) setLocationError('ไม่สามารถระบุพิกัดได้ (อาจไม่มีสัญญาน GPS)');
+        else if (err.code === 3) setLocationError('ขอพิกัด GPS หมดเวลา (Timeout)');
+        else setLocationError('เกิดข้อผิดพลาดในการโหลด GPS');
+      },
+      { 
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+      }
+    );
   };
 
   const openCameraForAction = async () => {
@@ -188,9 +212,21 @@ function CheckInContent() {
                   </div>
                 </div>
 
-                {location ? (
+                {locationStatus === 'found' ? (
                   <div className={`w-full flex items-center justify-center space-x-2 text-sm font-medium p-3 rounded-xl mb-6 ${isCheckIn ? 'bg-green-50 text-green-700 border-green-100' : 'bg-orange-50 text-orange-700 border-orange-100'} border`}>
                     <MapPin size={18} /><span>พบพิกัด GPS แล้ว</span>
+                  </div>
+                ) : locationStatus === 'error' ? (
+                  <div className="w-full flex flex-col items-center mb-6">
+                    <div className="w-full flex items-center justify-center space-x-2 text-sm font-medium p-3 rounded-xl bg-red-50 text-red-600 border border-red-100 mb-2">
+                      <MapPin size={18} /><span>{locationError}</span>
+                    </div>
+                    <button 
+                      onClick={getLocation}
+                      className="text-blue-500 text-sm font-bold hover:underline underline-offset-4"
+                    >
+                      กดเพื่อลองค้นหาพิกัดใหม่อีกครั้ง
+                    </button>
                   </div>
                 ) : (
                   <div className={`w-full flex items-center justify-center space-x-2 text-sm font-medium p-3 rounded-xl mb-6 bg-slate-50 text-slate-500 animate-pulse border border-slate-200`}>
