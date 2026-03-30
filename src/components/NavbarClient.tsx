@@ -8,7 +8,7 @@ import MobileMenu from "./MobileMenu";
 import { NavItem } from "@/types/nav";
 import ThemeToggle from "./ThemeToggle";
 import { signOut } from "next-auth/react";
-import { FileText, Clock } from "lucide-react";
+import { FileText, Clock, UserCog } from "lucide-react";
 
 // กำหนด Type ให้รองรับ _id ที่บังคับใช้ใน MobileMenu
 type MenuItem = NavItem & {
@@ -340,6 +340,15 @@ export default function NavbarClient({
                                 </svg>
                               </div>
                               ระบบรายงานการเข้างาน
+                            </Link>
+                            <Link
+                              href="/manage-roles"
+                              className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-xl transition-all group"
+                            >
+                              <div className="p-1.5 rounded-lg bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 transition-colors">
+                                <UserCog size={16} />
+                              </div>
+                              จัดการสิทธิ์บุคลากร
                             </Link>
                             <Link
                               href="/work-reports"

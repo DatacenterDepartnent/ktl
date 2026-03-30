@@ -31,7 +31,15 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const session = await auth();
-    const body = await req.json();
+    let body: any = {};
+    
+    try {
+      body = await req.json();
+    } catch (e) {
+      // If body is missing or invalid, we still want to log that something happened
+      console.warn("LOG_POST: Missing or invalid body");
+    }
+
     const { action, details, link, userName: manualName } = body;
 
     const forwarded = req.headers.get("x-forwarded-for");
@@ -41,10 +49,10 @@ export async function POST(req: Request) {
     const db = client.db("ktltc_db");
 
     const newLog = {
-      userName: session?.user?.name || manualName || "System_Kernel",
+      userName: (session?.user as any)?.name || manualName || "SYSTEM_KERN",
       userEmail: session?.user?.email || null,
-      action: action || "UNKNOWN_ACTION",
-      details: details || "No details provided",
+      action: action || "SYSTEM_ACTIVITY",
+      details: details || "No specific details provided",
       link: link || null,
       timestamp: new Date(),
       ip,
@@ -56,7 +64,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true }, { status: 201 });
   } catch (error) {
     console.error("LOG_POST_ERROR:", error);
-    return NextResponse.json({ error: "Failed to save log" }, { status: 500 });
+    return NextResponse.json({ error: "Internal Server Error during logging" }, { status: 500 });
   }
 }
 

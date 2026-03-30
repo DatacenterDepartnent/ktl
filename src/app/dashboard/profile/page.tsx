@@ -263,15 +263,19 @@ export default function ProfilePage() {
               <div className="mt-3 sm:mt-4 flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-[10px] sm:text-xs font-bold uppercase tracking-widest shadow-sm">
                   <SafetyCertificateOutlined /> {
-                    formData.role === "super_admin" ? "Super Admin" :
-                    formData.role === "admin" ? "Administrator" :
-                    formData.role === "hr" ? "HR (ฝ่ายบุคคล)" :
-                    formData.role === "director" ? "Director (ผู้บริหาร)" :
+                    formData.role === "super_admin" ? "Super Admin (ผู้ดูแลระบบสูงสุด)" :
+                    formData.role === "admin" ? "Admin (ผู้ดูแลระบบ)" :
+                    formData.role === "hr" ? "ฝ่ายบริหารงานบุคคล (HR)" :
+                    formData.role === "director" ? "ผู้อำนวยการ (Director)" :
+                    formData.role === "deputy_resource" ? "รองผู้อำนวยการ ฝ่ายบริหารทรัพยากร" :
+                    formData.role === "deputy_strategy" ? "รองผู้อำนวยการ ฝ่ายแผนงานและความร่วมมือ" :
+                    formData.role === "deputy_activities" ? "รองผู้อำนวยการ ฝ่ายพัฒนากิจการนักเรียนฯ" :
+                    formData.role === "deputy_student_affairs" ? "รองผู้อำนวยการ ฝ่ายวิชาการ" :
+                    formData.role === "teacher" ? "คณะครู (Teacher)" :
                     formData.role === "staff" ? "เจ้าหน้าที่ (Staff)" :
-                    formData.role === "teacher" ? "ครู (Teacher)" :
-                    formData.role === "janitor" ? "ภารโรง (Janitor)" :
-                    formData.role === "editor" ? "Editor (บรรณาธิการ)" :
-                    formData.role || "Member"
+                    formData.role === "janitor" ? "นักการภารโรง (Janitor)" :
+                    formData.role === "editor" ? "Editor (ผู้ดูแลเนื้อหา)" :
+                    formData.role || "สมาชิกทั่วไป"
                   }
                 </span>
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-100 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest shadow-sm">

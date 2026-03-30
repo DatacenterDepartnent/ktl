@@ -13,6 +13,7 @@ import {
   MessageCircle,
   Command,
   ArrowRight,
+  ShieldCheck,
 } from "lucide-react";
 
 export default function RegisterPage() {
@@ -24,13 +25,16 @@ export default function RegisterPage() {
     name: "",
     phone: "",
     lineId: "",
+    department: "ไม่มีสังกัด",
   });
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const [success, setSuccess] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
+  ) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
     setErrorMsg("");
   };
@@ -316,25 +320,6 @@ export default function RegisterPage() {
                         className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all text-sm font-medium placeholder:text-slate-400 dark:placeholder:text-zinc-600 shadow-sm hover:shadow-md"
                         placeholder="08xxxxxxxx"
                         required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-slate-500 dark:text-zinc-500 uppercase tracking-widest pl-1 block">
-                      Line ID
-                    </label>
-                    <div className="relative group">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-indigo-500 transition-colors">
-                        <MessageCircle size={18} />
-                      </div>
-                      <input
-                        type="text"
-                        name="lineId"
-                        value={formData.lineId}
-                        onChange={handleChange}
-                        className="w-full pl-11 pr-4 py-3.5 bg-slate-50 dark:bg-zinc-900/50 border border-slate-200 dark:border-zinc-800 text-slate-800 dark:text-white rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all text-sm font-medium placeholder:text-slate-400 dark:placeholder:text-zinc-600 shadow-sm hover:shadow-md"
-                        placeholder="ไอดีไลน์ของคุณ"
                       />
                     </div>
                   </div>

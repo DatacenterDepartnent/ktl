@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { NavItem } from "@/types/nav";
 import ThemeToggle from "./ThemeToggle";
 import { useSession, signOut } from "next-auth/react";
-import { Clock } from "lucide-react";
+import { Clock, UserCog } from "lucide-react";
 
 type MenuItem = NavItem & {
   children?: MenuItem[];
@@ -226,16 +226,28 @@ export default function MobileMenu({
                           </Link>
                         )}
                         {(["super_admin", "hr", "deputy_resource"].includes(userRole)) && (
-                          <Link
-                            href="/attendance-settings"
-                            onClick={closeMenu}
-                            className="mx-1 block text-center py-3.5 rounded-xl bg-blue-50 text-blue-700 font-bold border border-blue-100 dark:bg-blue-900/20 dark:text-blue-300 transition-colors"
-                          >
-                            <div className="flex items-center justify-center gap-2">
-                               <Clock size={18} />
-                               ตั้งค่าเวลาเข้างานตามตำแหน่ง
-                            </div>
-                          </Link>
+                          <>
+                            <Link
+                              href="/manage-roles"
+                              onClick={closeMenu}
+                              className="mx-1 block text-center py-3.5 rounded-xl bg-blue-50 text-blue-700 font-bold border border-blue-100 dark:bg-blue-900/20 dark:text-blue-300 transition-colors mb-2"
+                            >
+                              <div className="flex items-center justify-center gap-2">
+                                <UserCog size={18} />
+                                จัดการสิทธิ์บุคลากร
+                              </div>
+                            </Link>
+                            <Link
+                              href="/attendance-settings"
+                              onClick={closeMenu}
+                              className="mx-1 block text-center py-3.5 rounded-xl bg-blue-50 text-blue-700 font-bold border border-blue-100 dark:bg-blue-900/20 dark:text-blue-300 transition-colors"
+                            >
+                              <div className="flex items-center justify-center gap-2">
+                                <Clock size={18} />
+                                ตั้งค่าเวลาเข้างานตามตำแหน่ง
+                              </div>
+                            </Link>
+                          </>
                         )}
                         {(["super_admin", "admin", "hr", "director", "deputy_resource", "editor", "staff"].includes(userRole)) && (
                           <Link
