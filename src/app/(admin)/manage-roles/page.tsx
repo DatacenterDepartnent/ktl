@@ -170,6 +170,7 @@ export default function ManageRolesPage() {
                         ))}
                       </select>
                     </td>
+                    <td className="p-6">
                       <select 
                         value={user.department || "ไม่มีสังกัด"}
                         onChange={(e) => changeDepartment(user._id, e.target.value, user.name)}
@@ -177,7 +178,7 @@ export default function ManageRolesPage() {
                       >
                         <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
                         <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
-                        <optgroup label="๑. ฝ่ายบริหารทรัพยากร">
+                        <optgroup label="1. ฝ่ายบริหารทรัพยากร">
                           <option value="งานบริหารงานทั่วไป">งานบริหารงานทั่วไป</option>
                           <option value="งานบริหารและพัฒนาทรัพยากรบุคคล">งานบริหารและพัฒนาทรัพยากรบุคคล</option>
                           <option value="งานการเงิน">งานการเงิน</option>
@@ -187,7 +188,7 @@ export default function ManageRolesPage() {
                           <option value="งานทะเบียน">งานทะเบียน</option>
                           <option value="งานภารโรง">งานภารโรง</option>
                         </optgroup>
-                        <optgroup label="๒. ฝ่ายยุทธศาสตร์และแผนงาน">
+                        <optgroup label="2. ฝ่ายยุทธศาสตร์และแผนงาน">
                           <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ">งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ</option>
                           <option value="งานมาตรฐานและการประกันคุณภาพ">งานมาตรฐานและการประกันคุณภาพ</option>
                           <option value="งานศูนย์ดิจิทัลและสื่อสารองค์กร">งานศูนย์ดิจิทัลและสื่อสารองค์กร</option>
@@ -195,14 +196,14 @@ export default function ManageRolesPage() {
                           <option value="งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ">งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ</option>
                           <option value="งานติดตามและประเมินผลการ">งานติดตามและประเมินผลการ</option>
                         </optgroup>
-                        <optgroup label="๓. ฝ่ายพัฒนากิจการนักเรียน นักศึกษา">
+                        <optgroup label="3. ฝ่ายพัฒนากิจการนักเรียน นักศึกษา">
                           <option value="งานกิจกรรมนักเรียนนักศึกษา">งานกิจกรรมนักเรียนนักศึกษา</option>
                           <option value="งานครูที่ปรึกษาและการแนะแนว">งานครูที่ปรึกษาและการแนะแนว</option>
                           <option value="งานปกครองและความปลอดภัยนักเรียนนักศึกษา">งานปกครองและความปลอดภัยนักเรียนนักศึกษา</option>
                           <option value="งานสวัสดิการนักเรียนนักศึกษา">งานสวัสดิการนักเรียนนักศึกษา</option>
                           <option value="งานโครงการพิเศษและการบริการ">งานโครงการพิเศษและการบริการ</option>
                         </optgroup>
-                        <optgroup label="๔. ฝ่ายวิชาการ">
+                        <optgroup label="4. ฝ่ายวิชาการ">
                           <option value="งานพัฒนาหลักสูตรและการจัดการเรียนรู้">งานพัฒนาหลักสูตรและการจัดการเรียนรู้</option>
                           <option value="งานวัดผลและประเมินผล">งานวัดผลและประเมินผล</option>
                           <option value="งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ">งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ</option>
@@ -222,6 +223,7 @@ export default function ManageRolesPage() {
                           <option value="แผนกวิชาการโรงแรม">แผนกวิชาการโรงแรม</option>
                         </optgroup>
                       </select>
+                    </td>
                   </tr>
                 ))}
               </tbody>

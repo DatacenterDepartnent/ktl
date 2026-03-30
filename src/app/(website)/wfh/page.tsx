@@ -66,13 +66,13 @@ export default function WFHHubPage() {
 
       <div className="max-w-xl mx-auto relative z-10 space-y-8">
         {/* Profile Card - Premium ID Badge Look */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="w-full bg-white dark:bg-zinc-900 rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-black/20 overflow-hidden border border-slate-100 dark:border-zinc-800 p-8 relative group transition-all hover:shadow-2xl hover:shadow-blue-500/5"
         >
           <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-all group-hover:rotate-12">
-             <User size={100} className="text-blue-500" />
+            <User size={100} className="text-blue-500" />
           </div>
           <div className="flex items-center gap-6 relative z-10">
             <div className="relative">
@@ -84,7 +84,10 @@ export default function WFHHubPage() {
                     className="h-full w-full object-cover"
                   />
                 ) : (
-                  <User size={40} className="text-slate-300 dark:text-zinc-700" />
+                  <User
+                    size={40}
+                    className="text-slate-300 dark:text-zinc-700"
+                  />
                 )}
               </div>
               <div className="absolute -bottom-2 -right-2 w-8 h-8 bg-emerald-500 border-4 border-white dark:border-zinc-900 rounded-full flex items-center justify-center shadow-lg">
@@ -109,7 +112,7 @@ export default function WFHHubPage() {
         </motion.div>
 
         {/* Clock Section - Modern Minimalist */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
@@ -117,9 +120,9 @@ export default function WFHHubPage() {
         >
           <div className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-blue-500 to-indigo-600 opacity-50 group-hover:opacity-100 transition-opacity" />
           <div className="flex justify-center mb-4">
-             <div className="p-3 bg-slate-50 dark:bg-zinc-800 rounded-2xl text-slate-400">
-               <Clock size={28} />
-             </div>
+            <div className="p-3 bg-slate-50 dark:bg-zinc-800 rounded-2xl text-slate-400">
+              <Clock size={28} />
+            </div>
           </div>
           <div className="text-7xl font-black tracking-tighter text-slate-800 dark:text-white font-mono flex items-baseline justify-center gap-1 drop-shadow-sm">
             {mounted
@@ -159,19 +162,23 @@ export default function WFHHubPage() {
             <Link href="/check-in?action=in" className="block group">
               <div className="bg-linear-to-r from-emerald-500 to-teal-600 dark:from-emerald-600 dark:to-teal-700 p-6 rounded-4xl flex items-center justify-between transition shadow-2xl shadow-emerald-500/20 active:shadow-lg relative overflow-hidden">
                 <div className="absolute right-0 top-0 p-8 opacity-10 group-hover:opacity-20 transition-all group-hover:scale-150 rotate-12">
-                   <LogIn size={80} className="text-white" />
+                  <LogIn size={80} className="text-white" />
                 </div>
                 <div className="flex items-center gap-6 relative z-10">
                   <div className="bg-white/20 backdrop-blur-md p-4 rounded-2xl text-white shadow-inner">
                     <LogIn size={28} />
                   </div>
                   <div className="text-left space-y-1">
-                    <h2 className="font-black text-2xl text-white uppercase tracking-tight">ลงเวลาเข้างาน</h2>
-                    <p className="text-emerald-50/70 text-[10px] font-bold uppercase tracking-widest">Punch in for today session</p>
+                    <h2 className="font-black text-2xl text-white uppercase tracking-tight">
+                      ลงเวลาเข้างาน
+                    </h2>
+                    <p className="text-emerald-50/70 text-[10px] font-bold uppercase tracking-widest">
+                      Punch in for today session
+                    </p>
                   </div>
                 </div>
                 <div className="bg-white/20 p-2.5 rounded-full text-white backdrop-blur-md group-hover:translate-x-1 transition-transform relative z-10">
-                   <ArrowRight size={20} />
+                  <ArrowRight size={20} />
                 </div>
               </div>
             </Link>
@@ -180,20 +187,24 @@ export default function WFHHubPage() {
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Link href="/check-in?action=out" className="block group">
               <div className="bg-linear-to-r from-orange-500 to-rose-600 dark:from-orange-600 dark:to-rose-700 p-6 rounded-4xl flex items-center justify-between transition shadow-2xl shadow-orange-500/20 active:shadow-lg relative overflow-hidden">
-                 <div className="absolute right-0 top-0 p-8 opacity-10 group-hover:opacity-20 transition-all group-hover:scale-150 -rotate-12">
-                   <LogOut size={80} className="text-white" />
+                <div className="absolute right-0 top-0 p-8 opacity-10 group-hover:opacity-20 transition-all group-hover:scale-150 -rotate-12">
+                  <LogOut size={80} className="text-white" />
                 </div>
                 <div className="flex items-center gap-6 relative z-10">
                   <div className="bg-white/20 backdrop-blur-md p-4 rounded-2xl text-white shadow-inner">
                     <LogOut size={28} />
                   </div>
                   <div className="text-left space-y-1">
-                    <h2 className="font-black text-2xl text-white uppercase tracking-tight">ลงเวลาออกงาน</h2>
-                    <p className="text-rose-50/70 text-[10px] font-bold uppercase tracking-widest">Punch out and end shift</p>
+                    <h2 className="font-black text-2xl text-white uppercase tracking-tight">
+                      ลงเวลาออกงาน
+                    </h2>
+                    <p className="text-rose-50/70 text-[10px] font-bold uppercase tracking-widest">
+                      Punch out and end shift
+                    </p>
                   </div>
                 </div>
                 <div className="bg-white/20 p-2.5 rounded-full text-white backdrop-blur-md group-hover:translate-x-1 transition-transform relative z-10">
-                   <ArrowRight size={20} />
+                  <ArrowRight size={20} />
                 </div>
               </div>
             </Link>
@@ -213,8 +224,12 @@ export default function WFHHubPage() {
                     <CalendarDays size={24} />
                   </div>
                   <div className="text-left">
-                    <h2 className="font-black text-lg text-slate-800 dark:text-white uppercase tracking-tight line-none">แจ้งลางาน</h2>
-                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">Leave Request</p>
+                    <h2 className="font-black text-lg text-slate-800 dark:text-white uppercase tracking-tight line-none">
+                      แจ้งลางาน
+                    </h2>
+                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">
+                      Leave Request
+                    </p>
                   </div>
                 </div>
               </Link>
@@ -227,26 +242,38 @@ export default function WFHHubPage() {
                     <History size={24} />
                   </div>
                   <div className="text-left">
-                    <h2 className="font-black text-lg text-slate-800 dark:text-white uppercase tracking-tight">ประวัติของฉัน</h2>
-                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">My History</p>
+                    <h2 className="font-black text-lg text-slate-800 dark:text-white uppercase tracking-tight">
+                      ประวัติของฉัน
+                    </h2>
+                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">
+                      My History
+                    </p>
                   </div>
                 </div>
               </Link>
             </motion.div>
 
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="sm:col-span-2">
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="sm:col-span-2"
+            >
               <Link href="/work-report" className="block h-full">
                 <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 p-8 rounded-4xl flex items-center justify-between transition shadow-xl shadow-slate-200/50 dark:shadow-black/20 group hover:border-blue-200 dark:hover:border-blue-900/60 overflow-hidden relative">
-                   <div className="absolute right-0 top-0 p-8 opacity-0 group-hover:opacity-5 transition-all group-hover:rotate-12 translate-x-4 -translate-y-4">
-                     <ClipboardList size={120} className="text-blue-500" />
+                  <div className="absolute right-0 top-0 p-8 opacity-0 group-hover:opacity-5 transition-all group-hover:rotate-12 translate-x-4 -translate-y-4">
+                    <ClipboardList size={120} className="text-blue-500" />
                   </div>
                   <div className="flex items-center gap-6 relative z-10">
                     <div className="bg-blue-50 dark:bg-blue-500/10 p-5 rounded-3xl text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all shadow-sm">
                       <FileText size={28} />
                     </div>
                     <div className="text-left space-y-1">
-                      <h2 className="font-black text-xl text-slate-800 dark:text-zinc-100 uppercase tracking-tight">แบบสรุปรายงานผลการปฏิบัติงาน</h2>
-                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest leading-none">Daily activity & Project reporting</p>
+                      <h2 className="font-black text-xl text-slate-800 dark:text-zinc-100 uppercase tracking-tight">
+                        แบบสรุปรายงานผลการปฏิบัติงาน
+                      </h2>
+                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest leading-none">
+                        Daily activity & Project reporting
+                      </p>
                     </div>
                   </div>
                   <div className="bg-blue-500 text-white p-2.5 rounded-full shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform relative z-10">
@@ -256,9 +283,11 @@ export default function WFHHubPage() {
               </Link>
             </motion.div>
           </div>
-          
+
           <div className="pt-10 pb-6 text-center">
-             <p className="text-[10px] text-slate-300 dark:text-zinc-700 font-black uppercase tracking-[0.4em]">KTL Management System • Workplace Portal</p>
+            <p className="text-[10px] text-slate-300 dark:text-zinc-700 font-black uppercase tracking-[0.4em]">
+              KTL Management System • Workplace Portal
+            </p>
           </div>
         </div>
       </div>
