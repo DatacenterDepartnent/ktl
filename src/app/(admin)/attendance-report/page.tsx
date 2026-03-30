@@ -74,12 +74,12 @@ export default function AttendanceReportPage() {
     const csvRows = [headers.join(",")];
 
     filteredRecords.forEach((r) => {
-      const d = new Date(r.date).toLocaleDateString("th-TH");
+      const d = new Date(r.date).toLocaleDateString("th-TH", { timeZone: "Asia/Bangkok" });
       const inTime = r.checkInTime
-        ? new Date(r.checkInTime).toLocaleTimeString("th-TH")
+        ? new Date(r.checkInTime).toLocaleTimeString("th-TH", { timeZone: "Asia/Bangkok" })
         : "-";
       const outTime = r.checkOutTime
-        ? new Date(r.checkOutTime).toLocaleTimeString("th-TH")
+        ? new Date(r.checkOutTime).toLocaleTimeString("th-TH", { timeZone: "Asia/Bangkok" })
         : "-";
       csvRows.push(
         [
@@ -127,7 +127,7 @@ export default function AttendanceReportPage() {
   }) => {
     if (!time) return <span className="text-slate-300 text-sm">-</span>;
 
-    const timeStr = new Date(time).toLocaleTimeString("th-TH") + " น.";
+    const timeStr = new Date(time).toLocaleTimeString("th-TH", { timeZone: "Asia/Bangkok" }) + " น.";
 
     if (photoUrl) {
       return (
@@ -294,6 +294,7 @@ export default function AttendanceReportPage() {
                       {/* วันที่: ปรับขนาดฟอนต์ให้เล็กลงในมือถือ */}
                       <td className="px-3 md:px-4 py-3 text-xs md:text-sm font-medium text-slate-700 dark:text-neutral-300 whitespace-nowrap">
                         {new Date(r.date).toLocaleDateString("th-TH", {
+                          timeZone: "Asia/Bangkok",
                           day: "numeric",
                           month: "short",
                           year: "2-digit", // ใช้ปีแบบสั้นเพื่อประหยัดพื้นที่

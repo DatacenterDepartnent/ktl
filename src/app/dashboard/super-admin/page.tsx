@@ -572,7 +572,7 @@ export default function SuperAdminPage() {
                 <div className="flex flex-col md:flex-row md:items-start gap-6">
                   <div className="text-center bg-white/5 p-4 rounded-3xl min-w-[100px] border border-white/10">
                     <p className="text-sm font-black text-white italic tabular-nums leading-none">
-                      {new Date(log.timestamp).toLocaleTimeString("th-TH")}
+                      {new Date(log.timestamp).toLocaleTimeString("th-TH", { timeZone: "Asia/Bangkok" })}
                     </p>
                   </div>
                   <div className="flex-1 space-y-2">
@@ -611,7 +611,7 @@ export default function SuperAdminPage() {
                     <div className="flex items-center gap-4 pt-2">
                       <p className="text-[9px] text-slate-500 font-black uppercase tracking-widest">
                         วันที่:{" "}
-                        {new Date(log.timestamp).toLocaleDateString("th-TH")}
+                        {new Date(log.timestamp).toLocaleDateString("th-TH", { timeZone: "Asia/Bangkok" })}
                       </p>
                       <p className="text-[9px] text-slate-600 font-black uppercase tracking-widest">
                         IP: {log.ip || "ไม่ปรากฏ"}

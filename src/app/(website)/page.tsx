@@ -165,6 +165,7 @@ export default async function HomePage() {
                         />
                       </svg>
                       {new Date(news.createdAt).toLocaleDateString("th-TH", {
+                        timeZone: "Asia/Bangkok",
                         year: "numeric",
                         month: "short",
                         day: "numeric",

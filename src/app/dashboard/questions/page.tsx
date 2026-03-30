@@ -34,6 +34,7 @@ const toDateTimeLocalValue = (value: string) => {
 
 const formatDateTime = (value: string) =>
   new Date(value).toLocaleString("th-TH", {
+    timeZone: "Asia/Bangkok",
     dateStyle: "medium",
     timeStyle: "short",
   });
@@ -256,7 +257,7 @@ export default function QuestionsPage() {
     <div className="mx-auto max-w-[1600px] px-3 py-8 md:px-4 md:py-10">
       <Toaster position="top-right" />
 
-      <section className="relative overflow-hidden rounded-[2rem] border border-slate-200 bg-[radial-gradient(circle_at_top_left,_rgba(34,211,238,0.18),_transparent_28%),linear-gradient(135deg,_#0f172a_0%,_#111827_45%,_#f8fafc_45%,_#ffffff_100%)] p-6 shadow-[0_30px_80px_rgba(15,23,42,0.10)] md:p-8">
+      <section className="relative overflow-hidden rounded-4xl border border-slate-200 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.18),transparent_28%),linear-gradient(135deg,#0f172a_0%,#111827_45%,#f8fafc_45%,#ffffff_100%)] p-6 shadow-[0_30px_80px_rgba(15,23,42,0.10)] md:p-8">
         <div className="absolute inset-y-0 right-0 hidden w-1/3 bg-[linear-gradient(180deg,rgba(34,211,238,0.10),transparent)] md:block" />
         <div className="relative grid gap-8 lg:grid-cols-[1.6fr_1fr]">
           <div className="space-y-5">
@@ -283,7 +284,7 @@ export default function QuestionsPage() {
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-1">
-            <div className="rounded-[1.5rem] border border-white/60 bg-white/80 p-5 backdrop-blur">
+            <div className="rounded-3xl border border-white/60 bg-white/80 p-5 backdrop-blur">
               <p className="text-[11px] font-black uppercase tracking-[0.25em] text-slate-400">
                 ทั้งหมด
               </p>
@@ -292,7 +293,7 @@ export default function QuestionsPage() {
               </p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-2">
-              <div className="rounded-[1.5rem] border border-cyan-100 bg-cyan-50 p-5">
+              <div className="rounded-3xl border border-cyan-100 bg-cyan-50 p-5">
                 <p className="text-[11px] font-black uppercase tracking-[0.25em] text-cyan-700">
                   รอตอบ
                 </p>
@@ -300,7 +301,7 @@ export default function QuestionsPage() {
                   {stats.pending}
                 </p>
               </div>
-              <div className="rounded-[1.5rem] border border-emerald-100 bg-emerald-50 p-5">
+              <div className="rounded-3xl border border-emerald-100 bg-emerald-50 p-5">
                 <p className="text-[11px] font-black uppercase tracking-[0.25em] text-emerald-700">
                   ตอบแล้ว
                 </p>
@@ -309,7 +310,7 @@ export default function QuestionsPage() {
                 </p>
               </div>
             </div>
-            <div className="rounded-[1.5rem] border border-slate-200 bg-white/85 p-5">
+            <div className="rounded-3xl border border-slate-200 bg-white/85 p-5">
               <p className="text-[11px] font-black uppercase tracking-[0.25em] text-slate-400">
                 ล่าสุด
               </p>
@@ -323,7 +324,7 @@ export default function QuestionsPage() {
 
       <section className="mt-8 grid gap-6">
         {questions.length === 0 ? (
-          <div className="rounded-[2rem] border border-dashed border-slate-200 bg-white px-6 py-20 text-center shadow-sm">
+          <div className="rounded-4xl border border-dashed border-slate-200 bg-white px-6 py-20 text-center shadow-sm">
             <p className="text-lg font-black tracking-tight text-slate-400">
               ยังไม่มีคำถามในระบบ
             </p>
@@ -336,7 +337,7 @@ export default function QuestionsPage() {
               <article
                 key={question._id}
                 id={question._id}
-                className="group relative overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_70px_rgba(15,23,42,0.10)] md:p-7"
+                className="group relative overflow-hidden rounded-4xl border border-slate-200 bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_30px_70px_rgba(15,23,42,0.10)] md:p-7"
               >
                 <div className="absolute inset-x-0 top-0 h-1 bg-[linear-gradient(90deg,#22d3ee,#0f172a,#10b981)] opacity-70" />
 
@@ -383,7 +384,7 @@ export default function QuestionsPage() {
                       {question.subject}
                     </h2>
 
-                    <div className="mt-4 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5">
+                    <div className="mt-4 rounded-3xl border border-slate-200 bg-slate-50 p-5">
                       <p className="whitespace-pre-wrap text-sm font-medium leading-7 text-slate-700">
                         {question.content}
                       </p>
@@ -445,8 +446,8 @@ export default function QuestionsPage() {
       </section>
 
       {selectedQuestion && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-2xl rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_30px_120px_rgba(15,23,42,0.25)] md:p-7">
+        <div className="fixed inset-0 z-100 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-2xl rounded-4xl border border-slate-200 bg-white p-6 shadow-[0_30px_120px_rgba(15,23,42,0.25)] md:p-7">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-[11px] font-black uppercase tracking-[0.28em] text-cyan-600">
@@ -467,14 +468,14 @@ export default function QuestionsPage() {
               </button>
             </div>
 
-            <div className="mt-5 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-4">
+            <div className="mt-5 rounded-3xl border border-slate-200 bg-slate-50 p-4">
               <p className="whitespace-pre-wrap text-sm leading-7 text-slate-700">
                 {selectedQuestion.content}
               </p>
             </div>
 
             <textarea
-              className="mt-5 h-56 w-full rounded-[1.5rem] border border-slate-200 bg-white p-5 text-base font-medium text-slate-800 outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10"
+              className="mt-5 h-56 w-full rounded-3xl border border-slate-200 bg-white p-5 text-base font-medium text-slate-800 outline-none transition focus:border-cyan-500 focus:ring-4 focus:ring-cyan-500/10"
               placeholder="พิมพ์คำตอบ..."
               value={answerText}
               onChange={(e) => setAnswerText(e.target.value)}
@@ -504,9 +505,9 @@ export default function QuestionsPage() {
       )}
 
       {editingQuestion && (
-        <div className="fixed inset-0 z-[110] overflow-y-auto bg-slate-950/70 p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 z-110 overflow-y-auto bg-slate-950/70 p-4 backdrop-blur-sm">
           <div className="flex min-h-full items-center justify-center py-6">
-            <div className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-[2rem] border border-slate-200 bg-white p-6 shadow-[0_30px_120px_rgba(15,23,42,0.25)] md:p-7">
+            <div className="max-h-[92vh] w-full max-w-3xl overflow-y-auto rounded-4xl border border-slate-200 bg-white p-6 shadow-[0_30px_120px_rgba(15,23,42,0.25)] md:p-7">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-[11px] font-black uppercase tracking-[0.28em] text-cyan-600">

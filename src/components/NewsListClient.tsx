@@ -243,6 +243,7 @@ export default function NewsListClient({
                     </div>
                     <span className="text-[10px] text-zinc-400 dark:text-zinc-500 shrink-0">
                       {new Date(news.createdAt).toLocaleString("th-TH", {
+                        timeZone: "Asia/Bangkok",
                         day: "numeric",
                         month: "short",
                         year: "2-digit",

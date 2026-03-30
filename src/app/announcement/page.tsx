@@ -65,6 +65,7 @@ const stripHtml = (html: string) => {
 const formatDateTime = (dateString: string) => {
   return (
     new Date(dateString).toLocaleString("th-TH", {
+      timeZone: "Asia/Bangkok",
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -123,7 +124,7 @@ export default async function AnnouncementPage() {
                   className="group flex flex-col rounded-3xl overflow-hidden border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 h-full bg-white dark:bg-slate-900 dark:border-slate-800"
                 >
                   {/* Image Area */}
-                  <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
+                  <div className="relative aspect-4/3 w-full overflow-hidden bg-slate-100 dark:bg-slate-800">
                     <div className="absolute top-4 left-4 z-10 bg-white/95 backdrop-blur shadow-sm px-3 py-1.5 rounded-xl flex items-center gap-2 text-[10px] font-bold text-slate-700 dark:bg-slate-900/90 dark:text-slate-300">
                       <svg
                         className="w-3.5 h-3.5 text-red-500"

@@ -165,7 +165,7 @@ export default function AdminWorkReportsPage() {
                   <div className="space-y-4">
                     <div className="flex items-center justify-between text-xs">
                        <span className="text-slate-400 font-bold flex items-center gap-1.5">
-                         <Calendar size={14} /> {new Date(report.date).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: '2-digit' })}
+                         <Calendar size={14} /> {new Date(report.date).toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok', day: 'numeric', month: 'short', year: '2-digit' })}
                        </span>
                        <span className="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 px-3 py-1 rounded-full font-black text-[10px]">
                          {report.activities?.length || 0} TASKS
@@ -217,7 +217,7 @@ export default function AdminWorkReportsPage() {
                   <div>
                     <h2 className="text-3xl font-black text-slate-800 dark:text-neutral-100 leading-none">{selectedReport.user.name}</h2>
                     <p className="text-sm font-bold text-indigo-500 uppercase tracking-widest mt-2">
-                      Work Report: {new Date(selectedReport.date).toLocaleDateString('th-TH', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      Work Report: {new Date(selectedReport.date).toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok', day: 'numeric', month: 'long', year: 'numeric' })}
                     </p>
                   </div>
                   <button onClick={() => setSelectedReport(null)} className="p-3 bg-slate-100 dark:bg-neutral-800 rounded-full text-slate-400 hover:text-rose-500 transition-colors">
@@ -268,8 +268,8 @@ export default function AdminWorkReportsPage() {
                 </div>
 
                 <div className="pt-8 border-t border-slate-100 dark:border-neutral-800 flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                   <span>Submitted: {new Date(selectedReport.createdAt).toLocaleString('th-TH')}</span>
-                   <span>Last Updated: {new Date(selectedReport.updatedAt).toLocaleString('th-TH')}</span>
+                   <span>Submitted: {new Date(selectedReport.createdAt).toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' })}</span>
+                   <span>Last Updated: {new Date(selectedReport.updatedAt).toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' })}</span>
                 </div>
               </div>
             </motion.div>

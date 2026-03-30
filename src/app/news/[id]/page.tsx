@@ -253,7 +253,7 @@ export default async function NewsDetailPage({
   const authorName =
     news.userName ||
     news.author?.name ||
-    "เธเธฒเธเธจเธนเธเธขเนเธเนเธญเธกเธนเธฅ";
+    "เธ‡เธฒเธ™เธจเธนเธ™เธขเนŒเธ‚เน‰เธญเธกเธนเธฅ";
   const authorImage = news.userImage || news.author?.image || null;
   const baseUrl =
     process.env.NEXT_PUBLIC_API_URL ||
@@ -302,6 +302,7 @@ export default async function NewsDetailPage({
                   <span className="font-medium">เผยแพร่เมื่อ:</span>
                   <time className="text-slate-700 dark:text-slate-300">
                     {new Date(news.createdAt).toLocaleDateString("th-TH", {
+                      timeZone: "Asia/Bangkok",
                       year: "numeric",
                       month: "long",
                       day: "numeric",
@@ -315,6 +316,7 @@ export default async function NewsDetailPage({
                   <span className="font-medium">เวลา:</span>
                   <time className="text-slate-700 dark:text-slate-300">
                     {new Date(news.createdAt).toLocaleTimeString("th-TH", {
+                      timeZone: "Asia/Bangkok",
                       hour: "2-digit",
                       minute: "2-digit",
                     })}

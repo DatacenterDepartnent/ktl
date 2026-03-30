@@ -123,6 +123,7 @@ export default async function NewsletterPage() {
                       </svg>
                       {/* ✅ แสดงวันที่และเวลา */}
                       {new Date(news.createdAt).toLocaleString("th-TH", {
+                        timeZone: "Asia/Bangkok",
                         day: "numeric",
                         month: "short",
                         year: "numeric",

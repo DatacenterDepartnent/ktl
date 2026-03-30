@@ -51,6 +51,7 @@ const formatDate = (iso?: string) => {
   const d = new Date(iso);
   if (isNaN(d.getTime())) return "Invalid Date";
   return d.toLocaleDateString("th-TH", {
+    timeZone: "Asia/Bangkok",
     year: "numeric",
     month: "short",
     day: "numeric",

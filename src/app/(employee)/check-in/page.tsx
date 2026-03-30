@@ -297,7 +297,7 @@ function CheckInContent() {
         <div className={`mb-6 w-full max-w-sm px-6 py-8 bg-white ${isCheckIn ? 'text-green-600 border-green-200' : 'text-orange-600 border-orange-200'} rounded-3xl flex flex-col items-center justify-center shadow-lg border-2 text-center space-y-4`}>
           <CheckCircle size={56} className={`${isCheckIn ? 'text-green-500' : 'text-orange-500'}`} />
           <span className="font-bold text-2xl text-slate-800">{statusMsg}</span>
-          <p className="text-slate-500 font-mono text-xl">{mounted ? time.toLocaleTimeString('th-TH') : ''}</p>
+          <p className="text-slate-500 font-mono text-xl">{mounted ? time.toLocaleTimeString('th-TH', { timeZone: 'Asia/Bangkok' }) : ''}</p>
           <Link href="/wfh" className="mt-6 px-8 py-3 bg-slate-100 text-slate-700 rounded-xl font-bold hover:bg-slate-200 transition text-lg w-full">
             กลับหน้าหลัก
           </Link>

@@ -47,6 +47,7 @@ async function getLatestNews(): Promise<NewsItem[]> {
 const formatDateTime = (dateString: string) => {
   return (
     new Date(dateString).toLocaleString("th-TH", {
+      timeZone: "Asia/Bangkok",
       year: "numeric",
       month: "short",
       day: "numeric",

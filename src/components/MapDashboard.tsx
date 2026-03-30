@@ -80,7 +80,7 @@ export default function MapDashboard({ markers }: { markers: any[] }) {
                   <div className="w-full h-24 bg-slate-200 flex items-center justify-center mb-2">No Photo</div>
                 )}
                 <p className="font-bold text-slate-800 text-sm">{m.name}</p>
-                <p className="text-xs text-slate-500">{new Date(m.time).toLocaleTimeString('th-TH')} น.</p>
+                <p className="text-xs text-slate-500">{new Date(m.time).toLocaleTimeString('th-TH', { timeZone: 'Asia/Bangkok' })} น.</p>
                 <span className={`px-2 py-0.5 mt-1 text-[10px] uppercase font-bold tracking-wider rounded-sm ${m.status === 'Present' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
                    {m.status}
                 </span>

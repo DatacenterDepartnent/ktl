@@ -29,6 +29,7 @@ const SuveryDetailModal = ({ isOpen, onClose, suvery }: ModalProps) => {
     try {
       if (!dateString) return "-";
       return new Date(dateString).toLocaleDateString("th-TH", {
+        timeZone: "Asia/Bangkok",
         year: "numeric",
         month: "long",
         day: "numeric",

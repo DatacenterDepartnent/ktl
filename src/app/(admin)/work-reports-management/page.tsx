@@ -268,7 +268,7 @@ export default function WorkReportsManagementPage() {
                           </div>
                         </td>
                         <td className="px-8 py-6 border-b border-slate-50 dark:border-neutral-800 text-sm font-bold text-slate-500 dark:text-neutral-400">
-                          {new Date(report.date).toLocaleDateString('th-TH')}
+                          {new Date(report.date).toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' })}
                         </td>
                         <td className="px-8 py-6 border-b border-slate-50 dark:border-neutral-800 text-sm">
                           <p className="text-slate-600 dark:text-neutral-300 line-clamp-1 max-w-xs">{report.summary}</p>
@@ -334,7 +334,7 @@ export default function WorkReportsManagementPage() {
                     <div>
                       <h2 className="text-2xl font-black text-slate-800 dark:text-neutral-100 leading-tight">Edit Work Report</h2>
                       <p className="text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-widest mt-1">
-                        Employee: {selectedReport.user.name} • {new Date(selectedReport.date).toLocaleDateString('th-TH')}
+                        Employee: {selectedReport.user.name} • {new Date(selectedReport.date).toLocaleDateString('th-TH', { timeZone: 'Asia/Bangkok' })}
                       </p>
                     </div>
                   </div>

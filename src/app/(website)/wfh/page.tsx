@@ -98,6 +98,7 @@ export default function WFHHubPage() {
         <div className="text-6xl font-black tracking-tighter text-slate-800 font-mono drop-shadow-sm mb-2">
           {mounted
             ? time.toLocaleTimeString("th-TH", {
+                timeZone: "Asia/Bangkok",
                 hour: "2-digit",
                 minute: "2-digit",
               })
@@ -111,6 +112,7 @@ export default function WFHHubPage() {
           <span className="text-sm font-medium">
             {mounted
               ? time.toLocaleDateString("th-TH", {
+                  timeZone: "Asia/Bangkok",
                   weekday: "long",
                   year: "numeric",
                   month: "long",
