@@ -49,10 +49,14 @@ export async function PATCH(req: Request) {
 
   try {
     const body = await req.json();
-    const { name, email, phone, lineId, password, image, coverImage } = body;
+    const { name, username, email, phone, lineId, password, image, coverImage } = body;
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
+    
+    // Check if user is super_admin to allow username update
+    const currentUser = await db.collection("users").findOne({ _id: new ObjectId(userId) });
+    const isSuperAdmin = currentUser?.role === "super_admin";
 
     const updateData: any = {
       name,
@@ -61,6 +65,17 @@ export async function PATCH(req: Request) {
       lineId,
       updatedAt: new Date(),
     };
+
+    if (isSuperAdmin && username) {
+      const trimmedUsername = username.trim();
+      const existingUser = await db.collection("users").findOne({ 
+        username: { $regex: new RegExp(`^${trimmedUsername}$`, "i") },
+        _id: { $ne: new ObjectId(userId) } 
+      });
+      if (!existingUser) {
+        updateData.username = trimmedUsername;
+      }
+    }
 
     let logDetail = "อัปเดตข้อมูลส่วนตัว";
 

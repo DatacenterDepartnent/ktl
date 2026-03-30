@@ -204,16 +204,19 @@ export default function MobileMenu({
                       🚀 ไปที่ Dashboard
                     </Link>
 
-                    {(["super_admin", "admin", "hr", "director", "editor", "deputy_director"].includes(userRole)) && (
+                    {(["super_admin", "admin", "hr", "director", "editor", "deputy_resource", "deputy_strategy", "deputy_activities", "deputy_student_affairs"].includes(userRole)) && (
                       <div className="flex flex-col gap-2">
-                        <Link
-                          href="/attendance-report"
-                          onClick={closeMenu}
-                          className="mx-1 block text-center py-3.5 rounded-xl bg-emerald-50 text-emerald-700 font-bold border border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300 transition-colors"
-                        >
-                          📊 ระบบรายงานการเข้างาน
-                        </Link>
-                        {(["super_admin", "hr", "director", "deputy_director"].includes(userRole)) && (
+                         {/* เฉพาะรองบริหารทรัพยากร (และผู้บริหารหลัก) ที่เห็นรายงานและการทำงาน */}
+                         {(["super_admin", "admin", "hr", "director", "deputy_resource"].includes(userRole)) && (
+                          <Link
+                            href="/attendance-report"
+                            onClick={closeMenu}
+                            className="mx-1 block text-center py-3.5 rounded-xl bg-emerald-50 text-emerald-700 font-bold border border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300 transition-colors"
+                          >
+                            📊 ระบบรายงานการเข้างาน
+                          </Link>
+                         )}
+                        {(["super_admin", "hr", "director", "deputy_resource"].includes(userRole)) && (
                           <Link
                             href="/leave-approvals"
                             onClick={closeMenu}
@@ -222,7 +225,7 @@ export default function MobileMenu({
                              ✅ จัดการอนุมัติใบลา
                           </Link>
                         )}
-                        {(["super_admin", "hr"].includes(userRole)) && (
+                        {(["super_admin", "hr", "deputy_resource"].includes(userRole)) && (
                           <Link
                             href="/attendance-settings"
                             onClick={closeMenu}
@@ -234,13 +237,15 @@ export default function MobileMenu({
                             </div>
                           </Link>
                         )}
-                        <Link
-                          href="/work-reports"
-                          onClick={closeMenu}
-                          className="mx-1 block text-center py-3.5 rounded-xl bg-indigo-50 text-indigo-700 font-bold border border-indigo-100 dark:bg-indigo-900/20 dark:text-indigo-300 transition-colors"
-                        >
-                          📝 ระบบรายงานการปฏิบัติงาน
-                        </Link>
+                        {(["super_admin", "admin", "hr", "director", "deputy_resource", "editor", "staff"].includes(userRole)) && (
+                          <Link
+                            href="/work-reports"
+                            onClick={closeMenu}
+                            className="mx-1 block text-center py-3.5 rounded-xl bg-indigo-50 text-indigo-700 font-bold border border-indigo-100 dark:bg-indigo-900/20 dark:text-indigo-300 transition-colors"
+                          >
+                            📝 ระบบรายงานการปฏิบัติงาน
+                          </Link>
+                        )}
                       </div>
                     )}
 

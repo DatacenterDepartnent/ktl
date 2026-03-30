@@ -1,11 +1,39 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import { ArrowLeft, Calendar, FileText, Upload, Send, HelpCircle, Loader2, Info } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  ArrowLeft,
+  Calendar,
+  FileText,
+  Upload,
+  Send,
+  HelpCircle,
+  Loader2,
+  Info,
+  Activity,
+  User,
+  Baby,
+  Heart,
+  Sun,
+  Briefcase,
+  MoreHorizontal,
+  CheckCircle2,
+  AlertCircle
+} from "lucide-react";
 import imageCompression from "browser-image-compression";
+
+const LEAVE_TYPES = [
+  { id: "sick", label: "ลาป่วย", sub: "Sick Leave", icon: Activity, color: "rose" },
+  { id: "personal", label: "ลากิจ", sub: "Personal", icon: User, color: "amber" },
+  { id: "paternity", label: "ลาช่วยภริยา", sub: "Paternity", icon: Baby, color: "indigo" },
+  { id: "maternity", label: "ลาคลอด", sub: "Maternity", icon: Heart, color: "pink" },
+  { id: "ordination", label: "ลาบวช", sub: "Ordination", icon: Sun, color: "orange" },
+  { id: "official", label: "ราชการ", sub: "Official", icon: Briefcase, color: "slate" },
+  { id: "other", label: "อื่นๆ", sub: "Other", icon: MoreHorizontal, color: "gray" },
+];
 
 export default function LeaveRequestPage() {
   const router = useRouter();
@@ -13,24 +41,24 @@ export default function LeaveRequestPage() {
   const [success, setSuccess] = useState(false);
   const [quotas, setQuotas] = useState<any>(null);
   const [quotaLoading, setQuotaLoading] = useState(true);
-  
+
   const [formData, setFormData] = useState({
     leaveType: "sick",
     startDate: "",
     endDate: "",
     reason: "",
   });
-  
+
   const [file, setFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/attendance/leave/quota")
-      .then(res => res.json())
-      .then(data => {
-         if(data.success) {
-           setQuotas(data.quotas);
-         }
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          setQuotas(data.quotas);
+        }
       })
       .finally(() => setQuotaLoading(false));
   }, []);
@@ -59,51 +87,38 @@ export default function LeaveRequestPage() {
       method: "POST",
       body: formData,
     });
-    
+
     if (!res.ok) throw new Error("อัปโหลดไฟล์ไม่สำเร็จ");
     const data = await res.json();
     return data.secure_url;
   };
 
-  const getRequestedDays = () => {
-    if(!formData.startDate || !formData.endDate) return 0;
+  const requestedDays = useMemo(() => {
+    if (!formData.startDate || !formData.endDate) return 0;
     const start = new Date(formData.startDate);
     const end = new Date(formData.endDate);
-    if(end < start) return 0;
+    if (end < start) return 0;
     const diffTime = Math.abs(end.getTime() - start.getTime());
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
-  };
+  }, [formData.startDate, formData.endDate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.startDate || !formData.endDate || !formData.reason) return;
-    
-    const requestedDays = getRequestedDays();
+
     if (requestedDays <= 0) return alert("❌ วันที่สิ้นสุดต้องมากกว่าหรือเท่ากับวันที่เริ่มต้น");
 
-    // Quota validation
     if (quotas && formData.leaveType !== "other") {
       const remaining = quotas[formData.leaveType]?.remaining || 0;
       if (requestedDays > remaining) {
-        const typeLabels: any = {
-          sick: "ลาป่วย",
-          personal: "ลากิจส่วนตัว",
-          paternity: "ลาช่วยเหลือภริยาที่คลอดบุตร",
-          maternity: "ลาคลอด",
-          ordination: "ลาอุปสมบท",
-          official: "ไปราชการ",
-          other: "อื่นๆ"
-        };
-        return alert(`❌ ไม่สามารถลางานได้ เนื่องจากสิทธิ์${typeLabels[formData.leaveType] || 'ลา'} คงเหลือเพียง ${remaining} วัน (คุณร้องขอ ${requestedDays} วัน)`);
+        return alert(`❌ สิทธิ์คงเหลือไม่เพียงพอ (คงเหลือ ${remaining} วัน)`);
       }
     }
-    
+
     setLoading(true);
     try {
       let attachmentUrl = null;
-      if (file) {
-        attachmentUrl = await uploadToCloudinary(file);
-      }
+      if (file) attachmentUrl = await uploadToCloudinary(file);
 
       const res = await fetch("/api/attendance/leave", {
         method: "POST",
@@ -111,13 +126,9 @@ export default function LeaveRequestPage() {
         body: JSON.stringify({ ...formData, attachmentUrl }),
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "บันทึกข้อมูลล้มเหลว");
-      }
-
+      if (!res.ok) throw new Error("บันทึกข้อมูลล้มเหลว");
       setSuccess(true);
-      setTimeout(() => router.push("/wfh"), 3000);
+      setTimeout(() => router.push("/wfh"), 4000);
     } catch (err: any) {
       alert("❌ " + err.message);
       setLoading(false);
@@ -125,173 +136,292 @@ export default function LeaveRequestPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 flex flex-col items-center justify-center py-12 px-4 selection:bg-blue-500/30 font-sans">
-      <div className="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/10 blur-[120px] rounded-full mix-blend-screen pointer-events-none" />
-      <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500/10 blur-[120px] rounded-full mix-blend-screen pointer-events-none" />
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 flex items-center justify-center py-12 px-4 selection:bg-blue-500/30 font-sans relative overflow-hidden">
+      {/* Background Depth */}
+      <div className="fixed top-[-10%] left-[-10%] w-[60%] h-[60%] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none animate-pulse" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-rose-500/5 blur-[120px] rounded-full pointer-events-none animate-pulse" style={{ animationDelay: '1s' }} />
 
-      {success ? (
-        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="w-full max-w-lg bg-white dark:bg-zinc-900 border border-emerald-200 dark:border-emerald-500/30 p-10 rounded-[2.5rem] text-center shadow-2xl relative z-10">
-          <div className="w-24 h-24 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-emerald-500/30">
-            <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
-          </div>
-          <h2 className="text-3xl font-black text-slate-800 dark:text-white mb-3">ส่งคำขอลาสำเร็จ!</h2>
-          <p className="text-slate-500 dark:text-zinc-400 font-medium mb-8 text-lg">HR ได้รับเรื่องของท่านแล้ว ระบบกำลังพากลับผู้ใช้งานเดิม...</p>
-          <div className="w-full bg-emerald-100 dark:bg-zinc-800 h-2 rounded-full overflow-hidden">
-            <motion.div initial={{ width: 0 }} animate={{ width: "100%" }} transition={{ duration: 3 }} className="h-full bg-emerald-500 rounded-full" />
-          </div>
-        </motion.div>
-      ) : (
-        <div className="w-full max-w-2xl relative z-10 space-y-4">
-          
-          {/* Quota Panel */}
-          {!quotaLoading && quotas && (
-            <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex overflow-x-auto pb-2 gap-3 snap-x hide-scrollbar">
-              {[
-                { key: "sick", label: "ลาป่วย", color: "bg-rose-50 text-rose-600 border-rose-200" },
-                { key: "personal", label: "ลากิจส่วนตัว", color: "bg-blue-50 text-blue-600 border-blue-200" },
-                { key: "paternity", label: "ลาช่วยเหลือภริยา", color: "bg-indigo-50 text-indigo-600 border-indigo-200" },
-                { key: "maternity", label: "ลาคลอด", color: "bg-pink-50 text-pink-600 border-pink-200" },
-                { key: "ordination", label: "ลาอุปสมบท", color: "bg-amber-50 text-amber-600 border-amber-200" },
-                { key: "official", label: "ไปราชการ", color: "bg-slate-50 text-slate-600 border-slate-200" }
-              ].map(q => quotas[q.key] && (
-                <div key={q.key} className={`flex-none snap-start min-w-[140px] px-4 py-3 rounded-2xl border ${q.color} bg-white/60 dark:bg-zinc-900 backdrop-blur-sm shadow-sm`}>
-                   <div className="text-[10px] font-black uppercase tracking-widest opacity-80 mb-1">{q.label}</div>
-                   <div className="flex items-baseline gap-1">
-                     <span className="text-2xl font-black">{quotas[q.key].remaining}</span>
-                     <span className="text-xs font-bold opacity-70">/ {quotas[q.key].total} วัน</span>
+      <div className="w-full max-w-4xl relative z-10">
+        <AnimatePresence mode="wait">
+          {success ? (
+            <motion.div
+              key="success"
+              initial={{ scale: 0.9, opacity: 0, y: 30 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              className="w-full max-w-xl mx-auto bg-white/80 dark:bg-zinc-900/80 backdrop-blur-3xl border border-emerald-100 dark:border-emerald-500/20 p-12 rounded-4xl text-center shadow-3xl relative overflow-hidden"
+            >
+              <div className="absolute top-0 left-0 w-full h-1.5 bg-emerald-500" />
+              <div className="w-24 h-24 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-emerald-500/40 relative">
+                 <div className="absolute inset-0 bg-white/20 rounded-full animate-ping" />
+                 <CheckCircle2 size={48} className="relative z-10" />
+              </div>
+              
+              <h2 className="text-4xl font-black text-slate-800 dark:text-white mb-4 tracking-tighter uppercase">
+                Success <span className="text-emerald-500">Receipt</span>
+              </h2>
+              <div className="bg-slate-50 dark:bg-zinc-950/50 rounded-3xl p-6 mb-10 border border-slate-100 dark:border-zinc-800 space-y-4">
+                 <div className="flex justify-between items-center text-xs">
+                    <span className="font-black text-slate-400 uppercase tracking-widest">Type</span>
+                    <span className="font-black text-slate-800 dark:text-white uppercase">{LEAVE_TYPES.find(t => t.id === formData.leaveType)?.label}</span>
+                 </div>
+                 <div className="flex justify-between items-center text-xs">
+                    <span className="font-black text-slate-400 uppercase tracking-widest">Requested Period</span>
+                    <span className="font-black text-slate-800 dark:text-white uppercase">{requestedDays} Days</span>
+                 </div>
+                 <div className="pt-4 border-t border-dashed border-slate-200 dark:border-zinc-800 flex justify-between items-center text-xs">
+                    <span className="font-black text-slate-400 uppercase tracking-widest">Status</span>
+                    <span className="px-3 py-1 bg-amber-500/10 text-amber-600 rounded-full font-black uppercase text-[10px]">Processing</span>
+                 </div>
+              </div>
+
+              <p className="text-slate-400 dark:text-zinc-500 font-bold mb-8 text-sm uppercase tracking-widest">
+                Returning you to WFH Hub in a few moments...
+              </p>
+              
+              <div className="w-full bg-emerald-100 dark:bg-zinc-800 h-1.5 rounded-full overflow-hidden shadow-inner">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: "100%" }}
+                  transition={{ duration: 4, ease: "linear" }}
+                  className="h-full bg-emerald-500 rounded-full"
+                />
+              </div>
+            </motion.div>
+          ) : (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              {/* Left Column: Form Info & Quotas */}
+              <motion.div 
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="lg:col-span-4 space-y-6"
+              >
+                <div className="space-y-4">
+                  <Link href="/wfh" className="group flex items-center gap-3 w-fit">
+                    <div className="p-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl text-slate-400 group-hover:text-blue-500 group-hover:border-blue-200 shadow-sm transition-all group-hover:-translate-x-1">
+                      <ArrowLeft size={18} />
+                    </div>
+                  </Link>
+                  <div className="pl-1">
+                    <h1 className="text-4xl font-black text-slate-800 dark:text-white tracking-tighter uppercase leading-none mb-3">
+                      Leave <span className="text-blue-600">Request</span>
+                    </h1>
+                    <p className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-[0.3em] pl-1 flex items-center gap-2">
+                       <span className="w-1.5 h-1.5 bg-blue-500 rounded-full inline-block" />
+                       Attendance Management v2.0
+                    </p>
+                  </div>
+                </div>
+
+                {/* Quota Dashboard */}
+                <div className="space-y-3">
+                   <h3 className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-2 mb-4">Availability Matrix</h3>
+                   <div className="grid grid-cols-1 gap-3">
+                     {!quotaLoading && quotas && LEAVE_TYPES.map(type => (
+                       type.id !== "other" && quotas[type.id] && (
+                         <motion.div 
+                           key={type.id}
+                           whileHover={{ scale: 1.02 }}
+                           className={`p-5 rounded-3xl bg-white dark:bg-zinc-900 border transition-all flex items-center justify-between group shadow-sm ${formData.leaveType === type.id ? 'border-blue-500 dark:border-blue-500/50 shadow-xl shadow-blue-500/5' : 'border-slate-100 dark:border-zinc-800'}`}
+                         >
+                            <div className="flex items-center gap-4">
+                               <div className={`p-3 rounded-2xl bg-${type.color}-500/10 text-${type.color}-600 group-hover:rotate-12 transition-transform`}>
+                                  <type.icon size={20} />
+                               </div>
+                               <div>
+                                  <p className="text-[10px] font-bold text-slate-400 dark:text-zinc-600 uppercase tracking-widest mb-1">{type.label}</p>
+                                  <h4 className="text-lg font-black text-slate-800 dark:text-white leading-none">{quotas[type.id].remaining} <span className="text-[10px] uppercase text-slate-400 font-bold ml-1">Days left</span></h4>
+                               </div>
+                            </div>
+                            {formData.leaveType === type.id && (
+                               <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse shadow-glow shadow-blue-500" />
+                            )}
+                         </motion.div>
+                       )
+                     ))}
                    </div>
                 </div>
-              ))}
-            </motion.div>
-          )}
+              </motion.div>
 
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-4xl shadow-2xl overflow-hidden">
-            <div className="bg-slate-900 dark:bg-zinc-950 p-6 flex items-center justify-between border-b border-slate-800">
-              <div className="flex items-center gap-4">
-                <Link href="/wfh" className="text-white/60 hover:text-white bg-white/10 p-3 rounded-full transition-colors">
-                  <ArrowLeft size={20} />
-                </Link>
-                <div>
-                  <h1 className="text-xl font-black text-white uppercase tracking-wider">Leave Request</h1>
-                  <p className="text-slate-400 text-xs font-medium mt-0.5">แบบฟอร์มแจ้งบันทึกการลางาน</p>
-                </div>
-              </div>
-              <HelpCircle className="text-white/20" size={24} />
-            </div>
-
-            <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-6">
-              <div className="space-y-5">
-                <div className="space-y-2">
-                  <label className="flex items-center justify-between text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest pl-1">
-                    ประเภทการลา (Leave Type)
-                    {formData.leaveType !== "other" && quotas && (
-                      <span className="text-indigo-500 flex items-center gap-1"><Info size={12}/> โควตาคงเหลือ: {quotas[formData.leaveType]?.remaining} วัน</span>
-                    )}
-                  </label>
-                  <select
-                    value={formData.leaveType}
-                    onChange={(e) => setFormData({ ...formData, leaveType: e.target.value })}
-                    className="w-full p-4 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-slate-800 dark:text-white font-medium"
-                  >
-                    <option value="sick">ลาป่วย (Sick Leave)</option>
-                    <option value="personal">ลากิจส่วนตัว (Personal Leave)</option>
-                    <option value="paternity">ลาช่วยเหลือภริยาที่คลอดบุตร (Paternity Leave)</option>
-                    <option value="maternity">ลาคลอด (Maternity Leave)</option>
-                    <option value="ordination">ลาอุปสมบท (Ordination Leave)</option>
-                    <option value="official">ไปราชการ (Official Business)</option>
-                    <option value="other">อื่นๆ (Other)</option>
-                  </select>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest pl-1">จากวันที่ (Start Date)</label>
-                    <div className="relative group">
-                      <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={18} />
-                      <input
-                        type="date"
-                        value={formData.startDate}
-                        onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                        className="w-full pl-11 pr-4 py-4 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-slate-800 dark:text-white font-medium shadow-sm hover:shadow-md transition-all appearance-none"
-                        required
-                      />
+              {/* Right Column: Form */}
+              <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="lg:col-span-8 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-3xl border border-slate-100 dark:border-zinc-800 rounded-4xl shadow-3xl overflow-hidden"
+              >
+                <form onSubmit={handleSubmit} className="p-8 md:p-12 space-y-10">
+                  {/* Visual Dropdown Replacement */}
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest px-2">Select Purpose</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                       {LEAVE_TYPES.map(type => (
+                         <button
+                           key={type.id}
+                           type="button"
+                           onClick={() => setFormData({ ...formData, leaveType: type.id })}
+                           className={`flex flex-col items-center justify-center p-5 rounded-3xl border-2 transition-all gap-2 group ${formData.leaveType === type.id ? 'bg-blue-600 border-blue-600 text-white shadow-xl shadow-blue-500/30 -translate-y-1' : 'bg-slate-50 dark:bg-zinc-950 border-transparent hover:border-slate-200 dark:hover:border-zinc-800 grayscale hover:grayscale-0 opacity-60 hover:opacity-100'}`}
+                         >
+                            <type.icon size={22} className={`group-hover:scale-110 transition-transform ${formData.leaveType === type.id ? 'text-white' : `text-${type.color}-500`}`} />
+                            <span className="text-[9px] font-black uppercase tracking-widest">{type.label}</span>
+                         </button>
+                       ))}
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest pl-1">ถึงวันที่ (End Date)</label>
-                    <div className="relative group">
-                      <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={18} />
-                      <input
-                        type="date"
-                        value={formData.endDate}
-                        min={formData.startDate}
-                        onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                        className="w-full pl-11 pr-4 py-4 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-slate-800 dark:text-white font-medium shadow-sm hover:shadow-md transition-all appearance-none"
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
 
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest pl-1">เหตุผลการลา (Reason)</label>
-                  <div className="relative group">
-                    <FileText className="absolute left-4 top-4 text-slate-400 group-focus-within:text-blue-500 transition-colors" size={18} />
-                    <textarea
-                      value={formData.reason}
-                      onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
-                      rows={3}
-                      className="w-full pl-11 pr-4 py-4 bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500/50 text-slate-800 dark:text-white font-medium resize-none shadow-sm hover:shadow-md transition-all"
-                      placeholder="ระบุเหตุผลในการลางานที่ชัดเจน..."
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-widest pl-1">แนบไฟล์เอกสาร / ใบรับรองแพทย์ (ถ้ามี)</label>
-                  <label className="flex flex-col items-center justify-center w-full h-36 border-2 border-dashed border-slate-300 dark:border-zinc-700 rounded-2xl cursor-pointer bg-slate-50/50 hover:bg-slate-100 dark:bg-zinc-900/50 dark:hover:bg-zinc-800/80 transition-colors group">
-                    {previewUrl ? (
-                      <div className="w-full h-full p-2">
-                        <img src={previewUrl} alt="Preview" className="w-full h-full object-contain rounded-xl shadow-sm" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+                    <div className="space-y-4">
+                      <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest px-2">Duration Matrix</label>
+                      <div className="space-y-3">
+                         <div className="relative group">
+                            <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500">
+                               <Calendar size={18} />
+                            </div>
+                            <input
+                              type="date"
+                              value={formData.startDate}
+                              onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                              className="w-full pl-14 pr-6 py-5 bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-zinc-800 rounded-3xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-slate-800 dark:text-white font-black text-sm transition-all appearance-none cursor-pointer"
+                              required
+                            />
+                            <span className="absolute top-0 right-5 -translate-y-1/2 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 px-3 py-1 rounded-full text-[9px] font-black uppercase text-slate-400 tracking-widest shadow-sm">Start</span>
+                         </div>
+                         <div className="relative group">
+                            <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500">
+                               <Calendar size={18} />
+                            </div>
+                            <input
+                              type="date"
+                              value={formData.endDate}
+                              min={formData.startDate}
+                              onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                              className="w-full pl-14 pr-6 py-5 bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-zinc-800 rounded-3xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-slate-800 dark:text-white font-black text-sm transition-all appearance-none cursor-pointer"
+                              required
+                            />
+                            <span className="absolute top-0 right-5 -translate-y-1/2 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 px-3 py-1 rounded-full text-[9px] font-black uppercase text-slate-400 tracking-widest shadow-sm">End</span>
+                         </div>
                       </div>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                        <div className="bg-white dark:bg-zinc-800 p-3 rounded-full shadow-sm mb-3">
-                          <Upload className="w-6 h-6 text-blue-500 group-hover:scale-110 transition-transform" />
+                    </div>
+                    
+                    {/* Duration Badge */}
+                    <div className="h-full flex flex-col justify-end">
+                       <AnimatePresence>
+                         {requestedDays > 0 && (
+                            <motion.div 
+                              initial={{ scale: 0.8, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              className="bg-blue-600 rounded-3xl p-6 text-white shadow-2xl shadow-blue-500/20 text-center relative overflow-hidden group mb-1"
+                            >
+                               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-125 transition-transform">
+                                  <Clock size={60} />
+                               </div>
+                               <h4 className="text-4xl font-black leading-none">{requestedDays}</h4>
+                               <p className="text-[10px] font-black uppercase opacity-60 tracking-[0.2em] mt-1">Total Days Requested</p>
+                            </motion.div>
+                         )}
+                       </AnimatePresence>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest px-2">Detailed Justification</label>
+                    <div className="relative group">
+                      <div className="absolute left-5 top-6 text-slate-400 group-focus-within:text-blue-500">
+                        <FileText size={18} />
+                      </div>
+                      <textarea
+                        value={formData.reason}
+                        onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
+                        rows={4}
+                        className="w-full pl-14 pr-8 py-6 bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-zinc-800 rounded-4xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-slate-800 dark:text-white font-bold text-sm tracking-tight resize-none transition-all placeholder:text-slate-300 dark:placeholder:text-zinc-800 shadow-inner"
+                        placeholder="Please elaborate on your request objective..."
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest px-2">Documentary Proof (Optional)</label>
+                    <label className="flex flex-col items-center justify-center w-full min-h-[160px] border-3 border-dashed border-slate-100 dark:border-zinc-800 rounded-4xl cursor-pointer bg-slate-50/50 dark:bg-zinc-950/20 hover:bg-slate-100 dark:hover:bg-zinc-900 transition-all group overflow-hidden relative">
+                      {previewUrl ? (
+                        <div className="w-full h-full absolute inset-0 p-3">
+                          <img src={previewUrl} alt="Preview" className="w-full h-full object-cover rounded-3xl" />
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-black text-xs uppercase tracking-widest">Change Artifact</div>
                         </div>
-                        <p className="text-sm font-medium text-slate-600 dark:text-zinc-300">ลาก&วางไฟล์ หรือ <span className="text-blue-500 font-bold">คลิกค้นหา</span></p>
-                        <p className="text-[10px] text-slate-400 mt-1 uppercase tracking-widest max-w-[200px] text-center">PNG, JPG เฉพาะภาพนิ่ง ไฟล์ขนาดไม่เกิน 5MB</p>
-                      </div>
-                    )}
-                    <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
-                  </label>
-                </div>
-              </div>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center py-8">
+                          <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 p-4 rounded-3xl shadow-xl group-hover:scale-110 transition-transform mb-4">
+                            <Upload className="w-6 h-6 text-blue-500" />
+                          </div>
+                          <p className="text-xs font-black text-slate-700 dark:text-zinc-300 uppercase tracking-widest">Upload <span className="text-blue-500">Supporting Attachment</span></p>
+                          <p className="text-[9px] text-slate-400 mt-2 font-bold uppercase tracking-[0.2em]">MAX 5MB • PNG / JPEG</p>
+                        </div>
+                      )}
+                      <input type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+                    </label>
+                  </div>
 
-              <div className="pt-6 border-t border-slate-100 dark:border-zinc-800 mt-4">
-                <button
-                  type="submit"
-                  disabled={loading || quotaLoading}
-                  className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 p-4 rounded-2xl font-bold flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-slate-900/10 disabled:opacity-70 disabled:cursor-not-allowed group overflow-hidden relative"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="animate-spin relative z-10" size={20} />
-                      <span className="relative z-10">กำลังตรวจสอบข้อมูล...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span className="relative z-10">ส่งคำขอลางาน</span>
-                      <Send size={18} className="relative z-10 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                    </>
-                  )}
-                </button>
-              </div>
-            </form>
-          </motion.div>
-        </div>
-      )}
+                  <div className="pt-10 border-t border-slate-100 dark:border-zinc-800 flex flex-col md:flex-row gap-6 items-center">
+                    <button
+                      type="submit"
+                      disabled={loading || quotaLoading}
+                      className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-6 rounded-3xl font-black flex items-center justify-center gap-4 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-2xl shadow-slate-900/20 dark:shadow-white/5 disabled:opacity-50 disabled:cursor-not-allowed group relative overflow-hidden"
+                    >
+                      {loading ? (
+                        <Loader2 className="animate-spin" size={24} />
+                      ) : (
+                        <>
+                          <span className="uppercase tracking-widest text-sm">Submit Request</span>
+                          <Send size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                        </>
+                      )}
+                    </button>
+                    
+                    <div className="flex items-center gap-4 px-6 py-4 bg-slate-50 dark:bg-zinc-950/50 rounded-2xl border border-slate-100 dark:border-zinc-800 opacity-60">
+                       <Info size={16} className="text-blue-500" />
+                       <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-loose">
+                          Requests are sent directly to DC Department <br/> for immediate verification.
+                       </p>
+                    </div>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      <style jsx global>{`
+        input[type="date"]::-webkit-calendar-picker-indicator {
+          background: transparent;
+          bottom: 0;
+          color: transparent;
+          cursor: pointer;
+          height: auto;
+          left: 0;
+          position: absolute;
+          right: 0;
+          top: 0;
+          width: auto;
+        }
+      `}</style>
     </div>
   );
 }
+
+const Clock = ({ className, size }: { className?: string, size?: number }) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    width={size || 24} 
+    height={size || 24} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={className}
+  >
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" />
+  </svg>
+);

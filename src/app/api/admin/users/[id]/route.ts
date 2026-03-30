@@ -55,11 +55,25 @@ export async function PATCH(
     const body = await req.json();
     const {
       password,
+      username,
       ...updateData
     } = body;
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
+
+    // ✅ ตรวจสอบความเป็นสากลของ Username (ป้องกันการซ้ำ)
+    if (username) {
+      const trimmedUsername = username.trim();
+      const existingUser = await db.collection("users").findOne({ 
+        username: { $regex: new RegExp(`^${trimmedUsername}$`, "i") },
+        _id: { $ne: new ObjectId(id) } 
+      });
+      if (existingUser) {
+        return NextResponse.json({ error: "ชื่อผู้ใช้งานนี้ถูกใช้ไปแล้ว" }, { status: 400 });
+      }
+      updateData.username = trimmedUsername;
+    }
 
     // เตรียมข้อมูลสำหรับอัปเดต
     const updatePayload: any = { ...updateData, updatedAt: new Date() };
@@ -126,6 +140,7 @@ export async function PATCH(
     if (updateData.role) actionDesc = `เปลี่ยนสิทธิ์ของ ${targetName} เป็น ${updateData.role}`;
     if (updateData.isActive === false) actionDesc = `🚫 ระงับการใช้งานผู้ใช้: ${targetName}`;
     if (updateData.isActive === true) actionDesc = `✅ เปิดใช้งานผู้ใช้: ${targetName}`;
+    if (username) actionDesc += ` (เปลี่ยนชื่อผู้ใช้เป็น @${username})`;
     if (password) actionDesc += " (มีการเปลี่ยนรหัสผ่าน)";
 
     await db.collection("logs").insertOne({

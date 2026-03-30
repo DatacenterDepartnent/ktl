@@ -24,7 +24,11 @@ export async function POST(req: Request) {
 
     // 3. ตรวจสอบว่ามี Username หรือ Email หรือเบอร์โทร นี้อยู่แล้วหรือไม่
     const existingUser = await db.collection("users").findOne({
-      $or: [{ username }, { email }, { phone }],
+      $or: [
+        { username: { $regex: new RegExp(`^${(username as string).trim()}$`, "i") } }, 
+        { email }, 
+        { phone }
+      ],
     });
 
     if (existingUser) {

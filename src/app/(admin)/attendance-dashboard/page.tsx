@@ -1,22 +1,39 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   PieChart,
   Pie,
   Cell,
   ResponsiveContainer,
-  Tooltip,
-  Legend,
+  Tooltip as RechartsTooltip,
 } from "recharts";
-import { Activity, Users, Clock, AlertTriangle, Calendar } from "lucide-react";
+import {
+  Activity,
+  Users,
+  Clock,
+  AlertTriangle,
+  Calendar,
+  Layers,
+  ArrowRight,
+  TrendingUp,
+  Map as MapIcon,
+  PieChart as PieIcon,
+  Loader2 as LucideLoader,
+} from "lucide-react";
 import dynamic from "next/dynamic";
 
 const MapDashboard = dynamic(() => import("@/components/MapDashboard"), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full bg-slate-100 dark:bg-neutral-800 animate-pulse flex items-center justify-center text-slate-400 rounded-2xl">
-      กำลังโหลดพื้นที่แผนที่ตรวจสอบพิกัด...
+    <div className="w-full h-full bg-slate-50 dark:bg-zinc-900 animate-pulse flex items-center justify-center text-slate-400 rounded-3xl border border-dashed border-slate-200 dark:border-zinc-800">
+      <div className="flex flex-col items-center gap-3">
+        <LucideLoader className="animate-spin text-blue-500" size={32} />
+        <p className="text-[10px] font-black uppercase tracking-widest">
+          Initializing Satellite Data...
+        </p>
+      </div>
     </div>
   ),
 });
@@ -24,16 +41,15 @@ const MapDashboard = dynamic(() => import("@/components/MapDashboard"), {
 export default function AdminAttendanceDashboard() {
   const [selectedDate, setSelectedDate] = useState(() => {
     const d = new Date();
-    // Use local Date to avoid timezone shift on initial render
     const offset = d.getTimezoneOffset();
     d.setMinutes(d.getMinutes() - offset);
     return d.toISOString().split("T")[0];
   });
 
   const [data, setData] = useState([
-    { name: "มาทำงานตรงเวลา", value: 0, color: "#22c55e" },
-    { name: "มาสาย", value: 0, color: "#eab308" },
-    { name: "ลา / ขาด", value: 0, color: "#ef4444" },
+    { name: "มาทำงานตรงเวลา", value: 0, color: "#10b981" }, // Emerald 500
+    { name: "มาสาย", value: 0, color: "#f59e0b" }, // Amber 500
+    { name: "ลา / ขาด", value: 0, color: "#f43f5e" }, // Rose 500
   ]);
   const [markers, setMarkers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -61,125 +77,312 @@ export default function AdminAttendanceDashboard() {
 
   const total = data.reduce((acc, curr) => acc + curr.value, 0);
 
+  const CustomPieLabel = ({ cx, cy }: any) => {
+    return (
+      <g>
+        <text
+          x={cx}
+          y={cy}
+          dy={8}
+          textAnchor="middle"
+          fill="currentColor"
+          className="font-black text-3xl fill-slate-800 dark:fill-white transition-colors duration-500"
+        >
+          {total}
+        </text>
+        <text
+          x={cx}
+          y={cy}
+          dy={-22}
+          textAnchor="middle"
+          fill="#94a3b8"
+          className="uppercase text-[9px] font-black tracking-[0.2em] fill-slate-400"
+        >
+          Total
+        </text>
+      </g>
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-neutral-950 py-4 px-2 font-sans">
-      <div className="max-w-7xl mx-auto space-y-6">
-        <div className="flex flex-col sm:flex-row py-4 justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-800 dark:text-neutral-100">
-              Attendance Dashboard
-            </h1>
-            <p className="text-gray-500 dark:text-neutral-400">
-              ภาพรวมการเข้างานตามวันที่เลือก (Work from Anywhere)
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 py-12 px-5 font-sans selection:bg-blue-500/30 overflow-hidden relative">
+      {/* Background Blobs */}
+      <div className="fixed top-[-10%] left-[-10%] w-[60%] h-[60%] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-emerald-500/5 blur-[120px] rounded-full pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto space-y-12 relative z-10">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 text-left">
+          <div className="space-y-3">
+            <div className="flex items-center gap-4">
+              <div className="p-2.5 bg-blue-600 rounded-2xl text-white shadow-2xl shadow-blue-500/20 border border-blue-400 group hover:rotate-6 transition-transform">
+                <Layers size={22} />
+              </div>
+              <h1 className="text-4xl md:text-5xl font-black text-slate-800 dark:text-white tracking-tighter uppercase leading-none">
+                Attendance <span className="text-blue-600">Hub</span>
+              </h1>
+            </div>
+            <p className="text-slate-400 dark:text-zinc-500 text-[11px] font-black uppercase tracking-[0.25em] pl-1 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              Enterprise Monitoring System v2.0
             </p>
           </div>
-          <div className="flex items-center gap-3 w-full sm:w-auto relative group">
-            <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-              <Calendar className="h-5 w-5 text-gray-400 group-focus-within:text-blue-500 transition-colors" />
-            </div>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="pl-11 pr-5 py-2.5 w-full sm:w-auto rounded-xl border border-gray-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 text-gray-800 dark:text-neutral-200 outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all shadow-md hover:shadow-lg font-bold tracking-wide cursor-pointer appearance-none"
-              style={{ minWidth: "180px", colorScheme: "light dark" }}
-            />
-          </div>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {/* Stat Cards */}
-          <div className="bg-white dark:bg-neutral-900 p-2 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center space-x-4">
-            <div className="p-3 bg-blue-100 dark:bg-blue-900/30 text-blue-600 rounded-xl">
-              <Users size={24} />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">ยอดตอบกลับ</p>
-              <p className="text-2xl font-bold">{total}</p>
-            </div>
-          </div>
-          <div className="bg-white dark:bg-neutral-900 p-2 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center space-x-4">
-            <div className="p-3 bg-green-100 dark:bg-green-900/30 text-green-600 rounded-xl">
-              <Activity size={24} />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">มาตรงเวลา</p>
-              <p className="text-2xl font-bold">{data[0].value}</p>
-            </div>
-          </div>
-          <div className="bg-white dark:bg-neutral-900 p-2 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center space-x-4">
-            <div className="p-3 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 rounded-xl">
-              <Clock size={24} />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">มาสาย</p>
-              <p className="text-2xl font-bold">{data[1].value}</p>
-            </div>
-          </div>
-          <div className="bg-white dark:bg-neutral-900 p-2 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 flex items-center space-x-4">
-            <div className="p-3 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-xl">
-              <AlertTriangle size={24} />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">ลา / ขาด</p>
-              <p className="text-2xl font-bold">{data[2].value}</p>
+          <div className="flex items-center gap-4 w-full md:w-auto">
+            <div className="relative group flex-1 md:flex-none">
+              <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-600 transition-colors">
+                <Calendar size={18} />
+              </div>
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="pl-14 pr-8 py-4 w-full md:w-auto bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-3xl font-black text-sm text-slate-800 dark:text-white outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all shadow-xl shadow-black/2 hover:shadow-2xl hover:border-slate-200 dark:hover:border-zinc-700 appearance-none cursor-pointer"
+                style={{ colorScheme: "light dark" }}
+              />
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="col-span-1 lg:col-span-2 bg-white dark:bg-neutral-900 p-2 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800 h-96 relative z-0">
-            <MapDashboard markers={markers} />
-          </div>
+        {/* Status Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            {
+              label: "Total Presence",
+              val: total,
+              unit: "responses",
+              icon: Users,
+              theme: "indigo",
+              delay: 0,
+            },
+            {
+              label: "On-Time Status",
+              val: data[0].value,
+              unit: "staff",
+              icon: Activity,
+              theme: "emerald",
+              delay: 0.1,
+            },
+            {
+              label: "Delayed Arrival",
+              val: data[1].value,
+              unit: "staff",
+              icon: Clock,
+              theme: "amber",
+              delay: 0.2,
+            },
+            {
+              label: "Absent / Leave",
+              val: data[2].value,
+              unit: "staff",
+              icon: AlertTriangle,
+              theme: "rose",
+              delay: 0.3,
+            },
+          ].map((stat, idx) => {
+            const Icon = stat.icon;
+            return (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: stat.delay, type: "spring", damping: 15 }}
+                className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-4xl p-8 shadow-2xl shadow-black/3 relative group overflow-hidden transition-all hover:shadow-indigo-500/5 hover:-translate-y-1.5"
+              >
+                <div
+                  className={`absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-all group-hover:scale-125 duration-700 text-${stat.theme}-600`}
+                >
+                  <Icon size={120} />
+                </div>
+                <div className="flex flex-col items-start gap-6 relative z-10">
+                  <div
+                    className={`p-4 bg-${stat.theme}-50 dark:bg-${stat.theme}-500/10 text-${stat.theme}-600 dark:text-${stat.theme}-400 rounded-2xl shadow-sm border border-${stat.theme}-100 dark:border-${stat.theme}-900/30 group-hover:rotate-12 transition-transform`}
+                  >
+                    <Icon size={24} />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest leading-none mb-2">
+                      {stat.label}
+                    </p>
+                    <div className="flex items-baseline gap-2">
+                      <h2 className="text-5xl font-black text-slate-800 dark:text-white tracking-tighter leading-none">
+                        {stat.val}
+                      </h2>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-slate-400">
+                        {stat.unit}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
 
-          <div className="col-span-1 bg-white dark:bg-neutral-900 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-neutral-800">
-            <h3 className="font-bold text-lg mb-2 dark:text-gray-200">
-              สัดส่วนการเข้างานวันนี้
-            </h3>
-            {loading ? (
-              <div className="h-64 flex items-center justify-center">
-                <p className="text-gray-400">กำลังโหลด...</p>
+        {/* Content Section */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-12 ">
+          {/* Map Section */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4 }}
+            className="lg:col-span-2 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-4xl p-5 shadow-2xl shadow-black/3 relative overflow-hidden group"
+          >
+            {/* <div className="absolute top-10 left-10 z-20">
+              <div className="px-2 py-2 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl rounded-2xl border border-slate-100 dark:border-zinc-800 flex items-center gap-3 shadow-2xl">
+                <div className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-800 dark:text-zinc-300">
+                  Personnel Heatmap
+                </span>
               </div>
-            ) : (
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={data}
-                      innerRadius={70}
-                      outerRadius={100}
-                      paddingAngle={2}
-                      dataKey="value"
-                    >
-                      {data.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <Tooltip wrapperClassName="dark:bg-black rounded-lg" />
-                    <Legend verticalAlign="bottom" />
-                  </PieChart>
-                </ResponsiveContainer>
+            </div> */}
+            <div className="h-[580px] w-full rounded-3xl overflow-hidden relative border border-slate-50 dark:border-zinc-800 shadow-inner">
+              <MapDashboard markers={markers} />
+            </div>
+          </motion.div>
+
+          {/* Stats Visualization */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+            className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-4xl p-10 shadow-2xl shadow-black/3 overflow-hidden group relative flex flex-col"
+          >
+            <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition-all -rotate-12 duration-1000 scale-150">
+              <PieIcon size={140} className="text-blue-500" />
+            </div>
+
+            <div className="relative z-10 mb-10">
+              <h3 className="text-2xl font-black text-slate-800 dark:text-white leading-tight tracking-tighter uppercase mb-2">
+                Status <span className="text-blue-600">Mix</span>
+              </h3>
+              <p className="text-[10px] text-slate-400 dark:text-zinc-500 font-black uppercase tracking-widest pl-1">
+                Presence Distribution Matrix
+              </p>
+            </div>
+
+            <div className="relative z-10 flex-1 flex flex-col justify-between gap-12">
+              {loading ? (
+                <div className="flex-1 flex flex-col items-center justify-center gap-5">
+                  <LucideLoader
+                    className="animate-spin text-blue-500"
+                    size={48}
+                  />
+                  <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.3em]">
+                    Processing Stats...
+                  </p>
+                </div>
+              ) : (
+                <div className="h-64 relative transform hover:scale-105 transition-transform duration-500">
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-32 h-32 rounded-full bg-slate-50 dark:bg-zinc-800 transition-colors duration-500" />
+                  </div>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={data}
+                        innerRadius={78}
+                        outerRadius={105}
+                        paddingAngle={8}
+                        dataKey="value"
+                        stroke="none"
+                        animationBegin={600}
+                        animationDuration={1500}
+                      >
+                        {data.map((entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={entry.color}
+                            className="focus:outline-none hover:opacity-85 transition-opacity cursor-pointer shadow-xl"
+                          />
+                        ))}
+                      </Pie>
+                      <RechartsTooltip
+                        contentStyle={{
+                          backgroundColor: "rgba(0,0,0,0.9)",
+                          borderRadius: "20px",
+                          border: "none",
+                          backdropFilter: "blur(12px)",
+                          padding: "16px 20px",
+                          boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)",
+                        }}
+                        itemStyle={{
+                          color: "#fff",
+                          fontSize: "11px",
+                          fontWeight: "900",
+                          textTransform: "uppercase",
+                          letterSpacing: "0.1em",
+                        }}
+                      />
+                      <CustomPieLabel />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              )}
+
+              <div className="space-y-6">
+                {data.map((d, i) => (
+                  <div key={i} className="group/item relative">
+                    <div className="flex justify-between items-center mb-3">
+                      <div className="flex items-center gap-4">
+                        <div
+                          className="w-3.5 h-3.5 rounded-full shadow-lg border-2 border-white dark:border-zinc-800"
+                          style={{ backgroundColor: d.color }}
+                        />
+                        <span className="text-[11px] font-black text-slate-500 dark:text-zinc-400 uppercase tracking-widest">
+                          {d.name}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-sm font-black text-slate-800 dark:text-white uppercase leading-none">
+                          {d.value}
+                        </span>
+                        <div className="h-4 w-px bg-slate-100 dark:bg-zinc-800" />
+                        <span className="text-[9px] font-black text-slate-300 dark:text-zinc-600 uppercase tracking-widest">
+                          {total > 0 ? Math.round((d.value / total) * 100) : 0}%
+                        </span>
+                      </div>
+                    </div>
+                    <div className="w-full h-2.5 bg-slate-50 dark:bg-zinc-800 rounded-full overflow-hidden shadow-inner">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{
+                          width:
+                            total > 0 ? `${(d.value / total) * 100}%` : "0%",
+                        }}
+                        transition={{
+                          duration: 1.5,
+                          ease: [0.34, 1.56, 0.64, 1],
+                          delay: 0.8 + i * 0.15,
+                        }}
+                        className="h-full rounded-full shadow-lg"
+                        style={{ backgroundColor: d.color }}
+                      />
+                    </div>
+                  </div>
+                ))}
               </div>
-            )}
-            <div className="mt-4 space-y-2">
-              {data.map((d, i) => (
-                <div key={i} className="flex justify-between text-sm">
-                  <span className="flex items-center space-x-2">
-                    <span
-                      className="w-3 h-3 rounded-full"
-                      style={{ backgroundColor: d.color }}
-                    ></span>
-                    <span className="text-gray-600 dark:text-gray-300">
-                      {d.name}
-                    </span>
-                  </span>
-                  <span className="font-semibold dark:text-white">
-                    {d.value} คน
+
+              <div className="pt-8 border-t border-slate-50 dark:border-zinc-800 flex items-center justify-between mt-4">
+                <div className="flex items-center gap-3 text-emerald-500 group-hover:translate-x-1 transition-transform">
+                  <TrendingUp size={18} />
+                  <span className="text-[10px] font-black uppercase tracking-[0.2em]">
+                    Efficiency Stable
                   </span>
                 </div>
-              ))}
+                <div className="p-2.5 bg-slate-50 dark:bg-zinc-800 rounded-xl text-slate-300 dark:text-zinc-600 hover:text-blue-500 transition-colors">
+                  <ArrowRight size={18} />
+                </div>
+              </div>
             </div>
-          </div>
+          </motion.div>
+        </div>
+
+        <div className="pt-16 pb-8 text-center border-t border-slate-100 dark:border-zinc-900">
+          <p className="text-[10px] text-slate-300 dark:text-zinc-700 font-black uppercase tracking-[0.5em] leading-loose">
+            Precision Management Protocol • KTL-Hub Enterprise Edition <br />©
+            2026 DATACENTER DEPARTMENT
+          </p>
         </div>
       </div>
     </div>

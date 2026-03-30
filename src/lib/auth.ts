@@ -105,7 +105,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const db = client.db("ktltc_db");
         const user = await db
           .collection("users")
-          .findOne({ username: credentials.username });
+          .findOne({ username: { $regex: new RegExp(`^${(credentials.username as string).trim()}$`, "i") } });
 
         if (!user) throw new Error("ไม่พบผู้ใช้งานในระบบ");
 

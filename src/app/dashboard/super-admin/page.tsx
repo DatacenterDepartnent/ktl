@@ -229,7 +229,10 @@ export default function SuperAdminPage() {
       case "super_admin":
         return "bg-rose-50 text-rose-600 border-rose-200";
       case "director":
-      case "deputy_director":
+      case "deputy_resource":
+      case "deputy_strategy":
+      case "deputy_activities":
+      case "deputy_student_affairs":
         return "bg-purple-50 text-purple-600 border-purple-200";
       case "hr":
         return "bg-emerald-50 text-emerald-600 border-emerald-200";
@@ -448,7 +451,10 @@ export default function SuperAdminPage() {
                       <option value="editor">EDITOR</option>
                       <option value="admin">ADMIN</option>
                       <option value="director">ผอ (DIRECTOR)</option>
-                      <option value="deputy_director">รอง ผอ (DEPUTY)</option>
+                      <option value="deputy_resource">รอง ผอ (บริหารทรัพยากร)</option>
+                      <option value="deputy_strategy">รอง ผอ (ยุทธศาสตร์)</option>
+                      <option value="deputy_activities">รอง ผอ (กิจกรรม)</option>
+                      <option value="deputy_student_affairs">รอง ผอ (กิจการนักเรียน)</option>
                       <option value="teacher">ครู (TEACHER)</option>
                       <option value="hr">บุคคล (HR)</option>
                       <option value="staff">เจ้าหน้าที่ (STAFF)</option>

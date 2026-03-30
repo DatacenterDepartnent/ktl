@@ -319,6 +319,28 @@ export default function ProfilePage() {
 
               <div className="md:col-span-2 group">
                 <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 ml-1 mb-2 block transition-colors group-focus-within:text-blue-500">
+                  ชื่อผู้ใช้งาน (ระบบ) <span className="text-blue-600 font-normal italic">* แก้ไขได้เฉพาะ Super Admin</span>
+                </label>
+                <div className="relative">
+                  <span className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-blue-500 transition-colors font-bold">@</span>
+                  <input
+                    type="text"
+                    value={formData.username}
+                    onChange={(e) => setFormData({ ...formData, username: e.target.value.replace(/\s/g, "") })}
+                    readOnly={formData.role !== "super_admin"}
+                    className={`w-full ${formData.role === "super_admin" ? "bg-blue-50/30 border-blue-200 text-slate-800" : "bg-zinc-100 dark:bg-zinc-800/80 border-zinc-200 dark:border-zinc-700/50 text-zinc-500 dark:text-zinc-400 cursor-not-allowed"} rounded-2xl pl-12 pr-5 py-4 outline-none transition-all font-bold italic`}
+                    placeholder="username"
+                  />
+                  {formData.role !== "super_admin" && (
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 bg-zinc-200 dark:bg-zinc-700 rounded-md text-[9px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-tighter">
+                      Read-Only
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="md:col-span-2 group">
+                <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 ml-1 mb-2 block transition-colors group-focus-within:text-blue-500">
                   สังกัด / แผนก
                 </label>
                 <div className="relative">

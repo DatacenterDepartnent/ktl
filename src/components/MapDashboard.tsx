@@ -1,6 +1,7 @@
 // @ts-nocheck
 'use client';
 
+import { useMemo } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
@@ -14,81 +15,113 @@ const icon = L.icon({
   iconAnchor: [12, 41],
 });
 
-// พิกัดวิทยาลัยเทคนิคกันทรลักษ์
 const COLLEGE_LOCATION = [14.754043, 104.65807];
-const IN_SITE_RADIUS = 200; // 200 Meters (Office Boundary)
-const MAX_RADIUS = 200000; // 200 Kilometers (Allowed Area)
+const IN_SITE_RADIUS = 200; 
+const MAX_RADIUS = 200000; 
 
 export default function MapDashboard({ markers }: { markers: any[] }) {
   if (typeof window === 'undefined') return null;
 
+  // Optimized Marker Rendering using Memoization
+  const markerElements = useMemo(() => {
+    return markers.map((m, i) => (
+      <Marker key={`${m.lat}-${m.lng}-${i}`} position={[m.lat, m.lng]} icon={icon}>
+        <Popup className="premium-popup" closeButton={false}>
+          <div className="flex flex-col items-center min-w-[140px] pb-3 bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden">
+            {m.photoUrl ? (
+              <div className="w-full h-24 overflow-hidden mb-3 border-b border-slate-100 dark:border-zinc-800">
+                 <img src={m.photoUrl} alt="face" className="w-full h-full object-cover" />
+              </div>
+            ) : (
+              <div className="w-full h-24 bg-slate-100 dark:bg-zinc-800 flex items-center justify-center mb-3">
+                 <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest">No Photo</span>
+              </div>
+            )}
+            <div className="px-3 text-center">
+              <p className="font-black text-slate-800 dark:text-white text-xs uppercase tracking-tight leading-tight mb-1">{m.name}</p>
+              <p className="text-[10px] text-slate-400 dark:text-zinc-500 font-bold mb-2">
+                {new Date(m.time).toLocaleTimeString('th-TH', { timeZone: 'Asia/Bangkok', hour: '2-digit', minute: '2-digit' })} น.
+              </p>
+              <span className={`px-2.5 py-1 text-[9px] uppercase font-black tracking-widest rounded-lg border shadow-sm ${m.status === 'Present' ? 'bg-emerald-50 text-emerald-600 border-emerald-100' : 'bg-amber-50 text-amber-600 border-amber-100'}`}>
+                 {m.status}
+              </span>
+            </div>
+          </div>
+        </Popup>
+      </Marker>
+    ));
+  }, [markers]);
+
   return (
-    <div className="w-full h-full rounded-xl overflow-hidden z-0 bg-slate-100">
+    <div className="w-full h-full rounded-xl overflow-hidden z-0 bg-slate-50 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 shadow-inner">
       <MapContainer 
-        center={COLLEGE_LOCATION} // จุดศูนย์กลางเริ่มต้น (KTLTC)
+        center={COLLEGE_LOCATION} 
         zoom={15} 
-        scrollWheelZoom={true} 
+        scrollWheelZoom={false} 
+        preferCanvas={true} // VITAL for mobile performance: hardware-accelerated vectors
         style={{ height: '100%', width: '100%', zIndex: 0 }}
       >
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a>'
+          attribution='&copy; OSM'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
         
-        {/* 200 KM Radius (Outer Area) */}
         <Circle
           center={COLLEGE_LOCATION}
           radius={MAX_RADIUS}
           pathOptions={{ 
-            color: '#10b981', // emerald-500
+            color: '#10b981', 
             fillColor: '#10b981', 
-            fillOpacity: 0.05,
-            weight: 2,
+            fillOpacity: 0.03,
+            weight: 1,
             dashArray: '10, 10'
           }}
         />
 
-        {/* 200 M Radius (Office Boundary) */}
         <Circle
           center={COLLEGE_LOCATION}
           radius={IN_SITE_RADIUS}
           pathOptions={{ 
-            color: '#3b82f6', // blue-500
+            color: '#3b82f6', 
             fillColor: '#3b82f6', 
-            fillOpacity: 0.15,
-            weight: 2,
-            dashArray: '5, 10'
+            fillOpacity: 0.1,
+            weight: 1.5,
+            dashArray: '5, 5',
           }}
         />
         
         <Marker position={COLLEGE_LOCATION} icon={icon}>
-          <Popup>
-            <div className="text-center">
-              <p className="font-bold text-blue-600">วิทยาลัยเทคนิคกันทรลักษ์</p>
-              <p className="text-[10px] text-slate-500 line-clamp-2">82 หมู่ 1 ต.จานใหญ่ อ.กันทรลักษ์ จ.ศรีสะเกษ 33110</p>
-              <p className="text-[9px] mt-1 bg-blue-50 text-blue-500 px-2 py-0.5 rounded-full inline-block font-bold uppercase">Official Office</p>
+          <Popup closeButton={false}>
+            <div className="text-center p-2 min-w-[140px]">
+              <p className="font-black text-blue-600 text-[10px] uppercase tracking-tight mb-1">KTL Technical College</p>
+              <p className="text-[8px] text-slate-400 dark:text-zinc-500 leading-tight mb-2 italic">Official Boundary Point</p>
+              <span className="text-[8px] px-2 py-1 bg-blue-50 text-blue-500 rounded-lg inline-block font-black uppercase tracking-widest border border-blue-100">HQ Site</span>
             </div>
           </Popup>
         </Marker>
-        {markers.map((m, i) => (
-          <Marker key={i} position={[m.lat, m.lng]} icon={icon}>
-            <Popup className="rounded-xl overflow-hidden p-0">
-              <div className="flex flex-col items-center min-w-[120px] pb-2">
-                {m.photoUrl ? (
-                  <img src={m.photoUrl} alt="face" className="w-full h-24 object-cover mb-2" />
-                ) : (
-                  <div className="w-full h-24 bg-slate-200 flex items-center justify-center mb-2">No Photo</div>
-                )}
-                <p className="font-bold text-slate-800 text-sm">{m.name}</p>
-                <p className="text-xs text-slate-500">{new Date(m.time).toLocaleTimeString('th-TH', { timeZone: 'Asia/Bangkok' })} น.</p>
-                <span className={`px-2 py-0.5 mt-1 text-[10px] uppercase font-bold tracking-wider rounded-sm ${m.status === 'Present' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                   {m.status}
-                </span>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+
+        {markerElements}
       </MapContainer>
+
+      <style jsx global>{`
+        .leaflet-container {
+          background: #f8fafc !important;
+          font-family: inherit;
+        }
+        .leaflet-popup-content-wrapper {
+          padding: 0 !important;
+          border-radius: 20px !important;
+          overflow: hidden !important;
+          box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.2) !important;
+          border: 1px solid #e2e8f0;
+        }
+        .leaflet-popup-tip-container {
+           display: none !important;
+        }
+        .leaflet-popup-content {
+           margin: 0 !important;
+        }
+      `}</style>
     </div>
   );
 }

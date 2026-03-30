@@ -12,7 +12,8 @@ import {
   CheckCircle2,
   Clock,
   AlertCircle,
-  Filter
+  Filter,
+  Image as ImageIcon,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -266,6 +267,27 @@ export default function AdminWorkReportsPage() {
                     )}
                   </div>
                 </div>
+
+                {/* Evidence Images */}
+                {selectedReport.images && selectedReport.images.length > 0 && (
+                  <section className="pt-4">
+                    <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
+                       <ImageIcon size={14} className="text-blue-500" /> Evidence Photos ({selectedReport.images.length})
+                    </h4>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                      {selectedReport.images.map((img: string, idx: number) => (
+                        <div key={idx} className="relative aspect-square rounded-3xl overflow-hidden border border-slate-100 dark:border-neutral-800 shadow-sm hover:scale-[1.02] transition-transform">
+                          <img 
+                            src={img} 
+                            alt={`Evidence ${idx}`} 
+                            className="w-full h-full object-cover cursor-pointer"
+                            onClick={() => window.open(img, '_blank')}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  </section>
+                )}
 
                 <div className="pt-8 border-t border-slate-100 dark:border-neutral-800 flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                    <span>Submitted: {new Date(selectedReport.createdAt).toLocaleString('th-TH', { timeZone: 'Asia/Bangkok' })}</span>

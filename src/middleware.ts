@@ -97,17 +97,35 @@ export default auth((req) => {
 
   // 4. การจัดการสิทธิ์ระบบ Attendance (WFH & Reports)
   const isWfhPage = nextUrl.pathname.startsWith("/wfh") || nextUrl.pathname.startsWith("/check-in") || nextUrl.pathname.startsWith("/leave-request");
-  const isAdminAttendancePage = nextUrl.pathname.startsWith("/attendance-dashboard") || nextUrl.pathname.startsWith("/attendance-report") || nextUrl.pathname.startsWith("/leave-approvals");
+  
+  // แบ่งหมวดหมู่หน้า Admin เพื่อจัดการสิทธิ์แยกตามระดับ
+  const isAttendanceDashboard = nextUrl.pathname.startsWith("/attendance-dashboard");
+  const isFullAdminAttendance = nextUrl.pathname.startsWith("/attendance-report") || 
+                               nextUrl.pathname.startsWith("/leave-approvals") || 
+                               nextUrl.pathname.startsWith("/attendance-settings") ||
+                               nextUrl.pathname.startsWith("/work-reports");
 
-  if ((isWfhPage || isAdminAttendancePage) && !isLoggedIn) {
+  if ((isWfhPage || isAttendanceDashboard || isFullAdminAttendance) && !isLoggedIn) {
      return NextResponse.redirect(new URL("/login", nextUrl));
   }
 
-  if (isAdminAttendancePage && isLoggedIn) {
-    // อนุญาตเฉพาะ super_admin, hr, director (ผู้บริหาร) เท่านั้น
-    const allowedAdminRoles = ["super_admin", "admin", "hr", "director", "deputy_director", "editor", "staff"];
-    if (!allowedAdminRoles.includes(userRole)) {
-      return NextResponse.redirect(new URL("/wfh", nextUrl)); // ถ้า general แอบเข้า ให้เด้งกลับไปหน้าลงเวลาปกติ
+  if (isLoggedIn) {
+    // 4.1 สิทธิ์เข้าหน้า Dashboard ภาพรวม (สำหรับทุก Deputy)
+    if (isAttendanceDashboard) {
+      const allowedDashboardRoles = ["super_admin", "admin", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_activities", "deputy_student_affairs", "editor", "staff"];
+      if (!allowedDashboardRoles.includes(userRole)) {
+        return NextResponse.redirect(new URL("/wfh", nextUrl));
+      }
+    }
+
+    // 4.2 สิทธิ์เข้าหน้าจัดการเต็มรูปแบบ (Report, Approvals, Settings, Work Reports)
+    // รองฝ่ายบริหารทรัพยากร (deputy_resource) เข้าได้ทุกหน้า
+    // รองฝ่ายอื่นๆ เข้าไม่ได้
+    if (isFullAdminAttendance) {
+      const allowedFullAdminRoles = ["super_admin", "admin", "hr", "director", "deputy_resource", "editor", "staff"];
+      if (!allowedFullAdminRoles.includes(userRole)) {
+        return NextResponse.redirect(new URL("/attendance-dashboard", nextUrl));
+      }
     }
   }
 

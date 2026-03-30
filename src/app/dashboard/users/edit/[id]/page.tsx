@@ -151,6 +151,7 @@ export default function EditUserPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ...formData,
+          username: username.toLowerCase().trim(), // ส่ง Username ที่อาจถูกแก้ไขไปด้วย
           password: newPassword || undefined, // ส่งรหัสผ่านใหม่ไปถ้ามีการกรอก
         }),
       });
@@ -347,11 +348,18 @@ export default function EditUserPage() {
 
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-slate-500 ml-1">
-                    ชื่อผู้ใช้งาน (ระบบ)
+                    ชื่อผู้ใช้งาน (ระบบ) <span className="text-blue-600 font-normal italic">* แก้ไขได้เฉพาะ Super Admin</span>
                   </label>
-                  <div className="w-full bg-slate-100 border border-slate-200 rounded-xl p-4 text-slate-400 font-medium flex items-center gap-2 cursor-not-allowed">
-                    <span className="text-slate-400">@</span>
-                    {username}
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">@</span>
+                    <input
+                      type="text"
+                      required
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value.replace(/\s/g, ""))}
+                      className="w-full bg-blue-50/30 border border-blue-200 rounded-xl p-4 pl-10 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all font-bold italic"
+                      placeholder="username"
+                    />
                   </div>
                 </div>
 
@@ -487,10 +495,12 @@ export default function EditUserPage() {
                     <option value="teacher">ครู (Teacher)</option>
                     <option value="janitor">ภารโรง (Janitor)</option>
                     <option value="director">ผู้บริหาร (Director)</option>
+                    <option value="deputy_resource">รอง ผอ (บริหารทรัพยากร)</option>
+                    <option value="deputy_strategy">รอง ผอ (ยุทธศาสตร์)</option>
+                    <option value="deputy_activities">รอง ผอ (กิจกรรม)</option>
+                    <option value="deputy_student_affairs">รอง ผอ (กิจการนักเรียน)</option>
                     <option value="admin">ผู้ดูแลระบบ (Admin)</option>
-                    <option value="super_admin">
-                      ผู้ดูแลระบบสูงสุด (Super Admin)
-                    </option>
+                    <option value="super_admin">ผู้ดูแลระบบสูงสุด (Super Admin)</option>
                   </select>
                 </div>
 

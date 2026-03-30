@@ -2,7 +2,22 @@
 
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Camera, MapPin, ScanFace, CheckCircle, ArrowLeft, Loader2, ShieldCheck, ShieldX, AlertCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Camera, 
+  MapPin, 
+  ScanFace, 
+  CheckCircle, 
+  ArrowLeft, 
+  Loader2, 
+  ShieldCheck, 
+  ShieldX, 
+  AlertCircle,
+  Scan,
+  X,
+  Navigation,
+  Info
+} from 'lucide-react';
 import Link from 'next/link';
 import imageCompression from 'browser-image-compression';
 import { uploadToCloudinary } from '@/lib/upload';
@@ -296,107 +311,204 @@ function CheckInContent() {
   const faceStatusUI = getFaceStatusUI();
   const submitDisabled = isProcessing || !location || faceStatus === 'not_matched' || faceStatus === 'loading_models' || faceStatus === 'loading_profile';
 
+  const theme = isCheckIn 
+    ? { primary: 'emerald', bg: 'bg-emerald-50 dark:bg-emerald-950/20', accent: 'text-emerald-500', btn: 'bg-emerald-500 shadow-emerald-500/30' }
+    : { primary: 'rose', bg: 'bg-rose-50 dark:bg-rose-950/20', accent: 'text-rose-500', btn: 'bg-rose-500 shadow-rose-500/30' };
+
   return (
-    <div className={`min-h-screen ${isCheckIn ? 'bg-green-50' : 'bg-orange-50'} flex flex-col items-center py-6 px-4 font-sans text-slate-800 transition-colors duration-500`}>
+    <div className={`min-h-screen ${theme.bg} py-12 px-5 font-sans transition-colors duration-700 overflow-hidden relative`}>
+      {/* Background Blobs */}
+      <div className={`fixed top-[-10%] left-[-10%] w-[50%] h-[50%] ${isCheckIn ? 'bg-emerald-500/10' : 'bg-rose-500/10'} blur-[120px] rounded-full pointer-events-none`} />
+      <div className={`fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] ${isCheckIn ? 'bg-teal-500/10' : 'bg-orange-500/10'} blur-[120px] rounded-full pointer-events-none`} />
 
-      {/* Top Nav */}
-      <div className="w-full max-w-sm flex items-center mb-6">
-        <Link href="/wfh" onClick={cancelAction} className="p-2 bg-white rounded-full shadow-sm text-slate-500 hover:text-slate-800 transition">
-          <ArrowLeft size={24} />
-        </Link>
-        <span className="ml-4 font-bold text-lg text-slate-700">{isCheckIn ? 'ยืนยันลงเวลาเข้างาน' : 'ยืนยันลงเวลาออกงาน'}</span>
-      </div>
-
-      {statusMsg && (
-        <div className={`mb-6 w-full max-w-sm px-6 py-8 bg-white ${isCheckIn ? 'text-green-600 border-green-200' : 'text-orange-600 border-orange-200'} rounded-3xl flex flex-col items-center justify-center shadow-lg border-2 text-center space-y-4`}>
-          <CheckCircle size={56} className={`${isCheckIn ? 'text-green-500' : 'text-orange-500'}`} />
-          <span className="font-bold text-2xl text-slate-800">{statusMsg}</span>
-          <p className="text-slate-500 font-mono text-xl">
-            {recordedTime ? `${recordedTime} น.` : (mounted ? time.toLocaleTimeString('th-TH', { timeZone: 'Asia/Bangkok', hour12: false }) : '')}
-          </p>
-          <Link href="/wfh" className="mt-6 px-8 py-3 bg-slate-100 text-slate-700 rounded-xl font-bold hover:bg-slate-200 transition text-lg w-full">
-            กลับหน้าหลัก
+      <div className="max-w-md mx-auto relative z-10">
+        {/* Top Nav */}
+        <div className="flex items-center justify-between mb-10">
+          <Link 
+            href="/wfh" 
+            onClick={cancelAction} 
+            className="p-3.5 bg-white dark:bg-zinc-900 rounded-2xl shadow-xl shadow-black/5 text-slate-400 dark:text-zinc-500 hover:text-slate-800 dark:hover:text-white transition-all active:scale-95 border border-slate-100 dark:border-zinc-800"
+          >
+            <ArrowLeft size={22} />
           </Link>
+          <div className="text-right">
+             <h1 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
+               {isCheckIn ? 'Check-In' : 'Check-Out'}
+             </h1>
+             <p className={`text-[10px] font-black uppercase tracking-[0.2em] ${theme.accent}`}>
+               {isCheckIn ? 'ลงเวลาเข้างาน' : 'ลงเวลาออกงาน'}
+             </p>
+          </div>
         </div>
-      )}
 
-      {!statusMsg && (
-        <div className="w-full max-w-sm bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100">
-          {!isCameraOpen ? (
-            <div className="p-8 flex flex-col items-center text-center">
-              <div className={`w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-inner ${isCheckIn ? 'bg-green-100 text-green-500' : 'bg-orange-100 text-orange-500'}`}>
-                <ScanFace size={48} />
+        <AnimatePresence mode="wait">
+          {statusMsg ? (
+            <motion.div
+              key="success"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: -20 }}
+              className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-10 flex flex-col items-center shadow-2xl shadow-black/10 border border-slate-100 dark:border-zinc-800 relative overflow-hidden"
+            >
+              <div className={`absolute top-0 inset-x-0 h-1.5 ${isCheckIn ? 'bg-emerald-500' : 'bg-rose-500'}`} />
+              
+              <div className={`w-24 h-24 rounded-full ${isCheckIn ? 'bg-emerald-50 dark:bg-emerald-500/10' : 'bg-rose-50 dark:bg-rose-500/10'} flex items-center justify-center mb-8 relative`}>
+                 <motion.div
+                   initial={{ scale: 0 }}
+                   animate={{ scale: 1 }}
+                   transition={{ type: 'spring', damping: 12, stiffness: 200, delay: 0.2 }}
+                 >
+                   <CheckCircle size={56} className={theme.accent} />
+                 </motion.div>
+                <div className={`absolute inset-0 rounded-full border-2 ${isCheckIn ? 'border-emerald-500' : 'border-rose-500'} animate-ping opacity-20`} />
               </div>
-              <h3 className="font-bold text-2xl mb-2 text-slate-800">{isCheckIn ? 'ลงเวลาเข้างาน' : 'ลงเวลาออกงาน'}</h3>
-              <p className="text-slate-500 mb-1">ระบบจะถ่ายรูปใบหน้าของท่านเพื่อเป็นหลักฐานบันทึกเวลา</p>
-              <p className="text-xs text-slate-400 mb-8 flex items-center gap-1 justify-center">
-                <ShieldCheck size={12} /> ตรวจสอบใบหน้ากับโปรไฟล์อัตโนมัติ
+
+              <h2 className="text-2xl font-black text-slate-800 dark:text-white text-center mb-2">{statusMsg}</h2>
+              <div className="space-y-1 text-center mb-8">
+                 <p className="text-slate-400 dark:text-zinc-500 text-[10px] font-black uppercase tracking-widest leading-none">Recorded Completion Time</p>
+                 <p className="text-4xl font-black text-slate-800 dark:text-white font-mono uppercase">
+                   {recordedTime || (mounted ? time.toLocaleTimeString('th-TH', { hour12: false }) : '--:--')}
+                 </p>
+              </div>
+
+              <div className="w-full grid grid-cols-1 gap-4 pt-4 border-t border-slate-100 dark:border-zinc-800">
+                <Link 
+                  href="/wfh" 
+                  className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-5 rounded-3xl font-black text-sm uppercase tracking-widest text-center shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all"
+                >
+                  Return to Dashboard
+                </Link>
+                <p className="text-center text-[10px] text-slate-300 dark:text-zinc-600 font-bold uppercase tracking-[0.3em]">KTL Attendance System v1.2</p>
+              </div>
+            </motion.div>
+          ) : !isCameraOpen ? (
+            <motion.div
+              key="start"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-10 flex flex-col items-center shadow-2xl shadow-black/10 border border-slate-100 dark:border-zinc-800 text-center"
+            >
+              <div className={`w-28 h-28 rounded-3xl ${isCheckIn ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500' : 'bg-rose-50 dark:bg-rose-500/10 text-rose-500'} flex items-center justify-center mb-8 shadow-inner border border-white dark:border-zinc-800 transition-transform duration-500 hover:rotate-6`}>
+                <ScanFace size={60} />
+              </div>
+              
+              <h3 className="text-2xl font-black text-slate-800 dark:text-white mb-2">
+                {isCheckIn ? 'ยืนยันใบหน้า' : 'บันทึกเลิกงาน'}
+              </h3>
+              <p className="text-slate-400 dark:text-zinc-500 text-sm font-medium mb-10 max-w-[240px]">
+                {isCheckIn 
+                  ? 'ระบบจะทำการถ่ายรูปหน้าของท่าน เพื่อตรวจสอบตัวตนและบันทึกเวลาเข้างาน' 
+                  : 'บันทึกเวลาเลิกทำงานวันนี้ และอัปโหลดรูปภาพยืนยันตัวตน'}
               </p>
-              <button
-                onClick={openCameraForAction}
-                className={`w-full text-white py-4 rounded-2xl font-bold text-lg shadow-lg active:scale-95 transition flex justify-center items-center space-x-2 ${isCheckIn ? 'bg-green-500 hover:bg-green-600 shadow-green-500/30' : 'bg-orange-500 hover:bg-orange-600 shadow-orange-500/30'}`}
-              >
-                <Camera size={24} />
-                <span>เปิดกล้องถ่ายรูป</span>
-              </button>
-            </div>
+
+              <div className="w-full space-y-4">
+                <button
+                  onClick={openCameraForAction}
+                  className={`w-full ${theme.btn} text-white py-5 rounded-3xl font-black text-sm uppercase tracking-[0.2em] flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-2xl`}
+                >
+                  <Camera size={20} />
+                  <span>เปิดกล้องถ่ายรูป</span>
+                </button>
+                <div className="flex items-center justify-center gap-2 text-slate-400 dark:text-zinc-600">
+                   <ShieldCheck size={14} />
+                   <span className="text-[10px] font-black uppercase tracking-widest leading-none">Security Verified Access</span>
+                </div>
+              </div>
+            </motion.div>
           ) : (
-            <div className="p-6 flex flex-col items-center">
-              <div className="w-full aspect-square bg-slate-900 rounded-2xl overflow-hidden relative mb-4 shadow-inner ring-4 ring-slate-100">
-                <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20">
-                  <ScanFace size={150} className="text-white" />
+            <motion.div
+              key="camera"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-6 shadow-2xl shadow-black/10 border border-slate-100 dark:border-zinc-800"
+            >
+              {/* Video Feed Glass Container */}
+              <div className="w-full aspect-4/5 bg-slate-900 rounded-4xl overflow-hidden relative mb-6 shadow-2xl border-4 border-slate-50 dark:border-zinc-800 group">
+                <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover scale-x-[-1]" />
+                
+                {/* Scan Overlay UI */}
+                <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                   <div className="w-[80%] h-[70%] border-2 border-dashed border-white/30 rounded-3xl relative">
+                      <div className={`absolute top-0 inset-x-0 h-1 bg-white/40 blur-sm animate-[scan_2s_infinite]`} />
+                      <div className="absolute top-0 left-0 w-8 h-8 border-t-4 border-l-4 border-white/80 rounded-tl-xl" />
+                      <div className="absolute top-0 right-0 w-8 h-8 border-t-4 border-r-4 border-white/80 rounded-tr-xl" />
+                      <div className="absolute bottom-0 left-0 w-8 h-8 border-b-4 border-l-4 border-white/80 rounded-bl-xl" />
+                      <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-white/80 rounded-br-xl" />
+                   </div>
+                </div>
+
+                <div className="absolute bottom-4 inset-x-4">
+                  {faceStatusUI && (
+                    <div className={`flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest py-3 px-4 rounded-2xl backdrop-blur-xl border ${faceStatusUI.color} shadow-2xl`}>
+                      {faceStatusUI.icon}
+                      <span>{faceMsg}</span>
+                    </div>
+                  )}
                 </div>
               </div>
 
-              {/* Face Status */}
-              {faceStatusUI && (
-                <div className={`w-full flex items-center justify-center space-x-2 text-sm font-medium p-3 rounded-xl mb-3 border ${faceStatusUI.color}`}>
-                  {faceStatusUI.icon}
-                  <span>{faceMsg}</span>
-                </div>
-              )}
+              {/* Status Section */}
+              <div className="space-y-3 mb-8">
+                 {/* GPS Badge */}
+                 <div className={`flex items-center justify-between p-4 rounded-3xl border transition-all ${locationStatus === 'found' ? 'bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-900/30' : 'bg-slate-50 dark:bg-zinc-800/50 border-slate-200 dark:border-zinc-800'}`}>
+                    <div className="flex items-center gap-3">
+                       <div className={`p-2 rounded-xl ${locationStatus === 'found' ? 'bg-emerald-500 text-white' : 'bg-slate-200 dark:bg-zinc-700 text-slate-400'}`}>
+                         <MapPin size={18} />
+                       </div>
+                       <div>
+                         <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-zinc-500">Location Status</p>
+                         <p className={`text-xs font-black uppercase ${locationStatus === 'found' ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-500'}`}>
+                            {locationStatus === 'found' ? 'พบพิกัดตำแหน่งแล้ว' : locationStatus === 'searching' ? 'กำลังค้นหาพิกัด...' : 'เกิดข้อผิดพลาดในการโหลด'}
+                         </p>
+                       </div>
+                    </div>
+                    {locationStatus === 'found' ? (
+                       <ShieldCheck size={20} className="text-emerald-500" />
+                    ) : (
+                       <button onClick={getLocation} className="p-2 text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-lg transition-all">
+                         <Navigation size={18} />
+                       </button>
+                    )}
+                 </div>
 
-              {/* Location Status */}
-              {locationStatus === 'found' ? (
-                <div className={`w-full flex items-center justify-center space-x-2 text-sm font-medium p-3 rounded-xl mb-6 ${isCheckIn ? 'bg-green-50 text-green-700 border-green-100' : 'bg-orange-50 text-orange-700 border-orange-100'} border`}>
-                  <MapPin size={18} /><span>พบพิกัด GPS แล้ว</span>
-                </div>
-              ) : locationStatus === 'error' ? (
-                <div className="w-full flex flex-col items-center mb-6">
-                  <div className="w-full flex items-center justify-center space-x-2 text-sm font-medium p-3 rounded-xl bg-red-50 text-red-600 border border-red-100 mb-2">
-                    <MapPin size={18} /><span>{locationError}</span>
-                  </div>
-                  <button onClick={getLocation} className="text-blue-500 text-sm font-bold hover:underline underline-offset-4">
-                    กดเพื่อลองค้นหาพิกัดใหม่
-                  </button>
-                </div>
-              ) : (
-                <div className="w-full flex items-center justify-center space-x-2 text-sm font-medium p-3 rounded-xl mb-6 bg-slate-50 text-slate-500 animate-pulse border border-slate-200">
-                  <Loader2 size={18} className="animate-spin" /><span>กำลังค้นหาพิกัด...</span>
-                </div>
-              )}
+                 {locationStatus === 'error' && (
+                    <div className="px-4 py-2 bg-rose-50 dark:bg-rose-950/20 text-rose-500 text-[10px] font-black uppercase rounded-xl flex items-center gap-2">
+                       <Info size={12} /> {locationError}
+                    </div>
+                 )}
+              </div>
 
-              <div className="w-full space-y-3">
+              <div className="grid grid-cols-1 gap-3">
                 <button
                   onClick={submitAttendance}
                   disabled={submitDisabled}
-                  className={`w-full text-white rounded-xl py-4 font-bold text-lg flex justify-center items-center shadow-md transition ${submitDisabled ? 'bg-slate-300 cursor-not-allowed' : (isCheckIn ? 'bg-green-500 hover:bg-green-600 shadow-green-500/30' : 'bg-orange-500 hover:bg-orange-600 shadow-orange-500/30')}`}
+                  className={`w-full h-16 rounded-3xl font-black text-sm uppercase tracking-widest flex justify-center items-center gap-3 transition-all ${submitDisabled ? 'bg-slate-200 dark:bg-zinc-800 text-slate-400 cursor-not-allowed' : `${theme.btn} text-white hover:scale-[1.02] active:scale-[0.98] shadow-2xl`}`}
                 >
-                  {isProcessing ? <><Loader2 className="animate-spin mr-2" />กำลังบันทึกข้อมูล...</> : (isCheckIn ? 'บันทึกเข้างาน' : 'บันทึกออกงาน')}
+                  {isProcessing ? <><Loader2 className="animate-spin" size={20} /> PROCESSING...</> : (isCheckIn ? 'Punch-In Now' : 'Punch-Out Now')}
                 </button>
 
                 <button
                   onClick={cancelAction}
-                  className="w-full text-slate-500 bg-slate-100 hover:bg-slate-200 rounded-xl py-3 font-bold transition"
+                  className="w-full py-4 text-slate-400 dark:text-zinc-600 font-black text-[10px] uppercase tracking-[0.3em] hover:text-rose-500 dark:hover:text-rose-400 transition-colors"
                 >
-                  ยกเลิก
+                  <span className="flex items-center justify-center gap-2"><X size={14} /> Cancel Action</span>
                 </button>
               </div>
-            </div>
+            </motion.div>
           )}
-        </div>
-      )}
+        </AnimatePresence>
+
+        <style jsx global>{`
+          @keyframes scan {
+            0% { top: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+          }
+        `}</style>
+      </div>
     </div>
   );
 }

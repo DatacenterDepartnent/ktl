@@ -2,6 +2,14 @@ import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/db';
 import { auth } from '@/lib/auth';
 import { ObjectId } from 'mongodb';
+import { v2 as cloudinary } from "cloudinary";
+
+// ✅ Cloudinary Config
+cloudinary.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 export const dynamic = 'force-dynamic';
 
@@ -24,7 +32,7 @@ export async function GET(req: Request) {
 
     // Case 1: Fetch all reports for a date range (Admin only)
     if (startDateParam && endDateParam) {
-      const allowedRoles = ['super_admin', 'admin', 'hr', 'director', 'deputy_director', 'editor', 'staff'];
+      const allowedRoles = ['super_admin', 'admin', 'hr', 'director', 'deputy_resource', 'deputy_strategy', 'deputy_activities', 'deputy_student_affairs', 'editor', 'staff'];
       if (!allowedRoles.includes(userRole)) {
          return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
@@ -61,6 +69,7 @@ export async function GET(req: Request) {
             summary: 1,
             problems: 1,
             plansNextDay: 1,
+            images: 1,
             createdAt: 1,
             updatedAt: 1
           }
@@ -106,7 +115,27 @@ export async function POST(req: Request) {
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const data = await req.json();
-    const { date, activities, summary, problems, plansNextDay } = data;
+    const { date, activities, summary, problems, plansNextDay, images } = data;
+
+    // Handle Cloudinary Uploads if images are provided
+    let imageUrls: string[] = [];
+    if (images && Array.isArray(images) && images.length > 0) {
+      for (const img of images) {
+        if (img.startsWith("data:image")) {
+          try {
+            const uploadResponse = await cloudinary.uploader.upload(img, {
+              folder: "work_reports",
+            });
+            imageUrls.push(uploadResponse.secure_url);
+          } catch (error) {
+            console.error("Cloudinary upload error in Work Report:", error);
+          }
+        } else if (img.startsWith("http")) {
+          // Keep existing URLs
+          imageUrls.push(img);
+        }
+      }
+    }
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
@@ -116,10 +145,15 @@ export async function POST(req: Request) {
 
     const updateDoc = {
       $set: {
-        activities,
-        summary,
-        problems,
-        plansNextDay,
+        activities: activities?.map((a: any) => ({
+          ...a,
+          taskName: a.taskName?.trim() || "ไม่ได้ระบุ",
+          detail: a.detail?.trim() || "ไม่ได้ระบุ"
+        })) || [],
+        summary: summary?.trim() || "ไม่ได้ระบุ",
+        problems: problems?.trim() || "ไม่ได้ระบุ",
+        plansNextDay: plansNextDay?.trim() || "ไม่ได้ระบุ",
+        images: imageUrls,
         updatedAt: new Date()
       },
       $setOnInsert: {
