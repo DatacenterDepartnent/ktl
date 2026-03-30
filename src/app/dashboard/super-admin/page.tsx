@@ -157,7 +157,11 @@ export default function SuperAdminPage() {
         body: JSON.stringify({ isActive: !currentStatus }),
       });
       if (res.ok) {
-        toast.success(!currentStatus ? "เปิดใช้งานผู้ใช้เรียบร้อย" : "ระงับการใช้งานเรียบร้อย");
+        toast.success(
+          !currentStatus
+            ? "เปิดใช้งานผู้ใช้เรียบร้อย"
+            : "ระงับการใช้งานเรียบร้อย",
+        );
         fetchData();
       }
     } catch (error) {
@@ -166,7 +170,12 @@ export default function SuperAdminPage() {
   };
 
   const deleteUser = async (targetId: string, targetName: string) => {
-    if (!confirm(`⚠️ ต้องการลบสมาชิก "${targetName}" ออกจากระบบใช่หรือไม่? ไม่สามารถย้อนกลับได้`)) return;
+    if (
+      !confirm(
+        `⚠️ ต้องการลบสมาชิก "${targetName}" ออกจากระบบใช่หรือไม่? ไม่สามารถย้อนกลับได้`,
+      )
+    )
+      return;
     try {
       const res = await fetch(`/api/users/${targetId}/status`, {
         method: "DELETE",
@@ -440,9 +449,9 @@ export default function SuperAdminPage() {
                       <option value="admin">ADMIN</option>
                       <option value="director">ผอ (DIRECTOR)</option>
                       <option value="deputy_director">รอง ผอ (DEPUTY)</option>
+                      <option value="teacher">ครู (TEACHER)</option>
                       <option value="hr">บุคคล (HR)</option>
                       <option value="staff">เจ้าหน้าที่ (STAFF)</option>
-                      <option value="teacher">ครู (TEACHER)</option>
                       <option value="janitor">ภารโรง (JANITOR)</option>
                       <option value="user">USER (เดิม)</option>
                     </select>
@@ -456,55 +465,118 @@ export default function SuperAdminPage() {
                       className="text-[10px] font-black border-2 rounded-xl px-2 py-2 outline-none text-slate-600 bg-slate-50 max-w-[140px]"
                     >
                       <option value="ไม่มีสังกัด">- ไม่มี -</option>
-                      <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
+                      <option value="ผู้บริหารสถานศึกษา">
+                        ผู้บริหารสถานศึกษา
+                      </option>
 
                       <optgroup label="ฝ่ายบริหารทรัพยากร">
-                        <option value="งานบริหารงานทั่วไป">งานบริหารงานทั่วไป</option>
-                        <option value="งานบริหารและพัฒนาทรัพยากรบุคคล">งานบริหารและพัฒนาทรัพยากรบุคคล</option>
+                        <option value="งานบริหารงานทั่วไป">
+                          งานบริหารงานทั่วไป
+                        </option>
+                        <option value="งานบริหารและพัฒนาทรัพยากรบุคคล">
+                          งานบริหารและพัฒนาทรัพยากรบุคคล
+                        </option>
                         <option value="งานการเงิน">งานการเงิน</option>
+                        <option value="งานทะเบียน">งานทะเบียน</option>
                         <option value="งานการบัญชี">งานการบัญชี</option>
                         <option value="งานพัสดุ">งานพัสดุ</option>
                         <option value="งานอาคารสถานที่">งานอาคารสถานที่</option>
-                        <option value="งานทะเบียน">งานทะเบียน</option>
+                        <option value="งานภารโรง">งานภารโรง</option>
                       </optgroup>
 
                       <optgroup label="ฝ่ายยุทธศาสตร์และแผนงาน">
-                        <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ">งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ</option>
-                        <option value="งานมาตรฐานและการประกันคุณภาพ">งานมาตรฐานและการประกันคุณภาพ</option>
-                        <option value="งานศูนย์ดิจิทัลและสื่อสารองค์กร">งานศูนย์ดิจิทัลและสื่อสารองค์กร</option>
-                        <option value="งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์">งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์</option>
-                        <option value="งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ">งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ</option>
-                        <option value="งานติดตามและประเมินผล">งานติดตามและประเมินผล</option>
+                        <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ">
+                          งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ
+                        </option>
+                        <option value="งานมาตรฐานและการประกันคุณภาพ">
+                          งานมาตรฐานและการประกันคุณภาพ
+                        </option>
+                        <option value="งานศูนย์ดิจิทัลและสื่อสารองค์กร">
+                          งานศูนย์ดิจิทัลและสื่อสารองค์กร
+                        </option>
+                        <option value="งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์">
+                          งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์
+                        </option>
+                        <option value="งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ">
+                          งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ
+                        </option>
+                        <option value="งานติดตามและประเมินผล">
+                          งานติดตามและประเมินผล
+                        </option>
                       </optgroup>
 
                       <optgroup label="ฝ่ายกิจการนักเรียน นักศึกษา">
-                        <option value="งานกิจกรรมนักเรียนนักศึกษา">งานกิจกรรมนักเรียนนักศึกษา</option>
-                        <option value="งานครูที่ปรึกษาและการแนะแนว">งานครูที่ปรึกษาและการแนะแนว</option>
-                        <option value="งานปกครองและความปลอดภัยนักเรียนนักศึกษา">งานปกครองและความปลอดภัยนักเรียนนักศึกษา</option>
-                        <option value="งานสวัสดิการนักเรียนนักศึกษา">งานสวัสดิการนักเรียนนักศึกษา</option>
-                        <option value="งานโครงการพิเศษและการบริการ">งานโครงการพิเศษและการบริการ</option>
+                        <option value="งานกิจกรรมนักเรียนนักศึกษา">
+                          งานกิจกรรมนักเรียนนักศึกษา
+                        </option>
+                        <option value="งานครูที่ปรึกษาและการแนะแนว">
+                          งานครูที่ปรึกษาและการแนะแนว
+                        </option>
+                        <option value="งานปกครองและความปลอดภัยนักเรียนนักศึกษา">
+                          งานปกครองและความปลอดภัยนักเรียนนักศึกษา
+                        </option>
+                        <option value="งานสวัสดิการนักเรียนนักศึกษา">
+                          งานสวัสดิการนักเรียนนักศึกษา
+                        </option>
+                        <option value="งานโครงการพิเศษและการบริการ">
+                          งานโครงการพิเศษและการบริการ
+                        </option>
                       </optgroup>
 
                       <optgroup label="ฝ่ายวิชาการ">
-                        <option value="งานพัฒนาหลักสูตรและการจัดการเรียนรู้">งานพัฒนาหลักสูตรและการจัดการเรียนรู้</option>
-                        <option value="งานวัดผลและประเมินผล">งานวัดผลและประเมินผล</option>
-                        <option value="งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ">งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ</option>
-                        <option value="งานวิทยบริการและเทคโนโลยีการศึกษา">งานวิทยบริการและเทคโนโลยีการศึกษา</option>
-                        <option value="งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา">งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา</option>
-                        <option value="งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ">งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ</option>
+                        <option value="งานพัฒนาหลักสูตรและการจัดการเรียนรู้">
+                          งานพัฒนาหลักสูตรและการจัดการเรียนรู้
+                        </option>
+                        <option value="งานวัดผลและประเมินผล">
+                          งานวัดผลและประเมินผล
+                        </option>
+                        <option value="งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ">
+                          งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ
+                        </option>
+                        <option value="งานวิทยบริการและเทคโนโลยีการศึกษา">
+                          งานวิทยบริการและเทคโนโลยีการศึกษา
+                        </option>
+                        <option value="งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา">
+                          งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา
+                        </option>
+                        <option value="งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ">
+                          งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ
+                        </option>
                         {/* แผนกวิชา */}
-                        <option value="แผนกวิชาช่างยนต์">แผนกวิชาช่างยนต์</option>
-                        <option value="แผนกวิชาช่างกลโรงงาน">แผนกวิชาช่างกลโรงงาน</option>
-                        <option value="แผนกวิชาช่างเชื่อมโลหะ">แผนกวิชาช่างเชื่อมโลหะ</option>
-                        <option value="แผนกวิชาช่างไฟฟ้ากำลัง">แผนกวิชาช่างไฟฟ้ากำลัง</option>
-                        <option value="แผนกวิชาช่างอิเล็กทรอนิกส์">แผนกวิชาช่างอิเล็กทรอนิกส์</option>
-                        <option value="แผนกวิชาช่างเทคนิคพื้นฐาน">แผนกวิชาช่างเทคนิคพื้นฐาน</option>
-                        <option value="แผนกวิชาช่างก่อสร้าง">แผนกวิชาช่างก่อสร้าง</option>
-                        <option value="แผนกวิชาการบัญชี">แผนกวิชาการบัญชี</option>
+                        <option value="แผนกวิชาช่างยนต์">
+                          แผนกวิชาช่างยนต์
+                        </option>
+                        <option value="แผนกวิชาช่างกลโรงงาน">
+                          แผนกวิชาช่างกลโรงงาน
+                        </option>
+                        <option value="แผนกวิชาช่างเชื่อมโลหะ">
+                          แผนกวิชาช่างเชื่อมโลหะ
+                        </option>
+                        <option value="แผนกวิชาช่างไฟฟ้ากำลัง">
+                          แผนกวิชาช่างไฟฟ้ากำลัง
+                        </option>
+                        <option value="แผนกวิชาช่างอิเล็กทรอนิกส์">
+                          แผนกวิชาช่างอิเล็กทรอนิกส์
+                        </option>
+                        <option value="แผนกวิชาช่างเทคนิคพื้นฐาน">
+                          แผนกวิชาช่างเทคนิคพื้นฐาน
+                        </option>
+                        <option value="แผนกวิชาช่างก่อสร้าง">
+                          แผนกวิชาช่างก่อสร้าง
+                        </option>
+                        <option value="แผนกวิชาการบัญชี">
+                          แผนกวิชาการบัญชี
+                        </option>
                         <option value="แผนกวิชาการตลาด">แผนกวิชาการตลาด</option>
-                        <option value="แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล">แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล</option>
-                        <option value="แผนกวิชาการโรงแรม">แผนกวิชาการโรงแรม</option>
-                        <option value="แผนกวิชาสามัญสัมพันธ์">แผนกวิชาสามัญสัมพันธ์</option>
+                        <option value="แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล">
+                          แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล
+                        </option>
+                        <option value="แผนกวิชาการโรงแรม">
+                          แผนกวิชาการโรงแรม
+                        </option>
+                        <option value="แผนกวิชาสามัญสัมพันธ์">
+                          แผนกวิชาสามัญสัมพันธ์
+                        </option>
                       </optgroup>
                     </select>
                   </td>
@@ -580,7 +652,9 @@ export default function SuperAdminPage() {
                 <div className="flex flex-col md:flex-row md:items-start gap-6">
                   <div className="text-center bg-white/5 p-4 rounded-3xl min-w-[100px] border border-white/10">
                     <p className="text-sm font-black text-white italic tabular-nums leading-none">
-                      {new Date(log.timestamp).toLocaleTimeString("th-TH", { timeZone: "Asia/Bangkok" })}
+                      {new Date(log.timestamp).toLocaleTimeString("th-TH", {
+                        timeZone: "Asia/Bangkok",
+                      })}
                     </p>
                   </div>
                   <div className="flex-1 space-y-2">
@@ -619,7 +693,9 @@ export default function SuperAdminPage() {
                     <div className="flex items-center gap-4 pt-2">
                       <p className="text-[9px] text-slate-500 font-black uppercase tracking-widest">
                         วันที่:{" "}
-                        {new Date(log.timestamp).toLocaleDateString("th-TH", { timeZone: "Asia/Bangkok" })}
+                        {new Date(log.timestamp).toLocaleDateString("th-TH", {
+                          timeZone: "Asia/Bangkok",
+                        })}
                       </p>
                       <p className="text-[9px] text-slate-600 font-black uppercase tracking-widest">
                         IP: {log.ip || "ไม่ปรากฏ"}

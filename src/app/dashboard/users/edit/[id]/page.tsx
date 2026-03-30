@@ -521,6 +521,7 @@ export default function EditUserPage() {
                       <option value="งานการบัญชี">งานการบัญชี</option>
                       <option value="งานพัสดุ">งานพัสดุ</option>
                       <option value="งานอาคารสถานที่">งานอาคารสถานที่</option>
+                      <option value="งานภารโรง">งานภารโรง</option>
                       <option value="งานทะเบียน">งานทะเบียน</option>
                     </optgroup>
 
