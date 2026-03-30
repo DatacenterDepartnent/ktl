@@ -278,6 +278,11 @@ function CheckInContent() {
           const tracks = (videoRef.current.srcObject as MediaStream).getTracks();
           tracks.forEach(t => t.stop());
         }
+
+        // 🚀 Automatic Redirect for Check-Out
+        if (!isCheckIn) {
+          setTimeout(() => router.push('/work-report'), 3000);
+        }
       } else {
         alert('ทำรายการไม่สำเร็จ: ' + data.message);
       }
@@ -373,11 +378,16 @@ function CheckInContent() {
 
               <div className="w-full grid grid-cols-1 gap-4 pt-4 border-t border-slate-100 dark:border-zinc-800">
                 <Link 
-                  href="/wfh" 
+                  href={isCheckIn ? "/wfh" : "/work-report"} 
                   className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-5 rounded-3xl font-black text-sm uppercase tracking-widest text-center shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all"
                 >
-                  Return to Dashboard
+                  {isCheckIn ? "Return to Dashboard" : "Write Work Report"}
                 </Link>
+                {!isCheckIn && (
+                  <p className="text-center text-[10px] text-blue-500 font-black uppercase tracking-widest animate-pulse">
+                    Redirecting to Work Report in 3s...
+                  </p>
+                )}
                 <p className="text-center text-[10px] text-slate-300 dark:text-zinc-600 font-bold uppercase tracking-[0.3em]">KTL Attendance System v1.2</p>
               </div>
             </motion.div>

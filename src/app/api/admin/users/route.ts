@@ -6,8 +6,10 @@ export async function GET() {
   const session = await auth();
   const userRole = (session?.user as any)?.role;
 
-  // ตรวจสอบว่าเป็น super_admin หรือไม่
-  if (!session || userRole !== "super_admin") {
+  const allowedRoles = ["super_admin", "admin", "hr", "director", "deputy_resource", "editor", "staff"];
+
+  // ตรวจสอบว่ามีสิทธิ์เข้าถึงประเภทผู้ดูแลหรือไม่
+  if (!session || !allowedRoles.includes(userRole)) {
     return NextResponse.json({ error: "สิทธิ์ไม่เพียงพอ" }, { status: 403 });
   }
 
