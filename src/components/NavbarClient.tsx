@@ -272,7 +272,10 @@ export default function NavbarClient({
                           </div>
                           ระบบรายงานการทำงาน
                         </Link>
-                        {(isSuperAdmin || role?.toLowerCase() === "hr") && (
+                        {(isSuperAdmin || 
+                          role?.toLowerCase() === "hr" || 
+                          role?.toLowerCase() === "director" || 
+                          role?.toLowerCase() === "deputy_director") && (
                           <Link
                             href="/leave-approvals"
                             className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all group mb-1 border-b border-zinc-100 dark:border-zinc-800/50 pb-3"

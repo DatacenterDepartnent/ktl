@@ -477,8 +477,8 @@ export default function SuperAdminPage() {
                           งานบริหารและพัฒนาทรัพยากรบุคคล
                         </option>
                         <option value="งานการเงิน">งานการเงิน</option>
-                        <option value="งานทะเบียน">งานทะเบียน</option>
                         <option value="งานการบัญชี">งานการบัญชี</option>
+                        <option value="งานทะเบียน">งานทะเบียน</option>
                         <option value="งานพัสดุ">งานพัสดุ</option>
                         <option value="งานอาคารสถานที่">งานอาคารสถานที่</option>
                         <option value="งานภารโรง">งานภารโรง</option>

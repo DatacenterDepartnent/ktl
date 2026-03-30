@@ -213,6 +213,15 @@ export default function MobileMenu({
                         >
                           📊 ระบบรายงานการเข้างาน
                         </Link>
+                        {(["super_admin", "hr", "director", "deputy_director"].includes(userRole)) && (
+                          <Link
+                            href="/leave-approvals"
+                            onClick={closeMenu}
+                            className="mx-1 block text-center py-3.5 rounded-xl bg-emerald-50 text-emerald-700 font-bold border border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300 transition-colors"
+                          >
+                             ✅ จัดการอนุมัติใบลา
+                          </Link>
+                        )}
                         {(["super_admin", "hr"].includes(userRole)) && (
                           <Link
                             href="/attendance-settings"

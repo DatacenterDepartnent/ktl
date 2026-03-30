@@ -105,7 +105,7 @@ export default auth((req) => {
 
   if (isAdminAttendancePage && isLoggedIn) {
     // อนุญาตเฉพาะ super_admin, hr, director (ผู้บริหาร) เท่านั้น
-    const allowedAdminRoles = ["super_admin", "admin", "hr", "director", "editor", "staff"];
+    const allowedAdminRoles = ["super_admin", "admin", "hr", "director", "deputy_director", "editor", "staff"];
     if (!allowedAdminRoles.includes(userRole)) {
       return NextResponse.redirect(new URL("/wfh", nextUrl)); // ถ้า general แอบเข้า ให้เด้งกลับไปหน้าลงเวลาปกติ
     }
