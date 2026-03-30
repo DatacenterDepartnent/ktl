@@ -49,8 +49,8 @@ export async function POST(req: Request) {
       email,
       phone,
       lineId: lineId || "",
-      role: "user", // ปรับเป็น 'user' ตาม Schema (ทำหน้าที่เป็น Editor)
-      isActive: false, // บังคับให้รอ Super Admin อนุมัติ (Pending)
+      role: "user", // ปรับเป็น 'user' เพื่อให้เข้าถึง Profile และ WFH ได้ทันที
+      isActive: true, // ตั้งเป็น true เพื่อให้เข้าใช้งานได้เลยโดยไม่ต้องรออนุมัติ
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         message:
-          "ส่งคำขอสมัครสมาชิกสำเร็จ กรุณารอผู้ดูแลระบบ (Super Admin) อนุมัติการเข้าใช้งาน",
+          "สมัครสมาชิกสำเร็จ! ท่านสามารถเข้าสู่ระบบและเริ่มใช้งานได้ทันที",
       },
       { status: 201 },
     );
