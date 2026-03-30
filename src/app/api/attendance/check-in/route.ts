@@ -40,21 +40,42 @@ export async function POST(req: Request) {
       }
     }
 
+    const client = await clientPromise;
+    const db = client.db("ktltc_db");
+
+    // 1. ดึงข้อมูล User และ Role
+    const user = await db.collection("users").findOne({ _id: new ObjectId(userId) });
+    const userRole = user?.role || "user";
+
+    // 2. ดึงการตั้งค่าเวลาของ Role นี้ (ถ้าไม่มีให้ใช้ Default 08:00)
+    const roleSetting = await db.collection("role_settings").findOne({ role: userRole });
+    let limitHours = 8;
+    let limitMinutes = 0;
+
+    if (roleSetting && roleSetting.checkInLimit) {
+      const [h, m] = roleSetting.checkInLimit.split(":").map(Number);
+      limitHours = h;
+      limitMinutes = m;
+    } else {
+      // Fallback สำหรับ Staff ตามเงื่อนไขใหม่ (07:30) ถ้ายังไม่ได้ตั้งค่าใน DB
+      if (userRole === "staff") {
+        limitHours = 7;
+        limitMinutes = 30;
+      }
+    }
+
     // Thailand is UTC+7
     const thTime = new Date(serverTime.getTime() + (7 * 60 * 60 * 1000));
     const thHours = thTime.getUTCHours();
     const thMinutes = thTime.getUTCMinutes();
     const thSeconds = thTime.getUTCSeconds();
 
-    // Checking Late status (e.g. after 08:00)
-    // 08:00:00 is on time, 08:00:01+ is late
-    const isLate = thHours > 8 || (thHours === 8 && (thMinutes > 0 || thSeconds > 0));
+    // Checking Late status
+    const isLate = thHours > limitHours || (thHours === limitHours && (thMinutes > limitMinutes || thSeconds > 0));
     const status = isLate ? 'Late' : 'Present';
 
-    const client = await clientPromise;
-    const db = client.db("ktltc_db");
-
-    const today = new Date();
+    // วันที่ของวันนี้ (เวลาประเทศไทย)
+    const today = new Date(thTime);
     today.setUTCHours(0, 0, 0, 0);
 
     const userObjId = new ObjectId(userId);

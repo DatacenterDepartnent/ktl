@@ -33,12 +33,13 @@ export default function AttendanceReportPage() {
     return d.toISOString().split("T")[0];
   });
   const [searchQuery, setSearchQuery] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
 
   const fetchRecords = async () => {
     setLoading(true);
     try {
       const res = await fetch(
-        `/api/attendance/report?startDate=${startDate}&endDate=${endDate}`,
+        `/api/attendance/report?startDate=${startDate}&endDate=${endDate}&role=${roleFilter}`,
       );
       const json = await res.json();
       if (json.success) {
@@ -53,7 +54,7 @@ export default function AttendanceReportPage() {
 
   useEffect(() => {
     fetchRecords();
-  }, [startDate, endDate]);
+  }, [startDate, endDate, roleFilter]);
 
   const exportToCSV = () => {
     if (filteredRecords.length === 0) {
@@ -65,6 +66,7 @@ export default function AttendanceReportPage() {
     const headers = [
       "วันที่",
       "ชื่อ-สกุล",
+      "หมวดหมู่/ตำแหน่ง",
       "อีเมล",
       "เวลาเข้างาน",
       "เวลาออกงาน",
@@ -76,15 +78,32 @@ export default function AttendanceReportPage() {
     filteredRecords.forEach((r) => {
       const d = new Date(r.date).toLocaleDateString("th-TH", { timeZone: "Asia/Bangkok" });
       const inTime = r.checkInTime
-        ? new Date(r.checkInTime).toLocaleTimeString("th-TH", { timeZone: "Asia/Bangkok" })
+        ? new Date(r.checkInTime).toLocaleTimeString("th-TH", { 
+            timeZone: "Asia/Bangkok",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false
+          })
         : "-";
       const outTime = r.checkOutTime
-        ? new Date(r.checkOutTime).toLocaleTimeString("th-TH", { timeZone: "Asia/Bangkok" })
+        ? new Date(r.checkOutTime).toLocaleTimeString("th-TH", { 
+            timeZone: "Asia/Bangkok",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false
+          })
         : "-";
+      
+      const roleName = r.user?.role === "teacher" ? "ครู" : 
+                       r.user?.role === "staff" ? "เจ้าหน้าที่" : 
+                       r.user?.role === "janitor" ? "ภารโรง" : 
+                       r.user?.role || "-";
+
       csvRows.push(
         [
           `"${d}"`,
           `"${r.user?.name || "-"}"`,
+          `"${roleName}"`,
           `"${r.user?.email || "-"}"`,
           `"${inTime}"`,
           `"${outTime}"`,
@@ -102,7 +121,7 @@ export default function AttendanceReportPage() {
     link.href = url;
     link.setAttribute(
       "download",
-      `attendance_report_${startDate}_to_${endDate}.csv`,
+      `attendance_report_${startDate}_to_${endDate}_${roleFilter}.csv`,
     );
     document.body.appendChild(link);
     link.click();
@@ -127,7 +146,12 @@ export default function AttendanceReportPage() {
   }) => {
     if (!time) return <span className="text-slate-300 text-sm">-</span>;
 
-    const timeStr = new Date(time).toLocaleTimeString("th-TH", { timeZone: "Asia/Bangkok" }) + " น.";
+    const timeStr = new Date(time).toLocaleTimeString("th-TH", { 
+      timeZone: "Asia/Bangkok",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false 
+    }) + " น.";
 
     if (photoUrl) {
       return (
@@ -166,7 +190,7 @@ export default function AttendanceReportPage() {
                 ระบบรายงานการเข้างาน
               </h1>
               <p className="text-sm text-slate-500 font-medium mt-1">
-                Export ค้นหา และดูประวัติข้อมูลการทำงานของพนักงานทั้งหมด
+                Export ค้นหา และแยกตามหมวดหมู่ ครู เจ้าหน้าที่ ภารโรง
               </p>
             </div>
           </div>
@@ -180,47 +204,67 @@ export default function AttendanceReportPage() {
         </div>
 
         {/* Filter Section */}
-        <div className="bg-white dark:bg-neutral-900 p-3 rounded-3xl shadow-sm border border-slate-100 dark:border-neutral-800 grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
-          <div className="w-full">
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">
-              ค้นหารายชื่อพนักงาน
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                <Search size={18} />
+        <div className="bg-white dark:bg-neutral-900 p-4 rounded-4xl shadow-sm border border-slate-100 dark:border-neutral-800">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+            <div className="w-full">
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">
+                ค้นหารายชื่อพนักงาน
+              </label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                  <Search size={18} />
+                </div>
+                <input
+                  type="text"
+                  placeholder="พิมพ์ชื่อพนักงาน..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-11 pr-4 py-3 w-full rounded-2xl border border-slate-200 dark:border-neutral-700 bg-slate-50 dark:bg-neutral-800 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium text-slate-700 dark:text-neutral-200"
+                />
               </div>
+            </div>
+
+            <div className="w-full">
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">
+                หมวดหมู่พนักงาน
+              </label>
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="px-4 py-3 w-full rounded-2xl border border-slate-200 dark:border-neutral-700 bg-slate-50 dark:bg-neutral-800 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold text-slate-700 dark:text-neutral-200 appearance-none"
+              >
+                <option value="all">ทั้งหมด (ALL)</option>
+                <option value="teacher">ครู (TEACHER)</option>
+                <option value="staff">เจ้าหน้าที่ (STAFF)</option>
+                <option value="janitor">ภารโรง (JANITOR)</option>
+                <option value="hr">ฝ่ายบุคคล (HR)</option>
+                <option value="director">ผู้บริหาร (DIRECTOR)</option>
+              </select>
+            </div>
+
+            <div className="w-full">
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">
+                วันที่เริ่มต้น
+              </label>
               <input
-                type="text"
-                placeholder="พิมพ์ชื่อพนักงาน..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-11 pr-4 py-3 w-full rounded-xl border border-slate-200 dark:border-neutral-700 bg-slate-50 dark:bg-neutral-800 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-medium text-slate-700 dark:text-neutral-200"
+                type="date"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="px-4 py-3 w-full rounded-2xl border border-slate-200 dark:border-neutral-700 bg-slate-50 dark:bg-neutral-800 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold text-slate-700 dark:text-neutral-200"
               />
             </div>
-          </div>
 
-          <div className="w-full">
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">
-              วันที่เริ่มต้น
-            </label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="px-4 py-3 w-full rounded-xl border border-slate-200 dark:border-neutral-700 bg-slate-50 dark:bg-neutral-800 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold text-slate-700 dark:text-neutral-200"
-            />
-          </div>
-
-          <div className="w-full">
-            <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">
-              วันที่สิ้นสุด
-            </label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="px-4 py-3 w-full rounded-xl border border-slate-200 dark:border-neutral-700 bg-slate-50 dark:bg-neutral-800 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold text-slate-700 dark:text-neutral-200"
-            />
+            <div className="w-full">
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1">
+                วันที่สิ้นสุด
+              </label>
+              <input
+                type="date"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="px-4 py-3 w-full rounded-2xl border border-slate-200 dark:border-neutral-700 bg-slate-50 dark:bg-neutral-800 focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none transition-all font-bold text-slate-700 dark:text-neutral-200"
+              />
+            </div>
           </div>
         </div>
 

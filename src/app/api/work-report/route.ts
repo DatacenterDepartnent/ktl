@@ -24,7 +24,7 @@ export async function GET(req: Request) {
 
     // Case 1: Fetch all reports for a date range (Admin only)
     if (startDateParam && endDateParam) {
-      const allowedRoles = ['super_admin', 'admin', 'hr', 'director', 'deputy_director', 'editor'];
+      const allowedRoles = ['super_admin', 'admin', 'hr', 'director', 'deputy_director', 'editor', 'staff'];
       if (!allowedRoles.includes(userRole)) {
          return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
@@ -82,7 +82,7 @@ export async function GET(req: Request) {
     const queryUserId = targetUserId || userId;
     
     // Security: Only allow fetching own report unless admin
-    const allowedRoles = ['super_admin', 'admin', 'hr', 'director', 'deputy_director', 'editor'];
+    const allowedRoles = ['super_admin', 'admin', 'hr', 'director', 'deputy_director', 'editor', 'staff'];
     if (queryUserId !== userId && !allowedRoles.includes(userRole)) {
         return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }

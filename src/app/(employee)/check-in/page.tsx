@@ -25,6 +25,7 @@ function CheckInContent() {
   const [locationError, setLocationError] = useState('');
   const [faceStatus, setFaceStatus] = useState<FaceStatus>('idle');
   const [faceMsg, setFaceMsg] = useState('');
+  const [recordedTime, setRecordedTime] = useState<string>('');
 
   const videoRef = useRef<HTMLVideoElement>(null);
   const faceApiRef = useRef<any>(null);
@@ -243,6 +244,19 @@ function CheckInContent() {
       const data = await res.json();
       if (data.success) {
         if (detectionIntervalRef.current) clearInterval(detectionIntervalRef.current);
+        
+        // บันทึกเวลาที่ลงสำเร็จ (จาก Server)
+        const serverTimeStr = isCheckIn ? data.data.checkIn.time : data.data.checkOut.time;
+        if (serverTimeStr) {
+          setRecordedTime(new Date(serverTimeStr).toLocaleTimeString('th-TH', { 
+            timeZone: 'Asia/Bangkok',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+          }));
+        }
+
         setStatusMsg(isCheckIn ? 'บันทึกเวลาเข้างานเรียบร้อยแล้ว!' : 'บันทึกเวลาออกงานเรียบร้อยแล้ว!');
         setIsCameraOpen(false);
         if (videoRef.current && videoRef.current.srcObject) {
@@ -297,7 +311,9 @@ function CheckInContent() {
         <div className={`mb-6 w-full max-w-sm px-6 py-8 bg-white ${isCheckIn ? 'text-green-600 border-green-200' : 'text-orange-600 border-orange-200'} rounded-3xl flex flex-col items-center justify-center shadow-lg border-2 text-center space-y-4`}>
           <CheckCircle size={56} className={`${isCheckIn ? 'text-green-500' : 'text-orange-500'}`} />
           <span className="font-bold text-2xl text-slate-800">{statusMsg}</span>
-          <p className="text-slate-500 font-mono text-xl">{mounted ? time.toLocaleTimeString('th-TH', { timeZone: 'Asia/Bangkok' }) : ''}</p>
+          <p className="text-slate-500 font-mono text-xl">
+            {recordedTime ? `${recordedTime} น.` : (mounted ? time.toLocaleTimeString('th-TH', { timeZone: 'Asia/Bangkok', hour12: false }) : '')}
+          </p>
           <Link href="/wfh" className="mt-6 px-8 py-3 bg-slate-100 text-slate-700 rounded-xl font-bold hover:bg-slate-200 transition text-lg w-full">
             กลับหน้าหลัก
           </Link>

@@ -8,7 +8,7 @@ import MobileMenu from "./MobileMenu";
 import { NavItem } from "@/types/nav";
 import ThemeToggle from "./ThemeToggle";
 import { signOut } from "next-auth/react";
-import { FileText } from "lucide-react";
+import { FileText, Clock } from "lucide-react";
 
 // กำหนด Type ให้รองรับ _id ที่บังคับใช้ใน MobileMenu
 type MenuItem = NavItem & {
@@ -56,7 +56,7 @@ export default function NavbarClient({
 
   const filteredMenuTree = menuTree.filter((item) => {
     const r = role?.toLowerCase();
-    if (r === "user" || r === "general") {
+    if (r === "user" || r === "teacher" || r === "janitor") {
       const restrictedPaths = [
         "/dashboard",
         "/attendance-dashboard",
@@ -293,6 +293,17 @@ export default function NavbarClient({
                               </svg>
                             </div>
                             จัดการอนุมัติใบลา
+                          </Link>
+                        )}
+                        {(isSuperAdmin || role?.toLowerCase() === "hr") && (
+                          <Link
+                            href="/attendance-settings"
+                            className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-xl transition-all group mb-1 border-b border-zinc-100 dark:border-zinc-800/50 pb-3"
+                          >
+                            <div className="p-1.5 rounded-lg bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 transition-colors">
+                              <Clock size={16} />
+                            </div>
+                            ตั้งค่าเวลาเข้างานตามตำแหน่ง
                           </Link>
                         )}
                       </>

@@ -226,6 +226,12 @@ export default function SuperAdminPage() {
         return "bg-emerald-50 text-emerald-600 border-emerald-200";
       case "admin":
         return "bg-amber-50 text-amber-600 border-amber-200";
+      case "staff":
+        return "bg-indigo-50 text-indigo-600 border-indigo-200";
+      case "teacher":
+        return "bg-sky-50 text-sky-600 border-sky-200";
+      case "janitor":
+        return "bg-stone-50 text-stone-600 border-stone-200";
       default:
         return "bg-blue-50 text-blue-600 border-blue-200";
     }
@@ -435,7 +441,9 @@ export default function SuperAdminPage() {
                       <option value="director">ผอ (DIRECTOR)</option>
                       <option value="deputy_director">รอง ผอ (DEPUTY)</option>
                       <option value="hr">บุคคล (HR)</option>
-                      <option value="general">พนักงาน (GENERAL)</option>
+                      <option value="staff">เจ้าหน้าที่ (STAFF)</option>
+                      <option value="teacher">ครู (TEACHER)</option>
+                      <option value="janitor">ภารโรง (JANITOR)</option>
                       <option value="user">USER (เดิม)</option>
                     </select>
                   </td>

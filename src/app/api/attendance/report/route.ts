@@ -18,6 +18,7 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const startDateParam = searchParams.get('startDate');
     const endDateParam = searchParams.get('endDate');
+    const roleParam = searchParams.get('role'); // New filter
 
     let dateQuery: any = {};
     if (startDateParam && endDateParam) {
@@ -31,7 +32,7 @@ export async function GET(req: Request) {
       dateQuery = today;
     }
 
-    const records = await db.collection("attendances").aggregate([
+    const pipeline: any[] = [
       { $match: { date: dateQuery } },
       { $sort: { date: -1, 'checkIn.time': -1 } },
       {
@@ -53,24 +54,33 @@ export async function GET(req: Request) {
           as: "userDetails"
         }
       },
-      { $unwind: { path: "$userDetails", preserveNullAndEmptyArrays: true } },
-      {
-        $project: {
-          id: { $toString: "$_id" },
-          date: 1,
-          user: {
-            name: { $ifNull: ["$userDetails.name", { $ifNull: ["$userDetails.username", "Unknown User"] }] },
-            email: { $ifNull: ["$userDetails.email", ""] }
-          },
-          checkInTime: "$checkIn.time",
-          checkOutTime: "$checkOut.time",
-          status: "$status",
-          otHours: { $ifNull: ["$checkOut.otHours", 0] },
-          photoUrl: "$checkIn.photoUrl",
-          checkOutPhotoUrl: "$checkOut.photoUrl"
-        }
+      { $unwind: { path: "$userDetails", preserveNullAndEmptyArrays: true } }
+    ];
+
+    // ✅ กรองตาม Role ถ้ามีการส่งมา (ครู, เจ้าหน้าที่, ภารโรง)
+    if (roleParam && roleParam !== "all") {
+      pipeline.push({ $match: { "userDetails.role": roleParam } });
+    }
+
+    pipeline.push({
+      $project: {
+        id: { $toString: "$_id" },
+        date: 1,
+        user: {
+          name: { $ifNull: ["$userDetails.name", { $ifNull: ["$userDetails.username", "Unknown User"] }] },
+          email: { $ifNull: ["$userDetails.email", ""] },
+          role: { $ifNull: ["$userDetails.role", ""] }
+        },
+        checkInTime: "$checkIn.time",
+        checkOutTime: "$checkOut.time",
+        status: "$status",
+        otHours: { $ifNull: ["$checkOut.otHours", 0] },
+        photoUrl: "$checkIn.photoUrl",
+        checkOutPhotoUrl: "$checkOut.photoUrl"
       }
-    ]).toArray();
+    });
+
+    const records = await db.collection("attendances").aggregate(pipeline).toArray();
 
     const formattedData = records.map((r: any) => ({
       ...r,

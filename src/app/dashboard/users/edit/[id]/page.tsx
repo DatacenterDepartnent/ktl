@@ -30,7 +30,7 @@ import { useRef } from "react";
 interface UserFormData {
   name: string;
   email: string;
-  role: "super_admin" | "admin" | "hr" | "director" | "editor" | "user";
+  role: "super_admin" | "admin" | "hr" | "director" | "editor" | "user" | "staff" | "teacher" | "janitor";
   department: string;
   phone: string;
   lineId: string;
@@ -483,6 +483,9 @@ export default function EditUserPage() {
                     <option value="user">พนักงานทั่วไป (User)</option>
                     <option value="editor">บรรณาธิการ (Editor)</option>
                     <option value="hr">ฝ่ายบุคคล (HR)</option>
+                    <option value="staff">เจ้าหน้าที่ (Staff)</option>
+                    <option value="teacher">ครู (Teacher)</option>
+                    <option value="janitor">ภารโรง (Janitor)</option>
                     <option value="director">ผู้บริหาร (Director)</option>
                     <option value="admin">ผู้ดูแลระบบ (Admin)</option>
                     <option value="super_admin">

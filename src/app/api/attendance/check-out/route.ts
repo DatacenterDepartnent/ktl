@@ -34,10 +34,29 @@ export async function POST(req: Request) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    const today = new Date();
+    // Thailand is UTC+7
+    const thTime = new Date(serverTime.getTime() + (7 * 60 * 60 * 1000));
+    
+    // วันที่ของวันนี้ (เวลาประเทศไทย)
+    const today = new Date(thTime);
     today.setUTCHours(0, 0, 0, 0);
 
     const userObjId = new ObjectId(userId);
+
+    // ดึงข้อมูล User และ Role
+    const user = await db.collection("users").findOne({ _id: userObjId });
+    const userRole = user?.role || "user";
+
+    // ดึงการตั้งค่าเวลาออกงานของ Role นี้ (ถ้าไม่มีให้ใช้ Default 16:30)
+    const roleSetting = await db.collection("role_settings").findOne({ role: userRole });
+    let otLimitHours = 16;
+    let otLimitMinutes = 30;
+
+    if (roleSetting && roleSetting.checkOutTime) {
+      const [h, m] = roleSetting.checkOutTime.split(":").map(Number);
+      otLimitHours = h;
+      otLimitMinutes = m;
+    }
 
     const existingAttendance = await db.collection("attendances").findOne({ 
       userId: { $in: [userId, userObjId] }, 
@@ -60,17 +79,13 @@ export async function POST(req: Request) {
       }, { status: 400 });
     }
 
-    // Thailand is UTC+7
-    const thTime = new Date(serverTime.getTime() + (7 * 60 * 60 * 1000));
-    
-    // Create standard end of day in Thailand timezone
-    // 16:30 in Thailand is 09:30 UTC
-    const standardEndOfDayUTC = new Date(serverTime);
-    standardEndOfDayUTC.setUTCHours(9, 30, 0, 0);
+    // คำนวณ OT ตามเวลาประเทศไทย
+    const standardEndOfDay = new Date(thTime);
+    standardEndOfDay.setUTCHours(otLimitHours, otLimitMinutes, 0, 0);
 
     let otHours = 0;
-    if (serverTime.getTime() > standardEndOfDayUTC.getTime()) {
-      const diffInMs = serverTime.getTime() - standardEndOfDayUTC.getTime();
+    if (thTime.getTime() > standardEndOfDay.getTime()) {
+      const diffInMs = thTime.getTime() - standardEndOfDay.getTime();
       otHours = Number((diffInMs / (1000 * 60 * 60)).toFixed(2));
     }
 
