@@ -37,6 +37,56 @@ interface Activity {
   endTime?: string;
 }
 
+// Utility function for client-side image compression (with Safari/iOS fallback)
+const compressImage = async (base64Str: string): Promise<string> => {
+  return new Promise((resolve) => {
+    try {
+      const img = new Image();
+      img.onerror = () => resolve(base64Str); // Fallback: Use original if image fails to load
+      img.onload = () => {
+        try {
+          const canvas = document.createElement("canvas");
+          const MAX_WIDTH = 1200;
+          const MAX_HEIGHT = 1200;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) return resolve(base64Str); // Fallback: Canvas context fails
+
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
+          resolve(dataUrl);
+        } catch (canvasErr) {
+          console.error(
+            "Canvas compression failed, using original:",
+            canvasErr,
+          );
+          resolve(base64Str); // Fallback on canvas error
+        }
+      };
+      img.src = base64Str;
+    } catch (err) {
+      console.error("Compression startup failed, using original:", err);
+      resolve(base64Str); // Final Fallback
+    }
+  });
+};
+
 export default function WorkReportPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -126,8 +176,10 @@ export default function WorkReportPage() {
 
     Array.from(files).forEach((file) => {
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setImages((prev) => [...prev, reader.result as string]);
+      reader.onloadend = async () => {
+        const base64 = reader.result as string;
+        const compressed = await compressImage(base64);
+        setImages((prev) => [...prev, compressed]);
       };
       reader.readAsDataURL(file);
     });
@@ -146,6 +198,7 @@ export default function WorkReportPage() {
     const isNoSummary = !summary.trim();
     const isNoImages = images.length === 0;
 
+    // Must have at least one thing to save
     if (isNoActivities && isNoSummary && isNoImages) {
       setError(
         "กรุณาเพิ่มข้อมูลอย่างน้อย 1 อย่าง (ภารกิจ, สรุปผล หรือ รูปภาพ)",
@@ -165,7 +218,11 @@ export default function WorkReportPage() {
             ...a,
             taskName:
               a.taskName.trim() ||
-              (isNoSummary && isNoImages ? "งานประจำวัน" : "ไม่ได้ระบุ"),
+              (!isNoImages
+                ? "รายงานผลด้วยรูปภาพ"
+                : isNoSummary
+                  ? "ไม่ได้ระบุ"
+                  : "รายงานการปฏิบัติงาน"),
             detail: a.detail.trim() || "",
           })),
           summary: summary.trim() || "ไม่ได้ระบุ",
@@ -191,7 +248,7 @@ export default function WorkReportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 py-6 px-2 font-sans selection:bg-blue-500/30">
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 py-6 px-2 font-sans selection:bg-blue-500/30 overflow-x-hidden">
       {/* Background blobs */}
       <div className="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
@@ -206,12 +263,12 @@ export default function WorkReportPage() {
               <ArrowLeft size={22} />
             </Link>
             <div>
-              <h1 className="text-3xl font-black text-slate-800 dark:text-white tracking-tight uppercase leading-none">
+              <h1 className="text-xl sm:text-3xl font-black text-slate-800 dark:text-white tracking-tight uppercase leading-none">
                 รายงาน <span className="text-blue-600">การปฏิบัติงาน</span>
               </h1>
-              <p className="text-slate-400 dark:text-zinc-500 text-[10px] font-black uppercase tracking-[0.2em] mt-2 flex items-center gap-2">
+              <p className="text-slate-400 dark:text-zinc-500 text-xs font-bold uppercase tracking-widest mt-2 flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                ระบบส่งรายงานประจำวัน
+                ระบุภารกิจหรือผลงานประจำวัน
               </p>
             </div>
           </div>
@@ -225,16 +282,16 @@ export default function WorkReportPage() {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl py-6 px-2 shadow-sm overflow-hidden relative group transition-all hover:shadow-xl hover:shadow-blue-500/5"
+            className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl md:rounded-3xl py-6 px-4 shadow-sm overflow-hidden relative group transition-all hover:shadow-xl hover:shadow-blue-500/5"
           >
             <div className="absolute top-0 right-0 py-6 px-2 opacity-5 group-hover:opacity-10 transition-opacity">
               <Calendar size={80} />
             </div>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 px-2 relative z-10">
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
+                <label className="text-xs font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest flex items-center gap-2">
                   <span className="w-1 h-1 rounded-full bg-blue-500" />
-                  รายงานสำหรับวันที่
+                  รายชื่อผู้ส่งรายงานในระบบ
                 </label>
                 <h2 className="text-xl font-black text-slate-800 dark:text-white uppercase">
                   {format(new Date(date), "EEEE, d MMMM yyyy", { locale: th })}
@@ -266,7 +323,7 @@ export default function WorkReportPage() {
                   <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">
                     ภารกิจหลัก (Activities)
                   </h3>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">
+                  <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-0.5">
                     รายละเอียดงานและผลการปฏิบัติงาน
                   </p>
                 </div>
@@ -307,8 +364,8 @@ export default function WorkReportPage() {
                     <div className="flex-1 space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-end">
                         <div className="md:col-span-12 space-y-3">
-                          <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">
-                            ชื่อของงาน (จำเป็นต้องระบุหากไม่มีรูปภาพ)
+                          <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">
+                            ชื่อกิจกรรม (ระบุหากไม่ได้ลงรูปถ่าย)
                           </label>
                           <input
                             type="text"
@@ -323,8 +380,8 @@ export default function WorkReportPage() {
                       </div>
 
                       <div className="space-y-3">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">
-                          สถานะการดำเนินงาน
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">
+                          สถานะความคืบหน้า
                         </label>
                         <div className="flex flex-wrap items-center gap-3">
                           {(
@@ -357,8 +414,8 @@ export default function WorkReportPage() {
                       </div>
 
                       <div className="space-y-3">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">
-                          รายละเอียดกิจกรรม (เลือกกรอกหรือไม่ก็ได้)
+                        <label className="text-xs font-bold text-slate-400 uppercase tracking-widest pl-1">
+                          รายละเอียดเชิงลึก (ถ้ามี)
                         </label>
                         <textarea
                           placeholder="อธิบายรายละเอียดการทำงานของคุณเพิ่มเติม..."
@@ -395,8 +452,8 @@ export default function WorkReportPage() {
                 <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">
                   สรุปภาพรวม (Summary)
                 </h3>
-                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">
-                  สรุปผลสำเร็จในภาพรวมของวัน
+                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-0.5">
+                  สรุปความสำเร็จประจำวัน
                 </p>
               </div>
             </div>
@@ -425,8 +482,8 @@ export default function WorkReportPage() {
                   <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">
                     ปัญหาที่พบ (Problems)
                   </h3>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">
-                    อุปสรรคที่พบในการทำงาน
+                  <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-0.5">
+                    ปัญหาและอุปสรรคที่พบ
                   </p>
                 </div>
               </div>
@@ -454,8 +511,8 @@ export default function WorkReportPage() {
                   <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">
                     แผนงานวันต่อไป (Next Day)
                   </h3>
-                  <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">
-                    เป้าหมายที่ตั้งไว้ในวันถัดไป
+                  <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-0.5">
+                    แผนงานที่ตั้งใจทำในวันพรุ่งนี้
                   </p>
                 </div>
               </div>
@@ -485,8 +542,8 @@ export default function WorkReportPage() {
                   <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">
                     เพิ่มรูปภาพประกอบ (Optional)
                   </h3>
-                  <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest mt-0.5">
-                    รูปภาพหลักฐานการปฏิบัติงานของคุณ
+                  <p className="text-xs text-slate-500 font-bold uppercase tracking-widest mt-0.5">
+                    บันทึกภาพหลักฐานการทำงาน
                   </p>
                 </div>
               </div>
@@ -590,12 +647,12 @@ export default function WorkReportPage() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="flex items-center gap-4 text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 py-6 px-2 rounded-4xl text-sm font-black uppercase tracking-tight shadow-xl shadow-emerald-500/10"
+                className="flex items-center gap-4 text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 py-6 px-4 rounded-2xl md:rounded-3xl text-sm font-black uppercase tracking-tight shadow-xl shadow-emerald-500/10"
               >
                 <div className="w-10 h-10 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center shadow-sm">
                   <CheckCircle2 size={22} className="text-emerald-500" />
                 </div>
-                บันทึกรายงานการทำงานสำเร็จเรียบร้อยแล้ว
+                สำเร็จ! ระบบบันทึกข้อมูลรายงานเรียบร้อย
               </motion.div>
             )}
           </AnimatePresence>

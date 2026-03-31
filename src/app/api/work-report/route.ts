@@ -125,6 +125,10 @@ export async function POST(req: Request) {
           try {
             const uploadResponse = await cloudinary.uploader.upload(img, {
               folder: "work_reports",
+              width: 1000,
+              crop: "limit",
+              quality: "auto",
+              fetch_format: "auto",
             });
             imageUrls.push(uploadResponse.secure_url);
           } catch (error) {
