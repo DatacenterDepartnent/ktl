@@ -214,7 +214,8 @@ function CheckInContent() {
       });
       if (videoRef.current) videoRef.current.srcObject = stream;
       getLocation();
-      await loadFaceApiAndProfile();
+      {/* await loadFaceApiAndProfile(); */}
+      setFaceStatus("idle"); // Disable face check logic
     } catch (err: any) {
       if (err.name === "NotReadableError") {
         alert(
@@ -242,20 +243,8 @@ function CheckInContent() {
 
   // ตรวจสอบว่าสามารถลงเวลาได้หรือไม่
   const canSubmit = () => {
-    // ถ้ายังโหลด model อยู่ หรือกำลัง detect → ยังกดไม่ได้
-    if (faceStatus === "loading_models" || faceStatus === "loading_profile")
-      return false;
-    // ถ้าตรวจสอบไม่ผ่าน → กดไม่ได้
-    if (faceStatus === "not_matched") return false;
-    // ถ้าใบหน้าตรง, ไม่มีโปรไฟล์ (ข้ามการตรวจสอบ), หรือเกิด error (fallback) → ลงเวลาได้
-    return (
-      !!location &&
-      (faceStatus === "matched" ||
-        faceStatus === "no_profile" ||
-        faceStatus === "error" ||
-        faceStatus === "detecting" ||
-        faceStatus === "idle")
-    );
+    // ปิดการตรวจสอบใบหน้าชั่วคราว (Disabled Face Check)
+    return !!location && !isProcessing;
   };
 
   const submitAttendance = async () => {
@@ -306,7 +295,7 @@ function CheckInContent() {
         photoUrl: cloudinaryUrl,
         deviceId: "device-12345",
         address: "Location Address",
-        faceVerified: faceStatus === "matched",
+        faceVerified: true, // Face check disabled by user request
       };
 
       const endpoint = isCheckIn
@@ -541,8 +530,8 @@ function CheckInContent() {
               </h3>
               <p className="text-slate-400 dark:text-zinc-500 text-sm font-medium mb-10 max-w-[240px]">
                 {isCheckIn
-                  ? "ระบบจะทำการถ่ายรูปหน้าของท่าน เพื่อตรวจสอบตัวตนและบันทึกเวลาเข้างาน"
-                  : "บันทึกเวลาเลิกทำงานวันนี้ และอัปโหลดรูปภาพยืนยันตัวตน"}
+                  ? "ระบบจะทำการถ่ายรูปและบันทึกพิกัด GPS เพื่อยืนยันการเข้างาน"
+                  : "บันทึกเวลาเลิกทำงานวันนี้ และอัปโหลดรูปภาพยืนยัน"}
               </p>
 
               <div className="w-full space-y-4">

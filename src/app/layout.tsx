@@ -8,13 +8,13 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 import { Prompt } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
-import { Analytics } from "@vercel/analytics/next";
+// import { Analytics } from "@vercel/analytics/next";
 import ScrollUp from "@/components/Common/ScrollUp";
 import CookieConsent from "@/components/CookieConsent";
 import SessionWatcher from "@/components/SessionWatcher";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { AntdRegistry } from "@ant-design/nextjs-registry";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+// import { SpeedInsights } from "@vercel/speed-insights/next";
 
 // 1. ตั้งค่าฟอนต์หลักของเว็บ (Prompt) จาก Google Fonts
 // การใช้ next/font ช่วยลด Layout Shift และโหลดฟอนต์ได้รวดเร็ว
@@ -94,9 +94,11 @@ export default function RootLayout({
               <Navbar />
               {/* children: เนื้อหาของหน้าที่เราเปิดอยู่ (เช่น หน้า Home, หน้า News) */}
               {children}
-              {/* เครื่องมือเก็บสถิติของ Vercel */}
-              <SpeedInsights /> {/* วัดความเร็วเว็บ */}
-              <Analytics /> {/* วัดจำนวนคนเข้าชม */}
+
+              {/* ปิดการใช้งาน Vercel Analytics & Speed Insights ชั่วคราว */}
+              {/* <SpeedInsights /> */}
+              {/* <Analytics /> */}
+
               {/* Footer: ส่วนท้ายเว็บ (จะแสดงทุกหน้า) */}
               <ScrollUp />
               <CookieConsent />
