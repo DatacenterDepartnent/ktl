@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import FullPageLoader from "@/components/FullPageLoader";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -224,6 +225,14 @@ export default function LeaveRequestPage() {
       setLoading(false);
     }
   };
+
+  if (quotaLoading) {
+    return <FullPageLoader message="กำลังตรวจสอบสิทธิ์การลา..." subtitle="กรุณารอสักครู่ ระบบกำลังตรวจสอบโควตาการลาคงเหลือของคุณ" />;
+  }
+
+  if (loading) {
+    return <FullPageLoader message="กำลังส่งคำขอลาของคุณ..." subtitle="กำลังอัปโหลดเอกสารแนบและบันทึกข้อมูลคำแจ้งลา" />;
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-black flex items-center justify-center py-12 px-2 sm:px-8 selection:bg-indigo-500/30 font-sans relative overflow-x-hidden">

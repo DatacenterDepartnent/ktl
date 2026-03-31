@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import FullPageLoader from "@/components/FullPageLoader";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowLeft,
@@ -246,6 +247,14 @@ export default function WorkReportPage() {
       setLoading(false);
     }
   };
+
+  if (fetching) {
+    return <FullPageLoader message="กำลังตรวจสอบข้อมูลเดิมของคุณ..." subtitle="กรุณารอสักครู่ ระบบกำลังดึงผลการบันทึกงานล่าสุด" />;
+  }
+
+  if (loading) {
+    return <FullPageLoader message="กำลังบันทึกข้อมูลรายงาน..." subtitle="กำลังอัปโหลดรูปภาพและบันทึกข้อมูลของคุณไปยังฐานข้อมูล" />;
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 py-6 px-2 font-sans selection:bg-blue-500/30 overflow-x-hidden">

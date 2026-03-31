@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Save, Clock, ShieldCheck, Loader2 } from "lucide-react";
 import { toast, Toaster } from "react-hot-toast";
+import { useSession } from "next-auth/react";
 
 interface RoleSetting {
   role: string;
@@ -12,6 +13,7 @@ interface RoleSetting {
 }
 
 export default function AttendanceSettingsPage() {
+  const { data: session } = useSession();
   const [settings, setSettings] = useState<RoleSetting[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -84,9 +86,9 @@ export default function AttendanceSettingsPage() {
             <h1 className="text-xl sm:text-3xl font-black text-zinc-900 dark:text-white tracking-tight">
               ตั้งค่าเวลาการลงเวลา
             </h1>
-            <p className="text-sm font-bold text-zinc-400 mt-1 uppercase tracking-widest flex items-center gap-2">
+            <p className="text-[10px] font-black text-zinc-400 mt-1 uppercase tracking-[0.2em] flex items-center gap-2">
               <ShieldCheck size={14} className="text-emerald-500" />
-              HR
+              {session?.user ? (session.user as any).role.replace('_', ' ') : 'HR / Administrator'}
             </p>
           </div>
         </div>

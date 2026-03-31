@@ -10,9 +10,13 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   try {
     const session = await auth();
-    const role = (session?.user as any)?.role;
+    const role = (session?.user as any)?.role?.toLowerCase();
+    
+    // Consistent with middleware's admin roles
+    const allowedRoles = ["super_admin", "admin", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_activities", "deputy_student_affairs", "editor", "staff"];
 
-    if (!["super_admin", "hr"].includes(role)) {
+    if (!role || !allowedRoles.includes(role)) {
+      console.error(`[API/role-settings] Unauthorized Access: role=${role}`);
       return NextResponse.json({ error: "Unauthorized Access" }, { status: 403 });
     }
 
@@ -43,9 +47,13 @@ export async function GET() {
 export async function PATCH(req: Request) {
   try {
     const session = await auth();
-    const userRole = (session?.user as any)?.role;
+    const userRole = (session?.user as any)?.role?.toLowerCase();
+    
+    // Consistent with middleware's admin roles
+    const allowedRoles = ["super_admin", "admin", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_activities", "deputy_student_affairs", "editor", "staff"];
 
-    if (!["super_admin", "hr"].includes(userRole)) {
+    if (!userRole || !allowedRoles.includes(userRole)) {
+      console.error(`[API/role-settings] Update Unauthorized: role=${userRole}`);
       return NextResponse.json({ error: "Unauthorized Access" }, { status: 403 });
     }
 

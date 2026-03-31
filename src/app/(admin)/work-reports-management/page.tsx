@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import FullPageLoader from "@/components/FullPageLoader";
 
 interface Activity {
   id: string;
@@ -185,6 +186,10 @@ export default function WorkReportsManagementPage() {
       r.user.department.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
+  if (loading) {
+    return <FullPageLoader message="กำลังรวบรวมรายงานการปฏิบัติงาน..." subtitle="กรุณารอสักครู่ ระบบกำลังจัดเตรียมข้อมูลทั้งหมดเพื่อคุณ" />;
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-neutral-950 px-2 py-4 md:p-6 font-sans selection:bg-indigo-500/30 overflow-x-hidden">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -299,19 +304,7 @@ export default function WorkReportsManagementPage() {
               </thead>
               <tbody>
                 <AnimatePresence mode="popLayout">
-                  {loading ? (
-                    <tr>
-                      <td colSpan={6} className="py-20 text-center">
-                        <Loader2
-                          size={40}
-                          className="animate-spin text-indigo-500 mx-auto mb-4"
-                        />
-                        <p className="text-slate-400 font-black uppercase tracking-widest text-xs">
-                          กำลังโหลดข้อมูลจัดการรายงาน...
-                        </p>
-                      </td>
-                    </tr>
-                  ) : filteredReports.length === 0 ? (
+                  {filteredReports.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="py-20 text-center">
                         <AlertCircle
