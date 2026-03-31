@@ -23,7 +23,61 @@ import {
   ShieldCheck,
   Zap,
 } from "lucide-react";
-import imageCompression from "browser-image-compression";
+// Utility function for client-side image compression (with Safari/iOS fallback)
+const compressImage = async (file: File): Promise<Blob | File> => {
+  return new Promise((resolve) => {
+    try {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onerror = () => resolve(file); // Fallback: Use original if image fails to load
+        img.onload = () => {
+          try {
+            const canvas = document.createElement("canvas");
+            const MAX_WIDTH = 1200;
+            const MAX_HEIGHT = 1200;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+              if (width > MAX_WIDTH) {
+                height *= MAX_WIDTH / width;
+                width = MAX_WIDTH;
+              }
+            } else {
+              if (height > MAX_HEIGHT) {
+                width *= MAX_HEIGHT / height;
+                height = MAX_HEIGHT;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            if (!ctx) return resolve(file); // Fallback: Canvas context fails
+
+            ctx.drawImage(img, 0, 0, width, height);
+            canvas.toBlob(
+              (blob) => {
+                resolve(blob || file);
+              },
+              "image/jpeg",
+              0.7,
+            );
+          } catch (canvasErr) {
+            console.error("Canvas compression failed, using original:", canvasErr);
+            resolve(file); // Fallback on canvas error
+          }
+        };
+        img.src = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    } catch (err) {
+      console.error("Compression startup failed, using original:", err);
+      resolve(file); // Final Fallback
+    }
+  });
+};
 
 const LEAVE_TYPES = [
   {
@@ -117,14 +171,11 @@ export default function LeaveRequestPage() {
     if (!cloudName || !uploadPreset)
       throw new Error("Cloudinary config missing");
 
-    const options = {
-      maxSizeMB: 0.5,
-      maxWidthOrHeight: 1024,
-      useWebWorker: true,
-    };
-    const compressedFile = await imageCompression(file, options);
+    // Robust compression with Safari fallback
+    const compressedBlob = await compressImage(file);
+    
     const formData = new FormData();
-    formData.append("file", compressedFile);
+    formData.append("file", compressedBlob);
     formData.append("upload_preset", uploadPreset);
 
     const res = await fetch(
@@ -151,7 +202,9 @@ export default function LeaveRequestPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.startDate || !formData.endDate || !formData.reason) return;
+    if (!formData.startDate || !formData.endDate || !formData.reason) {
+      return alert("❌ กรุณากรอกข้อมูลให้ครบถ้วน (วันที่ และ เหตุผล)");
+    }
     if (requestedDays <= 0) return alert("❌ วันเริ่มต้นต้องไม่เกินวันสิ้นสุด");
 
     setLoading(true);
@@ -187,7 +240,7 @@ export default function LeaveRequestPage() {
               key="success"
               initial={{ scale: 0.9, opacity: 0, y: 30 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              className="w-full max-w-xl mx-auto bg-white/95 dark:bg-zinc-900/95 backdrop-blur-3xl border border-emerald-500/20 p-12 rounded-[3.5rem] text-center shadow-2xl relative overflow-hidden"
+              className="w-full max-w-xl mx-auto bg-white/95 dark:bg-zinc-900/95 backdrop-blur-3xl border border-emerald-500/20 p-8 md:p-12 rounded-3xl md:rounded-[3.5rem] text-center shadow-2xl relative overflow-hidden"
             >
               <div className="absolute top-0 left-0 w-full h-2 bg-emerald-500" />
               <div className="w-24 h-24 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-emerald-500/40 relative">
@@ -198,7 +251,7 @@ export default function LeaveRequestPage() {
                 ส่งใบลา <span className="text-emerald-500">สำเร็จ!</span>
               </h2>
 
-              <div className="bg-slate-50 dark:bg-zinc-950/50 rounded-[2.5rem] p-8 mb-10 border border-slate-100 dark:border-zinc-800 space-y-6">
+              <div className="bg-slate-50 dark:bg-zinc-950/50 rounded-2xl md:rounded-[2.5rem] p-6 md:p-8 mb-10 border border-slate-100 dark:border-zinc-800 space-y-6">
                 <div className="flex justify-between items-center text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-zinc-500">
                   <span>ประเภทการลา</span>
                   <span className="text-slate-900 dark:text-white text-xs">
@@ -252,7 +305,7 @@ export default function LeaveRequestPage() {
                     </div>
                   </Link>
                   <div className="pl-1">
-                    <h1 className="text-5xl font-black text-slate-900 dark:text-white tracking-tighter uppercase leading-none mb-4">
+                    <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tighter uppercase leading-none mb-4">
                       แจ้ง <span className="text-blue-600">ลางาน</span>
                     </h1>
                     <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-black text-[10px] font-black uppercase tracking-[0.4em] shadow-2xl">
@@ -305,7 +358,7 @@ export default function LeaveRequestPage() {
                           onClick={() =>
                             setFormData({ ...formData, leaveType: type.id })
                           }
-                          className={`flex flex-col items-center justify-center p-6 rounded-4xl border-2 transition-all gap-3 group relative overflow-hidden ${formData.leaveType === type.id ? `bg-slate-900 border-slate-900 text-white shadow-2xl -translate-y-1` : `bg-slate-50 dark:bg-zinc-950 border-transparent hover:border-slate-200 dark:hover:border-white/10 opacity-70 hover:opacity-100`}`}
+                          className={`flex flex-col items-center justify-center p-6 rounded-3xl md:rounded-4xl border-2 transition-all gap-3 group relative overflow-hidden ${formData.leaveType === type.id ? `bg-slate-900 border-slate-900 text-white shadow-2xl -translate-y-1` : `bg-slate-50 dark:bg-zinc-950 border-transparent hover:border-slate-200 dark:hover:border-white/10 opacity-70 hover:opacity-100`}`}
                         >
                           <type.icon
                             size={28}
@@ -351,7 +404,7 @@ export default function LeaveRequestPage() {
                                 startDate: e.target.value,
                               })
                             }
-                            className="w-full pl-16 pr-8 py-6 bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-white/5 rounded-3xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-slate-800 dark:text-white font-black text-sm cursor-pointer shadow-inner"
+                            className="w-full pl-16 pr-8 py-6 bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-white/5 rounded-3xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-slate-800 dark:text-white font-black text-sm cursor-pointer shadow-inner appearance-none scheme-light-dark"
                             required
                           />
                           <span className="absolute top-0 right-6 -translate-y-1/2 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-white/5 px-4 py-1.5 rounded-full text-[10px] font-black uppercase text-blue-500 tracking-widest shadow-xl">
@@ -372,7 +425,7 @@ export default function LeaveRequestPage() {
                                 endDate: e.target.value,
                               })
                             }
-                            className="w-full pl-16 pr-8 py-6 bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-white/5 rounded-3xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-slate-800 dark:text-white font-black text-sm cursor-pointer shadow-inner"
+                            className="w-full pl-16 pr-8 py-6 bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-white/5 rounded-3xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-slate-800 dark:text-white font-black text-sm cursor-pointer shadow-inner appearance-none scheme-light-dark"
                             required
                           />
                           <span className="absolute top-0 right-6 -translate-y-1/2 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-white/5 px-4 py-1.5 rounded-full text-[10px] font-black uppercase text-rose-500 tracking-widest shadow-xl">
@@ -387,7 +440,7 @@ export default function LeaveRequestPage() {
                         <motion.div
                           initial={{ scale: 0.8, opacity: 0 }}
                           animate={{ scale: 1, opacity: 1 }}
-                          className="bg-slate-900 dark:bg-white rounded-[2.5rem] p-8 text-center relative overflow-hidden group"
+                          className="bg-slate-900 dark:bg-zinc-800 rounded-3xl md:rounded-[2.5rem] p-8 text-center relative overflow-hidden group"
                         >
                           <div className="absolute top-0 right-0 p-5 opacity-5 group-hover:scale-125 transition-transform">
                             <Activity
@@ -426,7 +479,7 @@ export default function LeaveRequestPage() {
                           setFormData({ ...formData, reason: e.target.value })
                         }
                         rows={5}
-                        className="w-full pl-16 pr-10 py-7 bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-white/5 rounded-[2.5rem] focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 text-slate-800 dark:text-white font-bold text-sm leading-relaxed resize-none shadow-inner placeholder:text-slate-300 dark:placeholder:text-zinc-800"
+                        className="w-full pl-16 pr-10 py-7 bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-white/5 rounded-3xl md:rounded-[2.5rem] focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 text-slate-800 dark:text-white font-bold text-sm leading-relaxed resize-none shadow-inner placeholder:text-slate-300 dark:placeholder:text-zinc-800"
                         placeholder="ระบุเหตุผลการลาของคุณโดยสังเขป..."
                         required
                       />
@@ -443,7 +496,7 @@ export default function LeaveRequestPage() {
                         หลักฐานประกอบโครงการ (ถ้ามี)
                       </h3>
                     </div>
-                    <label className="flex flex-col items-center justify-center w-full min-h-[180px] border-4 border-dashed border-slate-100 dark:border-white/5 rounded-[3rem] cursor-pointer bg-slate-50/50 dark:bg-zinc-950/20 hover:bg-white dark:hover:bg-zinc-900 transition-all group overflow-hidden relative shadow-inner">
+                    <label className="flex flex-col items-center justify-center w-full min-h-[180px] border-4 border-dashed border-slate-100 dark:border-white/5 rounded-3xl md:rounded-[3rem] cursor-pointer bg-slate-50/50 dark:bg-zinc-950/20 hover:bg-white dark:hover:bg-zinc-900 transition-all group overflow-hidden relative shadow-inner">
                       {previewUrl ? (
                         <div className="w-full h-full absolute inset-0 p-4">
                           <img
@@ -489,7 +542,7 @@ export default function LeaveRequestPage() {
                     <button
                       type="submit"
                       disabled={loading}
-                      className="w-full bg-slate-900 dark:bg-white text-white dark:text-black py-7 rounded-[2.5rem] font-black flex items-center justify-center gap-5 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-3xl disabled:opacity-50 group overflow-hidden relative"
+                      className="w-full bg-slate-900 dark:bg-white text-white dark:text-black py-7 rounded-3xl md:rounded-[2.5rem] font-black flex items-center justify-center gap-5 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-3xl disabled:opacity-50 group overflow-hidden relative"
                     >
                       {loading ? (
                         <Loader2 className="animate-spin" size={28} />

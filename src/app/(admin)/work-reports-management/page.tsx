@@ -18,6 +18,8 @@ import {
   Save,
   Plus,
   ArrowLeft,
+  Maximize2,
+  Image as ImageIcon,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -43,6 +45,8 @@ export default function WorkReportsManagementPage() {
   const [editSummary, setEditSummary] = useState("");
   const [editProblems, setEditProblems] = useState("");
   const [editPlansNextDay, setEditPlansNextDay] = useState("");
+  const [editImages, setEditImages] = useState<string[]>([]);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const [startDate, setStartDate] = useState(() => {
     const d = new Date();
@@ -87,6 +91,7 @@ export default function WorkReportsManagementPage() {
     setEditSummary(report.summary || "");
     setEditProblems(report.problems || "");
     setEditPlansNextDay(report.plansNextDay || "");
+    setEditImages(report.images || []);
     setIsEditing(true);
   };
 
@@ -284,6 +289,9 @@ export default function WorkReportsManagementPage() {
                   <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-neutral-800">
                     กิจกรรม
                   </th>
+                  <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-neutral-800">
+                    รูปภาพ
+                  </th>
                   <th className="px-8 py-6 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] border-b border-slate-100 dark:border-neutral-800 text-right">
                     จัดการ
                   </th>
@@ -293,7 +301,7 @@ export default function WorkReportsManagementPage() {
                 <AnimatePresence mode="popLayout">
                   {loading ? (
                     <tr>
-                      <td colSpan={5} className="py-20 text-center">
+                      <td colSpan={6} className="py-20 text-center">
                         <Loader2
                           size={40}
                           className="animate-spin text-indigo-500 mx-auto mb-4"
@@ -305,7 +313,7 @@ export default function WorkReportsManagementPage() {
                     </tr>
                   ) : filteredReports.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="py-20 text-center">
+                      <td colSpan={6} className="py-20 text-center">
                         <AlertCircle
                           size={48}
                           className="text-slate-200 dark:text-neutral-800 mx-auto mb-4"
@@ -354,6 +362,24 @@ export default function WorkReportsManagementPage() {
                           <span className="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 px-3 py-1 rounded-full font-black text-[10px]">
                             {report.activities?.length || 0}
                           </span>
+                        </td>
+                        <td className="px-8 py-6 border-b border-slate-50 dark:border-neutral-800 text-center">
+                          {report.images && report.images.length > 0 ? (
+                            <div className="flex flex-col items-center gap-1 group/img cursor-help">
+                              <div className="relative">
+                                <div className="p-2 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg group-hover/img:scale-110 transition-transform">
+                                  <ImageIcon size={16} />
+                                </div>
+                                <span className="absolute -top-2 -right-2 bg-rose-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full shadow-sm">
+                                  {report.images.length}
+                                </span>
+                              </div>
+                            </div>
+                          ) : (
+                            <span className="text-[9px] font-black text-slate-300 dark:text-neutral-700 uppercase tracking-widest">
+                              ไม่มีรูป
+                            </span>
+                          )}
                         </td>
                         <td className="px-8 py-6 border-b border-slate-50 dark:border-neutral-800 text-right">
                           <div className="flex items-center justify-end gap-2">
@@ -559,6 +585,70 @@ export default function WorkReportsManagementPage() {
                       </div>
                     </div>
                   </div>
+
+                  {/* Images Section */}
+                  <div className="space-y-6 pt-6 border-t border-slate-100 dark:border-neutral-800 px-2 lg:px-0">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-2xl">
+                        <ImageIcon size={20} />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-black text-slate-800 dark:text-neutral-100 uppercase tracking-tight">
+                          รูปภาพประกอบ ({editImages.length})
+                        </h3>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">
+                          ภาพหลักฐานการปฏิบัติงานที่พนักงานแนบมา
+                        </p>
+                      </div>
+                    </div>
+
+                    {editImages.length > 0 ? (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 pb-4">
+                        {editImages.map((img, idx) => (
+                          <div
+                            key={idx}
+                            className="relative aspect-square rounded-2xl overflow-hidden group border border-slate-100 dark:border-neutral-800 bg-slate-50 dark:bg-neutral-950"
+                          >
+                            <img
+                              src={img}
+                              className="w-full h-full object-cover"
+                              alt={`Work proof ${idx}`}
+                            />
+                            <div className="absolute inset-0 bg-slate-900/60 opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-3 backdrop-blur-[2px]">
+                              <button
+                                onClick={() => setPreviewImage(img)}
+                                className="p-2.5 bg-white/20 hover:bg-white/40 text-white rounded-xl transition-colors"
+                                title="ขยายรูป"
+                              >
+                                <Maximize2 size={16} />
+                              </button>
+                              <button
+                                onClick={() =>
+                                  setEditImages(
+                                    editImages.filter((_, i) => i !== idx),
+                                  )
+                                }
+                                className="p-2.5 bg-rose-500/20 hover:bg-rose-500/40 text-rose-200 rounded-xl transition-colors"
+                                title="ลบรูปภาพ"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="py-12 border-2 border-dashed border-slate-100 dark:border-neutral-800 rounded-3xl flex flex-col items-center justify-center gap-3">
+                        <ImageIcon
+                          size={32}
+                          className="text-slate-200 dark:text-neutral-800"
+                        />
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                          ไม่มีรูปภาพแนบมา
+                        </p>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Modal Footer */}
@@ -583,6 +673,39 @@ export default function WorkReportsManagementPage() {
                   </button>
                 </div>
               </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Lightbox Preview */}
+      <AnimatePresence>
+        {previewImage && (
+          <div className="fixed inset-0 z-60 flex items-center justify-center p-4 md:p-10">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setPreviewImage(null)}
+              className="absolute inset-0 bg-slate-950/95 backdrop-blur-xl cursor-zoom-out"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="relative max-w-full max-h-full rounded-3xl overflow-hidden shadow-2xl border border-white/10"
+            >
+              <img
+                src={previewImage}
+                alt="Enlarged proof"
+                className="max-w-full max-h-[85vh] object-contain"
+              />
+              <button
+                onClick={() => setPreviewImage(null)}
+                className="absolute top-6 right-6 p-4 bg-white/10 hover:bg-white/20 text-white rounded-2xl backdrop-blur-md transition-all shadow-xl"
+              >
+                <X size={24} />
+              </button>
             </motion.div>
           </div>
         )}
