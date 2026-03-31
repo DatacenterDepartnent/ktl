@@ -4,7 +4,7 @@ import { ObjectId } from "mongodb";
 import bcrypt from "bcryptjs";
 import { auth } from "@/lib/auth";
 
-const PROTECTED_ROLES = ["super_admin", "editor", "admin"];
+const PROTECTED_ROLES = ["super_admin", "editor", "admin", "director"];
 const ALLOWED_ADMIN_ROLES = ["super_admin", "admin", "hr", "director", "deputy_resource", "editor", "staff"];
 
 export async function PATCH(

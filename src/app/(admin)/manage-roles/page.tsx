@@ -23,7 +23,7 @@ interface User {
   department?: string;
 }
 
-const PROTECTED_ROLES = ["super_admin", "editor", "admin"];
+const PROTECTED_ROLES = ["super_admin", "editor", "admin", "director"];
 
 export default function ManageRolesPage() {
   const router = useRouter();
@@ -340,6 +340,9 @@ export default function ManageRolesPage() {
                             </option>
                             <option value="แผนกวิชาการโรงแรม">
                               แผนกวิชาการโรงแรม
+                            </option>
+                            <option value="แผนกวิชาสามัญสัมพันธ์">
+                              แผนกวิชาสามัญสัมพันธ์
                             </option>
                           </optgroup>
                         </select>

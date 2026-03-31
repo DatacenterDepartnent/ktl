@@ -29,7 +29,10 @@ export async function GET(req: Request) {
     
     console.log(`[API] Filtering by date: ${targetDate.toISOString()}`);
 
-    // 1. Aggregate Stats using Native Driver
+    // 1. Get Total Personnel Count from Users collection
+    const totalUsersCount = await db.collection("users").countDocuments();
+
+    // 2. Aggregate Stats using Native Driver
     const stats = await db.collection("attendances").aggregate([
       { $match: { date: targetDate } },
       {
@@ -41,16 +44,28 @@ export async function GET(req: Request) {
     ]).toArray();
 
     const formattedData = [
-      { name: 'มาทำงานตรงเวลา', value: 0, color: '#22c55e' },
-      { name: 'มาสาย', value: 0, color: '#eab308' },
-      { name: 'ลา / ขาด', value: 0, color: '#ef4444' }
+      { name: 'มาทำงานตรงเวลา', value: 0, color: '#10b981' }, // Emerald 500
+      { name: 'มาสาย', value: 0, color: '#f59e0b' },         // Amber 500
+      { name: 'ลา / ขาด', value: 0, color: '#f43f5e' }       // Rose 500
     ];
 
+    let presentCount = 0;
+    let lateCount = 0;
+    let leaveCount = 0;
+
     stats.forEach(stat => {
-      if (stat._id === 'Present') formattedData[0].value = stat.count;
-      else if (stat._id === 'Late') formattedData[1].value = stat.count;
-      else if (stat._id === 'Leave' || stat._id === 'Absent') formattedData[2].value += stat.count;
+      if (stat._id === 'Present') presentCount = stat.count;
+      else if (stat._id === 'Late') lateCount = stat.count;
+      else if (stat._id === 'Leave' || stat._id === 'Absent') leaveCount += stat.count;
     });
+
+    // 3. Calculate Accurate Absent (Total - (Present + Late + Leave))
+    const reportedTotal = presentCount + lateCount + leaveCount;
+    const realAbsent = Math.max(0, totalUsersCount - reportedTotal);
+    
+    formattedData[0].value = presentCount;
+    formattedData[1].value = lateCount;
+    formattedData[2].value = leaveCount + realAbsent;
 
     // 2. Fetch Markers with efficient $lookup instead of populate
     const markers = await db.collection("attendances").aggregate([
@@ -94,7 +109,12 @@ export async function GET(req: Request) {
     const end = Date.now();
     console.log(`[API] Dashboard Stats took ${end - start}ms (DB: ${end - midConn}ms)`);
 
-    return NextResponse.json({ success: true, data: formattedData, markers: validMarkers });
+    return NextResponse.json({ 
+      success: true, 
+      data: formattedData, 
+      markers: validMarkers,
+      totalEmployees: totalUsersCount
+    });
   } catch (error: any) {
     console.error("Dashboard Stats Error:", error);
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });

@@ -32,6 +32,7 @@ async function getDashboardData() {
       .countDocuments({ parentId: null });
     const totalPages = await db.collection("pages").countDocuments();
     const totalBanners = await db.collection("banners").countDocuments();
+    const totalUsers = await db.collection("users").countDocuments();
 
     // ✅ เพิ่มส่วนนี้: ดึงจำนวนคำถามที่ยังไม่ได้ตอบ (status: "pending")
     const totalPendingQA = await db.collection("questions").countDocuments({
@@ -97,7 +98,8 @@ async function getDashboardData() {
         dbSizeMB,
         cloudUsageMB,
         cloudLimitMB,
-        totalPendingQA, // ✅ ส่งค่าที่ดึงได้กลับไป (Error จะหายไป)
+        totalPendingQA,
+        totalUsers,
       },
     };
   } catch (error) {
@@ -140,6 +142,12 @@ export default async function DashboardPage() {
               value={stats.totalBanners}
               icon="🖼️"
               color="pink"
+            />
+            <StatCard
+              label="บุคลากรทั้งหมด"
+              value={stats.totalUsers}
+              icon="👥"
+              color="emerald"
             />
             <StatCard
               label="เมนู"
@@ -238,6 +246,7 @@ function StatCard({ label, value, icon, color }: any) {
     purple: "text-purple-600 bg-purple-50 dark:bg-purple-900/10",
     amber: "text-amber-600 bg-amber-50 dark:bg-amber-900/10",
     pink: "text-pink-600 bg-pink-50 dark:bg-pink-900/10",
+    emerald: "text-emerald-600 bg-emerald-50 dark:bg-emerald-900/10",
   };
   return (
     <div className="bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 p-5 rounded-4xl shadow-sm group transition-all hover:shadow-md">

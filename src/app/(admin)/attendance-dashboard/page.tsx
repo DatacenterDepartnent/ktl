@@ -53,6 +53,7 @@ export default function AdminAttendanceDashboard() {
   ]);
   const [markers, setMarkers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [realTotal, setRealTotal] = useState(0);
 
   useEffect(() => {
     async function fetchStats() {
@@ -65,6 +66,7 @@ export default function AdminAttendanceDashboard() {
         if (json.success) {
           setData(json.data);
           setMarkers(json.markers || []);
+          setRealTotal(json.totalEmployees || 0);
         }
       } catch (error) {
         console.error("Failed to fetch dashboard stats", error);
@@ -75,7 +77,7 @@ export default function AdminAttendanceDashboard() {
     fetchStats();
   }, [selectedDate]);
 
-  const total = data.reduce((acc, curr) => acc + curr.value, 0);
+  const total = realTotal || data.reduce((acc, curr) => acc + curr.value, 0);
 
   const CustomPieLabel = ({ cx, cy }: any) => {
     return (
@@ -148,9 +150,9 @@ export default function AdminAttendanceDashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             {
-              label: "Total Presence",
+              label: "จำนวนบุคลากรทั้งหมด",
               val: total,
-              unit: "responses",
+              unit: "คน",
               icon: Users,
               theme: "indigo",
               delay: 0,
