@@ -201,10 +201,10 @@ export default function WorkReportsManagementPage() {
             </div>
             <div>
               <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-800 dark:text-neutral-100 uppercase tracking-tight">
-                จัดการรายงานการปฏิบัติงาน
+                ระบบตรวจสอบและจัดการรายงานผล
               </h1>
-              <p className="text-sm text-slate-500 dark:text-neutral-400 font-bold mt-1.5 uppercase tracking-widest opacity-70">
-                เฉพาะผู้ดูแลระบบสูงสุด • ควบคุมการแก้ไขและลบข้อมูล
+              <p className="text-xs text-slate-500 dark:text-neutral-400 font-bold mt-1.5 uppercase tracking-widest opacity-70">
+                Dashboard สำหรับผู้ดูแลระบบ • ตรวจสอบและบริหารจัดการรายงานการปฏิบัติงาน
               </p>
             </div>
           </div>

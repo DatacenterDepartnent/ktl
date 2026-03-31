@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { toast, Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 import {
   Users,
   Search,
@@ -12,6 +13,11 @@ import {
   UserCog,
   ArrowLeft,
   Lock,
+  Building2,
+  MoreVertical,
+  ChevronRight,
+  ShieldAlert,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -24,6 +30,22 @@ interface User {
 }
 
 const PROTECTED_ROLES = ["super_admin", "editor", "admin", "director"];
+
+// Framer Motion Variants
+const container: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+    },
+  },
+};
+
+const item: Variants = {
+  hidden: { opacity: 0, y: 15 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+};
 
 export default function ManageRolesPage() {
   const router = useRouter();
@@ -66,7 +88,14 @@ export default function ManageRolesPage() {
         body: JSON.stringify({ role: newRole }),
       });
       if (res.ok) {
-        toast.success(`เปลี่ยนสิทธิ์ ${targetName} เรียบร้อย`);
+        toast.success(`เปลี่ยนสิทธิ์ ${targetName} เรียบร้อย`, {
+          style: {
+            background: "#10b981",
+            color: "#fff",
+            fontWeight: "bold",
+            borderRadius: "1rem",
+          },
+        });
         fetchData();
       }
     } catch (error) {
@@ -86,7 +115,14 @@ export default function ManageRolesPage() {
         body: JSON.stringify({ department: newDept }),
       });
       if (res.ok) {
-        toast.success(`เปลี่ยนสังกัด ${targetName} เรียบร้อย`);
+        toast.success(`เปลี่ยนสังกัด ${targetName} เรียบร้อย`, {
+          style: {
+            background: "#3b82f6",
+            color: "#fff",
+            fontWeight: "bold",
+            borderRadius: "1rem",
+          },
+        });
         fetchData();
       }
     } catch (error) {
@@ -100,7 +136,6 @@ export default function ManageRolesPage() {
       u.username.toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
-  // สิทธิ์ที่อนุญาตให้เลือกเปลี่ยนได้ (ห้าม super_admin, editor, admin, director)
   const allowedRoles = [
     { value: "deputy_resource", label: "รอง ผอ. (ทรัพยากร)" },
     { value: "deputy_strategy", label: "รอง ผอ. (แผนงาน)" },
@@ -113,255 +148,222 @@ export default function ManageRolesPage() {
     { value: "user", label: "ผู้ใช้ทั่วไป" },
   ];
 
-  if (loading) {
+  if (loading && users.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-slate-50 font-sans gap-4">
-        <RefreshCcw className="w-10 h-10 text-blue-500 animate-spin" />
-        <span className="text-sm font-bold text-slate-400">
-          กำลังโหลดรายชื่อ...
+      <div className="flex flex-col items-center justify-center min-h-screen bg-zinc-50 dark:bg-zinc-950 gap-4">
+        <Loader2 className="w-12 h-12 text-blue-600 animate-spin" />
+        <span className="text-xs font-black uppercase tracking-widest text-zinc-400">
+          Syncing Personnel Records...
         </span>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 dark:bg-zinc-950 px-2 py-4 md:p-8 font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 px-4 py-8 md:p-12 font-sans selection:bg-blue-500/30 overflow-x-hidden relative">
       <Toaster position="top-right" />
 
-      <div className="max-w-6xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/attendance-dashboard"
-              className="p-2 bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-slate-200 dark:border-zinc-800 text-slate-400 hover:text-slate-600 dark:hover:text-zinc-300"
-            >
-              <ArrowLeft size={20} />
-            </Link>
-            <div>
-              <h1 className="text-lg sm:text-2xl font-black text-slate-800 dark:text-zinc-100 uppercase flex items-center gap-2">
-                <UserCog size={24} className="text-blue-600" />
-                จัดการสิทธิ์บุคลากร
+      {/* Background Blobs */}
+      <div className="fixed top-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="fixed bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto space-y-12 relative z-10">
+        {/* Header section */}
+        <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-8 border-b border-zinc-200/60 dark:border-zinc-800/60 pb-12">
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+              <Link
+                href="/attendance-dashboard"
+                className="p-3 bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-slate-200 dark:border-zinc-800 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-500/20 transition-all active:scale-95"
+              >
+                <ArrowLeft size={20} />
+              </Link>
+              <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30">
+                <UserCog className="w-3.5 h-3.5 text-blue-600" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">Personnel RBAC</span>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <h1 className="text-4xl sm:text-6xl font-black text-slate-800 dark:text-white tracking-tighter uppercase leading-none">
+                จัดการ <span className="text-blue-600 italic">สิทธิ์บุคลากร</span>
               </h1>
-              <p className="text-xs text-slate-400 dark:text-zinc-500 font-bold uppercase tracking-widest">
-                จัดการบทบาทสิทธิ์และสังกัดแผนกบุคลากร
+              <p className="text-slate-400 dark:text-zinc-500 font-bold uppercase tracking-[0.2em] text-xs sm:text-sm flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+                Administrative Role & Department Management Hub
               </p>
             </div>
           </div>
 
-          <div className="relative w-full md:w-80">
-            <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-zinc-500"
-              size={18}
-            />
-            <input
-              type="text"
-              placeholder="ค้นหาชื่อหรือไอดี..."
-              className="w-full pl-10 pr-4 py-3 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-sm font-bold text-slate-700 dark:text-zinc-200"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
+          <div className="w-full xl:w-96 group">
+            <div className="relative">
+              <Search
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors"
+                size={20}
+              />
+              <input
+                type="text"
+                placeholder="ค้นหาตามชื่อ หรือ USERNAME..."
+                className="w-full pl-12 pr-6 py-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 outline-none text-sm font-bold text-slate-700 dark:text-zinc-200 transition-all shadow-sm group-hover:shadow-lg"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </div>
           </div>
         </div>
 
-        {/* Table Container */}
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-zinc-800 shadow-sm overflow-hidden w-full">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="bg-slate-50 dark:bg-zinc-800/50 border-b border-slate-200 dark:border-zinc-800 text-[10px] uppercase font-black text-slate-400 dark:text-zinc-500 tracking-widest">
-                  <th className="px-2 md:px-6 py-4 md:py-6">ชื่อบุคลากร / ชื่อผู้ใช้</th>
-                  <th className="px-2 md:px-6 py-4 md:py-6">สิทธิ์ที่อนุญาตให้เปลี่ยน</th>
-                  <th className="px-2 md:px-6 py-4 md:py-6">สังกัด / แผนก</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-zinc-800">
-                {filteredUsers.map((user) => {
-                  const isProtected =
-                    PROTECTED_ROLES.includes(user.role) && !isSuperAdmin;
+        {/* Content Section */}
+        <motion.div
+           variants={container}
+           initial="hidden"
+           animate="show"
+           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          {filteredUsers.map((user) => {
+            const isProtected = PROTECTED_ROLES.includes(user.role) && !isSuperAdmin;
+            const roleLabel = allowedRoles.find(r => r.value === user.role)?.label || user.role;
 
-                  return (
-                    <tr
-                      key={user._id}
-                      className="hover:bg-slate-50 dark:hover:bg-zinc-800/50 transition-colors"
-                    >
-                      <td className="p-6">
-                        <div className="flex items-center gap-2">
-                          <div className="font-black text-slate-800 dark:text-zinc-100 text-base">
-                            {user.name}
-                          </div>
-                          {isProtected && (
-                            <Lock size={14} className="text-rose-500" />
-                          )}
-                        </div>
-                        <div className="text-xs text-blue-500 font-bold opacity-80">
-                          @{user.username}
-                        </div>
-                        <div className="mt-1 text-[10px] font-black uppercase text-slate-600 dark:text-zinc-300 bg-slate-100 dark:bg-zinc-800 px-2 py-0.5 rounded inline-block">
-                          ปัจจุบัน: {user.role}
-                        </div>
-                      </td>
-                      <td className="p-6">
-                        <select
-                          value={
-                            allowedRoles.some((r) => r.value === user.role)
-                              ? user.role
-                              : "user"
-                          }
-                          onChange={(e) =>
-                            changeRole(user._id, e.target.value, user.name)
-                          }
-                          disabled={isProtected}
-                          className={`w-full max-w-[200px] bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl p-2.5 text-xs font-bold text-slate-700 dark:text-zinc-200 outline-none focus:border-blue-500 transition-all ${isProtected ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
-                        >
-                          {allowedRoles.map((role) => (
-                            <option key={role.value} value={role.value}>
-                              {role.label}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-                      <td className="p-6">
-                        <select
-                          value={user.department || "ไม่มีสังกัด"}
-                          onChange={(e) =>
-                            changeDepartment(
-                              user._id,
-                              e.target.value,
-                              user.name,
-                            )
-                          }
-                          disabled={isProtected}
-                          className={`w-full max-w-[200px] bg-slate-50 dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-xl p-2.5 text-xs font-bold text-slate-700 dark:text-zinc-200 outline-none focus:border-blue-500 transition-all ${isProtected ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
-                        >
-                          <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
-                          <option value="ผู้บริหารสถานศึกษา">
-                            ผู้บริหารสถานศึกษา
+            return (
+              <motion.div
+                key={user._id}
+                variants={item}
+                className="group relative p-6 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-4xl shadow-sm hover:shadow-2xl hover:shadow-blue-500/5 transition-all duration-500 hover:-translate-y-1"
+              >
+                {isProtected && (
+                  <div className="absolute top-4 right-4 text-rose-500/40">
+                    <Lock size={18} />
+                  </div>
+                )}
+                
+                <div className="flex items-start gap-4 mb-8">
+                  <div className="w-14 h-14 rounded-2xl bg-linear-to-br from-zinc-50 to-zinc-100 dark:from-zinc-800 dark:to-zinc-800/50 flex items-center justify-center text-zinc-400 group-hover:from-blue-500 group-hover:to-indigo-600 group-hover:text-white transition-all cursor-default shadow-inner">
+                    <Users size={24} />
+                  </div>
+                  <div className="flex-1 overflow-hidden">
+                    <h3 className="text-xl font-black text-slate-800 dark:text-zinc-100 truncate uppercase tracking-tight">
+                      {user.name}
+                    </h3>
+                    <p className="text-xs font-black text-blue-500 uppercase tracking-widest mt-0.5 opacity-80 italic">
+                      @{user.username}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-6">
+                  {/* Role Select */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1 flex items-center gap-2">
+                      <ShieldCheck size={12} /> บทบาทสิทธิ์
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={allowedRoles.some((r) => r.value === user.role) ? user.role : "user"}
+                        onChange={(e) => changeRole(user._id, e.target.value, user.name)}
+                        disabled={isProtected}
+                        className={`w-full bg-slate-50 dark:bg-zinc-800/50 border border-slate-100 dark:border-zinc-800 rounded-2xl p-3.5 text-xs font-bold text-slate-700 dark:text-zinc-200 outline-none focus:border-blue-500 transition-all appearance-none ${isProtected ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
+                      >
+                        {allowedRoles.map((role) => (
+                          <option key={role.value} value={role.value}>
+                            {role.label}
                           </option>
+                        ))}
+                      </select>
+                      {!isProtected && <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 rotate-90" size={14} />}
+                    </div>
+                  </div>
+
+                  {/* Department Select */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1 flex items-center gap-2">
+                      <Building2 size={12} /> สังกัด / แผนก
+                    </label>
+                    <div className="relative">
+                      <select
+                        value={user.department || "ไม่มีสังกัด"}
+                        onChange={(e) => changeDepartment(user._id, e.target.value, user.name)}
+                        disabled={isProtected}
+                        className={`w-full bg-slate-50 dark:bg-zinc-800/50 border border-slate-100 dark:border-zinc-800 rounded-2xl p-3.5 text-xs font-bold text-slate-700 dark:text-zinc-200 outline-none focus:border-blue-500 transition-all appearance-none ${isProtected ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
+                      >
+                         <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
+                          <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
                           <optgroup label="1. ฝ่ายบริหารทรัพยากร">
-                            <option value="งานบริหารงานทั่วไป">
-                              งานบริหารงานทั่วไป
-                            </option>
-                            <option value="งานบริหารและพัฒนาทรัพยากรบุคคล">
-                              งานบริหารและพัฒนาทรัพยากรบุคคล
-                            </option>
+                            <option value="งานบริหารงานทั่วไป">งานบริหารงานทั่วไป</option>
+                            <option value="งานบริหารและพัฒนาทรัพยากรบุคคล">งานบริหารและพัฒนาทรัพยากรบุคคล</option>
                             <option value="งานการเงิน">งานการเงิน</option>
                             <option value="งานการบัญชี">งานการบัญชี</option>
                             <option value="งานพัสดุ">งานพัสดุ</option>
-                            <option value="งานอาคารสถานที่">
-                              งานอาคารสถานที่
-                            </option>
+                            <option value="งานอาคารสถานที่">งานอาคารสถานที่</option>
                             <option value="งานทะเบียน">งานทะเบียน</option>
                             <option value="งานภารโรง">งานภารโรง</option>
                           </optgroup>
                           <optgroup label="2. ฝ่ายยุทธศาสตร์และแผนงาน">
-                            <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ">
-                              งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ
-                            </option>
-                            <option value="งานมาตรฐานและการประกันคุณภาพ">
-                              งานมาตรฐานและการประกันคุณภาพ
-                            </option>
-                            <option value="งานศูนย์ดิจิทัลและสื่อสารองค์กร">
-                              งานศูนย์ดิจิทัลและสื่อสารองค์กร
-                            </option>
-                            <option value="งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์">
-                              งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์
-                            </option>
-                            <option value="งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ">
-                              งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ
-                            </option>
-                            <option value="งานติดตามและประเมินผลการ">
-                              งานติดตามและประเมินผลการ
-                            </option>
+                            <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ">งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ</option>
+                            <option value="งานมาตรฐานและการประกันคุณภาพ">งานมาตรฐานและการประกันคุณภาพ</option>
+                            <option value="งานศูนย์ดิจิทัลและสื่อสารองค์กร">งานศูนย์ดิจิทัลและสื่อสารองค์กร</option>
+                            <option value="งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์">งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์</option>
+                            <option value="งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ">งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ</option>
                           </optgroup>
                           <optgroup label="3. ฝ่ายพัฒนากิจการนักเรียน นักศึกษา">
-                            <option value="งานกิจกรรมนักเรียนนักศึกษา">
-                              งานกิจกรรมนักเรียนนักศึกษา
-                            </option>
-                            <option value="งานครูที่ปรึกษาและการแนะแนว">
-                              งานครูที่ปรึกษาและการแนะแนว
-                            </option>
-                            <option value="งานปกครองและความปลอดภัยนักเรียนนักศึกษา">
-                              งานปกครองและความปลอดภัยนักเรียนนักศึกษา
-                            </option>
-                            <option value="งานสวัสดิการนักเรียนนักศึกษา">
-                              งานสวัสดิการนักเรียนนักศึกษา
-                            </option>
-                            <option value="งานโครงการพิเศษและการบริการ">
-                              งานโครงการพิเศษและการบริการ
-                            </option>
+                            <option value="งานกิจกรรมนักเรียนนักศึกษา">งานกิจกรรมนักเรียนนักศึกษา</option>
+                            <option value="งานครูที่ปรึกษาและการแนะแนว">งานครูที่ปรึกษาและการแนะแนว</option>
+                            <option value="งานปกครองและความปลอดภัยนักเรียนนักศึกษา">งานปกครองและความปลอดภัยนักเรียนนักศึกษา</option>
+                            <option value="งานสวัสดิการนักเรียนนักศึกษา">งานสวัสดิการนักเรียนนักศึกษา</option>
                           </optgroup>
                           <optgroup label="4. ฝ่ายวิชาการ">
-                            <option value="งานพัฒนาหลักสูตรและการจัดการเรียนรู้">
-                              งานพัฒนาหลักสูตรและการจัดการเรียนรู้
-                            </option>
-                            <option value="งานวัดผลและประเมินผล">
-                              งานวัดผลและประเมินผล
-                            </option>
-                            <option value="งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ">
-                              งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ
-                            </option>
-                            <option value="งานวิทยบริการและเทคโนโลยีการศึกษา">
-                              งานวิทยบริการและเทคโนโลยีการศึกษา
-                            </option>
-                            <option value="งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา">
-                              งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา
-                            </option>
-                            <option value="งานพัฒนาหลักสูตรสายเทคโนโลยี หรือสายปฏิบัติการ">
-                              งานพัฒนาหลักสูตรสายเทคโนโลยี หรือสายปฏิบัติการ
-                            </option>
-                            <option disabled>──────────</option>
-                            <option value="แผนกวิชาช่างยนต์">
-                              แผนกวิชาช่างยนต์
-                            </option>
-                            <option value="แผนกวิชาช่างกลโรงงาน">
-                              แผนกวิชาช่างกลโรงงาน
-                            </option>
-                            <option value="แผนกวิชาช่างเชื่อมโลหะ">
-                              แผนกวิชาช่างเชื่อมโลหะ
-                            </option>
-                            <option value="แผนกวิชาช่างไฟฟ้ากำลัง">
-                              แผนกวิชาช่างไฟฟ้ากำลัง
-                            </option>
-                            <option value="แผนกวิชาช่างอิเล็กทรอนิกส์">
-                              แผนกวิชาช่างอิเล็กทรอนิกส์
-                            </option>
-                            <option value="แผนกวิชาช่างก่อสร้าง">
-                              แผนกวิชาช่างก่อสร้าง
-                            </option>
-                            <option value="แผนกวิชาการบัญชี">
-                              แผนกวิชาการบัญชี
-                            </option>
-                            <option value="แผนกวิชาการตลาด">
-                              แผนกวิชาการตลาด
-                            </option>
-                            <option value="แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล">
-                              แผนกวิชาธุรกิจดิจิทัล
-                            </option>
-                            <option value="แผนกวิชาการโรงแรม">
-                              แผนกวิชาการโรงแรม
-                            </option>
-                            <option value="แผนกวิชาสามัญสัมพันธ์">
-                              แผนกวิชาสามัญสัมพันธ์
-                            </option>
+                            <option value="งานพัฒนาหลักสูตรและการจัดการเรียนรู้">งานพัฒนาหลักสูตรและการจัดการเรียนรู้</option>
+                            <option value="งานวัดผลและประเมินผล">งานวัดผลและประเมินผล</option>
+                            <option value="แผนกวิชาช่างยนต์">แผนกวิชาช่างยนต์</option>
+                            <option value="แผนกวิชาช่างกลโรงงาน">แผนกวิชาช่างกลโรงงาน</option>
+                            <option value="แผนกวิชาช่างไฟฟ้ากำลัง">แผนกวิชาช่างไฟฟ้ากำลัง</option>
+                            <option value="แผนกวิชาช่างอิเล็กทรอนิกส์">แผนกวิชาช่างอิเล็กทรอนิกส์</option>
+                            <option value="แผนกวิชาช่างก่อสร้าง">แผนกวิชาช่างก่อสร้าง</option>
+                            <option value="แผนกวิชาการบัญชี">แผนกวิชาการบัญชี</option>
+                            <option value="แผนกวิชาธุรกิจดิจิทัล">แผนกวิชาธุรกิจดิจิทัล</option>
+                            <option value="แผนกวิชาการโรงแรม">แผนกวิชาการโรงแรม</option>
+                            <option value="แผนกวิชาสามัญสัมพันธ์">แผนกวิชาสามัญสัมพันธ์</option>
                           </optgroup>
-                        </select>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                      </select>
+                      {!isProtected && <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 rotate-90" size={14} />}
+                    </div>
+                  </div>
+                </div>
 
+                <div className="mt-8 pt-4 border-t border-slate-50 dark:border-zinc-800 flex items-center justify-between">
+                   <div className="flex items-center gap-1.5">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Current: {user.role}</span>
+                   </div>
+                   <div className="p-1 text-slate-300 hover:text-blue-500 transition-colors">
+                      <MoreVertical size={14} />
+                   </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+
+        <AnimatePresence>
           {filteredUsers.length === 0 && (
-            <div className="p-20 text-center text-slate-300 dark:text-zinc-700">
-              <Users size={48} className="mx-auto mb-4 opacity-20" />
-              <p className="font-bold">ไม่พบรายชื่อบุคลากร</p>
-            </div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="py-32 flex flex-col items-center justify-center text-slate-300 dark:text-zinc-800 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-[3rem] shadow-inner"
+            >
+              <Users size={64} className="mb-6 opacity-20" />
+              <p className="font-black text-xl uppercase tracking-tighter">ไม่พบรายชื่อบุคลากร</p>
+              <p className="text-sm font-bold uppercase tracking-widest mt-2 opacity-50">No Personnel Found in Records</p>
+            </motion.div>
           )}
+        </AnimatePresence>
+
+        <div className="pt-20 pb-10 text-center opacity-30">
+           <p className="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-400 dark:text-zinc-600">
+             Personnel Authorization & Governance Hub • v2026.03
+           </p>
         </div>
       </div>
     </div>
   );
 }
+

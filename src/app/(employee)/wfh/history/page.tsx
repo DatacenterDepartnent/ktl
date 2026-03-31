@@ -270,21 +270,59 @@ export default function WFHHistoryPage() {
                         </div>
 
                         <div className="flex items-center gap-4 w-full md:w-auto justify-end border-t border-slate-50 dark:border-zinc-800 md:border-none pt-4 md:pt-0">
-                          <div className="flex -space-x-2">
-                            {[1, 2].map((i) => (
-                              <div
-                                key={i}
-                                className="w-8 h-8 rounded-full border-2 border-white dark:border-zinc-900 bg-slate-100 dark:bg-zinc-800 overflow-hidden shadow-sm"
+                          <div className="flex items-center gap-3">
+                            {/* Check-In Photo */}
+                            {record.checkIn?.photoUrl ? (
+                              <Link
+                                href={record.checkIn.photoUrl}
+                                target="_blank"
+                                className="relative w-12 h-16 rounded-xl border-2 border-white dark:border-zinc-800 bg-slate-100 dark:bg-zinc-800 overflow-hidden shadow-md group/img hover:scale-105 transition-all"
                               >
-                                <MapPin
-                                  size={12}
-                                  className="w-full h-full p-2 text-slate-300"
+                                <img
+                                  src={record.checkIn.photoUrl}
+                                  alt="In"
+                                  className="w-full h-full object-cover"
                                 />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+                                  <Search size={14} className="text-white" />
+                                </div>
+                                <div className="absolute bottom-0 inset-x-0 bg-emerald-500/80 text-white text-[7px] font-black uppercase text-center py-0.5">
+                                  Check In
+                                </div>
+                              </Link>
+                            ) : (
+                              <div className="w-12 h-16 rounded-xl border-2 border-dashed border-slate-200 dark:border-zinc-800 flex items-center justify-center text-slate-200">
+                                <MapPin size={16} />
                               </div>
-                            ))}
+                            )}
+
+                            {/* Check-Out Photo */}
+                            {record.checkOut?.photoUrl ? (
+                              <Link
+                                href={record.checkOut.photoUrl}
+                                target="_blank"
+                                className="relative w-12 h-16 rounded-xl border-2 border-white dark:border-zinc-800 bg-slate-100 dark:bg-zinc-800 overflow-hidden shadow-md group/img hover:scale-105 transition-all"
+                              >
+                                <img
+                                  src={record.checkOut.photoUrl}
+                                  alt="Out"
+                                  className="w-full h-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center">
+                                  <Search size={14} className="text-white" />
+                                </div>
+                                <div className="absolute bottom-0 inset-x-0 bg-rose-500/80 text-white text-[7px] font-black uppercase text-center py-0.5">
+                                  Check Out
+                                </div>
+                              </Link>
+                            ) : (
+                              <div className="w-12 h-16 rounded-xl border-2 border-dashed border-slate-200 dark:border-zinc-800 flex items-center justify-center text-slate-200">
+                                <MapPin size={16} />
+                              </div>
+                            )}
                           </div>
                           <ChevronRight
-                            className="text-slate-200 dark:text-zinc-800 group-hover:text-blue-500 group-hover:translate-x-1 transition-all"
+                            className="text-slate-200 dark:text-zinc-800 group-hover:text-blue-500 group-hover:translate-x-1 transition-all md:hidden xl:block"
                             size={20}
                           />
                         </div>

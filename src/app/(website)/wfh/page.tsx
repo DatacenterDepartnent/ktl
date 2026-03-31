@@ -74,8 +74,8 @@ export default function WFHHubPage() {
           <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-all group-hover:rotate-12">
             <User size={100} className="text-blue-500" />
           </div>
-          <div className="flex items-center gap-6 relative z-10">
-            <div className="relative">
+          <div className="flex flex-col md:flex-row items-center md:items-start gap-6 relative z-10 text-center md:text-left">
+            <div className="relative group/avatar">
               <div className="h-24 w-24 rounded-4xl overflow-hidden border-4 border-white dark:border-zinc-800 shadow-2xl shadow-black/10 bg-slate-100 dark:bg-zinc-800 flex items-center justify-center transition-transform duration-500 hover:scale-105">
                 {userImage ? (
                   <img
@@ -96,12 +96,12 @@ export default function WFHHubPage() {
             </div>
             <div className="flex-1 space-y-2">
               <h1
-                className="font-black text-3xl text-slate-800 dark:text-white leading-none tracking-tight truncate max-w-[220px]"
+                className="font-black text-2xl sm:text-3xl text-slate-800 dark:text-white leading-none tracking-tight truncate max-w-[280px] mx-auto md:mx-0"
                 title={userName}
               >
                 {userName}
               </h1>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center justify-center md:justify-start gap-2">
                 <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-2xl bg-blue-50 dark:bg-blue-500/10 border border-blue-100 dark:border-blue-900/30 text-blue-700 dark:text-blue-400 text-[10px] font-black uppercase tracking-[0.2em] shadow-sm">
                   <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />{" "}
                   WFH ACTIVE
