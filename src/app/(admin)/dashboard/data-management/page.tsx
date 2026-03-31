@@ -298,7 +298,7 @@ export default function DataManagementPage() {
           <ShieldCheck size={64} />
         </div>
         <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-800 dark:text-zinc-100 mb-2 underline decoration-red-500 underline-offset-8">
-          ACCESS DENIED
+          ปฏิเสธการเข้าถึง (ACCESS DENIED)
         </h1>
         <p className="text-slate-500 dark:text-zinc-400 font-medium max-w-md">
           พื้นที่นี้จำกัดสิทธิ์เฉพาะ Super Admin เท่านั้น
@@ -325,12 +325,12 @@ export default function DataManagementPage() {
               </div>
               <div>
                 <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-800 dark:text-zinc-100 tracking-tight">
-                  Data Management Pro
+                  ระบบจัดการข้อมูลขั้นสูง
                 </h1>
                 <div className="flex items-center gap-2 mt-2">
                   <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
                   <span className="text-xs font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest">
-                    Super Admin Level Access Required
+                    จำกัดสิทธิ์เฉพาะผู้ดูแลระบบสูงสุด (Super Admin Only)
                   </span>
                 </div>
               </div>
@@ -552,12 +552,12 @@ export default function DataManagementPage() {
                                     className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none focus:border-rose-500 font-bold"
                                   >
                                     <option value="Present">
-                                      มาทำงาน (Present)
+                                      มาทำงาน
                                     </option>
-                                    <option value="Late">มาสาย (Late)</option>
-                                    <option value="Leave">ลา (Leave)</option>
+                                    <option value="Late">มาสาย</option>
+                                    <option value="Leave">ลางาน</option>
                                     <option value="Absent">
-                                      ขาดงาน (Absent)
+                                      ขาดงาน
                                     </option>
                                   </select>
                                 </div>
@@ -611,13 +611,13 @@ export default function DataManagementPage() {
                                     className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none"
                                   >
                                     <option value="pending">
-                                      รออนุมัติ (pending)
+                                      รออนุมัติ
                                     </option>
                                     <option value="approved">
-                                      อนุมัติแล้ว (approved)
+                                      อนุมัติแล้ว
                                     </option>
                                     <option value="rejected">
-                                      ปฏิเสธ (rejected)
+                                      ปฏิเสธ
                                     </option>
                                   </select>
                                 </div>

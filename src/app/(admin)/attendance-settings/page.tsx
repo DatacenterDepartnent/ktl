@@ -71,18 +71,18 @@ export default function AttendanceSettingsPage() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto py-10 px-4 font-sans">
+    <div className="max-w-4xl mx-auto px-2 py-4 md:p-10 font-sans">
       <Toaster />
 
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4 bg-white dark:bg-zinc-900 p-8 rounded-4xl border border-zinc-100 dark:border-zinc-800 shadow-sm shadow-blue-500/5">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4 bg-white dark:bg-zinc-900 p-6 rounded-4xl border border-zinc-100 dark:border-zinc-800 shadow-sm shadow-blue-500/5">
         <div className="flex items-center gap-5">
           <div className="p-4 bg-linear-to-br from-blue-500 to-indigo-600 text-white rounded-3xl shadow-lg shadow-blue-500/20">
             <Clock size={32} />
           </div>
           <div>
-            <h1 className="text-3xl font-black text-zinc-900 dark:text-white tracking-tight">
-              Attendance Settings
+            <h1 className="text-xl sm:text-3xl font-black text-zinc-900 dark:text-white tracking-tight">
+              ตั้งค่าเวลาการลงเวลา
             </h1>
             <p className="text-sm font-bold text-zinc-400 mt-1 uppercase tracking-widest flex items-center gap-2">
               <ShieldCheck size={14} className="text-emerald-500" />
@@ -96,7 +96,7 @@ export default function AttendanceSettingsPage() {
         {settings.map((item) => (
           <div
             key={item.role}
-            className="bg-white dark:bg-zinc-900 p-8 rounded-4xl border border-zinc-100 dark:border-zinc-800 shadow-sm transition-all hover:shadow-xl hover:shadow-blue-500/5 group"
+            className="bg-white dark:bg-zinc-900 p-6 rounded-4xl border border-zinc-100 dark:border-zinc-800 shadow-sm transition-all hover:shadow-xl hover:shadow-blue-500/5 group"
           >
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
               <div className="flex-1">
@@ -104,7 +104,7 @@ export default function AttendanceSettingsPage() {
                   {item.roleName}
                 </h3>
                 <p className="text-xs font-bold text-zinc-400 uppercase tracking-tighter">
-                  Role: <span className="text-blue-500">{item.role}</span>
+                  บทบาทสิทธิ์: <span className="text-blue-500">{item.role}</span>
                 </p>
               </div>
 

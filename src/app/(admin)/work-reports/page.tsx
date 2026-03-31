@@ -61,7 +61,7 @@ export default function AdminWorkReportsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-neutral-950 py-6 px-2 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-neutral-950 px-2 py-4 md:p-8 font-sans">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white dark:bg-neutral-900 p-6 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-neutral-800">
@@ -70,11 +70,11 @@ export default function AdminWorkReportsPage() {
               <FileText size={32} />
             </div>
             <div>
-              <h1 className="text-2xl font-black text-slate-800 dark:text-neutral-100 uppercase tracking-tight">
+              <h1 className="text-lg sm:text-2xl font-black text-slate-800 dark:text-neutral-100 uppercase tracking-tight">
                 ระบบรายงานการปฏิบัติงาน
               </h1>
               <p className="text-sm text-slate-500 font-medium mt-1">
-                Review and monitor daily individual work reports
+                ตรวจสอบและติดตามรายงานการปฏิบัติงานรายบุคคล
               </p>
             </div>
           </div>
@@ -84,7 +84,7 @@ export default function AdminWorkReportsPage() {
               onClick={fetchReports}
               className="px-4 py-2 bg-white dark:bg-neutral-900 text-slate-800 dark:text-white rounded-xl shadow-sm text-xs font-bold hover:bg-slate-50 transition-all active:scale-95"
             >
-              Refresh Data
+              รีเฟรชข้อมูล
             </button>
           </div>
         </div>
@@ -93,7 +93,7 @@ export default function AdminWorkReportsPage() {
         <div className="bg-white dark:bg-neutral-900 p-6 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-neutral-800 grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
           <div className="md:col-span-2">
             <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
-              Search Employee / Dept
+              ค้นหาจากชื่อพนักงาน / แผนก
             </label>
             <div className="relative">
               <Search
@@ -112,7 +112,7 @@ export default function AdminWorkReportsPage() {
 
           <div>
             <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
-              Start Date
+              วันที่เริ่ม
             </label>
             <div className="relative">
               <Calendar
@@ -130,7 +130,7 @@ export default function AdminWorkReportsPage() {
 
           <div>
             <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
-              End Date
+              วันที่สิ้นสุด
             </label>
             <div className="relative">
               <Calendar
@@ -211,13 +211,13 @@ export default function AdminWorkReportsPage() {
                         })}
                       </span>
                       <span className="bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 px-3 py-1 rounded-full font-black text-[10px]">
-                        {report.activities?.length || 0} TASKS
+                        {report.activities?.length || 0} งานต่างๆ
                       </span>
                     </div>
 
                     <div className="p-4 bg-slate-50 dark:bg-neutral-800/50 rounded-2xl border border-slate-100 dark:border-neutral-800">
                       <p className="text-xs font-bold text-slate-500 dark:text-neutral-400 uppercase tracking-widest mb-2 flex items-center gap-1.5 border-b border-slate-200 dark:border-neutral-700 pb-2">
-                        <ChevronRight size={14} /> Summary
+                        <ChevronRight size={14} /> สรุปงาน
                       </p>
                       <p className="text-sm text-slate-700 dark:text-neutral-300 line-clamp-2 italic leading-relaxed">
                         "{report.summary}"
@@ -227,7 +227,7 @@ export default function AdminWorkReportsPage() {
 
                   <div className="mt-6 flex items-center justify-end">
                     <span className="text-indigo-500 text-[10px] font-black uppercase tracking-widest flex items-center gap-1 group-hover:gap-2 transition-all">
-                      View Details <ChevronRight size={14} />
+                      ดูรายละเอียด <ChevronRight size={14} />
                     </span>
                   </div>
                 </motion.div>
@@ -286,7 +286,7 @@ export default function AdminWorkReportsPage() {
                   <div className="md:col-span-2 space-y-6">
                     <section>
                       <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 border-b border-slate-100 pb-2">
-                        Activities Detail
+                        รายละเอียดกิจกรรมทางการปฏิบัติงาน
                       </h4>
                       <div className="space-y-4">
                         {selectedReport.activities?.map(
@@ -322,7 +322,7 @@ export default function AdminWorkReportsPage() {
                   <div className="space-y-6">
                     <section className="p-5 bg-slate-50 dark:bg-neutral-800/50 rounded-3xl border border-slate-100 dark:border-neutral-800">
                       <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3">
-                        Overall Summary
+                        สรุปภาพรวมการทำงาน
                       </h4>
                       <p className="text-xs text-slate-700 dark:text-neutral-300 leading-relaxed italic">
                         "{selectedReport.summary}"
@@ -332,7 +332,7 @@ export default function AdminWorkReportsPage() {
                     {selectedReport.problems && (
                       <section className="p-5 bg-rose-50 dark:bg-rose-900/10 rounded-3xl border border-rose-100 dark:border-rose-900/20">
                         <h4 className="text-[10px] font-black text-rose-400 uppercase tracking-[0.2em] mb-3">
-                          Problems Found
+                          ปัญหาและอุปสรรคที่พบ
                         </h4>
                         <p className="text-xs text-rose-700 dark:text-rose-300 leading-relaxed">
                           {selectedReport.problems}
@@ -343,7 +343,7 @@ export default function AdminWorkReportsPage() {
                     {selectedReport.plansNextDay && (
                       <section className="p-5 bg-emerald-50 dark:bg-emerald-900/10 rounded-3xl border border-emerald-100 dark:border-emerald-900/20">
                         <h4 className="text-[10px] font-black text-emerald-400 uppercase tracking-[0.2em] mb-3">
-                          Next Day Plan
+                          แผนการปฏิบัติงานวันถัดไป
                         </h4>
                         <p className="text-xs text-emerald-700 dark:text-emerald-300 leading-relaxed">
                           {selectedReport.plansNextDay}
@@ -357,8 +357,8 @@ export default function AdminWorkReportsPage() {
                 {selectedReport.images && selectedReport.images.length > 0 && (
                   <section className="pt-4">
                     <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                      <ImageIcon size={14} className="text-blue-500" /> Evidence
-                      Photos ({selectedReport.images.length})
+                      <ImageIcon size={14} className="text-blue-500" /> รูปภาพหลักฐานประกอบ
+                      ({selectedReport.images.length})
                     </h4>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                       {selectedReport.images.map((img: string, idx: number) => (
@@ -380,14 +380,14 @@ export default function AdminWorkReportsPage() {
 
                 <div className="pt-8 border-t border-slate-100 dark:border-neutral-800 flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
                   <span>
-                    Submitted:{" "}
+                    ส่งรายงานเมื่อ:{" "}
                     {new Date(selectedReport.createdAt).toLocaleString(
                       "th-TH",
                       { timeZone: "Asia/Bangkok" },
                     )}
                   </span>
                   <span>
-                    Last Updated:{" "}
+                    แก้ไขล่าสุดเมื่อ:{" "}
                     {new Date(selectedReport.updatedAt).toLocaleString(
                       "th-TH",
                       { timeZone: "Asia/Bangkok" },

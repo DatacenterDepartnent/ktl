@@ -31,7 +31,7 @@ const MapDashboard = dynamic(() => import("@/components/MapDashboard"), {
       <div className="flex flex-col items-center gap-3">
         <LucideLoader className="animate-spin text-blue-500" size={32} />
         <p className="text-[10px] font-black uppercase tracking-widest">
-          Initializing Satellite Data...
+           กำลังเรียกข้อมูล...
         </p>
       </div>
     </div>
@@ -88,7 +88,7 @@ export default function AdminAttendanceDashboard() {
           dy={8}
           textAnchor="middle"
           fill="currentColor"
-          className="font-black text-3xl fill-slate-800 dark:fill-white transition-colors duration-500"
+          className="font-black text-2xl md:text-3xl fill-slate-800 dark:fill-white transition-colors duration-500"
         >
           {total}
         </text>
@@ -100,33 +100,33 @@ export default function AdminAttendanceDashboard() {
           fill="#94a3b8"
           className="uppercase text-[9px] font-black tracking-[0.2em] fill-slate-400"
         >
-          Total
+          <span>ทั้งหมด</span>
         </text>
       </g>
     );
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 py-12 px-5 font-sans selection:bg-blue-500/30 overflow-hidden relative">
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 px-2 py-4 md:p-6 font-sans selection:bg-blue-500/30 overflow-hidden relative">
       {/* Background Blobs */}
       <div className="fixed top-[-10%] left-[-10%] w-[60%] h-[60%] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="fixed bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-emerald-500/5 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-7xl mx-auto space-y-12 relative z-10">
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 text-left">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 text-left">
           <div className="space-y-3">
             <div className="flex items-center gap-4">
               <div className="p-2.5 bg-blue-600 rounded-2xl text-white shadow-2xl shadow-blue-500/20 border border-blue-400 group hover:rotate-6 transition-transform">
                 <Layers size={22} />
               </div>
-              <h1 className="text-4xl md:text-5xl font-black text-slate-800 dark:text-white tracking-tighter uppercase leading-none">
-                Attendance <span className="text-blue-600">Hub</span>
+              <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-slate-800 dark:text-white tracking-tighter uppercase leading-none">
+                ระบบข้อมูล <span className="text-blue-600">การเข้างาน</span>
               </h1>
             </div>
             <p className="text-slate-400 dark:text-zinc-500 text-[11px] font-black uppercase tracking-[0.25em] pl-1 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              Enterprise Monitoring System v2.0
+              ระบบติดตามผลการปฏิบัติงานองค์กร v2.0
             </p>
           </div>
 
@@ -158,7 +158,7 @@ export default function AdminAttendanceDashboard() {
               delay: 0,
             },
             {
-              label: "On-Time Status",
+              label: "สถานะการมาทำงานปกติ (ตรงเวลา)",
               val: data[0].value,
               unit: "staff",
               icon: Activity,
@@ -166,7 +166,7 @@ export default function AdminAttendanceDashboard() {
               delay: 0.1,
             },
             {
-              label: "Delayed Arrival",
+              label: "สถานะการเข้างาน (สาย)",
               val: data[1].value,
               unit: "staff",
               icon: Clock,
@@ -174,7 +174,7 @@ export default function AdminAttendanceDashboard() {
               delay: 0.2,
             },
             {
-              label: "Absent / Leave",
+              label: "สถานะการลางาน / ขาดงาน",
               val: data[2].value,
               unit: "staff",
               icon: AlertTriangle,
@@ -189,10 +189,10 @@ export default function AdminAttendanceDashboard() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: stat.delay, type: "spring", damping: 15 }}
-                className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-4xl p-8 shadow-2xl shadow-black/3 relative group overflow-hidden transition-all hover:shadow-indigo-500/5 hover:-translate-y-1.5"
+                className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-4xl p-6 shadow-2xl shadow-black/3 relative group overflow-hidden transition-all hover:shadow-indigo-500/5 hover:-translate-y-1.5"
               >
                 <div
-                  className={`absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-all group-hover:scale-125 duration-700 text-${stat.theme}-600`}
+                  className={`absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-all group-hover:scale-125 duration-700 text-${stat.theme}-600`}
                 >
                   <Icon size={120} />
                 </div>
@@ -222,13 +222,13 @@ export default function AdminAttendanceDashboard() {
         </div>
 
         {/* Content Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-12 ">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 pb-12 ">
           {/* Map Section */}
           <motion.div
             initial={{ opacity: 0, scale: 0.98 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.4 }}
-            className="lg:col-span-2 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-4xl p-5 shadow-2xl shadow-black/3 relative overflow-hidden group"
+            className=""
           >
             {/* <div className="absolute top-10 left-10 z-20">
               <div className="px-2 py-2 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl rounded-2xl border border-slate-100 dark:border-zinc-800 flex items-center gap-3 shadow-2xl">
@@ -248,7 +248,7 @@ export default function AdminAttendanceDashboard() {
             initial={{ opacity: 0, x: 30 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.5 }}
-            className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-4xl p-10 shadow-2xl shadow-black/3 overflow-hidden group relative flex flex-col"
+            className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-4xl p-6 shadow-2xl shadow-black/3 overflow-hidden group relative flex flex-col"
           >
             <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition-all -rotate-12 duration-1000 scale-150">
               <PieIcon size={140} className="text-blue-500" />
@@ -256,10 +256,10 @@ export default function AdminAttendanceDashboard() {
 
             <div className="relative z-10 mb-10">
               <h3 className="text-2xl font-black text-slate-800 dark:text-white leading-tight tracking-tighter uppercase mb-2">
-                Status <span className="text-blue-600">Mix</span>
+                สัดส่วน <span className="text-blue-600">สถานะ</span>
               </h3>
               <p className="text-[10px] text-slate-400 dark:text-zinc-500 font-black uppercase tracking-widest pl-1">
-                Presence Distribution Matrix
+                สรุปภาพรวมการเข้างานรายวัน
               </p>
             </div>
 
@@ -271,7 +271,7 @@ export default function AdminAttendanceDashboard() {
                     size={48}
                   />
                   <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.3em]">
-                    Processing Stats...
+                    กำลังประมวลผลข้อมูล...
                   </p>
                 </div>
               ) : (
@@ -369,7 +369,7 @@ export default function AdminAttendanceDashboard() {
                 <div className="flex items-center gap-3 text-emerald-500 group-hover:translate-x-1 transition-transform">
                   <TrendingUp size={18} />
                   <span className="text-[10px] font-black uppercase tracking-[0.2em]">
-                    Efficiency Stable
+                    ประสิทธิภาพการทำงานปกติ
                   </span>
                 </div>
                 <div className="p-2.5 bg-slate-50 dark:bg-zinc-800 rounded-xl text-slate-300 dark:text-zinc-600 hover:text-blue-500 transition-colors">
@@ -382,7 +382,7 @@ export default function AdminAttendanceDashboard() {
 
         <div className="pt-16 pb-8 text-center border-t border-slate-100 dark:border-zinc-900">
           <p className="text-[10px] text-slate-300 dark:text-zinc-700 font-black uppercase tracking-[0.5em] leading-loose">
-            Precision Management Protocol • KTL-Hub Enterprise Edition <br />©
+            ระบบศูนย์กลางข้อมูล KTL-Hub (Enterprise Edition) <br />©
             2026 DATACENTER DEPARTMENT
           </p>
         </div>

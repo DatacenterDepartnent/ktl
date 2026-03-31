@@ -147,16 +147,16 @@ export default function LeaveApprovalsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 p-4 md:p-8 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 px-2 py-4 md:p-8 font-sans">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="bg-white dark:bg-zinc-900 rounded-3xl p-4 shadow-sm border border-slate-200 dark:border-zinc-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex-1">
-            <h1 className="text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2">
+            <h1 className="text-lg sm:text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2">
               <ShieldCheck className="text-indigo-500" /> ระบบอนุมัติการลางาน
             </h1>
             <p className="text-slate-500 text-sm mt-1">
-              จัดการคำขอลาป่วย ลากิจ ทบทวนและอนุมัติใบรับรองแพทย์
+              ทบทวนและอนุมัติคำขอลาป่วย ลากิจ และตรวจสอบใบรับรองแพทย์
             </p>
           </div>
 
@@ -188,7 +188,7 @@ export default function LeaveApprovalsPage() {
               title="Export ข้อมูลเป็นไฟล์ CSV/Excel"
             >
               <Download size={18} />{" "}
-              <span className="hidden sm:inline">Export</span>
+              <span className="hidden sm:inline">ส่งออกข้อมูล</span>
             </button>
           </div>
         </div>
@@ -226,7 +226,7 @@ export default function LeaveApprovalsPage() {
                         <h3 className="text-lg font-bold text-slate-800 dark:text-white flex items-center gap-2">
                           {leave.user?.name ||
                             leave.user?.username ||
-                            "Unknown Employee"}
+                            "ไม่ระบุชื่อบุคลากร"}
                           <span
                             className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-widest border ${getStatusColor(leave.status)}`}
                           >
@@ -336,10 +336,10 @@ export default function LeaveApprovalsPage() {
                     {loadingMore ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        กำลังโหลดเพิ่มเติม...
+                        กำลังโหลดเพิ่ม...
                       </>
                     ) : (
-                      "แสดงข้อมูลเพิ่มเติม (Load 20 More)"
+                      "แสดงเพิ่มอีก 20 รายการ"
                     )}
                   </button>
                 </div>

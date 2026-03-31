@@ -106,11 +106,11 @@ export default function ManageRolesPage() {
     { value: "deputy_strategy", label: "รอง ผอ. (แผนงาน)" },
     { value: "deputy_activities", label: "รอง ผอ. (กิจกรรม)" },
     { value: "deputy_student_affairs", label: "รอง ผอ. (นักเรียน)" },
-    { value: "teacher", label: "ครู (TEACHER)" },
-    { value: "hr", label: "ฝ่ายบุคคล (HR)" },
-    { value: "staff", label: "เจ้าหน้าที่ (STAFF)" },
-    { value: "janitor", label: "ภารโรง (JANITOR)" },
-    { value: "user", label: "ผู้ใช้ทั่วไป (USER)" },
+    { value: "teacher", label: "ครูผู้สอน" },
+    { value: "hr", label: "เจ้าหน้าที่ฝ่ายบุคคล" },
+    { value: "staff", label: "เจ้าหน้าที่" },
+    { value: "janitor", label: "นักการภารโรง" },
+    { value: "user", label: "ผู้ใช้ทั่วไป" },
   ];
 
   if (loading) {
@@ -125,7 +125,7 @@ export default function ManageRolesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 dark:bg-zinc-950 p-2 md:p-8 py-12 font-sans">
+    <div className="min-h-screen bg-slate-100 dark:bg-zinc-950 px-2 py-4 md:p-8 font-sans">
       <Toaster position="top-right" />
 
       <div className="max-w-6xl mx-auto space-y-6">
@@ -139,12 +139,12 @@ export default function ManageRolesPage() {
               <ArrowLeft size={20} />
             </Link>
             <div>
-              <h1 className="text-2xl font-black text-slate-800 dark:text-zinc-100 uppercase flex items-center gap-2">
+              <h1 className="text-lg sm:text-2xl font-black text-slate-800 dark:text-zinc-100 uppercase flex items-center gap-2">
                 <UserCog size={24} className="text-blue-600" />
                 จัดการสิทธิ์บุคลากร
               </h1>
               <p className="text-xs text-slate-400 dark:text-zinc-500 font-bold uppercase tracking-widest">
-                Manage User Roles & Departments
+                จัดการบทบาทสิทธิ์และสังกัดแผนกบุคลากร
               </p>
             </div>
           </div>
@@ -170,9 +170,9 @@ export default function ManageRolesPage() {
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-slate-50 dark:bg-zinc-800/50 border-b border-slate-200 dark:border-zinc-800 text-[10px] uppercase font-black text-slate-400 dark:text-zinc-500 tracking-widest">
-                  <th className="p-6">ชื่อบุคลากร / ชื่อผู้ใช้</th>
-                  <th className="p-6">สิทธิ์ที่อนุญาตให้เปลี่ยน</th>
-                  <th className="p-6">สังกัด / แผนก</th>
+                  <th className="px-2 md:px-6 py-4 md:py-6">ชื่อบุคลากร / ชื่อผู้ใช้</th>
+                  <th className="px-2 md:px-6 py-4 md:py-6">สิทธิ์ที่อนุญาตให้เปลี่ยน</th>
+                  <th className="px-2 md:px-6 py-4 md:py-6">สังกัด / แผนก</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-zinc-800">
