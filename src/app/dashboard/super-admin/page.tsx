@@ -317,10 +317,10 @@ export default function SuperAdminPage() {
                 <ShieldCheck className="w-8 h-8 text-rose-600" />
               </div>
               <div>
-                <h1 className="text-4xl font-black text-slate-800 dark:text-white tracking-tighter uppercase leading-none mb-2">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-800 dark:text-white tracking-tighter uppercase leading-none mb-2">
                   ศูนย์ควบคุม<span className="text-rose-600">จัดการระบบ</span>
                 </h1>
-                <p className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-[0.3em] pl-1 flex items-center gap-2">
+                <p className="text-xs font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest pl-1 flex items-center gap-2">
                   <span className="w-1.5 h-1.5 bg-rose-500 rounded-full animate-pulse" />
                   สิทธิ์ผู้ดูแลระบบสูงสุด (Super Admin)
                 </p>
@@ -398,11 +398,11 @@ export default function SuperAdminPage() {
               >
                 <item.icon size={60} />
               </div>
-              <p className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-2 flex items-center gap-2">
+              <p className="text-xs font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-2 flex items-center gap-2">
                 {item.label}
               </p>
               <h3
-                className={`text-4xl font-black ${item.color} tracking-tighter tabular-nums`}
+                className={`text-2xl sm:text-3xl lg:text-4xl font-black ${item.color} tracking-tighter tabular-nums`}
               >
                 {item.val || 0}
               </h3>
@@ -421,7 +421,7 @@ export default function SuperAdminPage() {
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-zinc-950 rounded-2xl border border-slate-100 dark:border-zinc-800">
               <Users size={16} className="text-slate-400" />
-              <span className="text-[11px] font-black text-slate-800 dark:text-white uppercase tabular-nums">
+              <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white uppercase tabular-nums">
                 รายชื่อทั้งหมด {filteredUsers.length} คน
               </span>
             </div>
@@ -430,7 +430,7 @@ export default function SuperAdminPage() {
           <div className="overflow-x-auto overflow-y-visible">
             <table className="w-full text-left">
               <thead>
-                <tr className="bg-slate-50/50 dark:bg-zinc-950/50 text-slate-400 dark:text-zinc-500 text-[10px] uppercase font-black tracking-widest">
+                <tr className="bg-slate-50/50 dark:bg-zinc-950/50 text-slate-400 dark:text-zinc-500 text-xs uppercase font-bold tracking-widest">
                   <th className="p-4 text-center w-24">ลำดับ</th>
                   <th className="p-4">ข้อมูลบุคลากร</th>
                   <th className="p-4 text-center">สิทธิ์การใช้งาน</th>
@@ -476,7 +476,7 @@ export default function SuperAdminPage() {
                       <td className="p-4">
                         <div className="flex items-center gap-4">
                           <div>
-                            <div className="font-black text-slate-800 dark:text-white text-lg tracking-tight uppercase group-hover:text-blue-600 transition-colors">
+                            <div className="font-bold text-slate-800 dark:text-white text-base md:text-lg tracking-tight uppercase group-hover:text-blue-600 transition-colors leading-tight">
                               {user.name}
                             </div>
                             <div className="flex items-center gap-2">
@@ -498,7 +498,7 @@ export default function SuperAdminPage() {
                           onChange={(e) =>
                             changeRole(user._id, e.target.value, user.name)
                           }
-                          className={`text-[9px] font-black border-2 rounded-2xl px-4 py-2.5 outline-none uppercase transition-all focus:ring-4 focus:ring-current/10 ${getRoleStyle(user.role || "user")}`}
+                          className={`text-xs font-bold border-2 rounded-2xl px-4 py-2.5 outline-none uppercase transition-all focus:ring-4 focus:ring-current/10 ${getRoleStyle(user.role || "user")}`}
                         >
                           <option value="super_admin">
                             SUPER_ADMIN (สูงสุด)
@@ -535,7 +535,7 @@ export default function SuperAdminPage() {
                               user.name,
                             )
                           }
-                          className="text-[9px] font-black border-2 border-slate-100 dark:border-zinc-800 rounded-2xl px-4 py-2.5 outline-none text-slate-600 dark:text-zinc-400 bg-slate-50 dark:bg-zinc-950 focus:border-blue-500 transition-all cursor-pointer max-w-[180px]"
+                          className="text-xs font-bold border-2 border-slate-100 dark:border-zinc-800 rounded-2xl px-4 py-2.5 outline-none text-slate-600 dark:text-zinc-400 bg-slate-50 dark:bg-zinc-950 focus:border-blue-500 transition-all cursor-pointer max-w-[180px]"
                         >
                           <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
                           <option value="ผู้บริหารสถานศึกษา">
@@ -701,17 +701,17 @@ export default function SuperAdminPage() {
                 <h2 className="text-xl font-black text-white uppercase tracking-tight">
                   ประวัติกิจกรรมระบบ
                 </h2>
-                <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mt-1">
+                <p className="text-xs font-bold text-zinc-500 uppercase tracking-widest mt-1">
                   รายการบันทึกกิจกรรมล่าสุด
                 </p>
               </div>
             </div>
-            <button
-              onClick={handleClearLogs}
-              className="px-6 py-3 bg-white/5 hover:bg-rose-500 text-zinc-400 hover:text-white text-[10px] font-black uppercase tracking-widest rounded-2xl border border-white/10 hover:border-rose-500 transition-all"
-            >
-              ล้างประวัติกิจกรรม
-            </button>
+              <button
+                onClick={handleClearLogs}
+                className="px-6 py-3 bg-white/5 hover:bg-rose-500 text-zinc-400 hover:text-white text-xs font-bold uppercase tracking-widest rounded-2xl border border-white/10 hover:border-rose-500 transition-all"
+              >
+                ล้างประวัติกิจกรรม
+              </button>
           </div>
 
           <div className="p-4 max-h-[700px] overflow-y-auto custom-scrollbar-dark space-y-6">
@@ -739,7 +739,7 @@ export default function SuperAdminPage() {
                   </div>
                   <div className="flex-1 pb-6">
                     <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-2">
-                      <span className="text-[11px] font-black text-zinc-500 tabular-nums">
+                      <span className="text-xs font-bold text-zinc-500 tabular-nums">
                         {new Date(log.timestamp).toLocaleTimeString("th-TH", {
                           timeZone: "Asia/Bangkok",
                           hour12: false,
@@ -749,12 +749,12 @@ export default function SuperAdminPage() {
                         {log.userName || "SYSTEM_KERN"}
                       </span>
                       <span
-                        className={`text-[8px] font-black px-3 py-1 rounded-lg uppercase tracking-widest border ${getActionStyle(log.action)}`}
+                        className={`text-[10px] font-bold px-3 py-1 rounded-lg uppercase tracking-widest border ${getActionStyle(log.action)}`}
                       >
                         {log.action}
                       </span>
                       {log.module && (
-                        <span className="text-[8px] font-black px-3 py-1 rounded-lg uppercase tracking-widest border border-cyan-500/30 bg-cyan-500/10 text-cyan-400">
+                        <span className="text-[10px] font-bold px-3 py-1 rounded-lg uppercase tracking-widest border border-cyan-500/30 bg-cyan-500/10 text-cyan-400">
                           {log.module}
                         </span>
                       )}
@@ -779,7 +779,7 @@ export default function SuperAdminPage() {
                         </p>
                       )}
                       <div className="mt-4 flex items-center gap-4 border-t border-white/5 pt-3">
-                        <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-tight flex items-center gap-1.5">
+                        <div className="text-xs font-bold text-zinc-500 uppercase tracking-tight flex items-center gap-1.5">
                           {new Date(log.timestamp).toLocaleDateString("th-TH", {
                             timeZone: "Asia/Bangkok",
                             weekday: "long",
@@ -788,7 +788,7 @@ export default function SuperAdminPage() {
                             day: "numeric",
                           })}
                         </div>
-                        <div className="text-[8px] font-black text-zinc-700 uppercase tracking-widest">
+                        <div className="text-[10px] font-bold text-zinc-700 uppercase tracking-widest">
                           IP: {log.ip || "REDACTED"}
                         </div>
                       </div>
@@ -802,7 +802,7 @@ export default function SuperAdminPage() {
 
         {/* Footer Protocol */}
         <div className="pt-12 pb-8 text-center border-t border-slate-100 dark:border-zinc-900/50">
-          <p className="text-[9px] text-slate-300 dark:text-zinc-800 font-black uppercase tracking-[0.4em] leading-loose">
+          <p className="text-xs text-slate-400 dark:text-zinc-700 font-bold uppercase tracking-[0.4em] leading-loose">
             ระบบจัดเก็บข้อมูลสิทธิ์ระดับสูง <br />
             เฉพาะผู้ใช้ที่ได้รับการอนุญาตเท่านั้น • รุ่นพัฒนา v2.0
           </p>
