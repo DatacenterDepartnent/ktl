@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
 import {
@@ -13,6 +13,8 @@ import {
   ExternalLink,
   ShieldCheck,
   Download,
+  X,
+  Maximize2,
 } from "lucide-react";
 
 export default function LeaveApprovalsPage() {
@@ -22,6 +24,7 @@ export default function LeaveApprovalsPage() {
   const [skip, setSkip] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [filter, setFilter] = useState("pending"); // pending, approved, rejected, all
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   const LIMIT = 20;
 
@@ -281,15 +284,13 @@ export default function LeaveApprovalsPage() {
                         เอกสารแนบ
                       </strong>
                       {leave.attachmentUrl ? (
-                        <a
-                          href={leave.attachmentUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 p-3 rounded-xl transition-colors font-medium border border-blue-100"
+                        <button
+                          onClick={() => setSelectedImage(leave.attachmentUrl)}
+                          className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 p-3 rounded-xl transition-colors font-medium border border-blue-100 w-full"
                         >
                           <FileText size={16} /> ดูรูปถ่าย/เอกสาร{" "}
-                          <ExternalLink size={14} />
-                        </a>
+                          <Maximize2 size={14} />
+                        </button>
                       ) : (
                         <div className="text-sm text-slate-400 italic bg-slate-50 dark:bg-zinc-950 p-3 rounded-xl border border-slate-100 dark:border-zinc-800">
                           ไม่มีไฟล์แนบส่งมา
@@ -348,6 +349,57 @@ export default function LeaveApprovalsPage() {
           )}
         </div>
       </div>
+
+      {/* Attachment Modal */}
+      <AnimatePresence>
+        {selectedImage && (
+          <div className="fixed inset-0 z-60 flex items-center justify-center p-4 md:p-10">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSelectedImage(null)}
+              className="absolute inset-0 bg-slate-900/90 backdrop-blur-xl cursor-zoom-out"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative max-w-5xl w-full bg-white dark:bg-zinc-900 rounded-3xl overflow-hidden shadow-2xl border border-white/10"
+            >
+              <div className="p-4 border-b border-slate-100 dark:border-zinc-800 flex items-center justify-between">
+                <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-widest flex items-center gap-2">
+                  <FileText size={18} className="text-blue-500" />
+                  หลักฐานประกอบการลา
+                </h3>
+                <button
+                  onClick={() => setSelectedImage(null)}
+                  className="p-2 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-xl text-slate-400 hover:text-rose-500 transition-all"
+                >
+                  <X size={24} />
+                </button>
+              </div>
+              <div className="bg-slate-50 dark:bg-black p-2 flex items-center justify-center">
+                <img
+                  src={selectedImage}
+                  alt="Attachment Preview"
+                  className="max-w-full max-h-[70vh] object-contain rounded-xl shadow-lg"
+                />
+              </div>
+              <div className="p-4 bg-slate-50 dark:bg-zinc-900 border-t border-slate-100 dark:border-zinc-800 flex justify-center">
+                <a
+                  href={selectedImage}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-blue-500/20"
+                >
+                  เปิดไฟล์ขนาดเต็ม
+                </a>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

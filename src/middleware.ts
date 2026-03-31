@@ -56,10 +56,19 @@ export default auth((req) => {
       if (!allowedFullAdminRoles.includes(userRole)) {
         return NextResponse.redirect(new URL("/attendance-dashboard", nextUrl.origin));
       }
+
+      // 3.2b เฉพาะ super_admin เท่านั้นสำหรับฟีเจอร์ "จัดการรายงานลูกน้องทุกแผนก"
+      if (pathname.startsWith("/work-reports-management")) {
+        if (userRole !== "super_admin") {
+          return NextResponse.redirect(new URL("/attendance-dashboard", nextUrl.origin));
+        }
+      }
     }
 
-    // 3.3 สิทธิ์เข้าหน้าจัดการผู้ใช้/ตั้งค่าระบบ ใน Dashboard เดิม (เฉพาะ super_admin)
-    if (pathname.startsWith("/dashboard/users") || pathname.startsWith("/dashboard/settings")) {
+    // 3.3 สิทธิ์เข้าหน้าจัดการข้อมูล/ผู้ใช้/ตั้งค่าระบบ (เฉพาะ super_admin)
+    if (pathname.startsWith("/dashboard/users") || 
+        pathname.startsWith("/dashboard/settings") ||
+        pathname.startsWith("/dashboard/data-management")) {
       if (userRole !== "super_admin") {
         return NextResponse.redirect(new URL("/dashboard", nextUrl.origin));
       }

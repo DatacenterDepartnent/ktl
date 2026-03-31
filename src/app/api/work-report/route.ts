@@ -32,8 +32,7 @@ export async function GET(req: Request) {
 
     // Case 1: Fetch all reports for a date range (Admin only)
     if (startDateParam && endDateParam) {
-      const allowedRoles = ['super_admin', 'admin', 'hr', 'director', 'deputy_resource', 'deputy_strategy', 'deputy_activities', 'deputy_student_affairs', 'editor', 'staff'];
-      if (!allowedRoles.includes(userRole)) {
+      if (userRole !== 'super_admin') {
          return NextResponse.json({ error: "Forbidden" }, { status: 403 });
       }
 
