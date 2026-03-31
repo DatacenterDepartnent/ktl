@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import clientPromise from "@/lib/db";
 import bcrypt from "bcryptjs";
 import { ObjectId } from "mongodb";
+import { randomUUID } from "node:crypto";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [
@@ -17,6 +18,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const client = await clientPromise;
         const db = client.db("ktltc_db");
+        // ค้นหา username แบบ Case-insensitive
         const user = await db
           .collection("users")
           .findOne({ username: { $regex: new RegExp(`^${(credentials.username as string).trim()}$`, "i") } });
@@ -34,10 +36,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           throw new Error("บัญชีของคุณยังรอการอนุมัติจาก Super Admin กรุณาติดต่อผู้ดูแลระบบ");
         }
 
-        // ✅ สร้างเลข session ID ใหม่ทุกครั้งที่ล็อกอิน
-        const sessionId = crypto.randomUUID();
+        // ✅ สร้างเลข session ID ใหม่ทุกครั้งที่ล็อกอิน (ใช้ UUID ที่เสถียร)
+        const sessionId = randomUUID();
 
-        // ✅ ล้าง global session cache ของ user คนนี้ออกทั้งหมด
+        // ✅ ล้าง global session cache ของ user คนนี้ออกทั้งหมด (ช่วยให้ Login ใหม่ เคลียร์ error เก่า)
         if ((global as any)._sessionCache) {
           const userId = user._id.toString();
           Object.keys((global as any)._sessionCache).forEach((key) => {
@@ -58,7 +60,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           name: user.name,
           username: user.username,
           email: user.email || null,
-          role: user.role || "user",
+          role: (user.role || "user").toLowerCase(), // ✅ บังคับเป็นพิมพ์เล็กเสมอกัน
           sessionId, // ส่งต่อไปให้ jwt callback
         };
       },

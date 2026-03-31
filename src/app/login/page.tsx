@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { motion, AnimatePresence } from "framer-motion";
 import { User, Lock, Command, Eye, EyeOff, ArrowRight } from "lucide-react";
 
@@ -47,23 +47,29 @@ export default function LoginPage() {
         await recordActivity({
           userName: username || "Unknown User",
           action: "LOGIN_FAILED",
-          details: "พยายามเข้าสู่ระบบด้วยรหัสผ่านที่ผิด",
+          details: `เข้าสู่ระบบไม่สำเร็จ: ${result.error}`,
         });
-        setError("ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง");
+        
+        let errorMessage = "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง";
+        if (result.error.toLowerCase().includes("ยังรอการอนุมัติ")) {
+          errorMessage = "บัญชีของคุณยังรอการอนุมัติจาก Super Admin";
+        } else if (result.error.toLowerCase().includes("ไม่พบผู้ใช้งาน")) {
+          errorMessage = "ไม่พบชื่อผู้ใช้นี้ในระบบ";
+        }
+        
+        setError(errorMessage);
         setLoading(false);
       } else {
         await recordActivity({
           userName: username,
           action: "LOGIN",
-          details: "เข้าสู่ระบบจัดการเนื้อหา (CMS) สำเร็จ",
+          details: "เข้าสู่ระบบสำเร็จ",
         });
         setSuccess(true);
         router.refresh();
         
-        // ดึงข้อมูล session ล่าสุดเพื่อเช็ค Role และส่งไปยังหน้าที่เหมาะสม
-        const sessionRes = await fetch("/api/auth/session");
-        const session = await sessionRes.json();
-        const role = session?.user?.role?.toLowerCase();
+        const session = await getSession();
+        const role = (session?.user as any)?.role?.toLowerCase();
 
         if (role === "super_admin") {
           router.push("/dashboard");
