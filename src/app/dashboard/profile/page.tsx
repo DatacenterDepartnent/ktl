@@ -347,18 +347,61 @@ export default function ProfilePage() {
                 <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 ml-1 mb-2 block transition-colors group-focus-within:text-blue-500">
                   สังกัด / แผนก
                 </label>
-                <div className="relative">
-                  <SafetyCertificateOutlined className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-blue-500 transition-colors" />
-                  <input
-                    type="text"
+                <div className="relative group">
+                  <SafetyCertificateOutlined className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-blue-500 transition-colors z-10" />
+                  <select
                     value={formData.department}
-                    readOnly
-                    className="w-full bg-zinc-100 dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700/50 rounded-2xl pl-12 pr-5 py-4 text-zinc-500 dark:text-zinc-400 cursor-not-allowed outline-none transition-all font-bold"
-                    placeholder="ไม่มีสังกัด"
-                  />
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 bg-zinc-200 dark:bg-zinc-700 rounded-md text-[9px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-tighter">
-                    Read-Only
-                  </div>
+                    onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                    className="w-full bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-700/50 rounded-2xl pl-12 pr-5 py-4 text-zinc-800 dark:text-zinc-200 focus:bg-white dark:focus:bg-zinc-800 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all font-bold cursor-pointer"
+                  >
+                    <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
+                    <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
+                    <optgroup label="1. ฝ่ายบริหารทรัพยากร">
+                      <option value="งานบริหารงานทั่วไป">งานบริหารงานทั่วไป</option>
+                      <option value="งานบริหารและพัฒนาทรัพยากรบุคคล">งานบริหารและพัฒนาทรัพยากรบุคคล</option>
+                      <option value="งานการเงิน">งานการเงิน</option>
+                      <option value="งานการบัญชี">งานการบัญชี</option>
+                      <option value="งานพัสดุ">งานพัสดุ</option>
+                      <option value="งานอาคารสถานที่">งานอาคารสถานที่</option>
+                      <option value="งานทะเบียน">งานทะเบียน</option>
+                      <option value="งานภารโรง">งานภารโรง</option>
+                    </optgroup>
+                    <optgroup label="2. ฝ่ายยุทธศาสตร์และแผนงาน">
+                      <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ">งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ</option>
+                      <option value="งานมาตรฐานและการประกันคุณภาพ">งานมาตรฐานและการประกันคุณภาพ</option>
+                      <option value="งานศูนย์ดิจิทัลและสื่อสารองค์กร">งานศูนย์ดิจิทัลและสื่อสารองค์กร</option>
+                      <option value="งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์">งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์</option>
+                      <option value="งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ">งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ</option>
+                      <option value="งานติดตามและประเมินผลการ">งานติดตามและประเมินผลการ</option>
+                    </optgroup>
+                    <optgroup label="3. ฝ่ายพัฒนากิจการนักเรียน นักศึกษา">
+                      <option value="งานกิจกรรมนักเรียนนักศึกษา">งานกิจกรรมนักเรียนนักศึกษา</option>
+                      <option value="งานครูที่ปรึกษาและการแนะแนว">งานครูที่ปรึกษาและการแนะแนว</option>
+                      <option value="งานปกครองและความปลอดภัยนักเรียนนักศึกษา">งานปกครองและความปลอดภัยนักเรียนนักศึกษา</option>
+                      <option value="งานสวัสดิการนักเรียนนักศึกษา">งานสวัสดิการนักเรียนนักศึกษา</option>
+                      <option value="งานโครงการพิเศษและการบริการ">งานโครงการพิเศษและการบริการ</option>
+                    </optgroup>
+                    <optgroup label="4. ฝ่ายวิชาการ">
+                      <option value="งานพัฒนาหลักสูตรและการจัดการเรียนรู้">งานพัฒนาหลักสูตรและการจัดการเรียนรู้</option>
+                      <option value="งานวัดผลและประเมินผล">งานวัดผลและประเมินผล</option>
+                      <option value="งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ">งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ</option>
+                      <option value="งานวิทยบริการและเทคโนโลยีการศึกษา">งานวิทยบริการและเทคโนโลยีการศึกษา</option>
+                      <option value="งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา">งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา</option>
+                      <option value="งานพัฒนาหลักสูตรสายเทคโนโลยี หรือสายปฏิบัติการ">งานพัฒนาหลักสูตรสายเทคโนโลยี หรือสายปฏิบัติการ</option>
+                      <option disabled>──────────</option>
+                      <option value="แผนกวิชาช่างยนต์">แผนกวิชาช่างยนต์</option>
+                      <option value="แผนกวิชาช่างกลโรงงาน">แผนกวิชาช่างกลโรงงาน</option>
+                      <option value="แผนกวิชาช่างเชื่อมโลหะ">แผนกวิชาช่างเชื่อมโลหะ</option>
+                      <option value="แผนกวิชาช่างไฟฟ้ากำลัง">แผนกวิชาช่างไฟฟ้ากำลัง</option>
+                      <option value="แผนกวิชาช่างอิเล็กทรอนิกส์">แผนกวิชาช่างอิเล็กทรอนิกส์</option>
+                      <option value="แผนกวิชาช่างก่อสร้าง">แผนกวิชาช่างก่อสร้าง</option>
+                      <option value="แผนกวิชาการบัญชี">แผนกวิชาการบัญชี</option>
+                      <option value="แผนกวิชาการตลาด">แผนกวิชาการตลาด</option>
+                      <option value="แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล">แผนกวิชาธุรกิจดิจิทัล</option>
+                      <option value="แผนกวิชาการโรงแรม">แผนกวิชาการโรงแรม</option>
+                      <option value="แผนกวิชาสามัญสัมพันธ์">แผนกวิชาสามัญสัมพันธ์</option>
+                    </optgroup>
+                  </select>
                 </div>
               </div>
 
