@@ -6,8 +6,8 @@ const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
   const { nextUrl } = req;
-  const isLoggedIn = !!req.auth && !(req.auth as any).error;
-  const userRole = (req.auth?.user as any)?.role;
+  const isLoggedIn = !!req.auth;
+  const userRole = (req.auth?.user as any)?.role?.toLowerCase();
   const pathname = nextUrl.pathname;
 
   const isDashboardPage = pathname.startsWith("/dashboard");

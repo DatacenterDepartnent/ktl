@@ -1,7 +1,11 @@
 const { MongoClient } = require('mongodb');
 
 async function forcePurge() {
-  const uri = "mongodb+srv://allm:admin@ktltc.igrso.mongodb.net/ktltc_db?retryWrites=true&w=majority&appName=ktltc";
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    console.error("MONGODB_URI is not set.");
+    return;
+  }
   console.log(">>> [PURGE] Attempting to connect to Atlas...");
   const client = new MongoClient(uri, { serverSelectionTimeoutMS: 5000 });
 

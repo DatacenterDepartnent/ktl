@@ -1,7 +1,11 @@
 const { MongoClient } = require('mongodb');
 
 async function run() {
-  const uri = "mongodb+srv://ktlltc:1685@cluster0.aekx2.mongodb.net/ktltc_db?retryWrites=true&w=majority";
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    console.error("MONGODB_URI is not set.");
+    return;
+  }
   const client = new MongoClient(uri);
   try {
     await client.connect();

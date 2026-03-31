@@ -1,7 +1,11 @@
 const { MongoClient } = require('mongodb');
 
 async function profileDb() {
-  const uri = "mongodb+srv://allm:admin@ktltc.igrso.mongodb.net/ktltc_db?retryWrites=true&w=majority&appName=ktltc";
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    console.error("MONGODB_URI is not set in surroundings.");
+    return;
+  }
   console.log("Starting DB Profile...");
   const start = Date.now();
   const client = new MongoClient(uri, {

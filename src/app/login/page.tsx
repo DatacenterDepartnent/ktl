@@ -59,7 +59,17 @@ export default function LoginPage() {
         });
         setSuccess(true);
         router.refresh();
-        router.push("/");
+        
+        // ดึงข้อมูล session ล่าสุดเพื่อเช็ค Role และส่งไปยังหน้าที่เหมาะสม
+        const sessionRes = await fetch("/api/auth/session");
+        const session = await sessionRes.json();
+        const role = session?.user?.role?.toLowerCase();
+
+        if (role === "super_admin") {
+          router.push("/dashboard");
+        } else {
+          router.push("/");
+        }
       }
     } catch (err) {
       setError("เกิดข้อผิดพลาดในการเชื่อมต่อ");
