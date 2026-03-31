@@ -309,12 +309,12 @@ export default function DataManagementPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 px-2 py-4 md:p-8 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 px-2 py-4 md:p-8 font-sans overflow-x-hidden">
       <Toaster position="top-right" />
 
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header Section */}
-        <div className="bg-white dark:bg-zinc-900 px-2 py-6 rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-black/20 border border-slate-100 dark:border-zinc-800 relative overflow-hidden group">
+        <div className="bg-white dark:bg-zinc-900 px-4 py-8 md:p-6 rounded-3xl md:rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-black/20 border border-slate-100 dark:border-zinc-800 relative overflow-hidden group w-full">
           <div className=" ">
             <Database size={120} />
           </div>
@@ -549,7 +549,7 @@ export default function DataManagementPage() {
                                         status: e.target.value,
                                       })
                                     }
-                                    className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none focus:border-rose-500 font-bold"
+                                    className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none focus:border-rose-500 font-bold appearance-none scheme-light-dark"
                                   >
                                     <option value="Present">
                                       มาทำงาน
@@ -574,7 +574,7 @@ export default function DataManagementPage() {
                                         checkInTimeOnly: e.target.value,
                                       })
                                     }
-                                    className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none focus:border-rose-500 font-bold"
+                                    className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none focus:border-rose-500 font-bold appearance-none scheme-light-dark"
                                   />
                                 </div>
                                 <div className="space-y-1">
@@ -590,7 +590,7 @@ export default function DataManagementPage() {
                                         checkOutTimeOnly: e.target.value,
                                       })
                                     }
-                                    className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none focus:border-rose-500 font-bold"
+                                    className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none focus:border-rose-500 font-bold appearance-none scheme-light-dark"
                                   />
                                 </div>
                               </>

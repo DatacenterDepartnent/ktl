@@ -181,7 +181,7 @@ export default function WorkReportsManagementPage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-neutral-950 px-2 py-4 md:p-6 font-sans selection:bg-indigo-500/30">
+    <div className="min-h-screen bg-slate-50 dark:bg-neutral-950 px-2 py-4 md:p-6 font-sans selection:bg-indigo-500/30 overflow-x-hidden">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header Section */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white dark:bg-neutral-900 px-4 py-8 md:p-6 rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-neutral-800">
@@ -209,7 +209,7 @@ export default function WorkReportsManagementPage() {
         </div>
 
         {/* Filter Section */}
-        <div className="bg-white dark:bg-neutral-900  px-4 py-6 rounded-3xl shadow-lg shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-neutral-800 grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+        <div className="bg-white dark:bg-neutral-900 px-4 py-6 rounded-3xl shadow-lg shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-neutral-800 grid grid-cols-1 md:grid-cols-4 gap-6 items-end w-full">
           <div className="md:col-span-2">
             <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-2">
               ค้นหาพนักงาน / แผนก
@@ -242,7 +242,7 @@ export default function WorkReportsManagementPage() {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full pl-14 pr-6 py-4 bg-slate-50 dark:bg-neutral-800 border-2 border-transparent focus:border-indigo-500/20 rounded-2xl focus:outline-none font-black text-sm"
+                className="w-full pl-14 pr-6 py-4 bg-slate-50 dark:bg-neutral-800 border-2 border-transparent focus:border-indigo-500/20 rounded-2xl focus:outline-none font-black text-sm appearance-none scheme-light-dark"
               />
             </div>
           </div>
@@ -260,7 +260,7 @@ export default function WorkReportsManagementPage() {
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full pl-14 pr-6 py-4 bg-slate-50 dark:bg-neutral-800 border-2 border-transparent focus:border-indigo-500/20 rounded-2xl focus:outline-none font-black text-sm"
+                className="w-full pl-14 pr-6 py-4 bg-slate-50 dark:bg-neutral-800 border-2 border-transparent focus:border-indigo-500/20 rounded-2xl focus:outline-none font-black text-sm appearance-none scheme-light-dark"
               />
             </div>
           </div>

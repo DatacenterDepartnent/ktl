@@ -61,10 +61,10 @@ export default function AdminWorkReportsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-neutral-950 px-2 py-4 md:p-8 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-neutral-950 px-2 py-4 md:p-8 font-sans overflow-x-hidden">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white dark:bg-neutral-900 p-6 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-neutral-800">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white dark:bg-neutral-900 p-6 rounded-3xl md:rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-neutral-800">
           <div className="flex items-center gap-4">
             <div className="p-4 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-2xl">
               <FileText size={32} />
@@ -90,7 +90,7 @@ export default function AdminWorkReportsPage() {
         </div>
 
         {/* Filter Section */}
-        <div className="bg-white dark:bg-neutral-900 p-6 rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-neutral-800 grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+        <div className="bg-white dark:bg-neutral-900 p-6 rounded-3xl md:rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-neutral-800 grid grid-cols-1 md:grid-cols-4 gap-6 items-end w-full">
           <div className="md:col-span-2">
             <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
               ค้นหาจากชื่อพนักงาน / แผนก
@@ -105,7 +105,7 @@ export default function AdminWorkReportsPage() {
                 placeholder="พิมพ์ชื่อพนักงาน หรือ แผนก..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-medium"
+                className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-medium text-sm"
               />
             </div>
           </div>
@@ -123,7 +123,7 @@ export default function AdminWorkReportsPage() {
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none font-bold"
+                className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark"
               />
             </div>
           </div>
@@ -141,7 +141,7 @@ export default function AdminWorkReportsPage() {
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none font-bold"
+                className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark"
               />
             </div>
           </div>

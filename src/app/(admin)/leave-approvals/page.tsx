@@ -147,10 +147,10 @@ export default function LeaveApprovalsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 px-2 py-4 md:p-8 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 px-2 py-4 md:p-8 font-sans overflow-x-hidden">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
-        <div className="bg-white dark:bg-zinc-900 rounded-3xl p-4 shadow-sm border border-slate-200 dark:border-zinc-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl md:rounded-3xl p-4 shadow-sm border border-slate-200 dark:border-zinc-800 flex flex-col md:flex-row md:items-center justify-between gap-4 w-full">
           <div className="flex-1">
             <h1 className="text-lg sm:text-2xl font-black text-slate-800 dark:text-white flex items-center gap-2">
               <ShieldCheck className="text-indigo-500" /> ระบบอนุมัติการลางาน

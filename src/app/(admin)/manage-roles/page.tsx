@@ -125,7 +125,7 @@ export default function ManageRolesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 dark:bg-zinc-950 px-2 py-4 md:p-8 font-sans">
+    <div className="min-h-screen bg-slate-100 dark:bg-zinc-950 px-2 py-4 md:p-8 font-sans overflow-x-hidden">
       <Toaster position="top-right" />
 
       <div className="max-w-6xl mx-auto space-y-6">
@@ -165,7 +165,7 @@ export default function ManageRolesPage() {
         </div>
 
         {/* Table Container */}
-        <div className="bg-white dark:bg-zinc-900 rounded-3xl border border-slate-200 dark:border-zinc-800 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-zinc-900 rounded-2xl md:rounded-3xl border border-slate-200 dark:border-zinc-800 shadow-sm overflow-hidden w-full">
           <div className="overflow-x-auto">
             <table className="w-full text-left">
               <thead>
