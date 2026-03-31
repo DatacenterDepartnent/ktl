@@ -59,7 +59,7 @@ export default function LoginPage() {
         });
         setSuccess(true);
         router.refresh();
-        router.push("/dashboard");
+        router.push("/");
       }
     } catch (err) {
       setError("เกิดข้อผิดพลาดในการเชื่อมต่อ");

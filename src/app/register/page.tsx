@@ -57,7 +57,7 @@ export default function RegisterPage() {
       const data = await res.json();
       if (res.ok) {
         setSuccess(true);
-        setTimeout(() => router.push("/login"), 3000);
+        setTimeout(() => router.push("/login"), 1500);
       } else {
         setErrorMsg(data.error || "ไม่สามารถลงทะเบียนได้");
       }
@@ -181,7 +181,7 @@ export default function RegisterPage() {
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{ width: "100%" }}
-                  transition={{ duration: 3 }}
+                  transition={{ duration: 1.5 }}
                   className="h-full bg-emerald-500 rounded-full"
                 />
               </div>
