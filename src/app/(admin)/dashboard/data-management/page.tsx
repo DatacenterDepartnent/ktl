@@ -40,7 +40,9 @@ export default function DataManagementPage() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filterDay, setFilterDay] = useState("");
   const [filterMonth, setFilterMonth] = useState("");
-  const [filterYear, setFilterYear] = useState(new Date().getFullYear().toString());
+  const [filterYear, setFilterYear] = useState(
+    new Date().getFullYear().toString(),
+  );
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editFormData, setEditFormData] = useState<any>({});
@@ -75,7 +77,7 @@ export default function DataManagementPage() {
         day: format(d, "dd"),
         month: format(d, "MMM", { locale: th }),
         year: format(d, "yyyy", { locale: th }),
-        full: format(d, "yyyy-MM-dd") // สำหรับ Input "date"
+        full: format(d, "yyyy-MM-dd"), // สำหรับ Input "date"
       };
     } catch (e) {
       return { day: "-", month: "-", year: "-" };
@@ -101,7 +103,7 @@ export default function DataManagementPage() {
     try {
       const d = new Date(originalDateStr);
       const [hours, minutes] = thTimeStr.split(":").map(Number);
-      
+
       // ตั้งเวลาในเขตเวลาไทย (เราหักลบ 7 ชม. เพื่อเป็น UTC)
       const utcDate = new Date(d.getTime());
       utcDate.setUTCHours(hours - 7, minutes, 0, 0);
@@ -146,7 +148,7 @@ export default function DataManagementPage() {
     try {
       const currentSkip = isLoadMore ? skip + LIMIT : 0;
       let url = `/api/admin/data?type=${tab}&limit=${LIMIT}&skip=${currentSkip}&search=${encodeURIComponent(search)}&_t=${Date.now()}`;
-      
+
       if (filterDay) url += `&day=${filterDay}`;
       if (filterMonth) url += `&month=${filterMonth}`;
       if (filterYear) url += `&year=${filterYear}`;
@@ -208,11 +210,11 @@ export default function DataManagementPage() {
   const handleEdit = (record: any) => {
     setEditingId(record._id);
     // เตรียมข้อมูลสำหรับการแก้ไข - แปลงเวลาเป็น HH:mm สำหรับ Input "time"
-    setEditFormData({ 
+    setEditFormData({
       ...record,
       checkInTimeOnly: getTHTime(record.checkIn?.time),
       checkOutTimeOnly: getTHTime(record.checkOut?.time),
-      dateOnly: formatDateParts(record.date || record.startDate).full
+      dateOnly: formatDateParts(record.date || record.startDate).full,
     });
   };
 
@@ -221,7 +223,7 @@ export default function DataManagementPage() {
     try {
       // รวมเวลาที่แก้ไขเข้ากับวันที่เดิม
       const finalUpdates = { ...editFormData };
-      
+
       if (activeTab === "attendance") {
         if (finalUpdates.dateOnly) {
           finalUpdates.date = new Date(finalUpdates.dateOnly);
@@ -229,13 +231,21 @@ export default function DataManagementPage() {
         if (finalUpdates.checkInTimeOnly) {
           finalUpdates.checkIn = {
             ...finalUpdates.checkIn,
-            time: mergeTimeWithDate(finalUpdates.date || finalUpdates.checkIn?.time, finalUpdates.checkInTimeOnly)
+            time: mergeTimeWithDate(
+              finalUpdates.date || finalUpdates.checkIn?.time,
+              finalUpdates.checkInTimeOnly,
+            ),
           };
         }
         if (finalUpdates.checkOutTimeOnly) {
           finalUpdates.checkOut = {
             ...finalUpdates.checkOut,
-            time: mergeTimeWithDate(finalUpdates.date || finalUpdates.checkOut?.time || finalUpdates.checkIn?.time, finalUpdates.checkOutTimeOnly)
+            time: mergeTimeWithDate(
+              finalUpdates.date ||
+                finalUpdates.checkOut?.time ||
+                finalUpdates.checkIn?.time,
+              finalUpdates.checkOutTimeOnly,
+            ),
           };
         }
         // ลบฟิลด์ชั่วคราวออกก่อนส่ง API
@@ -287,7 +297,7 @@ export default function DataManagementPage() {
         <div className="p-6 bg-red-100 dark:bg-red-900/30 text-red-600 rounded-full mb-4">
           <ShieldCheck size={64} />
         </div>
-        <h1 className="text-3xl font-black text-slate-800 dark:text-zinc-100 mb-2 underline decoration-red-500 underline-offset-8">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-800 dark:text-zinc-100 mb-2 underline decoration-red-500 underline-offset-8">
           ACCESS DENIED
         </h1>
         <p className="text-slate-500 dark:text-zinc-400 font-medium max-w-md">
@@ -299,12 +309,12 @@ export default function DataManagementPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 p-4 md:p-8 font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 px-2 py-4 md:p-8 font-sans">
       <Toaster position="top-right" />
 
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header Section */}
-        <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-black/20 border border-slate-100 dark:border-zinc-800 relative overflow-hidden group">
+        <div className="bg-white dark:bg-zinc-900 px-2 py-6 rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-black/20 border border-slate-100 dark:border-zinc-800 relative overflow-hidden group">
           <div className=" ">
             <Database size={120} />
           </div>
@@ -314,7 +324,7 @@ export default function DataManagementPage() {
                 <ShieldCheck size={32} />
               </div>
               <div>
-                <h1 className="text-3xl font-black text-slate-800 dark:text-zinc-100 tracking-tight">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-800 dark:text-zinc-100 tracking-tight">
                   Data Management Pro
                 </h1>
                 <div className="flex items-center gap-2 mt-2">
@@ -334,7 +344,7 @@ export default function DataManagementPage() {
               <input
                 type="text"
                 placeholder="ค้นหาชื่อ, รหัส, หรือ ID..."
-                className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-zinc-800 rounded-2xl border border-slate-200 dark:border-zinc-700 outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all font-medium text-slate-700 dark:text-zinc-200 shadow-inner"
+                className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-zinc-800 rounded-2xl border border-slate-200 dark:border-zinc-700 outline-none focus:ring-4 focus:ring-rose-500/10 focus:border-rose-500 transition-all font-medium text-xs sm:text-sm md:text-base text-slate-700 dark:text-zinc-200 shadow-inner"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -352,7 +362,7 @@ export default function DataManagementPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`px-8 py-3 rounded-xl font-black text-sm transition-all ${
+              className={`px-6 py-3 rounded-xl font-black text-xs transition-all ${
                 activeTab === tab.id
                   ? `bg-${tab.color}-500 text-white shadow-lg shadow-${tab.color}-500/30`
                   : "text-slate-400 hover:text-slate-600 dark:hover:text-zinc-200"
@@ -364,20 +374,20 @@ export default function DataManagementPage() {
         </div>
 
         {/* Filter Bar */}
-        <div className="flex flex-wrap items-center gap-4 bg-white dark:bg-zinc-900 p-6 rounded-3xl shadow-sm border border-slate-100 dark:border-zinc-800">
+        <div className="flex flex-wrap items-center gap-4 bg-white dark:bg-zinc-900 px-2 py-4 rounded-3xl shadow-sm border border-slate-100 dark:border-zinc-800">
           <div className="flex items-center gap-2">
             <ShieldCheck size={18} className="text-rose-500" />
-            <span className="text-sm font-black text-slate-700 dark:text-zinc-200 uppercase tracking-tight">
+            <span className="text-xs font-black text-slate-700 dark:text-zinc-200 uppercase tracking-tight">
               กรองตามวันที่:
             </span>
           </div>
-          
+
           <div className="flex gap-2">
             {/* Day */}
             <select
               value={filterDay}
               onChange={(e) => setFilterDay(e.target.value)}
-              className="px-4 py-2 bg-slate-50 dark:bg-zinc-800 border-none rounded-xl text-sm font-bold text-slate-600 dark:text-zinc-300 outline-none focus:ring-2 focus:ring-rose-500/20"
+              className="px-4 py-2 bg-slate-50 dark:bg-zinc-800 border-none rounded-xl text-xs font-bold text-slate-600 dark:text-zinc-300 outline-none focus:ring-2 focus:ring-rose-500/20"
             >
               <option value="">ทุกวัน</option>
               {Array.from({ length: 31 }, (_, i) => (
@@ -391,14 +401,26 @@ export default function DataManagementPage() {
             <select
               value={filterMonth}
               onChange={(e) => setFilterMonth(e.target.value)}
-              className="px-4 py-2 bg-slate-50 dark:bg-zinc-800 border-none rounded-xl text-sm font-bold text-slate-600 dark:text-zinc-300 outline-none focus:ring-2 focus:ring-rose-500/20"
+              className="px-4 py-2 bg-slate-50 dark:bg-zinc-800 border-none rounded-xl text-xs font-bold text-slate-600 dark:text-zinc-300 outline-none focus:ring-2 focus:ring-rose-500/20"
             >
               <option value="">ทุกเดือน</option>
               {[
-                "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
-                "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+                "มกราคม",
+                "กุมภาพันธ์",
+                "มีนาคม",
+                "เมษายน",
+                "พฤษภาคม",
+                "มิถุนายน",
+                "กรกฎาคม",
+                "สิงหาคม",
+                "กันยายน",
+                "ตุลาคม",
+                "พฤศจิกายน",
+                "ธันวาคม",
               ].map((m, i) => (
-                <option key={i + 1} value={i + 1}>{m}</option>
+                <option key={i + 1} value={i + 1}>
+                  {m}
+                </option>
               ))}
             </select>
 
@@ -406,10 +428,12 @@ export default function DataManagementPage() {
             <select
               value={filterYear}
               onChange={(e) => setFilterYear(e.target.value)}
-              className="px-4 py-2 bg-slate-50 dark:bg-zinc-800 border-none rounded-xl text-sm font-bold text-slate-600 dark:text-zinc-300 outline-none focus:ring-2 focus:ring-rose-500/20"
+              className="px-4 py-2 bg-slate-50 dark:bg-zinc-800 border-none rounded-xl text-xs font-bold text-slate-600 dark:text-zinc-300 outline-none focus:ring-2 focus:ring-rose-500/20"
             >
-              {[2024, 2025, 2026].map(y => (
-                <option key={y} value={y}>พ.ศ. {y + 543}</option>
+              {[2024, 2025, 2026].map((y) => (
+                <option key={y} value={y}>
+                  พ.ศ. {y + 543}
+                </option>
               ))}
             </select>
           </div>
@@ -429,23 +453,23 @@ export default function DataManagementPage() {
 
         {/* DATA TABLE */}
         <div className="bg-white dark:bg-zinc-900 rounded-4xl shadow-2xl border border-slate-100 dark:border-zinc-800 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+          <div className="overflow-x-auto custom-scrollbar">
+            <table className="w-full text-left border-collapse min-w-[700px]">
               <thead>
                 <tr className="bg-slate-50/50 dark:bg-zinc-950/50 border-bottom border-slate-100 dark:border-zinc-800">
-                  <th className="px-8 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest">
+                  <th className="px-2 md:px-4 py-4 text-[9px] md:text-[11px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
                     ผู้ใช้งาน / รายการ
                   </th>
-                  <th className="px-8 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest">
+                  <th className="px-2 md:px-4 py-4 text-[9px] md:text-[11px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
                     วันที่
                   </th>
-                  <th className="px-8 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest">
+                  <th className="px-2 md:px-4 py-4 text-[9px] md:text-[11px] font-black text-slate-400 uppercase tracking-widest whitespace-nowrap">
                     เวลาเข้า-ออก
                   </th>
-                  <th className="px-8 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest text-center">
+                  <th className="px-2 md:px-4 py-4 text-[9px] md:text-[11px] font-black text-slate-400 uppercase tracking-widest text-center whitespace-nowrap">
                     สถานะ
                   </th>
-                  <th className="px-8 py-5 text-[11px] font-black text-slate-400 uppercase tracking-widest text-right">
+                  <th className="px-2 md:px-4 py-4 text-[9px] md:text-[11px] font-black text-slate-400 uppercase tracking-widest text-right whitespace-nowrap">
                     จัดการ
                   </th>
                 </tr>
@@ -456,18 +480,18 @@ export default function DataManagementPage() {
                     .fill(0)
                     .map((_, i) => (
                       <tr key={i} className="animate-pulse">
-                        <td colSpan={5} className="px-8 py-10">
+                        <td colSpan={5} className="px-6 py-10">
                           <div className="h-8 bg-slate-100 dark:bg-zinc-800 rounded-xl w-full opacity-50"></div>
                         </td>
                       </tr>
                     ))
                 ) : records.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-8 py-20 text-center">
+                    <td colSpan={5} className="px-6 py-20 text-center">
                       <div className="flex flex-col items-center gap-3 opacity-30">
                         <Database size={64} className="text-slate-300" />
                         <span className="text-xl font-black text-slate-400">
-                          NO DATA FOUND
+                          ไม่พบข้อมูล
                         </span>
                       </div>
                     </td>
@@ -480,7 +504,7 @@ export default function DataManagementPage() {
                     >
                       {editingId === record._id ? (
                         /* EDIT MODE */
-                        <td colSpan={5} className="px-8 py-6">
+                        <td colSpan={5} className="px-6 py-6">
                           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white dark:bg-zinc-800 p-6 rounded-3xl border-2 border-orange-200 dark:border-orange-500/20 shadow-xl">
                             <div className="md:col-span-4 flex justify-between items-center mb-2">
                               <h3 className="font-black text-slate-700 dark:text-zinc-200 flex items-center gap-2">
@@ -527,10 +551,14 @@ export default function DataManagementPage() {
                                     }
                                     className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none focus:border-rose-500 font-bold"
                                   >
-                                    <option value="Present">มาทำงาน (Present)</option>
+                                    <option value="Present">
+                                      มาทำงาน (Present)
+                                    </option>
                                     <option value="Late">มาสาย (Late)</option>
                                     <option value="Leave">ลา (Leave)</option>
-                                    <option value="Absent">ขาดงาน (Absent)</option>
+                                    <option value="Absent">
+                                      ขาดงาน (Absent)
+                                    </option>
                                   </select>
                                 </div>
                                 <div className="space-y-1">
@@ -582,9 +610,15 @@ export default function DataManagementPage() {
                                     }
                                     className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none"
                                   >
-                                    <option value="pending">รออนุมัติ (pending)</option>
-                                    <option value="approved">อนุมัติแล้ว (approved)</option>
-                                    <option value="rejected">ปฏิเสธ (rejected)</option>
+                                    <option value="pending">
+                                      รออนุมัติ (pending)
+                                    </option>
+                                    <option value="approved">
+                                      อนุมัติแล้ว (approved)
+                                    </option>
+                                    <option value="rejected">
+                                      ปฏิเสธ (rejected)
+                                    </option>
                                   </select>
                                 </div>
                                 <div className="space-y-1 md:col-span-3">
@@ -670,7 +704,7 @@ export default function DataManagementPage() {
                               </button>
                               <button
                                 onClick={handleSaveEdit}
-                                className="px-8 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold shadow-lg shadow-rose-600/20 transition-all flex items-center gap-2"
+                                className="px-6 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold shadow-lg shadow-rose-600/20 transition-all flex items-center gap-2"
                               >
                                 <Save size={18} /> บันทึกการเปลี่ยนแปลง
                               </button>
@@ -680,9 +714,9 @@ export default function DataManagementPage() {
                       ) : (
                         /* NORMAL ROW */
                         <>
-                          <td className="px-8 py-5">
+                          <td className="px-4 py-4">
                             <div className="flex flex-col">
-                              <span className="font-bold text-slate-800 dark:text-zinc-100">
+                              <span className="text-xs sm:text-sm md:text-base font-bold text-slate-800 dark:text-zinc-100">
                                 {activeTab === "suvery"
                                   ? record.fullName || "ไม่ระบุชื่อ"
                                   : record.user?.name || "ไม่ทราบชื่อ"}
@@ -695,56 +729,76 @@ export default function DataManagementPage() {
                               </span>
                             </div>
                           </td>
-                          <td className="px-8 py-5">
+                          <td className="px-4 py-4">
                             <div className="flex items-center gap-3">
                               <div className="flex flex-col items-center justify-center w-12 h-12 bg-slate-50 dark:bg-zinc-800 rounded-2xl border border-slate-100 dark:border-zinc-700/50 shadow-sm group-hover:bg-white dark:group-hover:bg-zinc-700 transition-colors">
-                                <span className="text-lg font-black text-slate-700 dark:text-zinc-200 leading-none">
-                                  {formatDateParts(activeTab === "attendance" ? record.date : record.startDate).day}
+                                <span className="text-sm sm:text-lg font-black text-slate-700 dark:text-zinc-200 leading-none">
+                                  {
+                                    formatDateParts(
+                                      activeTab === "attendance"
+                                        ? record.date
+                                        : record.startDate,
+                                    ).day
+                                  }
                                 </span>
                                 <span className="text-[9px] font-black text-slate-400 uppercase mt-0.5">
-                                  {formatDateParts(activeTab === "attendance" ? record.date : record.startDate).month}
+                                  {
+                                    formatDateParts(
+                                      activeTab === "attendance"
+                                        ? record.date
+                                        : record.startDate,
+                                    ).month
+                                  }
                                 </span>
                               </div>
                               <div className="flex flex-col">
                                 <span className="text-[11px] font-black text-slate-400 uppercase leading-none">
                                   ปี พ.ศ.
                                 </span>
-                                <span className="text-sm font-bold text-slate-600 dark:text-zinc-300">
-                                  {formatDateParts(activeTab === "attendance" ? record.date : record.startDate).year}
+                                <span className="text-xs font-bold text-slate-600 dark:text-zinc-300">
+                                  {
+                                    formatDateParts(
+                                      activeTab === "attendance"
+                                        ? record.date
+                                        : record.startDate,
+                                    ).year
+                                  }
                                 </span>
                               </div>
                             </div>
                           </td>
-                          <td className="px-8 py-5">
+                          <td className="px-4 py-4">
                             {activeTab === "attendance" ? (
                               <div className="flex items-center gap-3">
                                 <div className="flex flex-col items-center">
                                   <span className="text-[10px] font-black text-rose-400 uppercase leading-none mb-1">
-                                    In
+                                    เข้า
                                   </span>
-                                  <span className="text-sm font-black text-slate-700 dark:text-zinc-200 tabular-nums">
+                                  <span className="text-[10px] sm:text-xs font-black text-slate-700 dark:text-zinc-200 tabular-nums">
                                     {formatTime(record.checkIn?.time)}
                                   </span>
                                 </div>
                                 <div className="w-px h-6 bg-slate-200 dark:bg-zinc-800"></div>
                                 <div className="flex flex-col items-center">
                                   <span className="text-[10px] font-black text-blue-400 uppercase leading-none mb-1">
-                                    Out
+                                    ออก
                                   </span>
-                                  <span className="text-sm font-black text-slate-700 dark:text-zinc-200 tabular-nums">
+                                  <span className="text-[10px] sm:text-xs font-black text-slate-700 dark:text-zinc-200 tabular-nums">
                                     {formatTime(record.checkOut?.time)}
                                   </span>
                                 </div>
                               </div>
                             ) : (
-                              <span className="text-xs font-bold text-slate-400">
-                                ---
-                              </span>
+                              <div className="flex justify-center">
+                                <span className="text-xs font-bold text-slate-300">
+                                  -
+                                </span>
+                              </div>
                             )}
                           </td>
-                          <td className="px-8 py-5 text-center">
+                          <td className="px-4 py-4 text-center">
                             <span
-                              className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-shadow group-hover:shadow-sm ${
+                              className={`px-4 py-1.5 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-widest border transition-shadow group-hover:shadow-sm whitespace-nowrap ${
                                 record.status === "Present" ||
                                 record.status === "approved" ||
                                 record.currentStatus === "ทำงานแล้ว"
@@ -760,8 +814,8 @@ export default function DataManagementPage() {
                                 : STATUS_TH[record.status] || record.status}
                             </span>
                           </td>
-                          <td className="px-8 py-5">
-                            <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0">
+                          <td className="px-4 py-4">
+                            <div className="flex items-center justify-end gap-2 transition-all">
                               <button
                                 onClick={() => handleEdit(record)}
                                 className="p-2.5 text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-xl transition-all"
@@ -789,26 +843,26 @@ export default function DataManagementPage() {
         {/* Action Button: Load More */}
         <div className="flex flex-col items-center gap-4">
           {hasMore && !loading && (
-            <button
-              onClick={() => fetchData(true)}
-              disabled={loadingMore}
-              className="group flex items-center gap-3 px-12 py-4 bg-white dark:bg-zinc-900 hover:bg-rose-500 hover:text-white border-2 border-slate-100 dark:border-zinc-800 rounded-3xl font-black text-sm uppercase tracking-widest transition-all shadow-xl shadow-slate-200/50 hover:shadow-rose-500/20"
-            >
-              {loadingMore ? (
-                <Loader2 className="animate-spin" size={18} />
-              ) : (
-                <ChevronDown
-                  className="group-hover:translate-y-1 transition-transform"
-                  size={18}
-                />
-              )}
-              Load 20 More Records
-            </button>
+              <button
+                onClick={() => fetchData(true)}
+                disabled={loadingMore}
+                className="group flex items-center gap-3 px-12 py-4 bg-white dark:bg-zinc-900 hover:bg-rose-500 hover:text-white border-2 border-slate-100 dark:border-zinc-800 rounded-3xl font-black text-[10px] md:text-xs uppercase tracking-widest transition-all shadow-xl shadow-slate-200/50 hover:shadow-rose-500/20"
+              >
+                {loadingMore ? (
+                  <Loader2 className="animate-spin" size={18} />
+                ) : (
+                  <ChevronDown
+                    className="group-hover:translate-y-1 transition-transform"
+                    size={18}
+                  />
+                )}
+                โหลดข้อมูลเพิ่มอีก 20 รายการ
+              </button>
           )}
 
           {!hasMore && !loading && records.length > 0 && (
-            <div className="px-8 py-3 bg-slate-100 dark:bg-zinc-800 rounded-2xl text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
-              <Database size={14} /> Total Records Shown: {records.length}
+            <div className="px-6 py-3 bg-slate-100 dark:bg-zinc-800 rounded-2xl text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-widest flex items-center gap-2">
+              <Database size={14} /> จำนวนรายการทั้งหมดที่แสดง: {records.length}
             </div>
           )}
         </div>

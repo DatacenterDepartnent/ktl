@@ -364,7 +364,7 @@ export default function WorkReportsManagementPage() {
                         <div key={act.id} className="bg-slate-50 dark:bg-neutral-800/50 p-6 rounded-3xl border border-slate-100 dark:border-neutral-800 group relative">
                           <button 
                             onClick={() => removeActivity(act.id)}
-                            className="absolute top-4 right-4 p-2 text-slate-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all"
+                            className="absolute top-4 right-4 p-2 text-slate-300 hover:text-rose-500 transition-all"
                           >
                             <Trash2 size={16} />
                           </button>

@@ -301,7 +301,7 @@ export default function SuperAdminPage() {
   </div>;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 p-4 md:p-8 font-sans selection:bg-blue-500/30 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 p-2 md:p-4 font-sans selection:bg-blue-500/30 relative overflow-hidden">
       <Toaster position="top-right" />
 
       {/* Background Depth */}
@@ -310,7 +310,7 @@ export default function SuperAdminPage() {
 
       <div className="max-w-[1600px] mx-auto space-y-10 relative z-10">
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
           <div className="space-y-4">
             <div className="flex items-center gap-4">
               <div className="p-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl shadow-xl">
@@ -351,7 +351,7 @@ export default function SuperAdminPage() {
         </div>
 
         {/* Stats Summary Matrix */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             {
               label: "กิจกรรมทั้งหมด",
@@ -391,10 +391,10 @@ export default function SuperAdminPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
-              className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl p-8 rounded-[2.5rem] border border-slate-100 dark:border-zinc-800 shadow-xl relative overflow-hidden group"
+              className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl p-4 rounded-[2.5rem] border border-slate-100 dark:border-zinc-800 shadow-xl relative overflow-hidden group"
             >
               <div
-                className={`absolute top-0 right-0 p-6 ${item.color} opacity-10 group-hover:scale-125 transition-transform duration-500`}
+                className={`absolute top-0 right-0 p-4 ${item.color} opacity-10 group-hover:scale-125 transition-transform duration-500`}
               >
                 <item.icon size={60} />
               </div>
@@ -412,7 +412,7 @@ export default function SuperAdminPage() {
 
         {/* Users Management Grid */}
         <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-3xl rounded-4xl border border-slate-100 dark:border-zinc-800 shadow-3xl overflow-hidden">
-          <div className="p-8 border-b border-slate-50 dark:border-zinc-800/50 flex justify-between items-center">
+          <div className="p-4 border-b border-slate-50 dark:border-zinc-800/50 flex justify-between items-center">
             <div className="flex items-center gap-3">
               <div className="w-2 h-8 bg-rose-600 rounded-full" />
               <h2 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
@@ -431,12 +431,12 @@ export default function SuperAdminPage() {
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-slate-50/50 dark:bg-zinc-950/50 text-slate-400 dark:text-zinc-500 text-[10px] uppercase font-black tracking-widest">
-                  <th className="p-8 text-center w-24">ลำดับ</th>
-                  <th className="p-8">ข้อมูลบุคลากร</th>
-                  <th className="p-8 text-center">สิทธิ์การใช้งาน</th>
-                  <th className="p-8 text-center">สังกัด / แผนก</th>
-                  <th className="p-8 text-center">สถานะ</th>
-                  <th className="p-8 text-right">การจัดการ</th>
+                  <th className="p-4 text-center w-24">ลำดับ</th>
+                  <th className="p-4">ข้อมูลบุคลากร</th>
+                  <th className="p-4 text-center">สิทธิ์การใช้งาน</th>
+                  <th className="p-4 text-center">สังกัด / แผนก</th>
+                  <th className="p-4 text-center">สถานะ</th>
+                  <th className="p-4 text-right">การจัดการ</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50 dark:divide-zinc-800/50">
@@ -450,7 +450,7 @@ export default function SuperAdminPage() {
                       layout
                       className="hover:bg-blue-50/30 dark:hover:bg-blue-500/2 transition-colors group"
                     >
-                      <td className="p-8">
+                      <td className="p-4">
                         <div className="flex flex-col items-center gap-1">
                           <button
                             onClick={() =>
@@ -473,7 +473,7 @@ export default function SuperAdminPage() {
                           </button>
                         </div>
                       </td>
-                      <td className="p-8">
+                      <td className="p-4">
                         <div className="flex items-center gap-4">
                           <div>
                             <div className="font-black text-slate-800 dark:text-white text-lg tracking-tight uppercase group-hover:text-blue-600 transition-colors">
@@ -492,7 +492,7 @@ export default function SuperAdminPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="p-8 text-center">
+                      <td className="p-4 text-center">
                         <select
                           value={user.role || "user"}
                           onChange={(e) =>
@@ -525,7 +525,7 @@ export default function SuperAdminPage() {
                           <option value="user">ผู้ใช้ทั่วไป (USER)</option>
                         </select>
                       </td>
-                      <td className="p-8 text-center">
+                      <td className="p-4 text-center">
                         <select
                           value={user.department || "ไม่มีสังกัด"}
                           onChange={(e) =>
@@ -650,7 +650,7 @@ export default function SuperAdminPage() {
                           </optgroup>
                         </select>
                       </td>
-                      <td className="p-8 text-center">
+                      <td className="p-4 text-center">
                         <button
                           onClick={() =>
                             toggleStatus(user._id, user.isActive, user.name)
@@ -662,7 +662,7 @@ export default function SuperAdminPage() {
                           />
                         </button>
                       </td>
-                      <td className="p-8 text-right">
+                      <td className="p-4 text-right">
                         <div className="flex items-center justify-end gap-3  ">
                           <button
                             onClick={() =>
@@ -692,7 +692,7 @@ export default function SuperAdminPage() {
 
         {/* Activity Logs Console */}
         <div className="bg-zinc-900 rounded-4xl border border-zinc-800 shadow-3xl overflow-hidden">
-          <div className="p-8 border-b border-white/5 flex justify-between items-center">
+          <div className="p-4 border-b border-white/5 flex justify-between items-center">
             <div className="flex items-center gap-3">
               <div className="p-3 bg-rose-500/10 rounded-2xl border border-rose-500/20">
                 <Terminal className="w-5 h-5 text-rose-500" />
@@ -714,7 +714,7 @@ export default function SuperAdminPage() {
             </button>
           </div>
 
-          <div className="p-8 max-h-[700px] overflow-y-auto custom-scrollbar-dark space-y-6">
+          <div className="p-4 max-h-[700px] overflow-y-auto custom-scrollbar-dark space-y-6">
             {logs.length === 0 ? (
               <div className="py-24 text-center space-y-4">
                 <Database className="w-12 h-12 text-zinc-800 mx-auto" />
@@ -729,7 +729,7 @@ export default function SuperAdminPage() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.02 }}
-                  className="flex gap-6 group/log"
+                  className="flex gap-4 group/log"
                 >
                   <div className="flex flex-col items-center">
                     <div

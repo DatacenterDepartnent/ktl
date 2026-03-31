@@ -59,7 +59,7 @@ export default function WFHHubPage() {
   const userImage = profileData.image || session?.user?.image || null;
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 py-12 px-5 font-sans selection:bg-blue-500/30 overflow-hidden relative">
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 py-6 px-2 font-sans selection:bg-blue-500/30 overflow-hidden relative">
       {/* Background Blobs */}
       <div className="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-500/5 dark:bg-blue-500/10 blur-[120px] rounded-full pointer-events-none" />
       <div className="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-indigo-500/5 dark:bg-indigo-500/10 blur-[120px] rounded-full pointer-events-none" />
@@ -69,9 +69,9 @@ export default function WFHHubPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="w-full bg-white dark:bg-zinc-900 rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-black/20 overflow-hidden border border-slate-100 dark:border-zinc-800 p-8 relative group transition-all hover:shadow-2xl hover:shadow-blue-500/5"
+          className="w-full bg-white dark:bg-zinc-900 rounded-[2.5rem] shadow-xl shadow-slate-200/50 dark:shadow-black/20 overflow-hidden border border-slate-100 dark:border-zinc-800 p-6 relative group transition-all hover:shadow-2xl hover:shadow-blue-500/5"
         >
-          <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-all group-hover:rotate-12">
+          <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-all group-hover:rotate-12">
             <User size={100} className="text-blue-500" />
           </div>
           <div className="flex items-center gap-6 relative z-10">
@@ -161,7 +161,7 @@ export default function WFHHubPage() {
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Link href="/check-in?action=in" className="block group">
               <div className="bg-linear-to-r from-emerald-500 to-teal-600 dark:from-emerald-600 dark:to-teal-700 p-6 rounded-4xl flex items-center justify-between transition shadow-2xl shadow-emerald-500/20 active:shadow-lg relative overflow-hidden">
-                <div className="absolute right-0 top-0 p-8 opacity-10 group-hover:opacity-20 transition-all group-hover:scale-150 rotate-12">
+                <div className="absolute right-0 top-0 p-6 opacity-10 group-hover:opacity-20 transition-all group-hover:scale-150 rotate-12">
                   <LogIn size={80} className="text-white" />
                 </div>
                 <div className="flex items-center gap-6 relative z-10">
@@ -187,7 +187,7 @@ export default function WFHHubPage() {
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Link href="/check-in?action=out" className="block group">
               <div className="bg-linear-to-r from-orange-500 to-rose-600 dark:from-orange-600 dark:to-rose-700 p-6 rounded-4xl flex items-center justify-between transition shadow-2xl shadow-orange-500/20 active:shadow-lg relative overflow-hidden">
-                <div className="absolute right-0 top-0 p-8 opacity-10 group-hover:opacity-20 transition-all group-hover:scale-150 -rotate-12">
+                <div className="absolute right-0 top-0 p-6 opacity-10 group-hover:opacity-20 transition-all group-hover:scale-150 -rotate-12">
                   <LogOut size={80} className="text-white" />
                 </div>
                 <div className="flex items-center gap-6 relative z-10">
@@ -259,8 +259,8 @@ export default function WFHHubPage() {
               className="sm:col-span-2"
             >
               <Link href="/work-report" className="block h-full">
-                <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 p-8 rounded-4xl flex items-center justify-between transition shadow-xl shadow-slate-200/50 dark:shadow-black/20 group hover:border-blue-200 dark:hover:border-blue-900/60 overflow-hidden relative">
-                  <div className="absolute right-0 top-0 p-8 opacity-0 group-hover:opacity-5 transition-all group-hover:rotate-12 translate-x-4 -translate-y-4">
+                <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 p-6 rounded-4xl flex items-center justify-between transition shadow-xl shadow-slate-200/50 dark:shadow-black/20 group hover:border-blue-200 dark:hover:border-blue-900/60 overflow-hidden relative">
+                  <div className="absolute right-0 top-0 p-6 opacity-0 group-hover:opacity-5 transition-all group-hover:rotate-12 translate-x-4 -translate-y-4">
                     <ClipboardList size={120} className="text-blue-500" />
                   </div>
                   <div className="flex items-center gap-6 relative z-10">

@@ -96,7 +96,7 @@ export default function WFHHistoryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 p-4 md:p-8 font-sans selection:bg-blue-500/30 relative overflow-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 p-2 md:p-8 font-sans selection:bg-blue-500/30 relative overflow-hidden">
       {/* Background Depth */}
       <div className="fixed top-[-10%] left-[-10%] w-[60%] h-[60%] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="fixed bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
@@ -118,7 +118,7 @@ export default function WFHHistoryPage() {
                 </h1>
                 <p className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-[0.3em] pl-1 flex items-center gap-2">
                   <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
-                  Personal Data Management Matrix
+                  ประวัติการใช้งานระบบของฉัน
                 </p>
               </div>
             </div>
@@ -135,13 +135,15 @@ export default function WFHHistoryPage() {
               onClick={() => setActiveTab("attendance")}
               className={`relative z-10 flex-1 md:flex-none flex items-center justify-center gap-3 px-8 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-colors ${activeTab === "attendance" ? "text-white" : "text-slate-400 hover:text-slate-600"}`}
             >
-              <Clock size={16} /> Attendance
+              <Clock size={16} />
+              การเข้างาน
             </button>
             <button
               onClick={() => setActiveTab("leaves")}
               className={`relative z-10 flex-1 md:flex-none flex items-center justify-center gap-3 px-8 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest transition-colors ${activeTab === "leaves" ? "text-white" : "text-slate-400 hover:text-slate-600"}`}
             >
-              <FileText size={16} /> Leave History
+              <FileText size={16} />
+              การลางาน
             </button>
           </div>
         </div>
@@ -176,10 +178,10 @@ export default function WFHHistoryPage() {
                   <div className="text-center py-24 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-4xl border border-dashed border-slate-200 dark:border-zinc-800 shadow-inner">
                     <CalendarDays className="w-16 h-16 text-slate-200 dark:text-zinc-800 mx-auto mb-6" />
                     <p className="text-slate-400 font-black uppercase tracking-widest text-xs mb-2">
-                      No Attendance Matrix Found
+                      ไม่พบเมทริกซ์
                     </p>
                     <p className="text-[10px] text-slate-300 dark:text-zinc-600 uppercase tracking-widest">
-                      Start checking in to populate this log.
+                      เริ่มเช็คอินเพื่อบันทึกข้อมูลลงในบันทึกนี้
                     </p>
                   </div>
                 ) : (
@@ -309,7 +311,7 @@ export default function WFHHistoryPage() {
                       initial={{ opacity: 0, x: 10 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: index * 0.05 }}
-                      className="group bg-white dark:bg-zinc-900 rounded-3xl p-8 border border-slate-100 dark:border-zinc-800 shadow-xl shadow-black/2 flex flex-col gap-6 hover:shadow-2xl transition-all hover:border-blue-500/30"
+                      className="group bg-white dark:bg-zinc-900 rounded-3xl p-4 border border-slate-100 dark:border-zinc-800 shadow-xl shadow-black/2 flex flex-col gap-6 hover:shadow-2xl transition-all hover:border-blue-500/30"
                     >
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-50 dark:border-zinc-950 pb-6">
                         <div className="flex items-center gap-4">
@@ -342,7 +344,7 @@ export default function WFHHistoryPage() {
                             <Calendar size={18} className="text-blue-600" />
                             <div>
                               <p className="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-1">
-                                Period Range
+                                ช่วงเวลา
                               </p>
                               <p className="text-sm font-black text-slate-700 dark:text-zinc-200">
                                 {format(
@@ -366,7 +368,7 @@ export default function WFHHistoryPage() {
                                 size={12}
                                 className="text-slate-300"
                               />{" "}
-                              Justification Objective
+                              เหตุผลและวัตถุประสงค์
                             </p>
                             <p className="text-sm font-bold text-slate-600 dark:text-zinc-400 italic leading-relaxed">
                               &quot;{leave.reason}&quot;
@@ -383,21 +385,21 @@ export default function WFHHistoryPage() {
                                   <Search size={18} />
                                 </div>
                                 <p className="text-[9px] font-black uppercase text-slate-400 tracking-widest mb-2">
-                                  Attachment Secured
+                                  เอกสารแนบได้รับการรักษาความปลอดภัยแล้ว
                                 </p>
                                 <Link
                                   href={leave.attachmentUrl}
                                   target="_blank"
                                   className="text-[10px] font-black text-blue-600 uppercase border-b-2 border-blue-500/30 hover:border-blue-500 pb-0.5 transition-all"
                                 >
-                                  Preview Artifact
+                                  ดูเอกสารประกอบ
                                 </Link>
                               </div>
                             ) : (
                               <div className="text-center opacity-40">
                                 <XCircle size={20} className="mx-auto mb-3" />
                                 <p className="text-[9px] font-black uppercase tracking-widest">
-                                  No Documents Provided
+                                  ไม่มีเอกสารใดๆ ส่งมา
                                 </p>
                               </div>
                             )}

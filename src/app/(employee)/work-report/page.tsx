@@ -191,7 +191,7 @@ export default function WorkReportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 py-12 px-4 font-sans selection:bg-blue-500/30">
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 py-6 px-2 font-sans selection:bg-blue-500/30">
       {/* Background blobs */}
       <div className="fixed top-[-10%] left-[-10%] w-[40%] h-[40%] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="fixed bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
@@ -210,7 +210,7 @@ export default function WorkReportPage() {
                 รายงาน <span className="text-blue-600">การปฏิบัติงาน</span>
               </h1>
               <p className="text-slate-400 dark:text-zinc-500 text-[10px] font-black uppercase tracking-[0.2em] mt-2 flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />{" "}
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 ระบบส่งรายงานประจำวัน
               </p>
             </div>
@@ -225,15 +225,15 @@ export default function WorkReportPage() {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[2.5rem] p-8 shadow-sm overflow-hidden relative group transition-all hover:shadow-xl hover:shadow-blue-500/5"
+            className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl py-6 px-2 shadow-sm overflow-hidden relative group transition-all hover:shadow-xl hover:shadow-blue-500/5"
           >
-            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+            <div className="absolute top-0 right-0 py-6 px-2 opacity-5 group-hover:opacity-10 transition-opacity">
               <Calendar size={80} />
             </div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative z-10">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 px-2 relative z-10">
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-2">
-                  <span className="w-1 h-1 rounded-full bg-blue-500" />{" "}
+                  <span className="w-1 h-1 rounded-full bg-blue-500" />
                   รายงานสำหรับวันที่
                 </label>
                 <h2 className="text-xl font-black text-slate-800 dark:text-white uppercase">
@@ -243,7 +243,8 @@ export default function WorkReportPage() {
               <div className="flex items-center gap-4">
                 {fetching ? (
                   <div className="flex items-center gap-3 px-4 py-2 bg-blue-50 dark:bg-blue-500/10 text-blue-500 rounded-xl text-xs font-black animate-pulse uppercase tracking-widest">
-                    <Loader2 size={16} className="animate-spin" /> กำลังดึงข้อมูล...
+                    <Loader2 size={16} className="animate-spin" />
+                    กำลังดึงข้อมูล...
                   </div>
                 ) : (
                   <div className="px-4 py-2 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-500 rounded-xl text-[10px] font-black uppercase tracking-widest border border-emerald-100 dark:border-emerald-900/30">
@@ -286,9 +287,9 @@ export default function WorkReportPage() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.95 }}
-                  className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[2.5rem] p-8 shadow-sm space-y-6 relative group transition-all hover:shadow-xl hover:shadow-indigo-500/5 hover:border-indigo-100 dark:hover:border-indigo-900/20"
+                  className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl py-6 px-2 shadow-sm space-y-6 relative group transition-all hover:shadow-xl hover:shadow-indigo-500/5 hover:border-indigo-100 dark:hover:border-indigo-900/20"
                 >
-                  <div className="flex flex-col md:flex-row md:items-start gap-8">
+                  <div className="flex flex-col md:flex-row md:items-start gap-6">
                     <div className="flex-none flex items-start justify-between md:block">
                       <div className="w-12 h-12 rounded-2xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-sm font-black text-indigo-600 dark:text-indigo-400 border border-indigo-100 dark:border-indigo-900/20">
                         {String(index + 1).padStart(2, "0")}
@@ -381,9 +382,9 @@ export default function WorkReportPage() {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[2.5rem] p-8 shadow-sm relative overflow-hidden group hover:shadow-xl hover:shadow-emerald-500/5 transition-all"
+            className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl py-6 px-2 shadow-sm relative overflow-hidden group hover:shadow-xl hover:shadow-emerald-500/5 transition-all"
           >
-            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity">
+            <div className="absolute top-0 right-0 py-6 px-2 opacity-5 group-hover:opacity-10 transition-opacity">
               <FileText size={80} className="text-emerald-500" />
             </div>
             <div className="flex items-center gap-4 mb-6 relative z-10">
@@ -404,17 +405,17 @@ export default function WorkReportPage() {
               onChange={(e) => setSummary(e.target.value)}
               rows={5}
               placeholder="สรุปผลการทำงานในภาพรวมที่เกิดขึ้นในวันนี้..."
-              className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-zinc-800 rounded-3xl p-6 text-sm font-medium text-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all resize-none relative z-10 italic"
+              className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-zinc-800 rounded-3xl py-6 px-2 text-sm font-medium text-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all resize-none relative z-10 italic"
             />
           </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 px-2">
             {/* Problems - Rose Theme */}
             <motion.div
               initial={{ opacity: 0, x: -10 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[2.5rem] p-8 shadow-sm group hover:shadow-xl hover:shadow-rose-500/5 transition-all"
+              className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl py-6 px-2 shadow-sm group hover:shadow-xl hover:shadow-rose-500/5 transition-all "
             >
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-10 h-10 bg-rose-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-rose-500/20">
@@ -422,11 +423,9 @@ export default function WorkReportPage() {
                 </div>
                 <div>
                   <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">
-                    {" "}
                     ปัญหาที่พบ (Problems)
                   </h3>
                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">
-                    {" "}
                     อุปสรรคที่พบในการทำงาน
                   </p>
                 </div>
@@ -436,7 +435,7 @@ export default function WorkReportPage() {
                 onChange={(e) => setProblems(e.target.value)}
                 rows={4}
                 placeholder="อุปสรรคหรือปัญหาที่เกิดขึ้น (ถ้ามี)..."
-                className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-zinc-800 rounded-3xl p-6 text-sm font-medium text-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all resize-none"
+                className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-zinc-800 rounded-3xl py-6 px-2 text-sm font-medium text-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500 transition-all resize-none"
               />
             </motion.div>
 
@@ -445,7 +444,7 @@ export default function WorkReportPage() {
               initial={{ opacity: 0, x: 10 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[2.5rem] p-8 shadow-sm group hover:shadow-xl hover:shadow-amber-500/5 transition-all"
+              className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl py-6 px-2 shadow-sm group hover:shadow-xl hover:shadow-amber-500/5 transition-all"
             >
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-10 h-10 bg-amber-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/20">
@@ -453,11 +452,9 @@ export default function WorkReportPage() {
                 </div>
                 <div>
                   <h3 className="text-sm font-black text-slate-800 dark:text-white uppercase tracking-tight">
-                    {" "}
                     แผนงานวันต่อไป (Next Day)
                   </h3>
                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">
-                    {" "}
                     เป้าหมายที่ตั้งไว้ในวันถัดไป
                   </p>
                 </div>
@@ -467,7 +464,7 @@ export default function WorkReportPage() {
                 onChange={(e) => setPlansNextDay(e.target.value)}
                 rows={4}
                 placeholder="สิ่งที่คุณต้องการจะทำให้สำเร็จในวันถัดไป..."
-                className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-zinc-800 rounded-3xl p-6 text-sm font-medium text-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all resize-none"
+                className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-100 dark:border-zinc-800 rounded-3xl py-6 px-2 text-sm font-medium text-slate-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all resize-none"
               />
             </motion.div>
           </div>
@@ -477,7 +474,7 @@ export default function WorkReportPage() {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-[2.5rem] p-8 shadow-sm overflow-hidden group hover:shadow-xl hover:shadow-blue-500/5 transition-all"
+            className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl py-6 px-2 shadow-sm overflow-hidden group hover:shadow-xl hover:shadow-blue-500/5 transition-all"
           >
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
@@ -580,7 +577,7 @@ export default function WorkReportPage() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="flex items-center gap-4 text-rose-500 bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30 p-6 rounded-4xl text-sm font-black uppercase tracking-tight"
+                className="flex items-center gap-4 text-rose-500 bg-rose-50 dark:bg-rose-950/20 border border-rose-100 dark:border-rose-900/30 py-6 px-2 rounded-4xl text-sm font-black uppercase tracking-tight"
               >
                 <div className="w-10 h-10 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center shadow-sm">
                   <AlertCircle size={22} />
@@ -593,7 +590,7 @@ export default function WorkReportPage() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="flex items-center gap-4 text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 p-6 rounded-4xl text-sm font-black uppercase tracking-tight shadow-xl shadow-emerald-500/10"
+                className="flex items-center gap-4 text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 py-6 px-2 rounded-4xl text-sm font-black uppercase tracking-tight shadow-xl shadow-emerald-500/10"
               >
                 <div className="w-10 h-10 rounded-full bg-white dark:bg-zinc-800 flex items-center justify-center shadow-sm">
                   <CheckCircle2 size={22} className="text-emerald-500" />
@@ -608,7 +605,7 @@ export default function WorkReportPage() {
             <button
               type="submit"
               disabled={loading || fetching}
-              className="w-full h-20 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-[2.5rem] font-black text-xl flex items-center justify-center gap-4 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-2xl shadow-slate-900/10 disabled:opacity-50 disabled:cursor-not-allowed group overflow-hidden relative"
+              className="w-full h-20 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-3xl font-black text-xl flex items-center justify-center gap-4 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-2xl shadow-slate-900/10 disabled:opacity-50 disabled:cursor-not-allowed group overflow-hidden relative"
             >
               <div className="absolute inset-0 bg-blue-600 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out opacity-10" />
               {loading ? (

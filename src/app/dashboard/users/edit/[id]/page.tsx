@@ -30,7 +30,16 @@ import { useRef } from "react";
 interface UserFormData {
   name: string;
   email: string;
-  role: "super_admin" | "admin" | "hr" | "director" | "editor" | "user" | "staff" | "teacher" | "janitor";
+  role:
+    | "super_admin"
+    | "admin"
+    | "hr"
+    | "director"
+    | "editor"
+    | "user"
+    | "staff"
+    | "teacher"
+    | "janitor";
   department: string;
   phone: string;
   lineId: string;
@@ -208,7 +217,7 @@ export default function EditUserPage() {
       </nav>
 
       {/* Profile & Cover Header Area */}
-      <div className="max-w-[1600px] mx-auto px-6 mt-8">
+      <div className="max-w-[1600px] mx-auto px-2 mt-2">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -228,7 +237,7 @@ export default function EditUserPage() {
             ) : (
               <div className="absolute inset-0 bg-black/10" />
             )}
-            
+
             {/* Animated Gradient Mesh Overlay */}
             <div className="absolute inset-0 opacity-40 mix-blend-overlay bg-[radial-gradient(ellipse_at_top_right,var(--tw-gradient-stops))] from-white/40 via-transparent to-black/40" />
 
@@ -314,14 +323,14 @@ export default function EditUserPage() {
         </motion.div>
       </div>
 
-      <div className="max-w-[1600px] mx-auto px-6 mt-10">
+      <div className="max-w-[1600px] mx-auto px-2 mt-6">
         <form
           onSubmit={handleSubmit}
           className="grid grid-cols-1 lg:grid-cols-12 gap-8"
         >
           {/* Main Info */}
           <div className="lg:col-span-8 space-y-6">
-            <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-8">
+            <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-4">
               <div className="flex items-center gap-2 mb-8 text-blue-600">
                 <FiUser className="w-5 h-5" />
                 <h3 className="font-bold uppercase tracking-wider text-sm">
@@ -348,15 +357,22 @@ export default function EditUserPage() {
 
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-slate-500 ml-1">
-                    ชื่อผู้ใช้งาน (ระบบ) <span className="text-blue-600 font-normal italic">* แก้ไขได้เฉพาะ Super Admin</span>
+                    ชื่อผู้ใช้งาน (ระบบ){" "}
+                    <span className="text-blue-600 font-normal italic">
+                      * แก้ไขได้เฉพาะ Super Admin
+                    </span>
                   </label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">@</span>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">
+                      @
+                    </span>
                     <input
                       type="text"
                       required
                       value={username}
-                      onChange={(e) => setUsername(e.target.value.replace(/\s/g, ""))}
+                      onChange={(e) =>
+                        setUsername(e.target.value.replace(/\s/g, ""))
+                      }
                       className="w-full bg-blue-50/30 border border-blue-200 rounded-xl p-4 pl-10 text-slate-800 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all font-bold italic"
                       placeholder="username"
                     />
@@ -468,7 +484,7 @@ export default function EditUserPage() {
 
           {/* Settings Sidebar */}
           <div className="lg:col-span-4 space-y-6">
-            <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-200">
+            <div className="bg-white rounded-3xl p-4 shadow-sm border border-slate-200">
               <div className="flex items-center gap-2 mb-6 text-slate-800">
                 <FiShield className="w-5 h-5" />
                 <h3 className="font-bold text-sm uppercase tracking-wider">
@@ -495,12 +511,18 @@ export default function EditUserPage() {
                     <option value="teacher">ครู (Teacher)</option>
                     <option value="janitor">ภารโรง (Janitor)</option>
                     <option value="director">ผู้บริหาร (Director)</option>
-                    <option value="deputy_resource">รอง ผอ (บริหารทรัพยากร)</option>
+                    <option value="deputy_resource">
+                      รอง ผอ (บริหารทรัพยากร)
+                    </option>
                     <option value="deputy_strategy">รอง ผอ (ยุทธศาสตร์)</option>
                     <option value="deputy_activities">รอง ผอ (กิจกรรม)</option>
-                    <option value="deputy_student_affairs">รอง ผอ (กิจการนักเรียน)</option>
+                    <option value="deputy_student_affairs">
+                      รอง ผอ (กิจการนักเรียน)
+                    </option>
                     <option value="admin">ผู้ดูแลระบบ (Admin)</option>
-                    <option value="super_admin">ผู้ดูแลระบบสูงสุด (Super Admin)</option>
+                    <option value="super_admin">
+                      ผู้ดูแลระบบสูงสุด (Super Admin)
+                    </option>
                   </select>
                 </div>
 
