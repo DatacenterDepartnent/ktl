@@ -204,7 +204,17 @@ export default function MobileMenu({
                       🚀 ไปที่ Dashboard
                     </Link>
 
-                    {(["super_admin", "admin", "hr", "director", "editor", "deputy_resource", "deputy_strategy", "deputy_activities", "deputy_student_affairs"].includes(userRole)) && (
+                    {([
+                      "super_admin",
+                      "admin",
+                      "hr",
+                      "director",
+                      "editor",
+                      "deputy_resource",
+                      "deputy_strategy",
+                      "deputy_academic",
+                      "deputy_student_affairs",
+                    ].includes(userRole)) && (
                       <div className="flex flex-col gap-2">
                          {/* เฉพาะรองบริหารทรัพยากร (และผู้บริหารหลัก) ที่เห็นรายงานและการทำงาน */}
                          {(["super_admin", "admin", "hr", "director", "deputy_resource"].includes(userRole)) && (

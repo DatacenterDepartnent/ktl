@@ -511,11 +511,11 @@ export default function EditUserPage() {
                     <option value="teacher">ครู (Teacher)</option>
                     <option value="janitor">ภารโรง (Janitor)</option>
                     <option value="director">ผู้บริหาร (Director)</option>
-                    <option value="deputy_resource">
+                     <option value="deputy_resource">
                       รอง ผอ (บริหารทรัพยากร)
                     </option>
                     <option value="deputy_strategy">รอง ผอ (ยุทธศาสตร์)</option>
-                    <option value="deputy_activities">รอง ผอ (กิจกรรม)</option>
+                    <option value="deputy_academic">รอง ผอ (วิชาการ)</option>
                     <option value="deputy_student_affairs">
                       รอง ผอ (กิจการนักเรียน)
                     </option>

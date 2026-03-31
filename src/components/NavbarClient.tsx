@@ -282,7 +282,7 @@ export default function NavbarClient({
                       [
                         "deputy_resource",
                         "deputy_strategy",
-                        "deputy_activities",
+                        "deputy_academic",
                         "deputy_student_affairs",
                       ].includes(role?.toLowerCase() || "")) && (
                       <>

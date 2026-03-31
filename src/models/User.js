@@ -5,7 +5,7 @@
  * - name: string
  * - email: string (unique)
  * - password: string (hashed)
- * - role: enum ["super_admin", "director", "deputy_resource", "deputy_strategy", "deputy_activities", "deputy_student_affairs", "hr", "admin", "general", "editor", "user"]
+ * - role: enum ["super_admin", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "hr", "admin", "general", "editor", "user"]
  * - department: string
  * - image: string
  * - deviceId: string
@@ -15,4 +15,4 @@
  * - username: string
  */
 
-export const UserRoles = ["super_admin", "director", "deputy_resource", "deputy_strategy", "deputy_activities", "deputy_student_affairs", "hr", "admin", "general", "editor", "user"];
+export const UserRoles = ["super_admin", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "hr", "admin", "general", "editor", "user"];

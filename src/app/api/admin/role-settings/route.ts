@@ -13,7 +13,7 @@ export async function GET() {
     const role = (session?.user as any)?.role?.toLowerCase();
     
     // Consistent with middleware's admin roles
-    const allowedRoles = ["super_admin", "admin", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_activities", "deputy_student_affairs", "editor", "staff"];
+    const allowedRoles = ["super_admin", "admin", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "editor", "staff"];
 
     if (!role || !allowedRoles.includes(role)) {
       console.error(`[API/role-settings] Unauthorized Access: role=${role}`);
@@ -50,7 +50,7 @@ export async function PATCH(req: Request) {
     const userRole = (session?.user as any)?.role?.toLowerCase();
     
     // Consistent with middleware's admin roles
-    const allowedRoles = ["super_admin", "admin", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_activities", "deputy_student_affairs", "editor", "staff"];
+    const allowedRoles = ["super_admin", "admin", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "editor", "staff"];
 
     if (!userRole || !allowedRoles.includes(userRole)) {
       console.error(`[API/role-settings] Update Unauthorized: role=${userRole}`);

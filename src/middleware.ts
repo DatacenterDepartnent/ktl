@@ -44,7 +44,7 @@ export default auth((req) => {
   if (isLoggedIn) {
     // 3.1 สิทธิ์เข้าหน้า Dashboard (เฉพาะ Admin/Director/Staff/Deputy/HR)
     if (isAttendanceDashboard) {
-      const allowedDashboardRoles = ["super_admin", "admin", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_activities", "deputy_student_affairs", "editor", "staff"];
+      const allowedDashboardRoles = ["super_admin", "admin", "hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "editor", "staff"];
       if (!allowedDashboardRoles.includes(userRole)) {
         return NextResponse.redirect(new URL("/wfh", nextUrl.origin));
       }

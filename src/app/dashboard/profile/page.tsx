@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import FullPageLoader from "@/components/FullPageLoader";
 import {
   UserOutlined,
   PhoneOutlined,
@@ -144,14 +145,7 @@ export default function ProfilePage() {
   };
 
   if (loading) {
-    return (
-      <div className="flex h-[80vh] items-center justify-center">
-        <div className="relative flex h-20 w-20 items-center justify-center">
-          <div className="absolute h-full w-full animate-ping rounded-full bg-blue-400 opacity-20"></div>
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-blue-600 border-t-transparent"></div>
-        </div>
-      </div>
-    );
+    return <FullPageLoader message="กำลังรวบรวมข้อมูลผู้ใช้งาน..." />;
   }
 
   return (
@@ -269,8 +263,8 @@ export default function ProfilePage() {
                     formData.role === "director" ? "ผู้อำนวยการ (Director)" :
                     formData.role === "deputy_resource" ? "รองผู้อำนวยการ ฝ่ายบริหารทรัพยากร" :
                     formData.role === "deputy_strategy" ? "รองผู้อำนวยการ ฝ่ายแผนงานและความร่วมมือ" :
-                    formData.role === "deputy_activities" ? "รองผู้อำนวยการ ฝ่ายพัฒนากิจการนักเรียนฯ" :
-                    formData.role === "deputy_student_affairs" ? "รองผู้อำนวยการ ฝ่ายวิชาการ" :
+                    formData.role === "deputy_academic" ? "รองผู้อำนวยการ ฝ่ายวิชาการ" :
+                    formData.role === "deputy_student_affairs" ? "รองผู้อำนวยการ ฝ่ายกิจการนักเรียน" :
                     formData.role === "teacher" ? "คณะครู (Teacher)" :
                     formData.role === "staff" ? "เจ้าหน้าที่ (Staff)" :
                     formData.role === "janitor" ? "นักการภารโรง (Janitor)" :

@@ -245,7 +245,7 @@ export default function SuperAdminPage() {
       case "director":
       case "deputy_resource":
       case "deputy_strategy":
-      case "deputy_activities":
+      case "deputy_academic":
       case "deputy_student_affairs":
         return "border-indigo-500 bg-indigo-500/10 text-indigo-700 dark:text-indigo-400 font-bold";
       case "hr":
@@ -505,18 +505,18 @@ export default function SuperAdminPage() {
                           </option>
                           <option value="editor">EDITOR (ดูแลเนื้อหา)</option>
                           <option value="admin">ADMIN (แอดมิน)</option>
-                          <option value="director">DIRECTOR (ผอ.)</option>
+                          <option value="director">ผอ. (DIRECTOR)</option>
                           <option value="deputy_resource">
                             รอง ผอ. (ทรัพยากร)
                           </option>
                           <option value="deputy_strategy">
                             รอง ผอ. (แผนงาน)
                           </option>
-                          <option value="deputy_activities">
-                            รอง ผอ. (กิจกรรม)
+                          <option value="deputy_academic">
+                            รอง ผอ. (วิชาการ)
                           </option>
                           <option value="deputy_student_affairs">
-                            รอง ผอ. (นักเรียน)
+                            รอง ผอ. (กิจการนักเรียน)
                           </option>
                           <option value="teacher">ครู (TEACHER)</option>
                           <option value="hr">ฝ่ายบุคคล (HR)</option>
@@ -706,12 +706,12 @@ export default function SuperAdminPage() {
                 </p>
               </div>
             </div>
-              <button
-                onClick={handleClearLogs}
-                className="px-6 py-3 bg-white/5 hover:bg-rose-500 text-zinc-400 hover:text-white text-xs font-bold uppercase tracking-widest rounded-2xl border border-white/10 hover:border-rose-500 transition-all"
-              >
-                ล้างประวัติกิจกรรม
-              </button>
+            <button
+              onClick={handleClearLogs}
+              className="px-6 py-3 bg-white/5 hover:bg-rose-500 text-zinc-400 hover:text-white text-xs font-bold uppercase tracking-widest rounded-2xl border border-white/10 hover:border-rose-500 transition-all"
+            >
+              ล้างประวัติกิจกรรม
+            </button>
           </div>
 
           <div className="p-4 max-h-[700px] overflow-y-auto custom-scrollbar-dark space-y-6">

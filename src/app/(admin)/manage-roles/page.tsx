@@ -104,8 +104,8 @@ export default function ManageRolesPage() {
   const allowedRoles = [
     { value: "deputy_resource", label: "รอง ผอ. (ทรัพยากร)" },
     { value: "deputy_strategy", label: "รอง ผอ. (แผนงาน)" },
-    { value: "deputy_activities", label: "รอง ผอ. (กิจกรรม)" },
-    { value: "deputy_student_affairs", label: "รอง ผอ. (นักเรียน)" },
+    { value: "deputy_academic", label: "รอง ผอ. (วิชาการ)" },
+    { value: "deputy_student_affairs", label: "รอง ผอ. (กิจการนักเรียน)" },
     { value: "teacher", label: "ครูผู้สอน" },
     { value: "hr", label: "เจ้าหน้าที่ฝ่ายบุคคล" },
     { value: "staff", label: "เจ้าหน้าที่" },
