@@ -45,51 +45,62 @@ export async function POST(req: Request) {
 
     // 1. ดึงข้อมูล User และ Role
     const user = await db.collection("users").findOne({ _id: new ObjectId(userId) });
-    const userRole = user?.role || "user";
+    const userRole = (user?.role || "user").toLowerCase();
 
-    // 2. ดึงการตั้งค่าเวลาของ Role นี้ (ถ้าไม่มีให้ใช้ Default 08:00)
-    const roleSetting = await db.collection("role_settings").findOne({ role: userRole });
-    let limitHours = 8;
-    let limitMinutes = 0;
+    // 2. ดึงการตั้งค่า (Global และ Role)
+    const [globalSetting, roleSetting] = await Promise.all([
+      db.collection("role_settings").findOne({ role: "system_global" }),
+      db.collection("role_settings").findOne({ role: userRole })
+    ]);
 
-    if (roleSetting && roleSetting.checkInLimit) {
-      const [h, m] = roleSetting.checkInLimit.split(":").map(Number);
-      limitHours = h;
-      limitMinutes = m;
-    } else {
-      // Fallback สำหรับ Staff ตามเงื่อนไขใหม่ (07:30) ถ้ายังไม่ได้ตั้งค่าใน DB
-      if (userRole === "staff") {
-        limitHours = 7;
-        limitMinutes = 30;
-      }
-    }
+    // 2.1 ค่า Default สำหรับ Global (ถ้าใน DB ยังไม่มี)
+    const config = {
+      checkInStart: globalSetting?.checkInStart || "05:00",
+      lateThreshold: roleSetting?.checkInLimit || globalSetting?.lateThreshold || "08:00",
+      systemLockStart: globalSetting?.systemLockStart || "18:01",
+      systemLockEnd: globalSetting?.systemLockEnd || "04:59",
+    };
+
     // Thailand is UTC+7
     const thTime = new Date(serverTime.getTime() + (7 * 60 * 60 * 1000));
     const thHours = thTime.getUTCHours();
     const thMinutes = thTime.getUTCMinutes();
-    const thSeconds = thTime.getUTCSeconds();
     const currentTimeVal = thHours * 100 + thMinutes;
 
-    // ⛔ 1. ตรวจสอบช่วงเวลาปิดระบบ (18:01 - 04:59)
-    if (currentTimeVal >= 1801 || currentTimeVal < 500) {
+    // Helper: แปลง "HH:mm" เป็นตัวเลข HHmm เพื่อเปรียบเทียบ
+    const toNum = (timeStr: string) => {
+      const [h, m] = timeStr.split(":").map(Number);
+      return h * 100 + m;
+    };
+
+    const lockStart = toNum(config.systemLockStart);
+    const lockEnd = toNum(config.systemLockEnd);
+    const inStart = toNum(config.checkInStart);
+    const lateLimit = toNum(config.lateThreshold);
+
+    // ⛔ 1. ตรวจสอบช่วงเวลาปิดระบบ (System Lockout)
+    // กรณีข้ามคืน (เช่น 18:01 ถึง 04:59)
+    const isLocked = lockStart > lockEnd 
+      ? (currentTimeVal >= lockStart || currentTimeVal < lockEnd)
+      : (currentTimeVal >= lockStart && currentTimeVal < lockEnd);
+
+    if (isLocked) {
       return NextResponse.json({ 
         success: false, 
-        message: 'ขณะนี้อยู่นอกเวลาให้บริการ (ระบบปิดระหว่าง 18.01 - 04.59 น.)' 
+        message: `ขณะนี้อยู่นอกเวลาให้บริการ (ระบบปิดระหว่าง ${config.systemLockStart} - ${config.systemLockEnd} น.)` 
       }, { status: 403 });
     }
 
-    // ⛔ 2. ตรวจสอบเวลาเริ่มเข้างาน (05.00)
-    if (currentTimeVal < 500) {
+    // ⛔ 2. ตรวจสอบเวลาเริ่มเข้างาน
+    if (currentTimeVal < inStart) {
       return NextResponse.json({ 
         success: false, 
-        message: 'ยังไม่ถึงเวลาลงเวลาเข้างาน (เริ่ม 05.00 น.)' 
+        message: `ยังไม่ถึงเวลาลงเวลาเข้างาน (เริ่ม ${config.checkInStart} น.)` 
       }, { status: 403 });
     }
 
-    // 3. ดึงการตั้งค่าเวลาของ Role นี้ (ถ้ามี) แต่ยึดตามกฎระบบใหม่ "หลัง 08.01 สาย"
-    // ถ้าผู้ใช้ต้องการให้ยืดหยุ่นตามแผนผังเดิม ให้ใช้ limitHours/limitMinutes
-    // แต่จากคำสั่ง: "หลัง 08.01 เข้างานสาย" ผมจะใช้ค่านี้เป็นหลัก
-    const isLate = currentTimeVal > 801; 
+    // 3. ตรวจสอบสถานะสาย (Late)
+    const isLate = currentTimeVal > lateLimit; 
     const status = isLate ? 'Late' : 'Present';
 
     // วันที่ของวันนี้ (เวลาประเทศไทย)

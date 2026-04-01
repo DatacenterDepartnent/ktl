@@ -34,34 +34,57 @@ export async function POST(req: Request) {
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
+    // 1. ดึงการตั้งค่า Global
+    const globalSetting = await db.collection("role_settings").findOne({ role: "system_global" });
+    const config = {
+      checkOutStart: globalSetting?.checkOutStart || "16:30",
+      checkOutEnd: globalSetting?.checkOutEnd || "18:00",
+      systemLockStart: globalSetting?.systemLockStart || "18:01",
+      systemLockEnd: globalSetting?.systemLockEnd || "04:59",
+    };
+
     // Thailand is UTC+7
     const thTime = new Date(serverTime.getTime() + (7 * 60 * 60 * 1000));
     const thHours = thTime.getUTCHours();
     const thMinutes = thTime.getUTCMinutes();
     const currentTimeVal = thHours * 100 + thMinutes;
 
-    // ⛔ 1. ตรวจสอบช่วงเวลาปิดระบบ (18:01 - 04:59)
-    if (currentTimeVal >= 1801 || currentTimeVal < 500) {
+    // Helper: แปลง "HH:mm" เป็นตัวเลข HHmm
+    const toNum = (timeStr: string) => {
+      const [h, m] = timeStr.split(":").map(Number);
+      return h * 100 + m;
+    };
+
+    const lockStart = toNum(config.systemLockStart);
+    const lockEnd = toNum(config.systemLockEnd);
+    const outStart = toNum(config.checkOutStart);
+    const outEnd = toNum(config.checkOutEnd);
+
+    // ⛔ 1. ตรวจสอบช่วงเวลาปิดระบบ (System Lockout)
+    const isLocked = lockStart > lockEnd 
+      ? (currentTimeVal >= lockStart || currentTimeVal < lockEnd)
+      : (currentTimeVal >= lockStart && currentTimeVal < lockEnd);
+
+    if (isLocked) {
       return NextResponse.json({ 
         success: false, 
-        message: 'ขณะนี้อยู่นอกเวลาให้บริการ (ระบบปิดระหว่าง 18.01 - 04.59 น.)' 
+        message: `ขณะนี้อยู่นอกเวลาให้บริการ (ระบบปิดระหว่าง ${config.systemLockStart} - ${config.systemLockEnd} น.)` 
       }, { status: 403 });
     }
 
-    // ⛔ 2. ตรวจสอบเวลาออกงาน (ห้ามออกก่อน 16.29, เริ่ม 16.30)
-    // "ไม่ให้กดออกจากงานได้ก่อนเวลา 16.29 ออกจากงาน 16.30"
-    if (currentTimeVal < 1630) {
+    // ⛔ 2. ตรวจสอบเวลาออกงาน (ห้ามออกก่อนเวลาที่กำหนด)
+    if (currentTimeVal < outStart) {
       return NextResponse.json({ 
         success: false, 
-        message: 'ยังไม่ถึงเวลาลงเวลาออกงาน (ลงได้ตั้งแต่ 16.30 น. เป็นต้นไป)' 
+        message: `ยังไม่ถึงเวลาลงเวลาออกงาน (ลงได้ตั้งแต่ ${config.checkOutStart} น. เป็นต้นไป)` 
       }, { status: 403 });
     }
 
-    // ⛔ 3. ตรวจสอบเวลาคัทออฟการออกงาน (หลัง 18.00 ไม่ให้ลงเวลาออก)
-    if (currentTimeVal > 1800) {
+    // ⛔ 3. ตรวจสอบเวลาสิ้นสุดการออกงาน
+    if (currentTimeVal > outEnd) {
        return NextResponse.json({ 
         success: false, 
-        message: 'เลยเวลาลงเวลาออกงานแล้ว (สิ้นสุด 18.00 น.) โปรดติดต่อเจ้าหน้าที่' 
+        message: `เลยเวลาลงเวลาออกงานแล้ว (สิ้นสุด ${config.checkOutEnd} น.) โปรดติดต่อเจ้าหน้าที่` 
       }, { status: 403 });
     }
 
