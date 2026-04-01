@@ -443,17 +443,20 @@ export default function NavbarClient({
                       </Link>
                     )}
 
-                    {/* Manually added WFH to Main Menu */}
+                    <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/50"></div>
+
+                    {/* WFH Link - Refined Executive Style */}
                     <Link
                       href="/wfh"
-                      className={`px-3 py-2 flex items-center gap-2 text-[16px] font-bold transition-all whitespace-nowrap rounded-lg ml-2 ${
-                        pathname === "/wfh"
-                          ? ""
-                          : "text-zinc-600 dark:text-zinc-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/20"
-                      }`}
+                      className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10 rounded-xl transition-all group"
                     >
-                      🏠 WFH
+                      <div className="p-1.5 rounded-lg bg-orange-100 dark:bg-orange-900/30 group-hover:bg-orange-200 transition-colors">
+                        <FileText size={16} />
+                      </div>
+                      รายงานการปฏิบัติงาน (WFH)
                     </Link>
+
+                    <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/50" />
                     <Link
                       href="/dashboard/profile"
                       className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all group"

@@ -124,19 +124,22 @@ function CheckInContent() {
       const roleSpecific = settings.find((s) => s.role === userRole);
 
       // 2. กำหนดค่า Config (ลำดับความสำคัญ: Role > Global > Fallback)
-      // 🔥 ปรับปรุง: ดึงเวลาเริ่มออกงานตามกฎภาพรวม (12:30) มาใช้เป็นลำดับแรก 
+      // 🔥 ปรับปรุง: ดึงเวลาเริ่มออกงานตามกฎภาพรวม (12:30) มาใช้เป็นลำดับแรก
       const config = {
         checkInStart: global?.checkInStart || "05:00",
         lateLimit:
           roleSpecific?.checkInLimit || global?.lateThreshold || "08:00",
-        checkOutStart: global?.checkOutStart || roleSpecific?.checkOutTime || "16:30",
+        checkOutStart:
+          global?.checkOutStart || roleSpecific?.checkOutTime || "16:30",
         checkOutEnd: global?.checkOutEnd || "18:00",
         lockStart: global?.systemLockStart || "18:01",
         lockEnd: global?.systemLockEnd || "04:59",
       };
 
       // 🔍 DEBUG LOG: ตรวจสอบค่าที่ระบบดึงมาได้จริง
-      console.log(`[Config Sync] Role: ${userRole}, Global Out Start: ${global?.checkOutStart}, Final Out Start: ${config.checkOutStart}`);
+      console.log(
+        `[Config Sync] Role: ${userRole}, Global Out Start: ${global?.checkOutStart}, Final Out Start: ${config.checkOutStart}`,
+      );
 
       // Helper: HH:mm -> Number
       const toNum = (t: string) => {

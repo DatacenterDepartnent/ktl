@@ -74,14 +74,14 @@ export default function AttendanceSettingsPage() {
     }
   };
 
-  const TimeInput = ({ 
-    label, 
-    value, 
-    onChange 
-  }: { 
-    label: string; 
-    value: string; 
-    onChange: (val: string) => void 
+  const TimeInput = ({
+    label,
+    value,
+    onChange,
+  }: {
+    label: string;
+    value: string;
+    onChange: (val: string) => void;
   }) => {
     const [h, m] = (value || "00:00").split(":");
     return (
@@ -166,86 +166,126 @@ export default function AttendanceSettingsPage() {
 
           <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-blue-100 dark:border-blue-900/30 shadow-2xl shadow-blue-500/5 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition-opacity">
-               <ShieldCheck size={120} className="text-blue-600" />
+              <ShieldCheck size={120} className="text-blue-600" />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative z-10">
-               <div className="space-y-6">
-                  <h3 className="text-sm font-black text-blue-600 uppercase tracking-widest bg-blue-50 dark:bg-blue-900/20 px-3 py-1 rounded-lg inline-block">
-                    ช่วงเวลาการเข้างาน
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <TimeInput 
-                      label="เริ่มให้ลงเวลาเข้า" 
-                      value={globalSetting.checkInStart || "05:00"} 
-                      onChange={(val) => {
-                        setSettings(settings.map(s => s.role === "system_global" ? { ...s, checkInStart: val } : s));
-                      }}
-                    />
-                    <TimeInput 
-                      label="ตัดสาย (Late Threshold)" 
-                      value={globalSetting.lateThreshold || "08:00"} 
-                      onChange={(val) => {
-                        setSettings(settings.map(s => s.role === "system_global" ? { ...s, lateThreshold: val } : s));
-                      }}
-                    />
-                  </div>
-               </div>
+              <div className="space-y-6">
+                <h3 className="text-sm font-black text-blue-600 uppercase tracking-widest bg-blue-50 dark:bg-blue-900/20 px-3 py-1 rounded-lg inline-block">
+                  ช่วงเวลาการเข้างาน
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <TimeInput
+                    label="เริ่มให้ลงเวลาเข้า"
+                    value={globalSetting.checkInStart || "05:00"}
+                    onChange={(val) => {
+                      setSettings(
+                        settings.map((s) =>
+                          s.role === "system_global"
+                            ? { ...s, checkInStart: val }
+                            : s,
+                        ),
+                      );
+                    }}
+                  />
+                  <TimeInput
+                    label="ตัดสาย (Late Threshold)"
+                    value={globalSetting.lateThreshold || "08:00"}
+                    onChange={(val) => {
+                      setSettings(
+                        settings.map((s) =>
+                          s.role === "system_global"
+                            ? { ...s, lateThreshold: val }
+                            : s,
+                        ),
+                      );
+                    }}
+                  />
+                </div>
+              </div>
 
-               <div className="space-y-6">
-                  <h3 className="text-sm font-black text-orange-600 uppercase tracking-widest bg-orange-50 dark:bg-orange-900/20 px-3 py-1 rounded-lg inline-block">
-                    ช่วงเวลาการออกงาน
-                  </h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <TimeInput 
-                      label="เริ่มให้ลงเวลาออก" 
-                      value={globalSetting.checkOutStart || "16:30"} 
-                      onChange={(val) => {
-                        setSettings(settings.map(s => s.role === "system_global" ? { ...s, checkOutStart: val } : s));
-                      }}
-                    />
-                    <TimeInput 
-                      label="สิ้นสุดการลงออกงาน" 
-                      value={globalSetting.checkOutEnd || "18:00"} 
-                      onChange={(val) => {
-                        setSettings(settings.map(s => s.role === "system_global" ? { ...s, checkOutEnd: val } : s));
-                      }}
-                    />
-                  </div>
-               </div>
+              <div className="space-y-6">
+                <h3 className="text-sm font-black text-orange-600 uppercase tracking-widest bg-orange-50 dark:bg-orange-900/20 px-3 py-1 rounded-lg inline-block">
+                  ช่วงเวลาการออกงาน
+                </h3>
+                <div className="grid grid-cols-2 gap-4">
+                  <TimeInput
+                    label="เริ่มให้ลงเวลาออก"
+                    value={globalSetting.checkOutStart || "16:30"}
+                    onChange={(val) => {
+                      setSettings(
+                        settings.map((s) =>
+                          s.role === "system_global"
+                            ? { ...s, checkOutStart: val }
+                            : s,
+                        ),
+                      );
+                    }}
+                  />
+                  <TimeInput
+                    label="สิ้นสุดการลงออกงาน"
+                    value={globalSetting.checkOutEnd || "18:00"}
+                    onChange={(val) => {
+                      setSettings(
+                        settings.map((s) =>
+                          s.role === "system_global"
+                            ? { ...s, checkOutEnd: val }
+                            : s,
+                        ),
+                      );
+                    }}
+                  />
+                </div>
+              </div>
 
-               <div className="md:col-span-2 space-y-6 pt-4 border-t border-zinc-100 dark:border-zinc-800">
-                  <h3 className="text-sm font-black text-rose-600 uppercase tracking-widest bg-rose-50 dark:bg-rose-900/20 px-3 py-1 rounded-lg inline-block">
-                    ช่วงเวลาปิดระบบ (System Lockout)
-                  </h3>
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    <TimeInput 
-                      label="เริ่มปิดระบบ" 
-                      value={globalSetting.systemLockStart || "18:01"} 
-                      onChange={(val) => {
-                        setSettings(settings.map(s => s.role === "system_global" ? { ...s, systemLockStart: val } : s));
-                      }}
-                    />
-                    <TimeInput 
-                      label="สิ้นสุดการปิดระบบ" 
-                      value={globalSetting.systemLockEnd || "04:59"} 
-                      onChange={(val) => {
-                        setSettings(settings.map(s => s.role === "system_global" ? { ...s, systemLockEnd: val } : s));
-                      }}
-                    />
-                  </div>
-               </div>
+              <div className="md:col-span-2 space-y-6 pt-4 border-t border-zinc-100 dark:border-zinc-800">
+                <h3 className="text-sm font-black text-rose-600 uppercase tracking-widest bg-rose-50 dark:bg-rose-900/20 px-3 py-1 rounded-lg inline-block">
+                  ช่วงเวลาปิดระบบ (System Lockout)
+                </h3>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <TimeInput
+                    label="เริ่มปิดระบบ"
+                    value={globalSetting.systemLockStart || "18:01"}
+                    onChange={(val) => {
+                      setSettings(
+                        settings.map((s) =>
+                          s.role === "system_global"
+                            ? { ...s, systemLockStart: val }
+                            : s,
+                        ),
+                      );
+                    }}
+                  />
+                  <TimeInput
+                    label="สิ้นสุดการปิดระบบ"
+                    value={globalSetting.systemLockEnd || "04:59"}
+                    onChange={(val) => {
+                      setSettings(
+                        settings.map((s) =>
+                          s.role === "system_global"
+                            ? { ...s, systemLockEnd: val }
+                            : s,
+                        ),
+                      );
+                    }}
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="mt-10 pt-8 border-t border-zinc-100 dark:border-zinc-800 flex justify-end">
-               <button
-                  onClick={() => handleUpdate(globalSetting)}
-                  disabled={saving}
-                  className="flex items-center gap-3 bg-linear-to-r from-blue-600 to-indigo-600 text-white px-10 py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
-                >
-                  {saving ? <Loader2 className="animate-spin" size={20} /> : <Save size={20} />}
-                  บันทึกกฎภาพรวม
-                </button>
+              <button
+                onClick={() => handleUpdate(globalSetting)}
+                disabled={saving}
+                className="flex items-center gap-3 bg-linear-to-r from-blue-600 to-indigo-600 text-white px-10 py-5 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-blue-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all disabled:opacity-50"
+              >
+                {saving ? (
+                  <Loader2 className="animate-spin" size={20} />
+                ) : (
+                  <Save size={20} />
+                )}
+                บันทึกกฎภาพรวม
+              </button>
             </div>
           </div>
         </div>
@@ -271,23 +311,32 @@ export default function AttendanceSettingsPage() {
                   {item.roleName}
                 </h3>
                 <p className="text-xs font-bold text-zinc-400 uppercase tracking-tighter">
-                  บทบาทสิทธิ์: <span className="text-blue-500">{item.role}</span>
+                  บทบาทสิทธิ์:{" "}
+                  <span className="text-blue-500">{item.role}</span>
                 </p>
               </div>
 
               <div className="grid grid-cols-2 gap-4 w-full sm:w-auto">
-                <TimeInput 
-                  label="เวลาเข้างาน" 
-                  value={item.checkInLimit || "08:00"} 
+                <TimeInput
+                  label="เวลาเข้างาน"
+                  value={item.checkInLimit || "08:00"}
                   onChange={(val) => {
-                    setSettings(settings.map(s => s.role === item.role ? { ...s, checkInLimit: val } : s));
+                    setSettings(
+                      settings.map((s) =>
+                        s.role === item.role ? { ...s, checkInLimit: val } : s,
+                      ),
+                    );
                   }}
                 />
-                <TimeInput 
-                  label="เวลาออกงาน" 
-                  value={item.checkOutTime || "16:30"} 
+                <TimeInput
+                  label="เวลาออกงาน"
+                  value={item.checkOutTime || "16:30"}
                   onChange={(val) => {
-                    setSettings(settings.map(s => s.role === item.role ? { ...s, checkOutTime: val } : s));
+                    setSettings(
+                      settings.map((s) =>
+                        s.role === item.role ? { ...s, checkOutTime: val } : s,
+                      ),
+                    );
                   }}
                 />
               </div>
@@ -320,7 +369,8 @@ export default function AttendanceSettingsPage() {
           </li>
           <li className="flex items-start gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-1 shrink-0" />
-            กฎภาพรวมระบบ (Global Rules) จะใช้ควบคุมเวลาเปิด-ปิดการกดลงเวลาทั่วทั้งวิทยาลัยฯ
+            กฎภาพรวมระบบ (Global Rules)
+            จะใช้ควบคุมเวลาเปิด-ปิดการกดลงเวลาทั่วทั้งวิทยาลัยฯ
           </li>
         </ul>
       </div>
