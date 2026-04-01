@@ -228,17 +228,7 @@ export default function NavbarClient({
                         จัดการบัญชี
                       </p>
                     </div>
-                    {/* Manually added WFH to Main Menu */}
-                    <Link
-                      href="/wfh"
-                      className={`px-3 py-2 flex items-center gap-2 text-[16px] font-bold transition-all whitespace-nowrap rounded-lg ml-2 ${
-                        pathname === "/wfh"
-                          ? ""
-                          : "text-zinc-600 dark:text-zinc-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/20"
-                      }`}
-                    >
-                      🏠 WFH
-                    </Link>
+
                     {/* ✅ เมนูเฉพาะ Super Admin */}
                     {isSuperAdmin && (
                       <>
@@ -453,6 +443,17 @@ export default function NavbarClient({
                       </Link>
                     )}
 
+                    {/* Manually added WFH to Main Menu */}
+                    <Link
+                      href="/wfh"
+                      className={`px-3 py-2 flex items-center gap-2 text-[16px] font-bold transition-all whitespace-nowrap rounded-lg ml-2 ${
+                        pathname === "/wfh"
+                          ? ""
+                          : "text-zinc-600 dark:text-zinc-400 hover:text-orange-600 hover:bg-orange-50 dark:hover:bg-orange-950/20"
+                      }`}
+                    >
+                      🏠 WFH
+                    </Link>
                     <Link
                       href="/dashboard/profile"
                       className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all group"
