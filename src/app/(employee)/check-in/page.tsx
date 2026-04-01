@@ -18,7 +18,21 @@ import {
   Navigation,
   Info,
 } from "lucide-react";
+import Link from "next/link";
+export const dynamic = "force-dynamic";
+
 import { useSession } from "next-auth/react";
+
+type FaceStatus =
+  | "idle"
+  | "loading_models"
+  | "loading_profile"
+  | "no_profile"
+  | "detecting"
+  | "matched"
+  | "not_matched"
+  | "error";
+
 import imageCompression from "browser-image-compression";
 import { uploadToCloudinary } from "@/lib/upload";
 
@@ -71,11 +85,13 @@ function CheckInContent() {
     canProceed: true,
   });
 
-  // Fetch Settings on Mount
+  // Fetch Settings on Mount (Disabled Cache)
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await fetch("/api/admin/role-settings");
+        const res = await fetch("/api/admin/role-settings", {
+          cache: "no-store", // ⚡ บังคับดึงใหม่จาก Server
+        });
         if (res.ok) {
           const data = await res.json();
           setSettings(data);
@@ -104,7 +120,8 @@ function CheckInContent() {
       // 2. กำหนดค่า Config (ลำดับความสำคัญ: Role > Global > Fallback)
       const config = {
         checkInStart: global?.checkInStart || "05:00",
-        lateLimit: roleSpecific?.checkInLimit || global?.lateThreshold || "08:00",
+        lateLimit:
+          roleSpecific?.checkInLimit || global?.lateThreshold || "08:00",
         checkOutStart: global?.checkOutStart || "16:30",
         checkOutEnd: global?.checkOutEnd || "18:00",
         lockStart: global?.systemLockStart || "18:01",
@@ -167,7 +184,7 @@ function CheckInContent() {
     }, 1000);
     return () => clearInterval(timer);
   }, [isCheckIn, loadingConfig, settings, userRole]);
- 
+
   const videoRef = useRef<HTMLVideoElement>(null);
   const faceApiRef = useRef<any>(null);
   const profileDescriptorRef = useRef<Float32Array | null>(null);
@@ -321,7 +338,9 @@ function CheckInContent() {
       });
       if (videoRef.current) videoRef.current.srcObject = stream;
       getLocation();
-      {/* await loadFaceApiAndProfile(); */}
+      {
+        /* await loadFaceApiAndProfile(); */
+      }
       setFaceStatus("idle"); // Disable face check logic
     } catch (err: any) {
       if (err.name === "NotReadableError") {
@@ -397,7 +416,9 @@ function CheckInContent() {
       }
 
       if (!cloudinaryUrl) {
-        alert("🚨 ไม่สามารถบันทึกรูปภาพได้ กรุณาตรวจสอบการตั้งค่ากล้องแล้วลองใหม่อีกครั้ง");
+        alert(
+          "🚨 ไม่สามารถบันทึกรูปภาพได้ กรุณาตรวจสอบการตั้งค่ากล้องแล้วลองใหม่อีกครั้ง",
+        );
         setIsProcessing(false);
         return;
       }
@@ -644,7 +665,7 @@ function CheckInContent() {
               </div>
 
               <h3 className="text-2xl font-black text-slate-800 dark:text-white mb-2">
-                {isCheckIn ? "ยืนยันใบหน้า" : "บันทึกเลิกงาน"}
+                {isCheckIn ? "ลงเวลาเข้างาน" : "ลงเวลาออกงาน"}
               </h3>
               <p className="text-slate-400 dark:text-zinc-500 text-sm font-medium mb-10 max-w-[240px]">
                 {isCheckIn
@@ -656,7 +677,7 @@ function CheckInContent() {
                 {timeState.isLocked ? (
                   <div className="p-5 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-3xl text-rose-600 dark:text-rose-400">
                     <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-2 flex items-center justify-center gap-2">
-                       <AlertCircle size={14} /> System Restricted
+                      <AlertCircle size={14} /> System Restricted
                     </p>
                     <p className="text-xs font-bold leading-relaxed">
                       {timeState.lockMsg}
