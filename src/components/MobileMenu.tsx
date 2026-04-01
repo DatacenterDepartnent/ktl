@@ -188,21 +188,21 @@ export default function MobileMenu({
               })}
 
               <div className="flex items-center justify-between p-4 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 mt-2">
-                <span className="font-bold text-zinc-700 dark:text-zinc-200">
+                <span className="font-bold text-sky-800 dark:text-sky-400">
                   โหมดแสดงผล
                 </span>
                 <ThemeToggle />
               </div>
 
-              {/* ส่วนจัดการสมาชิก */}
+              {/* Restore Member Management and Admin Sections */}
               <div className="pt-4 pb-8 space-y-3 border-t border-zinc-100 dark:border-zinc-800 mt-4">
                 {status === "loading" ? (
                   <div className="text-center py-4 text-zinc-500">
                     กำลังโหลด...
                   </div>
                 ) : user ? (
-                  <div className="flex flex-col space-y-3">
-                    <div className="flex items-center gap-3 px-4 mb-2">
+                  <div className="flex flex-col space-y-3 px-1">
+                    <div className="flex items-center gap-3 px-3 mb-4">
                       <div className="relative w-12 h-12 rounded-full overflow-hidden bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white border-2 border-white dark:border-zinc-800 shadow-md shrink-0">
                         {image ? (
                           <Image
@@ -228,6 +228,7 @@ export default function MobileMenu({
                       </div>
                     </div>
 
+
                     {/* 1. Dashboard (General for Admin/Editor) */}
                     {(userRole === "super_admin" ||
                       userRole === "admin" ||
@@ -241,7 +242,7 @@ export default function MobileMenu({
                       </Link>
                     )}
 
-                    {/* 2. Systems for Admin / HR / Director / Deputy / Super Admin */}
+                    {/* 2. Systems Control Section */}
                     {(userRole === "super_admin" ||
                       userRole === "admin" ||
                       userRole === "hr" ||
@@ -253,7 +254,6 @@ export default function MobileMenu({
                         "deputy_student_affairs",
                       ].includes(userRole)) && (
                       <div className="flex flex-col gap-2">
-                        {/* 2.1 Attendance Dashboard (All Leadership see this) */}
                         <Link
                           href="/attendance-dashboard"
                           onClick={closeMenu}
@@ -262,7 +262,6 @@ export default function MobileMenu({
                           📊 เมนูภาพรวมการลงเวลา
                         </Link>
 
-                        {/* 2.2 Attendance Report & Work Reports (Director/HR/Deputy Resource) */}
                         {(userRole === "super_admin" ||
                           userRole === "hr" ||
                           userRole === "director" ||
@@ -282,24 +281,16 @@ export default function MobileMenu({
                             >
                               📝 ระบบรายงานการปฏิบัติงาน
                             </Link>
+                            <Link
+                              href="/leave-approvals"
+                              onClick={closeMenu}
+                              className="mx-1 block text-center py-3.5 rounded-xl bg-blue-50 text-blue-700 font-bold border border-blue-100 dark:bg-blue-900/20 dark:text-blue-300 transition-colors"
+                            >
+                              ✅ จัดการอนุมัติใบลา
+                            </Link>
                           </>
                         )}
 
-                        {/* 2.3 Leave Approvals (Director/HR/Deputy Resource) */}
-                        {(userRole === "super_admin" ||
-                          userRole === "hr" ||
-                          userRole === "director" ||
-                          userRole === "deputy_resource") && (
-                          <Link
-                            href="/leave-approvals"
-                            onClick={closeMenu}
-                            className="mx-1 block text-center py-3.5 rounded-xl bg-blue-50 text-blue-700 font-bold border border-blue-100 dark:bg-blue-900/20 dark:text-blue-300 transition-colors"
-                          >
-                            ✅ จัดการอนุมัติใบลา
-                          </Link>
-                        )}
-
-                        {/* 2.4 Staff Management (HR/Deputy Resource Only) */}
                         {(userRole === "super_admin" ||
                           userRole === "hr" ||
                           userRole === "deputy_resource") && (
@@ -349,15 +340,10 @@ export default function MobileMenu({
                         >
                           จัดการข้อมูลเรคคอร์ดทั้งหมด
                         </Link>
-                        <Link
-                          href="/work-reports-management"
-                          onClick={closeMenu}
-                          className="mx-1 block text-center py-3.5 rounded-xl bg-indigo-50 text-indigo-700 font-bold border border-indigo-100 dark:bg-indigo-900/20 dark:text-indigo-300 transition-colors"
-                        >
-                          จัดการรายงาน (Work Reports)
-                        </Link>
                       </div>
                     )}
+
+                    <div className="my-2 border-t border-zinc-100 dark:border-zinc-800" />
 
                     <Link
                       href="/dashboard/profile"
@@ -369,7 +355,7 @@ export default function MobileMenu({
 
                     <button
                       onClick={handleLogout}
-                      className="mx-1 mt-2 block w-full text-center py-3.5 rounded-xl text-red-600 font-semibold hover:bg-red-50 dark:text-red-400 transition-colors"
+                      className="mx-1 mt-1 block w-full text-center py-3.5 rounded-xl text-red-600 font-semibold hover:bg-red-50 dark:text-red-400 transition-colors"
                     >
                       ออกจากระบบ
                     </button>

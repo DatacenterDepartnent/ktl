@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = "force-dynamic";
+
 import { useState, useEffect } from "react";
 import { Save, Clock, ShieldCheck, Loader2 } from "lucide-react";
 import { toast, Toaster } from "react-hot-toast";
@@ -27,7 +29,14 @@ export default function AttendanceSettingsPage() {
 
   const fetchSettings = async () => {
     try {
-      const res = await fetch("/api/admin/role-settings");
+      const timestamp = Date.now();
+      const res = await fetch(`/api/admin/role-settings?t=${timestamp}`, {
+        cache: "no-store",
+        headers: {
+          Pragma: "no-cache",
+          "Cache-Control": "no-cache",
+        },
+      });
       if (res.ok) {
         const data = await res.json();
         setSettings(data);
