@@ -141,7 +141,7 @@ export default async function Footer() {
         {/* --- ส่วนแสดงยอดผู้เข้าชม --- */}
         <div className="flex flex-col items-center justify-center mb-8 gap-3">
           <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">
-            จำนวนผู้เข้าชมเว็บไซต์ (Visitors)
+            จำนวนผู้เข้าชมเว็บไซต์
           </span>
 
           <div className="flex gap-1 p-2 bg-slate-900 rounded-xl border border-slate-800 shadow-inner">
@@ -163,13 +163,13 @@ export default async function Footer() {
         {/* --- Copyright --- */}
         <div className="pt-8 border-t border-slate-800 flex flex-col items-center justify-center text-center text-xs text-slate-500 space-y-2">
           <div className="flex items-center gap-1">
-            Copyright © {new Date().getFullYear()}.
+            สงวนลิขสิทธิ์ © {new Date().getFullYear()}.
             <p className="text-blue-500">
               <span>KTLTC</span> /งานศูนย์ข้อมูลและสารสนเทศ
             </p>
           </div>
           <p className="flex items-center gap-1">
-            Designed By
+            ออกแบบโดย
             <a
               href="https://www.allmaster.store/"
               target="_blank"

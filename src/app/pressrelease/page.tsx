@@ -68,7 +68,7 @@ export default async function PressRelease() {
             <div className="w-1.5 bg-orange-500 rounded-full h-auto self-stretch"></div>
             <div className="space-y-1">
               <h4 className="text-orange-500 font-bold text-xs tracking-widest uppercase">
-                Update News
+                อัปเดตข่าวสาร
               </h4>
               <h1 className="text-3xl md:text-4xl font-bold text-zinc-800 dark:text-white">
                 ข่าวประชาสัมพันธ์
@@ -130,7 +130,7 @@ export default async function PressRelease() {
                           <div className="relative h-4 w-4 overflow-hidden rounded-full border border-orange-200 dark:border-orange-800">
                             <Image
                               src={news.userImage || news.author?.image || "/no-image.png"}
-                              alt={news.userName || news.author?.name || "Author"}
+                              alt={news.userName || news.author?.name || "ผู้เขียน"}
                               fill
                               unoptimized
                               className="object-cover"
@@ -151,7 +151,7 @@ export default async function PressRelease() {
                             />
                           </svg>
                         )}
-                        <span>{(news.userName || news.author?.name || "Author").split(" ")[0]}</span>
+                        <span>{(news.userName || news.author?.name || "ผู้เขียน").split(" ")[0]}</span>
                       </div>
                     )}
                   </div>

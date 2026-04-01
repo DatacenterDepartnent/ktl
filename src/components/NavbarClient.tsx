@@ -34,7 +34,21 @@ export default function NavbarClient({
   const pathname = usePathname();
 
   // จัดการรูปแบบชื่อ Role ให้สวยงาม
-  const displayRole = role?.replace("_", " ").toUpperCase() || "MEMBER";
+  // จัดการรูปแบบชื่อ Role ให้สวยงาม
+  const displayRole =
+    role?.toLowerCase() === "super_admin"
+      ? "ผู้ดูแลระบบสูงสุด"
+      : role?.toLowerCase() === "admin"
+        ? "ผู้ดูแลระบบ"
+        : role?.toLowerCase() === "editor"
+          ? "บรรณาธิการ"
+          : role?.toLowerCase() === "hr"
+            ? "บุคลากร"
+            : role?.toLowerCase() === "director"
+              ? "ผู้อำนวยการ"
+              : role?.toLowerCase() === "staff"
+                ? "เจ้าหน้าที่"
+                : "สมาชิก";
   const isAdmin =
     role?.toLowerCase() === "admin" || role?.toLowerCase() === "super_admin";
   const isSuperAdmin = role?.toLowerCase() === "super_admin";
@@ -288,7 +302,7 @@ export default function NavbarClient({
                       <>
                         <div className="px-3 py-1">
                           <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-widest pl-1 mt-1 mb-1">
-                            Attendance & HR
+                            ระบบลงเวลาและบุคลากร
                           </p>
                         </div>
                         {/* ทุกรองฝ่ายสามารถดูภาพรวมได้ */}
@@ -484,7 +498,7 @@ export default function NavbarClient({
               href="/login"
               className="relative overflow-hidden px-6 py-2 rounded-full bg-blue-600 text-white text-sm font-bold transition-all hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 active:scale-95 group"
             >
-              <span className="relative z-10">Sign In</span>
+              <span className="relative z-10">เข้าสู่ระบบ</span>
               <div className="absolute inset-0 bg-linear-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]" />
             </Link>
           )}

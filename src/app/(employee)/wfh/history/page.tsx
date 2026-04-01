@@ -114,7 +114,7 @@ export default function WFHHistoryPage() {
               </Link>
               <div>
                 <h1 className="text-3xl md:text-4xl font-black text-slate-800 dark:text-white tracking-tighter uppercase leading-none mb-2">
-                  My <span className="text-blue-600">History</span>
+                  ประวัติ <span className="text-blue-600">ของฉัน</span>
                 </h1>
                 <p className="text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-[0.3em] pl-1 flex items-center gap-2">
                   <span className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse" />
@@ -234,7 +234,7 @@ export default function WFHHistoryPage() {
                                 <div className="flex items-center gap-2">
                                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                                   <span className="uppercase tracking-widest">
-                                    In:
+                                    เข้างาน:
                                   </span>
                                   <span className="text-slate-800 dark:text-zinc-200 font-black">
                                     {format(
@@ -254,7 +254,7 @@ export default function WFHHistoryPage() {
                                 <div className="flex items-center gap-2 border-l border-slate-200 dark:border-zinc-800 pl-6">
                                   <div className="w-1.5 h-1.5 rounded-full bg-rose-500" />
                                   <span className="uppercase tracking-widest">
-                                    Out:
+                                    ออกงาน:
                                   </span>
                                   <span className="text-slate-800 dark:text-zinc-200 font-black">
                                     {format(
@@ -287,7 +287,7 @@ export default function WFHHistoryPage() {
                                   <Search size={14} className="text-white" />
                                 </div>
                                 <div className="absolute bottom-0 inset-x-0 bg-emerald-500/80 text-white text-[7px] font-black uppercase text-center py-0.5">
-                                  Check In
+                                  บันทึกเข้างาน
                                 </div>
                               </Link>
                             ) : (
@@ -312,7 +312,7 @@ export default function WFHHistoryPage() {
                                   <Search size={14} className="text-white" />
                                 </div>
                                 <div className="absolute bottom-0 inset-x-0 bg-rose-500/80 text-white text-[7px] font-black uppercase text-center py-0.5">
-                                  Check Out
+                                  บันทึกออกงาน
                                 </div>
                               </Link>
                             ) : (
@@ -334,10 +334,10 @@ export default function WFHHistoryPage() {
                 <div className="text-center py-24 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-4xl border border-dashed border-slate-200 dark:border-zinc-800 shadow-inner">
                   <FileText className="w-16 h-16 text-slate-200 dark:text-zinc-800 mx-auto mb-6" />
                   <p className="text-slate-400 font-black uppercase tracking-widest text-xs mb-2">
-                    No Leave Documents Found
+                    ไม่พบเอกสารการลา
                   </p>
                   <p className="text-[10px] text-slate-300 dark:text-zinc-600 uppercase tracking-widest">
-                    Your leave requests will appear here once submitted.
+                    รายการการขอลาของคุณจะปรากฏที่นี่หลังจากส่งคำขอ
                   </p>
                 </div>
               ) : (
@@ -361,7 +361,7 @@ export default function WFHHistoryPage() {
                               {getTypeLabel(leave.leaveType)}
                             </h3>
                             <p className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em] mt-1 flex items-center gap-2">
-                              <Clock size={10} /> Request Submitted on{" "}
+                              <Clock size={10} /> ส่งคำขอเมื่อ{" "}
                               {format(new Date(leave.createdAt), "dd MMM yy", {
                                 locale: th,
                               })}
@@ -454,8 +454,8 @@ export default function WFHHistoryPage() {
 
         <div className="pt-12 pb-8 text-center border-t border-slate-100 dark:border-zinc-900/50">
           <p className="text-[9px] text-slate-300 dark:text-zinc-800 font-black uppercase tracking-[0.4em] leading-loose">
-            Precision Attendance Logging Protocol <br />
-            Authorized User Data Access • V2.0 Dashboard
+            โพรโทคอลบันทึกการเข้างานที่แม่นยำ <br />
+            สิทธิ์การเข้าถึงข้อมูลโดยผู้ใช้ที่ได้รับอนุญาต • แผงควบคุม V2.0
           </p>
         </div>
       </div>

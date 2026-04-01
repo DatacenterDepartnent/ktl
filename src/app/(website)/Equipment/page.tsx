@@ -2564,7 +2564,7 @@ export default function EquipmentSelect() {
         <div className="mb-12 text-center">
           <div className="flex items-center justify-center gap-2 mb-4">
             <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-              Document Center
+              ศูนย์รวมเอกสาร
             </span>
           </div>
           <h1 className="text-3xl md:text-4xl font-black text-slate-800 dark:text-white mb-4">
@@ -2575,10 +2575,10 @@ export default function EquipmentSelect() {
               href="/"
               className="hover:text-amber-600 flex items-center gap-1"
             >
-              <HomeOutlined /> Home
+              <HomeOutlined /> หน้าหลัก
             </Link>
             <RightOutlined className="text-[10px] opacity-50" />
-            <span>Equipment</span>
+            <span>รายการพัสดุและครุภัณฑ์</span>
           </div>
         </div>
 
@@ -2588,7 +2588,7 @@ export default function EquipmentSelect() {
             {/* 1. Year Selector */}
             <div className="space-y-1">
               <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                <CalendarOutlined /> เลือกปีงบประมาณ (Year)
+                <CalendarOutlined /> เลือกปีงบประมาณ
               </label>
               <select
                 value={selectedYear}
@@ -2606,7 +2606,7 @@ export default function EquipmentSelect() {
             {/* 2. Category Selector */}
             <div className="space-y-1">
               <label className="text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-                <FilterOutlined /> เลือกหมวดหมู่เอกสาร (Folder)
+                <FilterOutlined /> เลือกหมวดหมู่เอกสาร
               </label>
               <select
                 value={selectedGroup}
@@ -2647,7 +2647,7 @@ export default function EquipmentSelect() {
                       {group.title}
                     </h2>
                     <span className="ml-auto text-xs font-medium text-slate-400 bg-slate-100 dark:bg-neutral-800 px-2 py-1 rounded-md">
-                      {group.docs.length} Files
+                      {group.docs.length} รายการ
                     </span>
                   </div>
 
@@ -2662,7 +2662,7 @@ export default function EquipmentSelect() {
                       >
                         <div className="flex items-start gap-3">
                           {/* File Icon */}
-                          <div className="flex-shrink-0 mt-1">
+                          <div className="shrink-0 mt-1">
                             <div className="w-8 h-8 rounded bg-slate-50 dark:bg-neutral-800 flex items-center justify-center text-lg">
                               {getFileIcon(doc.href)}
                             </div>
@@ -2678,7 +2678,7 @@ export default function EquipmentSelect() {
                                 {getFileType(doc.href)}
                               </span>
                               <span className="text-[10px] text-slate-400 flex items-center gap-1 group-hover:text-amber-600 transition-colors">
-                                <CloudDownloadOutlined /> Download
+                                <CloudDownloadOutlined /> ดาวน์โหลด
                               </span>
                             </div>
                           </div>

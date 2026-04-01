@@ -176,7 +176,7 @@ export default function QAPage() {
                       รายละเอียด<span className="text-cyan-500">*</span>
                     </label>
                     <textarea
-                      placeholder="Type details here..."
+                      placeholder="กรอกรายละเอียดที่นี่..."
                       className="h-44 w-full bg-slate-900 text-white rounded-3xl p-5 md:p-6 font-medium outline-none focus:ring-4 focus:ring-cyan-500/10 focus:border-cyan-500 transition-all resize-none shadow-inner leading-relaxed"
                       required
                       value={form.content}
@@ -193,10 +193,10 @@ export default function QAPage() {
                   >
                     <div className="relative z-10 flex items-center gap-3">
                       {isSubmitting ? (
-                        "PROCESSING..."
+                        "กำลังดำเนินการ..."
                       ) : (
                         <>
-                          SUBMIT ↗
+                          ส่งคำตอบ ↗
                           <FiSend className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                         </>
                       )}

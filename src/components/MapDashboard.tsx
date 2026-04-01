@@ -34,7 +34,9 @@ export default function MapDashboard({ markers }: { markers: any[] }) {
               </div>
             ) : (
               <div className="w-full h-24 bg-slate-100 dark:bg-zinc-800 flex items-center justify-center mb-3">
-                 <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest">No Photo</span>
+                 <span className="text-[9px] font-black uppercase text-slate-400 tracking-widest">
+                   ไม่มีรูปภาพ
+                 </span>
               </div>
             )}
             <div className="px-3 text-center">
@@ -93,9 +95,9 @@ export default function MapDashboard({ markers }: { markers: any[] }) {
         <Marker position={COLLEGE_LOCATION} icon={icon}>
           <Popup closeButton={false}>
             <div className="text-center p-2 min-w-[140px]">
-              <p className="font-black text-blue-600 text-[10px] uppercase tracking-tight mb-1">KTL Technical College</p>
-              <p className="text-[8px] text-slate-400 dark:text-zinc-500 leading-tight mb-2 italic">Official Boundary Point</p>
-              <span className="text-[8px] px-2 py-1 bg-blue-50 text-blue-500 rounded-lg inline-block font-black uppercase tracking-widest border border-blue-100">HQ Site</span>
+              <p className="font-black text-blue-600 text-[10px] uppercase tracking-tight mb-1">วิทยาลัยเทคนิคกันทรลักษ์</p>
+              <p className="text-[8px] text-slate-400 dark:text-zinc-500 leading-tight mb-2 italic">จุดพิกัดอาณาเขตอย่างเป็นทางการ</p>
+              <span className="text-[8px] px-2 py-1 bg-blue-50 text-blue-500 rounded-lg inline-block font-black uppercase tracking-widest border border-blue-100">อาคารหลัก</span>
             </div>
           </Popup>
         </Marker>

@@ -22,7 +22,7 @@ const StudentSupportSystem = () => {
         >
           {/* Badge: ปรับพื้นหลังให้เข้มขึ้นและตัวหนังสือสว่างขึ้นใน dark mode */}
           <span className="mb-2 inline-block rounded-full bg-red-100 px-3 py-1 text-xs font-semibold tracking-wide text-red-600 uppercase dark:bg-red-900/30 dark:text-red-300">
-            Student Care & Support
+            การดูแลและช่วยเหลือนักเรียน
           </span>
 
           {/* Heading: สีขาวใน dark mode */}
@@ -87,7 +87,7 @@ const StudentSupportSystem = () => {
 
               {/* Button UI within Card */}
               <div className="mt-auto inline-flex items-center justify-center gap-2 rounded-full bg-slate-50 px-6 py-3 text-sm font-bold text-slate-600 transition-all duration-300 group-hover:bg-red-600 group-hover:text-white group-hover:shadow-lg group-hover:shadow-red-500/30 dark:bg-zinc-800 dark:text-slate-300 dark:group-hover:bg-red-600 dark:group-hover:text-white">
-                <span>Access System</span>
+                <span>เข้าสู่ระบบจัดการ</span>
                 <ArrowRightOutlined />
               </div>
             </article>

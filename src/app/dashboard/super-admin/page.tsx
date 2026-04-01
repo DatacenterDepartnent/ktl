@@ -497,7 +497,7 @@ export default function SuperAdminPage() {
               ) : (
                 <FileSpreadsheet size={18} className="text-emerald-500" />
               )}
-              <span className="hidden sm:inline">Export CSV</span>
+              <span className="hidden sm:inline">ส่งออก CSV</span>
             </button>
             <button
               onClick={() => fetchData(1, searchQuery)}
@@ -969,7 +969,7 @@ export default function SuperAdminPage() {
                 ) : (
                   <Download size={14} />
                 )}
-                <span>Export Logs</span>
+                <span>ส่งออกประวัติ</span>
               </button>
               <button
                 onClick={handleClearLogs}
@@ -1012,7 +1012,7 @@ export default function SuperAdminPage() {
                         })}
                       </span>
                       <span className="text-sm font-black text-white uppercase italic tracking-tight">
-                        {log.userName || "SYSTEM_KERN"}
+                        {log.userName || "ระบบส่วนกลาง"}
                       </span>
                       <span
                         className={`text-[10px] font-bold px-3 py-1 rounded-lg uppercase tracking-widest border ${getActionStyle(log.action)}`}
@@ -1055,7 +1055,7 @@ export default function SuperAdminPage() {
                           })}
                         </div>
                         <div className="text-[10px] font-bold text-zinc-700 uppercase tracking-widest">
-                          IP: {log.ip || "REDACTED"}
+                          ไอพี: {log.ip || "ไม่ระบุ"}
                         </div>
                       </div>
                     </div>

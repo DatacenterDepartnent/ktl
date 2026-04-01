@@ -101,7 +101,7 @@ export default function LoginPage() {
               <Command size={24} className="text-blue-400" />
             </div>
             <span className="font-bold text-xl tracking-wide uppercase">
-              KTLTC System
+              ระบบจัดการ KTLTC
             </span>
           </Link>
         </div>
@@ -113,9 +113,9 @@ export default function LoginPage() {
             transition={{ duration: 0.8 }}
             className="text-5xl font-black text-white leading-tight mb-6 tracking-tighter"
           >
-            Welcome back to your{" "}
+            ยินดีต้อนรับกลับเข้าสู่{" "}
             <span className="text-transparent bg-clip-text bg-linear-to-r from-blue-400 to-indigo-400">
-              workspace.
+              ระบบจัดการ
             </span>
           </motion.h1>
           <motion.p
@@ -124,8 +124,9 @@ export default function LoginPage() {
             transition={{ delay: 0.2, duration: 0.8 }}
             className="text-slate-400 text-lg font-medium leading-relaxed"
           >
-            Secure, fast, and comprehensive management system designed for
-            operational excellence. Log in to manage administrative tools.
+            ระบบจัดการที่ปลอดภัย รวดเร็ว และครอบคลุม
+            ออกแบบมาเพื่อความเป็นเลิศในการดำเนินงาน
+            เข้าสู่ระบบเพื่อจัดการเครื่องมือบริหารจัดการ
           </motion.p>
         </div>
 
@@ -150,7 +151,7 @@ export default function LoginPage() {
             transition={{ duration: 0.5 }}
           >
             <h2 className="text-4xl font-black text-slate-900 dark:text-white mb-3">
-              Sign In
+              เข้าสู่ระบบ
             </h2>
             <p className="text-slate-500 dark:text-zinc-400 font-medium mb-10 text-lg">
               กรุณาเข้าสู่ระบบเพื่อดำเนินการต่อ
@@ -179,7 +180,7 @@ export default function LoginPage() {
               transition={{ delay: 0.1 }}
             >
               <label className="text-xs font-bold text-slate-500 dark:text-zinc-500 uppercase tracking-widest pl-1 mb-2 block">
-                Username
+                ชื่อผู้ใช้งาน
               </label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
@@ -204,7 +205,7 @@ export default function LoginPage() {
             >
               <div className="flex justify-between items-end mb-2">
                 <label className="text-xs font-bold text-slate-500 dark:text-zinc-500 uppercase tracking-widest pl-1 block">
-                  Password
+                  รหัสผ่าน
                 </label>
                 <Link
                   href="https://www.allmaster.store/contactus"
@@ -258,7 +259,7 @@ export default function LoginPage() {
                     "เข้าสู่ระบบสำเร็จ!"
                   ) : (
                     <>
-                      Sign In <ArrowRight size={18} />
+                      เข้าสู่ระบบ <ArrowRight size={18} />
                     </>
                   )}
                 </span>
@@ -286,7 +287,7 @@ export default function LoginPage() {
                 href="/"
                 className="text-slate-400 text-xs font-bold hover:text-slate-600 transition-colors dark:text-zinc-500 dark:hover:text-white uppercase tracking-widest"
               >
-                &larr; Return Home
+                &larr; กลับหน้าหลัก
               </Link>
             </div>
           </motion.div>
