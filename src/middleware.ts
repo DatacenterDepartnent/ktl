@@ -65,12 +65,27 @@ export default auth((req) => {
       }
     }
 
-    // 3.3 สิทธิ์เข้าหน้าจัดการข้อมูล/ผู้ใช้/ตั้งค่าระบบ (เฉพาะ super_admin)
-    if (pathname.startsWith("/dashboard/users") || 
-        pathname.startsWith("/dashboard/settings") ||
-        pathname.startsWith("/dashboard/data-management")) {
-      if (userRole !== "super_admin") {
-        return NextResponse.redirect(new URL("/dashboard", nextUrl.origin));
+    // 3.3 สิทธิ์เข้าหน้า Dashboard และหน้าจัดการระบบ
+    if (isDashboardPage) {
+      // ยกเว้นหน้า Profile ให้ทุกคนเข้าได้
+      if (pathname === "/dashboard/profile") {
+        return NextResponse.next();
+      }
+
+      const allowedDashboardRoles = ["super_admin", "admin", "editor"];
+      if (!allowedDashboardRoles.includes(userRole)) {
+        // ถ้าเป็นกลุ่มบริหาร/อาจารย์ ให้ไปหน้า Attendance Dashboard แทน
+        const isStaffGroup = ["hr", "director", "deputy_resource", "deputy_strategy", "deputy_academic", "deputy_student_affairs", "staff", "teacher"].includes(userRole);
+        return NextResponse.redirect(new URL(isStaffGroup ? "/attendance-dashboard" : "/wfh", nextUrl.origin));
+      }
+
+      // 3.3b จำกัดเฉพาะ super_admin เท่านั้นสำหรับบางหน้า
+      if (pathname.startsWith("/dashboard/users") || 
+          pathname.startsWith("/dashboard/settings") ||
+          pathname.startsWith("/dashboard/data-management")) {
+        if (userRole !== "super_admin") {
+          return NextResponse.redirect(new URL("/dashboard", nextUrl.origin));
+        }
       }
     }
 
@@ -87,6 +102,7 @@ export default auth((req) => {
 
 export const config = {
   matcher: [
+    "/dashboard",
     "/dashboard/:path*",
     "/wfh/:path*",
     "/check-in/:path*",

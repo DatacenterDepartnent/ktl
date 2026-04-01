@@ -49,7 +49,7 @@ export async function PATCH(req: Request) {
 
   try {
     const body = await req.json();
-    const { name, username, email, phone, lineId, password, image, coverImage } = body;
+    const { name, username, email, phone, lineId, department, password, image, coverImage } = body;
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
@@ -63,6 +63,7 @@ export async function PATCH(req: Request) {
       email,
       phone,
       lineId,
+      department,
       updatedAt: new Date(),
     };
 

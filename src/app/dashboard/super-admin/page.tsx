@@ -554,7 +554,7 @@ export default function SuperAdminPage() {
                           <option value="ผู้บริหารสถานศึกษา">
                             ผู้บริหารสถานศึกษา
                           </option>
-                          <optgroup label="๑. ฝ่ายบริหารทรัพยากร">
+                          <optgroup label="1. ฝ่ายบริหารทรัพยากร">
                             <option value="งานบริหารงานทั่วไป">
                               งานบริหารงานทั่วไป
                             </option>
@@ -564,13 +564,13 @@ export default function SuperAdminPage() {
                             <option value="งานการเงิน">งานการเงิน</option>
                             <option value="งานการบัญชี">งานการบัญชี</option>
                             <option value="งานพัสดุ">งานพัสดุ</option>
-                            <option value="งานอาคารสถานที่">
-                              งานอาคารสถานที่
-                            </option>
+                            <option value="งานอาคารสถานที่">งานอาคารสถานที่</option>
                             <option value="งานทะเบียน">งานทะเบียน</option>
-                            <option value="งานแม่บ้าน/นักการ">งานแม่บ้าน/นักการ</option>
+                            <option value="งานแม่บ้าน/นักการ">
+                              งานแม่บ้าน/นักการ
+                            </option>
                           </optgroup>
-                          <optgroup label="๒. ฝ่ายยุทธศาสตร์และแผนงาน">
+                          <optgroup label="2. ฝ่ายยุทธศาสตร์และแผนงาน">
                             <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ">
                               งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ
                             </option>
@@ -586,11 +586,11 @@ export default function SuperAdminPage() {
                             <option value="งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ">
                               งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ
                             </option>
-                            <option value="งานติดตามและประเมินผลการ">
-                              งานติดตามและประเมินผลการ
+                            <option value="งานติดตามและประเมินผล">
+                              งานติดตามและประเมินผล
                             </option>
                           </optgroup>
-                          <optgroup label="๓. ฝ่ายพัฒนากิจการนักเรียน นักศึกษา">
+                          <optgroup label="3. ฝ่ายพัฒนากิจการนักเรียน นักศึกษา">
                             <option value="งานกิจกรรมนักเรียนนักศึกษา">
                               งานกิจกรรมนักเรียนนักศึกษา
                             </option>
@@ -607,7 +607,7 @@ export default function SuperAdminPage() {
                               งานโครงการพิเศษและการบริการ
                             </option>
                           </optgroup>
-                          <optgroup label="๔. ฝ่ายวิชาการ">
+                          <optgroup label="4. ฝ่ายวิชาการ">
                             <option value="งานพัฒนาหลักสูตรและการจัดการเรียนรู้">
                               งานพัฒนาหลักสูตรและการจัดการเรียนรู้
                             </option>
@@ -623,42 +623,105 @@ export default function SuperAdminPage() {
                             <option value="งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา">
                               งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา
                             </option>
-                            <option value="งานพัฒนาหลักสูตรสายเทคโนโลยี หรือสายปฏิบัติการ">
-                              งานพัฒนาหลักสูตรสายเทคโนโลยี หรือสายปฏิบัติการ
+                            <option value="งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ">
+                              งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ
                             </option>
-                            <option disabled>──────────</option>
-                            <option value="แผนกวิชาช่างยนต์">
-                              แผนกวิชาช่างยนต์
+                          </optgroup>
+                          <optgroup label="5. ระดับชั้นประกาศนียบัตรวิชาชีพ (ปวช.)">
+                            <option value="ปวช. สาขาวิชาการบัญชี">
+                              สาขาวิชาการบัญชี (ปวช.)
                             </option>
-                            <option value="แผนกวิชาช่างกลโรงงาน">
-                              แผนกวิชาช่างกลโรงงาน
+                            <option value="ปวช. สาขาวิชาการตลาด">
+                              สาขาวิชาการตลาด (ปวช.)
                             </option>
-                            <option value="แผนกวิชาช่างเชื่อมโลหะ">
-                              แผนกวิชาช่างเชื่อมโลหะ
+                            <option value="ปวช. สาขาวิชาการโรงเเรม">
+                              สาขาวิชาการโรงเเรม (ปวช.)
                             </option>
-                            <option value="แผนกวิชาช่างไฟฟ้ากำลัง">
-                              แผนกวิชาช่างไฟฟ้ากำลัง
+                            <option value="ปวช. สาขาวิชาตัวถังเเละสีรถยนต์">
+                              สาขาวิชาตัวถังเเละสีรถยนต์ (ปวช.)
                             </option>
-                            <option value="แผนกวิชาช่างอิเล็กทรอนิกส์">
-                              แผนกวิชาช่างอิเล็กทรอนิกส์
+                            <option value="ปวช. สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล">
+                              สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล (ปวช.)
                             </option>
-                            <option value="แผนกวิชาช่างก่อสร้าง">
-                              แผนกวิชาช่างก่อสร้าง
+                            <option value="ปวช. สาขาวิชาช่างยนต์">
+                              สาขาวิชาช่างยนต์ (ปวช.)
                             </option>
-                            <option value="แผนกวิชาการบัญชี">
-                              แผนกวิชาการบัญชี
+                            <option value="ปวช. สาขาวิชาช่างกลโรงงาน">
+                              สาขาวิชาช่างกลโรงงาน (ปวช.)
                             </option>
-                            <option value="แผนกวิชาการตลาด">
-                              แผนกวิชาการตลาด
+                            <option value="ปวช. สาขาวิชาช่างเชื่อมโลหะ">
+                              สาขาวิชาช่างเชื่อมโลหะ (ปวช.)
                             </option>
-                            <option value="แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล">
-                              แผนกวิชาธุรกิจดิจิทัล
+                            <option value="ปวช. สาขาวิชาช่างไฟฟ้า">
+                              สาขาวิชาช่างไฟฟ้า (ปวช.)
                             </option>
-                            <option value="แผนกวิชาการโรงแรม">
-                              แผนกวิชาการโรงแรม
+                            <option value="ปวช. สาขาวิชาอิเล็กทรอนิกส์">
+                              สาขาวิชาอิเล็กทรอนิกส์ (ปวช.)
                             </option>
-                            <option value="แผนกวิชาสามัญสัมพันธ์">
-                              แผนกวิชาสามัญสัมพันธ์
+                            <option value="ปวช. สาขาวิชายานยนต์ไฟฟ้า">
+                              สาขาวิชายานยนต์ไฟฟ้า (ปวช.)
+                            </option>
+                            <option value="ปวช. สาขาวิชาโยธา">
+                              สาขาวิชาโยธา (ปวช.)
+                            </option>
+                            <option value="ปวช. สาขาวิชาโลจิสติกส์">
+                              สาขาวิชาโลจิสติกส์ (ปวช.)
+                            </option>
+                            <option value="ปวช. สาขาวิชาการจัดการสำนักงานดิจิทัล">
+                              สาขาวิชาการจัดการสำนักงานดิจิทัล (ปวช.)
+                            </option>
+                            <option value="ปวช. สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์">
+                              สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์ (ปวช.)
+                            </option>
+                          </optgroup>
+                          <optgroup label="6. ระดับชั้นประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.)">
+                            <option value="ปวส. สาขาวิชาเทคนิคเครื่องกล">
+                              สาขาวิชาเทคนิคเครื่องกล (ปวส.)
+                            </option>
+                            <option value="ปวส. สาขาวิชาเทคนิคการผลิต">
+                              สาขาวิชาเทคนิคการผลิต (ปวส.)
+                            </option>
+                            <option value="ปวส. สาขาวิชาเทคนิคโลหะ">
+                              สาขาวิชาเทคนิคโลหะ (ปวส.)
+                            </option>
+                            <option value="ปวส. สาขาวิชาไฟฟ้า">
+                              สาขาวิชาไฟฟ้า (ปวส.)
+                            </option>
+                            <option value="ปวส. สาขาวิชาโยธา">
+                              สาขาวิชาโยธา (ปวส.)
+                            </option>
+                            <option value="ปวส. สาขาวิชาการบัญชี">
+                              สาขาวิชาการบัญชี (ปวส.)
+                            </option>
+                            <option value="ปวส. สาขาวิชาเทคโนโลยีอิเล็กทรอนิกส์">
+                              สาขาวิชาเทคโนโลยีอิเล็กทรอนิกส์ (ปวส.)
+                            </option>
+                            <option value="ปวส. สาขาวิชาเทคนิคยานยนต์ไฟฟ้า">
+                              สาขาวิชาเทคนิคยานยนต์ไฟฟ้า (ปวส.)
+                            </option>
+                            <option value="ปวส. สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล">
+                              สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล (ปวส.)
+                            </option>
+                            <option value="ปวส. สาขาวิชาการตลาด">
+                              สาขาวิชาการตลาด (ปวส.)
+                            </option>
+                            <option value="ปวส. สาขาวิชาการโรงเเรม">
+                              สาขาวิชาการโรงเเรม (ปวส.)
+                            </option>
+                            <option value="ปวส. สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์">
+                              สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์ (ปวส.)
+                            </option>
+                            <option value="ปวส. สาขาวิชาเทคโนโลยีอุตสาหกรรมตัวถัง เเละสีรถยนต์">
+                              สาขาวิชาเทคโนโลยีอุตสาหกรรมตัวถัง เเละสีรถยนต์ (ปวส.)
+                            </option>
+                            <option value="ปวส. สาขาวิชาการจัดการโลจิสติกส์ เเละซัพพลายเชน">
+                              สาขาวิชาการจัดการโลจิสติกส์ เเละซัพพลายเชน (ปวส.)
+                            </option>
+                            <option value="ปวส. สาขาวิชาการจัดการสำนักงานดิจิทัล">
+                              สาขาวิชาการจัดการสำนักงานดิจิทัล (ปวส.)
+                            </option>
+                            <option value="ปวส. สาขาวิชาคอมพิวเตอร์เกมเเละแอนิเมชั่น">
+                              สาขาวิชาคอมพิวเตอร์เกมเเละแอนิเมชั่น (ปวส.)
                             </option>
                           </optgroup>
                         </select>
@@ -702,13 +765,12 @@ export default function SuperAdminPage() {
             </table>
           </div>
 
-          {/* Load More Button */}
-          {hasMore && (
-            <div className="p-8 flex justify-center border-t border-slate-50 dark:border-zinc-800/50 bg-slate-50/30 dark:bg-zinc-900/30">
+          <div className="flex flex-col items-center gap-4 py-8 bg-slate-50/50 dark:bg-zinc-950/30 border-t border-slate-100 dark:border-zinc-800/50 transition-all">
+            {hasMore && !loading && (
               <button
                 onClick={handleLoadMore}
                 disabled={isFetchingMore}
-                className="group flex items-center gap-3 bg-white dark:bg-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-700 text-slate-900 dark:text-white px-10 py-4 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-zinc-700 transition-all active:scale-95 disabled:opacity-50 font-black text-xs uppercase tracking-widest"
+                className="group flex items-center gap-3 px-12 py-4 bg-white dark:bg-zinc-900 border-2 border-slate-100 dark:border-zinc-800 rounded-3xl font-black text-xs uppercase tracking-widest transition-all shadow-xl hover:bg-rose-600 hover:text-white dark:hover:bg-rose-600 dark:hover:text-white active:scale-95 disabled:opacity-50 disabled:cursor-wait"
               >
                 {isFetchingMore ? (
                   <>
@@ -725,8 +787,14 @@ export default function SuperAdminPage() {
                   </>
                 )}
               </button>
-            </div>
-          )}
+            )}
+
+            {!hasMore && !loading && users.length > 0 && (
+              <div className="px-6 py-3 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-2xl text-[10px] font-black text-slate-400 dark:text-zinc-500 uppercase tracking-widest flex items-center gap-2 shadow-sm">
+                <Database size={14} /> รายชื่อทั้งหมดที่แสดง: {users.length} / {total} ราย
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Activity Logs Console */}

@@ -35,7 +35,8 @@ export default function ProfilePage() {
     phone: "",
     lineId: "",
     role: "",
-    department: "", // Added department
+    department: "",
+    program: "", // Added program
     image: "",
     coverImage: "",
     password: "",
@@ -55,7 +56,8 @@ export default function ProfilePage() {
             phone: data.phone || "",
             lineId: data.lineId || "",
             role: data.role || "",
-            department: data.department || "ไม่มีสังกัด", // Added department
+            department: data.department || "ไม่มีสังกัด",
+            program: data.program || "", // Added program
             image: data.image || "",
             coverImage: data.coverImage || "",
             password: "",
@@ -252,25 +254,36 @@ export default function ProfilePage() {
             {/* User Title & Badge */}
             <div className="text-center sm:text-left flex-1">
               <h2 className="text-2xl sm:text-4xl font-black text-zinc-900 dark:text-white leading-none tracking-tight pt-2 sm:pt-12">
-                {formData.username || "Super Admin"}
+                {formData.username || (loading ? "กำลังโหลด..." : "ไม่มีชื่อผู้ใช้งาน")}
               </h2>
               <div className="mt-3 sm:mt-4 flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-[10px] sm:text-xs font-bold uppercase tracking-widest shadow-sm">
-                  <SafetyCertificateOutlined /> {
-                    formData.role === "super_admin" ? "Super Admin (ผู้ดูแลระบบสูงสุด)" :
-                    formData.role === "admin" ? "Admin (ผู้ดูแลระบบ)" :
-                    formData.role === "hr" ? "ฝ่ายบริหารงานบุคคล (HR)" :
-                    formData.role === "director" ? "ผู้อำนวยการ (Director)" :
-                    formData.role === "deputy_resource" ? "รองผู้อำนวยการ ฝ่ายบริหารทรัพยากร" :
-                    formData.role === "deputy_strategy" ? "รองผู้อำนวยการ ฝ่ายแผนงานและความร่วมมือ" :
-                    formData.role === "deputy_academic" ? "รองผู้อำนวยการ ฝ่ายวิชาการ" :
-                    formData.role === "deputy_student_affairs" ? "รองผู้อำนวยการ ฝ่ายกิจการนักเรียน" :
-                    formData.role === "teacher" ? "คณะครู (Teacher)" :
-                    formData.role === "staff" ? "เจ้าหน้าที่ (Staff)" :
-                    formData.role === "janitor" ? "แม่บ้าน/นักการ (Maid/Janitor)" :
-                    formData.role === "editor" ? "Editor (ผู้ดูแลเนื้อหา)" :
-                    formData.role || "สมาชิกทั่วไป"
-                  }
+                  <SafetyCertificateOutlined />{" "}
+                  {formData.role === "super_admin"
+                    ? "Super Admin (ผู้ดูแลระบบสูงสุด)"
+                    : formData.role === "admin"
+                      ? "Admin (ผู้ดูแลระบบ)"
+                      : formData.role === "hr"
+                        ? "ฝ่ายบริหารงานบุคคล (HR)"
+                        : formData.role === "director"
+                          ? "ผู้อำนวยการ (Director)"
+                          : formData.role === "deputy_resource"
+                            ? "รองผู้อำนวยการ ฝ่ายบริหารทรัพยากร"
+                            : formData.role === "deputy_strategy"
+                              ? "รองผู้อำนวยการ ฝ่ายแผนงานและความร่วมมือ"
+                              : formData.role === "deputy_academic"
+                                ? "รองผู้อำนวยการ ฝ่ายวิชาการ"
+                                : formData.role === "deputy_student_affairs"
+                                  ? "รองผู้อำนวยการ ฝ่ายกิจการนักเรียน"
+                                  : formData.role === "teacher"
+                                    ? "คณะครู (Teacher)"
+                                    : formData.role === "staff"
+                                      ? "เจ้าหน้าที่ (Staff)"
+                                      : formData.role === "janitor"
+                                        ? "แม่บ้าน/นักการ (Maid/Janitor)"
+                                        : formData.role === "editor"
+                                          ? "Editor (ผู้ดูแลเนื้อหา)"
+                                          : formData.role || "สมาชิกทั่วไป"}
                 </span>
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-100 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400 text-[10px] sm:text-xs font-bold uppercase tracking-widest shadow-sm">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />{" "}
@@ -317,14 +330,24 @@ export default function ProfilePage() {
 
               <div className="md:col-span-2 group">
                 <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 ml-1 mb-2 block transition-colors group-focus-within:text-blue-500">
-                  ชื่อผู้ใช้งาน (ระบบ) <span className="text-blue-600 font-normal italic">* แก้ไขได้เฉพาะ Super Admin</span>
+                  ชื่อผู้ใช้งาน (ระบบ){" "}
+                  <span className="text-blue-600 font-normal italic">
+                    * แก้ไขได้เฉพาะ Super Admin
+                  </span>
                 </label>
                 <div className="relative">
-                  <span className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-blue-500 transition-colors font-bold">@</span>
+                  <span className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-blue-500 transition-colors font-bold">
+                    @
+                  </span>
                   <input
                     type="text"
                     value={formData.username}
-                    onChange={(e) => setFormData({ ...formData, username: e.target.value.replace(/\s/g, "") })}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        username: e.target.value.replace(/\s/g, ""),
+                      })
+                    }
                     readOnly={formData.role !== "super_admin"}
                     className={`w-full ${formData.role === "super_admin" ? "bg-blue-50/30 border-blue-200 text-slate-800" : "bg-zinc-100 dark:bg-zinc-800/80 border-zinc-200 dark:border-zinc-700/50 text-zinc-500 dark:text-zinc-400 cursor-not-allowed"} rounded-2xl pl-12 pr-5 py-4 outline-none transition-all font-bold italic`}
                     placeholder="username"
@@ -344,56 +367,186 @@ export default function ProfilePage() {
                 <div className="relative group">
                   <SafetyCertificateOutlined className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-blue-500 transition-colors z-10" />
                   <select
+                    id="department_select"
                     value={formData.department}
-                    onChange={(e) => setFormData({ ...formData, department: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, department: e.target.value })
+                    }
                     className="w-full bg-zinc-50 dark:bg-zinc-900/50 border border-zinc-200 dark:border-zinc-700/50 rounded-2xl pl-12 pr-5 py-4 text-zinc-800 dark:text-zinc-200 focus:bg-white dark:focus:bg-zinc-800 focus:ring-4 focus:ring-blue-500/5 focus:border-blue-500 outline-none transition-all font-bold cursor-pointer"
                   >
                     <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
-                    <option value="ผู้บริหารสถานศึกษา">ผู้บริหารสถานศึกษา</option>
+                    <option value="ผู้บริหารสถานศึกษา">
+                      ผู้บริหารสถานศึกษา
+                    </option>
                     <optgroup label="1. ฝ่ายบริหารทรัพยากร">
-                      <option value="งานบริหารงานทั่วไป">งานบริหารงานทั่วไป</option>
-                      <option value="งานบริหารและพัฒนาทรัพยากรบุคคล">งานบริหารและพัฒนาทรัพยากรบุคคล</option>
+                      <option value="งานบริหารงานทั่วไป">
+                        งานบริหารงานทั่วไป
+                      </option>
+                      <option value="งานบริหารและพัฒนาทรัพยากรบุคคล">
+                        งานบริหารและพัฒนาทรัพยากรบุคคล
+                      </option>
                       <option value="งานการเงิน">งานการเงิน</option>
                       <option value="งานการบัญชี">งานการบัญชี</option>
                       <option value="งานพัสดุ">งานพัสดุ</option>
                       <option value="งานอาคารสถานที่">งานอาคารสถานที่</option>
                       <option value="งานทะเบียน">งานทะเบียน</option>
-                      <option value="งานแม่บ้าน/นักการ">งานแม่บ้าน/นักการ</option>
+                      <option value="งานแม่บ้าน/นักการ">
+                        งานแม่บ้าน/นักการ
+                      </option>
                     </optgroup>
                     <optgroup label="2. ฝ่ายยุทธศาสตร์และแผนงาน">
-                      <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ">งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ</option>
-                      <option value="งานมาตรฐานและการประกันคุณภาพ">งานมาตรฐานและการประกันคุณภาพ</option>
-                      <option value="งานศูนย์ดิจิทัลและสื่อสารองค์กร">งานศูนย์ดิจิทัลและสื่อสารองค์กร</option>
-                      <option value="งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์">งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์</option>
-                      <option value="งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ">งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ</option>
-                      <option value="งานติดตามและประเมินผลการ">งานติดตามและประเมินผลการ</option>
+                      <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ">
+                        งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ
+                      </option>
+                      <option value="งานมาตรฐานและการประกันคุณภาพ">
+                        งานมาตรฐานและการประกันคุณภาพ
+                      </option>
+                      <option value="งานศูนย์ดิจิทัลและสื่อสารองค์กร">
+                        งานศูนย์ดิจิทัลและสื่อสารองค์กร
+                      </option>
+                      <option value="งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์">
+                        งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์
+                      </option>
+                      <option value="งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ">
+                        งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ
+                      </option>
+                      <option value="งานติดตามและประเมินผล">
+                        งานติดตามและประเมินผล
+                      </option>
                     </optgroup>
                     <optgroup label="3. ฝ่ายพัฒนากิจการนักเรียน นักศึกษา">
-                      <option value="งานกิจกรรมนักเรียนนักศึกษา">งานกิจกรรมนักเรียนนักศึกษา</option>
-                      <option value="งานครูที่ปรึกษาและการแนะแนว">งานครูที่ปรึกษาและการแนะแนว</option>
-                      <option value="งานปกครองและความปลอดภัยนักเรียนนักศึกษา">งานปกครองและความปลอดภัยนักเรียนนักศึกษา</option>
-                      <option value="งานสวัสดิการนักเรียนนักศึกษา">งานสวัสดิการนักเรียนนักศึกษา</option>
-                      <option value="งานโครงการพิเศษและการบริการ">งานโครงการพิเศษและการบริการ</option>
+                      <option value="งานกิจกรรมนักเรียนนักศึกษา">
+                        งานกิจกรรมนักเรียนนักศึกษา
+                      </option>
+                      <option value="งานครูที่ปรึกษาและการแนะแนว">
+                        งานครูที่ปรึกษาและการแนะแนว
+                      </option>
+                      <option value="งานปกครองและความปลอดภัยนักเรียนนักศึกษา">
+                        งานปกครองและความปลอดภัยนักเรียนนักศึกษา
+                      </option>
+                      <option value="งานสวัสดิการนักเรียนนักศึกษา">
+                        งานสวัสดิการนักเรียนนักศึกษา
+                      </option>
+                      <option value="งานโครงการพิเศษและการบริการ">
+                        งานโครงการพิเศษและการบริการ
+                      </option>
                     </optgroup>
                     <optgroup label="4. ฝ่ายวิชาการ">
-                      <option value="งานพัฒนาหลักสูตรและการจัดการเรียนรู้">งานพัฒนาหลักสูตรและการจัดการเรียนรู้</option>
-                      <option value="งานวัดผลและประเมินผล">งานวัดผลและประเมินผล</option>
-                      <option value="งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ">งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ</option>
-                      <option value="งานวิทยบริการและเทคโนโลยีการศึกษา">งานวิทยบริการและเทคโนโลยีการศึกษา</option>
-                      <option value="งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา">งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา</option>
-                      <option value="งานพัฒนาหลักสูตรสายเทคโนโลยี หรือสายปฏิบัติการ">งานพัฒนาหลักสูตรสายเทคโนโลยี หรือสายปฏิบัติการ</option>
-                      <option disabled>──────────</option>
-                      <option value="แผนกวิชาช่างยนต์">แผนกวิชาช่างยนต์</option>
-                      <option value="แผนกวิชาช่างกลโรงงาน">แผนกวิชาช่างกลโรงงาน</option>
-                      <option value="แผนกวิชาช่างเชื่อมโลหะ">แผนกวิชาช่างเชื่อมโลหะ</option>
-                      <option value="แผนกวิชาช่างไฟฟ้ากำลัง">แผนกวิชาช่างไฟฟ้ากำลัง</option>
-                      <option value="แผนกวิชาช่างอิเล็กทรอนิกส์">แผนกวิชาช่างอิเล็กทรอนิกส์</option>
-                      <option value="แผนกวิชาช่างก่อสร้าง">แผนกวิชาช่างก่อสร้าง</option>
-                      <option value="แผนกวิชาการบัญชี">แผนกวิชาการบัญชี</option>
-                      <option value="แผนกวิชาการตลาด">แผนกวิชาการตลาด</option>
-                      <option value="แผนกวิชาเทคโนโลยีธุรกิจดิจิทัล">แผนกวิชาธุรกิจดิจิทัล</option>
-                      <option value="แผนกวิชาการโรงแรม">แผนกวิชาการโรงแรม</option>
-                      <option value="แผนกวิชาสามัญสัมพันธ์">แผนกวิชาสามัญสัมพันธ์</option>
+                      <option value="งานพัฒนาหลักสูตรและการจัดการเรียนรู้">
+                        งานพัฒนาหลักสูตรและการจัดการเรียนรู้
+                      </option>
+                      <option value="งานวัดผลและประเมินผล">
+                        งานวัดผลและประเมินผล
+                      </option>
+                      <option value="งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ">
+                        งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ
+                      </option>
+                      <option value="งานวิทยบริการและเทคโนโลยีการศึกษา">
+                        งานวิทยบริการและเทคโนโลยีการศึกษา
+                      </option>
+                      <option value="งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา">
+                        งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา
+                      </option>
+                      <option value="งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ">
+                        งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ
+                      </option>
+                    </optgroup>
+                    <optgroup label="5. ระดับชั้นประกาศนียบัตรวิชาชีพ (ปวช.)">
+                      <option value="ปวช. สาขาวิชาการบัญชี">
+                        สาขาวิชาการบัญชี (ปวช.)
+                      </option>
+                      <option value="ปวช. สาขาวิชาการตลาด">
+                        สาขาวิชาการตลาด (ปวช.)
+                      </option>
+                      <option value="ปวช. สาขาวิชาการโรงเเรม">
+                        สาขาวิชาการโรงเเรม (ปวช.)
+                      </option>
+                      <option value="ปวช. สาขาวิชาตัวถังเเละสีรถยนต์">
+                        สาขาวิชาตัวถังเเละสีรถยนต์ (ปวช.)
+                      </option>
+                      <option value="ปวช. สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล">
+                        สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล (ปวช.)
+                      </option>
+                      <option value="ปวช. สาขาวิชาช่างยนต์">
+                        สาขาวิชาช่างยนต์ (ปวช.)
+                      </option>
+                      <option value="ปวช. สาขาวิชาช่างกลโรงงาน">
+                        สาขาวิชาช่างกลโรงงาน (ปวช.)
+                      </option>
+                      <option value="ปวช. สาขาวิชาช่างเชื่อมโลหะ">
+                        สาขาวิชาช่างเชื่อมโลหะ (ปวช.)
+                      </option>
+                      <option value="ปวช. สาขาวิชาช่างไฟฟ้า">
+                        สาขาวิชาช่างไฟฟ้า (ปวช.)
+                      </option>
+                      <option value="ปวช. สาขาวิชาอิเล็กทรอนิกส์">
+                        สาขาวิชาอิเล็กทรอนิกส์ (ปวช.)
+                      </option>
+                      <option value="ปวช. สาขาวิชายานยนต์ไฟฟ้า">
+                        สาขาวิชายานยนต์ไฟฟ้า (ปวช.)
+                      </option>
+                      <option value="ปวช. สาขาวิชาโยธา">
+                        สาขาวิชาโยธา (ปวช.)
+                      </option>
+                      <option value="ปวช. สาขาวิชาโลจิสติกส์">
+                        สาขาวิชาโลจิสติกส์ (ปวช.)
+                      </option>
+                      <option value="ปวช. สาขาวิชาการจัดการสำนักงานดิจิทัล">
+                        สาขาวิชาการจัดการสำนักงานดิจิทัล (ปวช.)
+                      </option>
+                      <option value="ปวช. สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์">
+                        สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์ (ปวช.)
+                      </option>
+                    </optgroup>
+                    <optgroup label="6. ระดับชั้นประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.)">
+                      <option value="ปวส. สาขาวิชาเทคนิคเครื่องกล">
+                        สาขาวิชาเทคนิคเครื่องกล (ปวส.)
+                      </option>
+                      <option value="ปวส. สาขาวิชาเทคนิคการผลิต">
+                        สาขาวิชาเทคนิคการผลิต (ปวส.)
+                      </option>
+                      <option value="ปวส. สาขาวิชาเทคนิคโลหะ">
+                        สาขาวิชาเทคนิคโลหะ (ปวส.)
+                      </option>
+                      <option value="ปวส. สาขาวิชาไฟฟ้า">
+                        สาขาวิชาไฟฟ้า (ปวส.)
+                      </option>
+                      <option value="ปวส. สาขาวิชาโยธา">
+                        สาขาวิชาโยธา (ปวส.)
+                      </option>
+                      <option value="ปวส. สาขาวิชาการบัญชี">
+                        สาขาวิชาการบัญชี (ปวส.)
+                      </option>
+                      <option value="ปวส. สาขาวิชาเทคโนโลยีอิเล็กทรอนิกส์">
+                        สาขาวิชาเทคโนโลยีอิเล็กทรอนิกส์ (ปวส.)
+                      </option>
+                      <option value="ปวส. สาขาวิชาเทคนิคยานยนต์ไฟฟ้า">
+                        สาขาวิชาเทคนิคยานยนต์ไฟฟ้า (ปวส.)
+                      </option>
+                      <option value="ปวส. สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล">
+                        สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล (ปวส.)
+                      </option>
+                      <option value="ปวส. สาขาวิชาการตลาด">
+                        สาขาวิชาการตลาด (ปวส.)
+                      </option>
+                      <option value="ปวส. สาขาวิชาการโรงเเรม">
+                        สาขาวิชาการโรงเเรม (ปวส.)
+                      </option>
+                      <option value="ปวส. สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์">
+                        สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์ (ปวส.)
+                      </option>
+                      <option value="ปวส. สาขาวิชาเทคโนโลยีอุตสาหกรรมตัวถัง เเละสีรถยนต์">
+                        สาขาวิชาเทคโนโลยีอุตสาหกรรมตัวถัง เเละสีรถยนต์ (ปวส.)
+                      </option>
+                      <option value="ปวส. สาขาวิชาการจัดการโลจิสติกส์ เเละซัพพลายเชน">
+                        สาขาวิชาการจัดการโลจิสติกส์ เเละซัพพลายเชน (ปวส.)
+                      </option>
+                      <option value="ปวส. สาขาวิชาการจัดการสำนักงานดิจิทัล">
+                        สาขาวิชาการจัดการสำนักงานดิจิทัล (ปวส.)
+                      </option>
+                      <option value="ปวส. สาขาวิชาคอมพิวเตอร์เกมเเละแอนิเมชั่น">
+                        สาขาวิชาคอมพิวเตอร์เกมเเละแอนิเมชั่น (ปวส.)
+                      </option>
                     </optgroup>
                   </select>
                 </div>
@@ -470,20 +623,21 @@ export default function ProfilePage() {
                 </h3>
               </div>
               <span className="text-[10px] font-bold text-zinc-400 uppercase bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 rounded-lg border border-zinc-200 dark:border-zinc-700">
-                Leave blank to keep current password
+                เว้นว่างไว้หากไม่ต้องการเปลี่ยนรหัสผ่าน
               </span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="group">
                 <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 ml-1 mb-2 block transition-colors group-focus-within:text-amber-500">
-                  รหัสผ่านใหม่
+                  รหัสผ่านใหม่ (ไม่บังคับ)
                 </label>
                 <div className="relative">
                   <LockOutlined className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-400 group-focus-within:text-amber-500 transition-colors " />
                   <input
                     type="password"
                     value={formData.password}
+                    autoComplete="new-password"
                     onChange={(e) =>
                       setFormData({ ...formData, password: e.target.value })
                     }
@@ -495,13 +649,14 @@ export default function ProfilePage() {
 
               <div className="group">
                 <label className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 ml-1 mb-2 block transition-colors group-focus-within:text-amber-500">
-                  ยืนยันรหัสผ่าน
+                  ยืนยันรหัสผ่านใหม่
                 </label>
                 <div className="relative">
                   <LockOutlined className="absolute left-6 top-1/2 -translate-y-1/2 text-zinc-400 transition-colors" />
                   <input
                     type="password"
                     value={formData.confirmPassword}
+                    autoComplete="new-password"
                     onChange={(e) =>
                       setFormData({
                         ...formData,

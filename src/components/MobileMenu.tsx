@@ -78,12 +78,32 @@ export default function MobileMenu({
         }`}
       >
         {isOpen ? (
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
           </svg>
         ) : (
-          <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          <svg
+            className="w-6 h-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M4 6h16M4 12h16M4 18h16"
+            />
           </svg>
         )}
       </button>
@@ -130,7 +150,12 @@ export default function MobileMenu({
                             viewBox="0 0 24 24"
                             stroke="currentColor"
                           >
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 9l-7 7-7-7"
+                            />
                           </svg>
                         </button>
 
@@ -180,9 +205,16 @@ export default function MobileMenu({
                     <div className="flex items-center gap-3 px-4 mb-2">
                       <div className="relative w-12 h-12 rounded-full overflow-hidden bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white border-2 border-white dark:border-zinc-800 shadow-md shrink-0">
                         {image ? (
-                          <Image src={image} alt={user.name || "User"} fill className="object-cover" />
+                          <Image
+                            src={image}
+                            alt={user.name || "User"}
+                            fill
+                            className="object-cover"
+                          />
                         ) : (
-                          <span className="font-bold text-xl uppercase">{user.name?.charAt(0) || "U"}</span>
+                          <span className="font-bold text-xl uppercase">
+                            {user.name?.charAt(0) || "U"}
+                          </span>
                         )}
                       </div>
 
@@ -204,7 +236,7 @@ export default function MobileMenu({
                       🚀 ไปที่ Dashboard
                     </Link>
 
-                    {([
+                    {[
                       "super_admin",
                       "admin",
                       "hr",
@@ -214,10 +246,16 @@ export default function MobileMenu({
                       "deputy_strategy",
                       "deputy_academic",
                       "deputy_student_affairs",
-                    ].includes(userRole)) && (
+                    ].includes(userRole) && (
                       <div className="flex flex-col gap-2">
-                         {/* เฉพาะรองบริหารทรัพยากร (และผู้บริหารหลัก) ที่เห็นรายงานและการทำงาน */}
-                         {(["super_admin", "admin", "hr", "director", "deputy_resource"].includes(userRole)) && (
+                        {/* เฉพาะรองบริหารทรัพยากร (และผู้บริหารหลัก) ที่เห็นรายงานและการทำงาน */}
+                        {[
+                          "super_admin",
+                          "admin",
+                          "hr",
+                          "director",
+                          "deputy_resource",
+                        ].includes(userRole) && (
                           <Link
                             href="/attendance-report"
                             onClick={closeMenu}
@@ -225,17 +263,24 @@ export default function MobileMenu({
                           >
                             📊 ระบบรายงานการเข้างาน
                           </Link>
-                         )}
-                        {(["super_admin", "hr", "director", "deputy_resource"].includes(userRole)) && (
+                        )}
+                        {[
+                          "super_admin",
+                          "hr",
+                          "director",
+                          "deputy_resource",
+                        ].includes(userRole) && (
                           <Link
                             href="/leave-approvals"
                             onClick={closeMenu}
                             className="mx-1 block text-center py-3.5 rounded-xl bg-emerald-50 text-emerald-700 font-bold border border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300 transition-colors"
                           >
-                             ✅ จัดการอนุมัติใบลา
+                            ✅ จัดการอนุมัติใบลา
                           </Link>
                         )}
-                        {(["super_admin", "hr", "deputy_resource"].includes(userRole)) && (
+                        {["super_admin", "hr", "deputy_resource"].includes(
+                          userRole,
+                        ) && (
                           <>
                             <Link
                               href="/manage-roles"
@@ -259,7 +304,15 @@ export default function MobileMenu({
                             </Link>
                           </>
                         )}
-                        {(["super_admin", "admin", "hr", "director", "deputy_resource", "editor", "staff"].includes(userRole)) && (
+                        {[
+                          "super_admin",
+                          "admin",
+                          "hr",
+                          "director",
+                          "deputy_resource",
+                          "editor",
+                          "staff",
+                        ].includes(userRole) && (
                           <Link
                             href="/work-reports"
                             onClick={closeMenu}
