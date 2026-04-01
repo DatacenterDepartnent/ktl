@@ -25,17 +25,22 @@ import type { NextAuthConfig } from "next-auth";
 export const authConfig = {
   providers: [], // ปล่อยว่างไว้ เดี๋ยวไปใส่ใน auth.ts
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.role = (user as any).role;
         token.id = user.id;
+        token.username = (user as any).username;
       }
       return token;
     },
     async session({ session, token }) {
+      if (token.error) {
+        (session as any).error = token.error;
+      }
       if (session.user) {
         (session.user as any).role = token.role;
         (session.user as any).id = token.id;
+        (session.user as any).username = token.username;
       }
       return session;
     },

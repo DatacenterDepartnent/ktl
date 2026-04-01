@@ -7,6 +7,7 @@ const { auth } = NextAuth(authConfig);
 export default auth((req) => {
   const { nextUrl } = req;
   const isLoggedIn = !!req.auth;
+  const hasAuthError = !!(req.auth as any)?.error;
   const userRole = (req.auth?.user as any)?.role?.toLowerCase();
   const pathname = nextUrl.pathname;
 
@@ -24,7 +25,7 @@ export default auth((req) => {
 
   // 1. จัดการหน้า Login/Register (ถ้าเข้าแล้วให้ไป Dashboard)
   if (isAuthPage) {
-    if (isLoggedIn) {
+    if (isLoggedIn && !hasAuthError) {
       return NextResponse.redirect(new URL("/", nextUrl.origin));
     }
     return NextResponse.next();

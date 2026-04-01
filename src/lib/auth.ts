@@ -79,64 +79,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       const role = token.role as string;
 
-      // 2. ตรวจสอบเงื่อนไขหมดเวลา 1 ชั่วโมง (ยกเว้น super_admin)
-      if (role !== "super_admin" && token.loginTimestamp) {
-        const ONE_HOUR_MS = 60 * 60 * 1000;
-        if (Date.now() - (token.loginTimestamp as number) > ONE_HOUR_MS) {
-          token.error = "SessionExpired";
-          return token;
-        }
-      }
+      // 2. ลบออก: ตรวจสอบเงื่อนไขหมดเวลา 1 ชั่วโมง (User สามารถใช้งานได้ไม่จำกัดเวลา)
 
-      // 3. ตรวจสอบการเข้าสู่ระบบซ้อนกัน (เช็ค Device ที่เข้าหลังสุด)
-      if (token.id && token.sessionId && !token.error) {
-        const cacheKey = `sess_${token.id}_${token.sessionId}`;
-        const now = Date.now();
-        const cached = (global as any)._sessionCache?.[cacheKey];
-        
-        if (cached && (now - cached.timestamp < 60000)) { // 60s cache
-           if (cached.error) {
-             token.error = cached.error;
-             return token;
-           }
-           // Valid cache, skip DB
-        } else {
-            // ✅ ยกเว้น super_admin จากการเช็ค Concurrent Login เพื่อลดภาระ DB และป้องกันการถูกดีดออกจากการเปิดหลายหน้าต่าง
-            if (role === "super_admin") {
-              if (!(global as any)._sessionCache) (global as any)._sessionCache = {};
-              (global as any)._sessionCache[cacheKey] = { timestamp: now };
-              return token;
-            }
-
-            const authStart = Date.now();
-            try {
-              const client = await clientPromise;
-              const db = client.db("ktltc_db");
-              const currentUser = await db.collection("users").findOne(
-                { _id: new ObjectId(token.id as string) },
-                { projection: { currentSessionId: 1 } }
-              );
-              const authEnd = Date.now();
-              
-              if (authEnd - authStart > 100) {
-                 console.log(`[AUTH] DB Session Check took ${authEnd - authStart}ms for user ${token.id}`);
-              }
-
-              if (!(global as any)._sessionCache) (global as any)._sessionCache = {};
-              
-              if (!currentUser || currentUser.currentSessionId !== token.sessionId) {
-                const err = "ConcurrentLogin";
-                (global as any)._sessionCache[cacheKey] = { error: err, timestamp: now };
-                token.error = err;
-                return token;
-              }
-
-              (global as any)._sessionCache[cacheKey] = { timestamp: now };
-            } catch (error) {
-              console.error("JWT Session validation error:", error);
-            }
-        }
-      }
+      // 3. ลบออก: ตรวจสอบการเข้าสู่ระบบซ้อนกัน (User สามารถเข้าใช้งานได้หลายเครื่องพร้อมกัน)
 
       return token;
     },
