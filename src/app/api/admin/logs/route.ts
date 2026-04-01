@@ -2,22 +2,29 @@ import { NextResponse } from "next/server";
 import clientPromise from "@/lib/db";
 import { auth } from "@/lib/auth";
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const session = await auth();
     if (!session || (session.user as any).role !== "super_admin") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { searchParams } = new URL(req.url);
+    const isAll = searchParams.get("all") === "true";
+
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
-    const logs = await db
+    let logsQuery = db
       .collection("logs")
       .find({})
-      .sort({ timestamp: -1 })
-      .limit(50)
-      .toArray();
+      .sort({ timestamp: -1 });
+
+    if (!isAll) {
+      logsQuery = logsQuery.limit(50);
+    }
+
+    const logs = await logsQuery.toArray();
 
     return NextResponse.json(logs);
   } catch (error) {

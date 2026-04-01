@@ -17,6 +17,7 @@ export async function GET(req: Request) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = parseInt(searchParams.get("limit") || "20"); // Adjusted back to 20 for "Load More"
     const search = searchParams.get("search") || "";
+    const isAll = searchParams.get("all") === "true";
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
@@ -30,14 +31,18 @@ export async function GET(req: Request) {
     }
 
     const total = await db.collection("users").countDocuments(query);
-    const users = await db
+    
+    let usersQuery = db
       .collection("users")
       .find(query)
       .sort({ orderIndex: 1, createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .project({ password: 0 })
-      .toArray();
+      .project({ password: 0 });
+
+    if (!isAll) {
+      usersQuery = usersQuery.skip((page - 1) * limit).limit(limit);
+    }
+
+    const users = await usersQuery.toArray();
 
     return NextResponse.json({
       users,

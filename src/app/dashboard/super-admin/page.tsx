@@ -23,6 +23,8 @@ import {
   CheckCircle2,
   AlertCircle,
   Loader2,
+  Download,
+  FileSpreadsheet,
 } from "lucide-react";
 import { Calendar } from "antd";
 
@@ -74,6 +76,136 @@ export default function SuperAdminPage() {
   const [total, setTotal] = useState(0);
   const [hasMore, setHasMore] = useState(false);
   const [isFetchingMore, setIsFetchingMore] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [isExportingLogs, setIsExportingLogs] = useState(false);
+
+  const handleExportLogsCSV = async () => {
+    try {
+      setIsExportingLogs(true);
+      const res = await fetch(`/api/admin/logs?all=true&_t=${Date.now()}`);
+      if (!res.ok) throw new Error("Export logs failed");
+
+      const allLogs: ActivityLog[] = await res.json();
+
+      if (!allLogs || allLogs.length === 0) {
+        toast.error("ไม่มีข้อมูลกิจกรรมให้ส่งออก");
+        return;
+      }
+
+      const headers = [
+        "ลำดับ",
+        "วันที่-เวลา",
+        "ผู้ใช้งาน",
+        "กิจกรรม",
+        "รายละเอียด",
+        "IP Address",
+      ];
+      const rows = allLogs.map((log, index) => [
+        index + 1,
+        new Date(log.timestamp).toLocaleString("th-TH", {
+          timeZone: "Asia/Bangkok",
+        }),
+        log.userName || "SYSTEM",
+        log.action,
+        log.details,
+        log.ip || "-",
+      ]);
+
+      const csvContent = [
+        headers.join(","),
+        ...rows.map((row) =>
+          row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","),
+        ),
+      ].join("\n");
+
+      const blob = new Blob(["\uFEFF" + csvContent], {
+        type: "text/csv;charset=utf-8;",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute(
+        "download",
+        `activity_logs_${new Date().toLocaleDateString("th-TH").replace(/\//g, "-")}.csv`,
+      );
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success(`ส่งออกประวัติกิจกรรม ${allLogs.length} รายการเรียบร้อย`);
+    } catch (error) {
+      console.error("Export Logs Error:", error);
+      toast.error("เกิดข้อผิดพลาดในการส่งออกประวัติกิจกรรม");
+    } finally {
+      setIsExportingLogs(false);
+    }
+  };
+
+  const handleExportCSV = async () => {
+    try {
+      setIsExporting(true);
+      const res = await fetch(
+        `/api/admin/users?all=true&search=${searchQuery}&_t=${Date.now()}`,
+      );
+      if (!res.ok) throw new Error("Export failed");
+
+      const data = await res.json();
+      const allUsers: User[] = data.users || [];
+
+      if (allUsers.length === 0) {
+        toast.error("ไม่มีข้อมูลให้ส่งออก");
+        return;
+      }
+
+      const headers = [
+        "ลำดับ",
+        "ชื่อ-นามสกุล",
+        "ชื่อผู้ใช้",
+        "อีเมล",
+        "สิทธิ์",
+        "สังกัด/แผนก",
+        "เบอร์โทรศัพท์",
+      ];
+      const rows = allUsers.map((user, index) => [
+        index + 1,
+        user.name,
+        user.username,
+        user.email,
+        user.role,
+        user.department || "ไม่มีสังกัด",
+        user.phone || "-",
+      ]);
+
+      const csvContent = [
+        headers.join(","),
+        ...rows.map((row) =>
+          row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","),
+        ),
+      ].join("\n");
+
+      // BOM for Thai characters in Excel
+      const blob = new Blob(["\uFEFF" + csvContent], {
+        type: "text/csv;charset=utf-8;",
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.setAttribute("href", url);
+      link.setAttribute(
+        "download",
+        `users_export_${new Date().toLocaleDateString("th-TH").replace(/\//g, "-")}.csv`,
+      );
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      toast.success(`ส่งออกข้อมูล ${allUsers.length} รายการเรียบร้อย`);
+    } catch (error) {
+      console.error("Export Error:", error);
+      toast.error("เกิดข้อผิดพลาดในการส่งออกข้อมูล");
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const fetchAdminProfile = async () => {
     try {
@@ -354,6 +486,19 @@ export default function SuperAdminPage() {
                 className="w-full md:w-[400px] pl-14 pr-6 py-5 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-slate-200 dark:border-zinc-800 rounded-3xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-slate-800 dark:text-white font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-black/2"
               />
             </div>
+            <button
+              onClick={handleExportCSV}
+              disabled={isExporting}
+              className="flex items-center gap-2 px-6 py-5 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-3xl hover:scale-105 active:scale-95 transition-all shadow-xl text-slate-600 dark:text-zinc-400 font-bold text-xs uppercase tracking-widest disabled:opacity-50"
+              title="ส่งออก CSV"
+            >
+              {isExporting ? (
+                <Loader2 size={18} className="animate-spin text-blue-500" />
+              ) : (
+                <FileSpreadsheet size={18} className="text-emerald-500" />
+              )}
+              <span className="hidden sm:inline">Export CSV</span>
+            </button>
             <button
               onClick={() => fetchData(1, searchQuery)}
               className="p-5 bg-slate-900 dark:bg-zinc-100 text-white dark:text-slate-900 rounded-3xl hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-slate-900/20"
@@ -813,12 +958,26 @@ export default function SuperAdminPage() {
                 </p>
               </div>
             </div>
-            <button
-              onClick={handleClearLogs}
-              className="px-6 py-3 bg-white/5 hover:bg-rose-500 text-zinc-400 hover:text-white text-xs font-bold uppercase tracking-widest rounded-2xl border border-white/10 hover:border-rose-500 transition-all"
-            >
-              ล้างประวัติกิจกรรม
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleExportLogsCSV}
+                disabled={isExportingLogs}
+                className="px-6 py-3 bg-white/5 hover:bg-emerald-600 text-zinc-400 hover:text-white text-xs font-bold uppercase tracking-widest rounded-2xl border border-white/10 hover:border-emerald-600 transition-all flex items-center gap-2 disabled:opacity-50"
+              >
+                {isExportingLogs ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : (
+                  <Download size={14} />
+                )}
+                <span>Export Logs</span>
+              </button>
+              <button
+                onClick={handleClearLogs}
+                className="px-6 py-3 bg-white/5 hover:bg-rose-500 text-zinc-400 hover:text-white text-xs font-bold uppercase tracking-widest rounded-2xl border border-white/10 hover:border-rose-500 transition-all"
+              >
+                ล้างประวัติกิจกรรม
+              </button>
+            </div>
           </div>
 
           <div className="p-4 max-h-[700px] overflow-y-auto custom-scrollbar-dark space-y-6">
