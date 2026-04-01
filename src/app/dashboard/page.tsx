@@ -178,7 +178,7 @@ export default function DashboardLoader() {
                   variants={item}
                 />
                 <StatCard
-                  label="หน้าเนื้อหาอิสระ"
+                  label="หน้าเนื้อเมนู"
                   value={stats.totalPages}
                   icon={FileText}
                   color="amber"
@@ -197,7 +197,7 @@ export default function DashboardLoader() {
               {/* Usage Cards */}
               <div className="md:col-span-4 flex flex-col gap-4">
                 <UsageCard
-                  title="Database Storage"
+                  title="MongoDB"
                   value={stats.dbSizeMB}
                   max={512}
                   unit="MB"
@@ -206,7 +206,7 @@ export default function DashboardLoader() {
                   variants={item}
                 />
                 <UsageCard
-                  title="Cloud Media Assets"
+                  title="cloudinary"
                   value={stats.cloudUsageMB}
                   max={stats.cloudLimitMB}
                   unit="MB"
