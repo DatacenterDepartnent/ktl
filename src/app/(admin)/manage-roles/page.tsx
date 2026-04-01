@@ -27,6 +27,7 @@ interface User {
   name: string;
   role: string;
   department?: string;
+  image?: string;
 }
 
 const PROTECTED_ROLES = ["super_admin", "editor", "admin", "director"];
@@ -52,29 +53,56 @@ export default function ManageRolesPage() {
   const { data: session } = useSession();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isMoreLoading, setIsMoreLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const [total, setTotal] = useState(0);
 
   const currentUserRole = (session?.user as any)?.role;
   const isSuperAdmin = currentUserRole === "super_admin";
 
-  const fetchData = async () => {
+  const fetchData = async (p = 1, q = "", isLoadMore = false) => {
     try {
-      setLoading(true);
-      const res = await fetch("/api/admin/users?_t=" + Date.now());
+      if (!isLoadMore) setLoading(true);
+      else setIsMoreLoading(true);
+
+      const res = await fetch(`/api/admin/users?page=${p}&search=${q}&_t=${Date.now()}`);
       if (res.ok) {
         const data = await res.json();
-        setUsers(data);
+        if (isLoadMore) {
+          setUsers((prev) => [...prev, ...data.users]);
+        } else {
+          setUsers(data.users);
+        }
+        setTotal(data.total);
+        setHasMore(data.hasMore);
+        setPage(data.page);
       }
     } catch (error) {
       toast.error("โหลดข้อมูลไม่สำเร็จ");
     } finally {
       setLoading(false);
+      setIsMoreLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchData();
+    fetchData(1, "");
   }, []);
+
+  // Debounced Search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      fetchData(1, searchQuery);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const loadMore = () => {
+    if (!hasMore || isMoreLoading) return;
+    fetchData(page + 1, searchQuery, true);
+  };
 
   const changeRole = async (
     targetId: string,
@@ -123,18 +151,31 @@ export default function ManageRolesPage() {
             borderRadius: "1rem",
           },
         });
-        fetchData();
+        fetchData(1, searchQuery); // Re-fetch current state
       }
     } catch (error) {
       toast.error("เปลี่ยนสังกัดไม่สำเร็จ");
     }
   };
 
-  const filteredUsers = users.filter(
-    (u) =>
-      u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.username.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const getInitials = (name: string) => {
+    if (!name) return "U";
+    return name.charAt(0).toUpperCase();
+  };
+
+  const avatarColors = [
+    "bg-red-500", "bg-blue-500", "bg-emerald-500", 
+    "bg-amber-500", "bg-indigo-500", "bg-purple-500",
+    "bg-rose-500", "bg-sky-500", "bg-teal-500"
+  ];
+
+  const getAvatarColor = (id: string) => {
+    const index = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    return avatarColors[index % avatarColors.length];
+  };
+
+  // Removed client-side filter as we use server-side search
+  const filteredUsers = users;
 
   const allowedRoles = [
     { value: "deputy_resource", label: "รอง ผอ. (ทรัพยากร)" },
@@ -144,7 +185,7 @@ export default function ManageRolesPage() {
     { value: "teacher", label: "ครูผู้สอน" },
     { value: "hr", label: "เจ้าหน้าที่ฝ่ายบุคคล" },
     { value: "staff", label: "เจ้าหน้าที่" },
-    { value: "janitor", label: "นักการภารโรง" },
+    { value: "janitor", label: "แม่บ้าน/นักการ" },
     { value: "user", label: "ผู้ใช้ทั่วไป" },
   ];
 
@@ -236,8 +277,16 @@ export default function ManageRolesPage() {
                 )}
                 
                 <div className="flex items-start gap-4 mb-8">
-                  <div className="w-14 h-14 rounded-2xl bg-linear-to-br from-zinc-50 to-zinc-100 dark:from-zinc-800 dark:to-zinc-800/50 flex items-center justify-center text-zinc-400 group-hover:from-blue-500 group-hover:to-indigo-600 group-hover:text-white transition-all cursor-default shadow-inner">
-                    <Users size={24} />
+                  <div className={`w-14 h-14 rounded-2xl overflow-hidden flex items-center justify-center text-white font-black shadow-inner relative transition-all duration-300 group-hover:scale-105 ${user.image ? "bg-zinc-100" : getAvatarColor(user._id)}`}>
+                    {user.image ? (
+                      <img 
+                        src={user.image} 
+                        alt={user.name} 
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <span className="text-xl">{getInitials(user.name)}</span>
+                    )}
                   </div>
                   <div className="flex-1 overflow-hidden">
                     <h3 className="text-xl font-black text-slate-800 dark:text-zinc-100 truncate uppercase tracking-tight">
@@ -294,7 +343,7 @@ export default function ManageRolesPage() {
                             <option value="งานพัสดุ">งานพัสดุ</option>
                             <option value="งานอาคารสถานที่">งานอาคารสถานที่</option>
                             <option value="งานทะเบียน">งานทะเบียน</option>
-                            <option value="งานภารโรง">งานภารโรง</option>
+                            <option value="งานแม่บ้าน/นักการ">งานแม่บ้าน/นักการ</option>
                           </optgroup>
                           <optgroup label="2. ฝ่ายยุทธศาสตร์และแผนงาน">
                             <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ">งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ</option>
@@ -341,6 +390,29 @@ export default function ManageRolesPage() {
             );
           })}
         </motion.div>
+
+        {/* Load More Section */}
+        {hasMore && (
+           <div className="pt-12 text-center">
+              <button
+                onClick={loadMore}
+                disabled={isMoreLoading}
+                className="inline-flex items-center gap-3 bg-white dark:bg-zinc-900 px-8 py-4 rounded-3xl border border-zinc-200 dark:border-zinc-800 text-sm font-black text-slate-800 dark:text-zinc-200 hover:bg-slate-50 dark:hover:bg-zinc-800 hover:shadow-xl hover:shadow-blue-500/5 transition-all active:scale-95 disabled:opacity-50"
+              >
+                {isMoreLoading ? (
+                   <>
+                    <Loader2 size={18} className="animate-spin text-blue-500" />
+                    <span>กำลังโหลดเพิ่ม...</span>
+                   </>
+                ) : (
+                   <>
+                    <RefreshCcw size={18} className="text-blue-500" />
+                    <span>โหลดข้อมูลเพิ่มเติม (แสดง {users.length} จาก {total})</span>
+                   </>
+                )}
+              </button>
+           </div>
+        )}
 
         <AnimatePresence>
           {filteredUsers.length === 0 && (

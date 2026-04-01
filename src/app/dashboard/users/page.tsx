@@ -185,7 +185,7 @@ export default function UsersPage() {
                       <option value="hr">HR (ฝ่ายบุคคล)</option>
                       <option value="staff">STAFF (เจ้าหน้าที่)</option>
                       <option value="teacher">TEACHER (ครู)</option>
-                      <option value="janitor">JANITOR (ภารโรง)</option>
+                      <option value="janitor">JANITOR (แม่บ้าน/นักการ)</option>
                       <option value="director">DIRECTOR (ผู้บริหาร)</option>
                       <option value="admin">ADMIN (ผู้ดูแล)</option>
                       <option value="super_admin">SUPER_ADMIN</option>

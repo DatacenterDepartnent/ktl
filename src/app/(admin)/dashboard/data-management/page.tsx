@@ -60,6 +60,25 @@ export default function DataManagementPage() {
     }
   };
 
+  const getInitials = (name: string) => {
+    return name ? name.trim().charAt(0).toUpperCase() : "?";
+  };
+
+  const getAvatarBg = (name: string) => {
+    const colors = [
+      "bg-emerald-500",
+      "bg-indigo-500",
+      "bg-blue-500",
+      "bg-purple-500",
+      "bg-rose-500",
+      "bg-amber-500",
+      "bg-cyan-500",
+      "bg-violet-500",
+    ];
+    const index = name.length % colors.length;
+    return colors[index];
+  };
+
   const formatDate = (dateStr: any) => {
     if (!dateStr) return "-";
     try {
@@ -204,6 +223,43 @@ export default function DataManagementPage() {
       } else throw new Error(json.error);
     } catch (err: any) {
       toast.error("ลบไม่สำเร็จ: " + err.message);
+    }
+  };
+
+  const handleDeleteAll = async () => {
+    // 1st Confirmation
+    if (
+      !confirm(
+        `🚨 [WARNING] คุณกำลังจะลบข้อมูล "${activeTab.toUpperCase()}" ทั้งหมดในระบบ! การกระทำนี้ไม่สามารถย้อนกลับได้ คุณแน่ใจหรือไม่?`,
+      )
+    )
+      return;
+
+    // 2nd Confirmation (String match)
+    const confirmText = prompt(
+      `กรุณาพิมพ์คำว่า "DELETE ALL" เพื่อยืนยันการลบข้อมูลทั้งหมดในหมวด ${activeTab.toUpperCase()}:`,
+    );
+    if (confirmText !== "DELETE ALL") {
+      return toast.error("การยืนยันไม่ถูกต้อง ยกเลิกการลบ");
+    }
+
+    const toastId = toast.loading("กำลังลบข้อมูลทั้งหมด...");
+    try {
+      const res = await fetch(
+        `/api/admin/data?type=${activeTab}&deleteAll=true`,
+        {
+          method: "DELETE",
+        },
+      );
+      const json = await res.json();
+      if (json.success) {
+        toast.success(`ลบข้อมูล ${activeTab} ทั้งหมดเรียบร้อยแล้ว`, {
+          id: toastId,
+        });
+        fetchData(false);
+      } else throw new Error(json.error);
+    } catch (err: any) {
+      toast.error("ลบไม่สำเร็จ: " + err.message, { id: toastId });
     }
   };
 
@@ -357,7 +413,7 @@ export default function DataManagementPage() {
           {[
             { id: "attendance", label: "การลงเวลา", color: "rose" },
             { id: "leave", label: "การลางาน", color: "emerald" },
-            { id: "suvery", label: "แบบสำรวจ", color: "blue" },
+            { id: "suvery", label: "แบบสำรวจภาวะการมีงานทำ", color: "blue" },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -448,6 +504,13 @@ export default function DataManagementPage() {
             className="ml-auto px-6 py-2 bg-slate-100 dark:bg-zinc-800 hover:bg-slate-200 dark:hover:bg-zinc-700 text-slate-500 dark:text-zinc-400 rounded-xl text-xs font-black uppercase tracking-widest transition-colors flex items-center gap-2"
           >
             <X size={14} /> ล้างการกรอง
+          </button>
+
+          <button
+            onClick={handleDeleteAll}
+            className="px-6 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-black uppercase tracking-widest transition-all flex items-center gap-2 shadow-lg shadow-rose-600/20 active:scale-95"
+          >
+            <AlertCircle size={14} /> ลบทั้งหมด ({activeTab.toUpperCase()})
           </button>
         </div>
 
@@ -551,14 +614,10 @@ export default function DataManagementPage() {
                                     }
                                     className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none focus:border-rose-500 font-bold appearance-none scheme-light-dark"
                                   >
-                                    <option value="Present">
-                                      มาทำงาน
-                                    </option>
+                                    <option value="Present">มาทำงาน</option>
                                     <option value="Late">มาสาย</option>
                                     <option value="Leave">ลางาน</option>
-                                    <option value="Absent">
-                                      ขาดงาน
-                                    </option>
+                                    <option value="Absent">ขาดงาน</option>
                                   </select>
                                 </div>
                                 <div className="space-y-1">
@@ -610,15 +669,11 @@ export default function DataManagementPage() {
                                     }
                                     className="w-full p-3 bg-slate-50 dark:bg-zinc-900 border rounded-xl outline-none"
                                   >
-                                    <option value="pending">
-                                      รออนุมัติ
-                                    </option>
+                                    <option value="pending">รออนุมัติ</option>
                                     <option value="approved">
                                       อนุมัติแล้ว
                                     </option>
-                                    <option value="rejected">
-                                      ปฏิเสธ
-                                    </option>
+                                    <option value="rejected">ปฏิเสธ</option>
                                   </select>
                                 </div>
                                 <div className="space-y-1 md:col-span-3">
@@ -715,18 +770,38 @@ export default function DataManagementPage() {
                         /* NORMAL ROW */
                         <>
                           <td className="px-4 py-4">
-                            <div className="flex flex-col">
-                              <span className="text-xs sm:text-sm md:text-base font-bold text-slate-800 dark:text-zinc-100">
-                                {activeTab === "suvery"
-                                  ? record.fullName || "ไม่ระบุชื่อ"
-                                  : record.user?.name || "ไม่ทราบชื่อ"}
-                              </span>
-                              <span className="text-xs text-slate-400 font-mono mt-1 uppercase tracking-tighter">
-                                {activeTab === "suvery"
-                                  ? `ID: ${record.studentId}`
-                                  : record.user?.username ||
-                                    record._id.slice(-8)}
-                              </span>
+                            <div className="flex items-center gap-4">
+                              {activeTab !== "suvery" && (
+                                <div className="relative shrink-0 group/avatar">
+                                  {record.user?.image ? (
+                                    <img
+                                      src={record.user.image}
+                                      alt={record.user.name}
+                                      className="w-12 h-12 rounded-[1.25rem] object-cover ring-2 ring-white dark:ring-zinc-800 shadow-lg group-hover/avatar:scale-110 transition-all"
+                                    />
+                                  ) : (
+                                    <div className={`w-12 h-12 rounded-[1.25rem] ${getAvatarBg(record.user?.name || "")} flex items-center justify-center text-white text-base font-black ring-2 ring-white dark:ring-zinc-800 shadow-lg group-hover/avatar:scale-110 transition-all`}>
+                                      {getInitials(record.user?.name || "")}
+                                    </div>
+                                  )}
+                                  <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-white dark:bg-zinc-800 rounded-full flex items-center justify-center shadow-sm">
+                                    <div className={`w-3 h-3 rounded-full ${record.status === "Present" || record.status === "approved" ? "bg-emerald-500" : "bg-rose-500"}`} />
+                                  </div>
+                                </div>
+                              )}
+                              <div className="flex flex-col">
+                                <span className="text-xs sm:text-sm md:text-base font-bold text-slate-800 dark:text-zinc-100">
+                                  {activeTab === "suvery"
+                                    ? record.fullName || "ไม่ระบุชื่อ"
+                                    : record.user?.name || "ไม่ทราบชื่อ"}
+                                </span>
+                                <span className="text-xs text-slate-400 font-mono mt-1 uppercase tracking-tighter">
+                                  {activeTab === "suvery"
+                                    ? `ID: ${record.studentId}`
+                                    : record.user?.username ||
+                                      record._id.slice(-8)}
+                                </span>
+                              </div>
                             </div>
                           </td>
                           <td className="px-4 py-4">
@@ -843,21 +918,21 @@ export default function DataManagementPage() {
         {/* Action Button: Load More */}
         <div className="flex flex-col items-center gap-4">
           {hasMore && !loading && (
-              <button
-                onClick={() => fetchData(true)}
-                disabled={loadingMore}
-                className="group flex items-center gap-3 px-12 py-4 bg-white dark:bg-zinc-900 hover:bg-rose-500 hover:text-white border-2 border-slate-100 dark:border-zinc-800 rounded-3xl font-black text-[10px] md:text-xs uppercase tracking-widest transition-all shadow-xl shadow-slate-200/50 hover:shadow-rose-500/20"
-              >
-                {loadingMore ? (
-                  <Loader2 className="animate-spin" size={18} />
-                ) : (
-                  <ChevronDown
-                    className="group-hover:translate-y-1 transition-transform"
-                    size={18}
-                  />
-                )}
-                โหลดข้อมูลเพิ่มอีก 20 รายการ
-              </button>
+            <button
+              onClick={() => fetchData(true)}
+              disabled={loadingMore}
+              className="group flex items-center gap-3 px-12 py-4 bg-white dark:bg-zinc-900 hover:bg-rose-500 hover:text-white border-2 border-slate-100 dark:border-zinc-800 rounded-3xl font-black text-[10px] md:text-xs uppercase tracking-widest transition-all shadow-xl shadow-slate-200/50 hover:shadow-rose-500/20"
+            >
+              {loadingMore ? (
+                <Loader2 className="animate-spin" size={18} />
+              ) : (
+                <ChevronDown
+                  className="group-hover:translate-y-1 transition-transform"
+                  size={18}
+                />
+              )}
+              โหลดข้อมูลเพิ่มอีก 20 รายการ
+            </button>
           )}
 
           {!hasMore && !loading && records.length > 0 && (

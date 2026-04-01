@@ -20,6 +20,8 @@ import {
   ArrowLeft,
   Maximize2,
   Image as ImageIcon,
+  ChevronDown,
+  Database,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -32,6 +34,15 @@ interface Activity {
   status: "Completed" | "In Progress" | "Pending";
 }
 
+const ROLE_TH: Record<string, string> = {
+  all: "ทั้งหมด",
+  teacher: "ครู",
+  staff: "เจ้าหน้าที่",
+  janitor: "แม่บ้าน/นักการ",
+  hr: "ฝ่ายบุคคล",
+  director: "ผู้บริหาร",
+};
+
 export default function WorkReportsManagementPage() {
   const router = useRouter();
   const [reports, setReports] = useState<any[]>([]);
@@ -40,6 +51,10 @@ export default function WorkReportsManagementPage() {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [actionLoading, setActionLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
+  const LIMIT = 20;
 
   // Edit State
   const [editActivities, setEditActivities] = useState<Activity[]>([]);
@@ -48,6 +63,25 @@ export default function WorkReportsManagementPage() {
   const [editPlansNextDay, setEditPlansNextDay] = useState("");
   const [editImages, setEditImages] = useState<string[]>([]);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+
+  const getInitials = (name: string) => {
+    return name ? name.trim().charAt(0).toUpperCase() : "?";
+  };
+
+  const getAvatarBg = (name: string) => {
+    const colors = [
+      "bg-emerald-500",
+      "bg-indigo-500",
+      "bg-blue-500",
+      "bg-purple-500",
+      "bg-rose-500",
+      "bg-amber-500",
+      "bg-cyan-500",
+      "bg-violet-500",
+    ];
+    const index = name.length % colors.length;
+    return colors[index];
+  };
 
   const [startDate, setStartDate] = useState(() => {
     const d = new Date();
@@ -59,27 +93,37 @@ export default function WorkReportsManagementPage() {
     return d.toISOString().split("T")[0];
   });
   const [searchQuery, setSearchQuery] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
 
-  const fetchReports = async () => {
-    setLoading(true);
+  const fetchReports = async (isLoadMore = false) => {
+    if (isLoadMore) setLoadingMore(true);
+    else {
+      setLoading(true);
+      setPage(1);
+    }
+    
     try {
+      const currentPage = isLoadMore ? page + 1 : 1;
       const res = await fetch(
-        `/api/work-report?startDate=${startDate}&endDate=${endDate}`,
+        `/api/work-report?startDate=${startDate}&endDate=${endDate}&role=${roleFilter}&page=${currentPage}&limit=${LIMIT}`,
       );
       const json = await res.json();
       if (json.success) {
-        setReports(json.data);
+        setReports((prev) => (isLoadMore ? [...prev, ...json.data] : json.data));
+        setHasMore(json.hasMore);
+        if (isLoadMore) setPage(currentPage);
       }
     } catch (err) {
       console.error("Fetch reports error:", err);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
   useEffect(() => {
     fetchReports();
-  }, [startDate, endDate]);
+  }, [startDate, endDate, roleFilter]);
 
   const handleEditInit = (report: any) => {
     setSelectedReport(report);
@@ -153,6 +197,42 @@ export default function WorkReportsManagementPage() {
     }
   };
 
+  const handleDeleteAll = async () => {
+    // 1st Confirmation
+    if (
+      !confirm(
+        "🚨 [CRITICAL WARNING] คุณกำลังจะลบรายงานการปฏิบัติงาน 'ทั้งหมด' ในระบบ! การกระทำนี้ไม่สามารถย้อนกลับได้ คุณแน่ใจหรือไม่?",
+      )
+    )
+      return;
+
+    // 2nd Confirmation (Security String)
+    const securityCode = prompt(
+      'กรุณาพิมพ์คำว่า "DELETE ALL" เพื่อยืนยันการลบข้อมูลรายงานทั้งหมด:',
+    );
+    if (securityCode !== "DELETE ALL") {
+      return alert("การยืนยันไม่ถูกต้อง ยกเลิกการลบ");
+    }
+
+    setActionLoading(true);
+    try {
+      const res = await fetch("/api/work-report?deleteAll=true", {
+        method: "DELETE",
+      });
+      const json = await res.json();
+      if (json.success) {
+        alert(json.message || "ลบรายงานทั้งหมดเรียบร้อยแล้ว");
+        fetchReports();
+      } else {
+        alert(json.message || "ลบรายงานไม่สำเร็จ");
+      }
+    } catch (err) {
+      console.error("Delete all error:", err);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
   const addActivity = () => {
     setEditActivities([
       {
@@ -209,17 +289,27 @@ export default function WorkReportsManagementPage() {
             </div>
           </div>
 
-          <button
-            onClick={fetchReports}
-            className="flex items-center gap-2 px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-3xl shadow-md text-sm font-black hover:scale-105 transition-all active:scale-95"
-          >
-            <Clock size={18} className={loading ? "animate-spin" : ""} />{" "}
-            รีเฟรชข้อมูล
-          </button>
+          <div className="flex flex-wrap items-center gap-4">
+            <button
+              onClick={() => fetchReports()}
+              className="flex items-center gap-2 px-6 py-3 bg-slate-50 dark:bg-neutral-800 text-slate-800 dark:text-neutral-100 rounded-3xl shadow-sm text-sm font-black hover:bg-slate-100 dark:hover:bg-neutral-700 transition-all active:scale-95 border border-slate-100 dark:border-neutral-700"
+            >
+              <Clock size={18} className={loading ? "animate-spin" : ""} />{" "}
+              รีเฟรชข้อมูล
+            </button>
+
+            <button
+              onClick={handleDeleteAll}
+              disabled={actionLoading}
+              className="flex items-center gap-2 px-6 py-3 bg-rose-600 hover:bg-rose-700 text-white rounded-3xl shadow-lg shadow-rose-600/20 text-sm font-black transition-all active:scale-95 disabled:opacity-50"
+            >
+              <Trash2 size={18} /> ลบรายงานทั้งหมด
+            </button>
+          </div>
         </div>
 
         {/* Filter Section */}
-        <div className="bg-white dark:bg-neutral-900 px-4 py-6 rounded-3xl shadow-lg shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-neutral-800 grid grid-cols-1 md:grid-cols-4 gap-6 items-end w-full">
+        <div className="bg-white dark:bg-neutral-900 px-4 py-6 rounded-3xl shadow-lg shadow-slate-200/50 dark:shadow-none border border-slate-100 dark:border-neutral-800 grid grid-cols-1 md:grid-cols-5 gap-6 items-end w-full">
           <div className="md:col-span-2">
             <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-2">
               ค้นหาพนักงาน / แผนก
@@ -236,6 +326,29 @@ export default function WorkReportsManagementPage() {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-14 pr-6 py-4 bg-slate-50 dark:bg-neutral-800 border-2 border-transparent focus:border-indigo-500/20 dark:focus:border-indigo-500/30 rounded-2xl focus:outline-none transition-all font-bold placeholder:text-slate-300"
               />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-2">
+              หมวดหมู่พนักงาน
+            </label>
+            <div className="relative group">
+              <Filter
+                className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-300 group-focus-within:text-indigo-500 transition-colors pointer-events-none"
+                size={18}
+              />
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="w-full pl-14 pr-6 py-4 bg-slate-50 dark:bg-neutral-800 border-2 border-transparent focus:border-indigo-500/20 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark"
+              >
+                {Object.entries(ROLE_TH).map(([val, label]) => (
+                  <option key={val} value={val}>
+                    {label}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -327,15 +440,28 @@ export default function WorkReportsManagementPage() {
                         className="group hover:bg-slate-50 dark:hover:bg-neutral-800 transition-colors"
                       >
                         <td className="px-8 py-6 border-b border-slate-50 dark:border-neutral-800">
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-500 font-black">
-                              {report.user.name.charAt(0)}
+                          <div className="flex items-center gap-4">
+                            <div className="relative shrink-0">
+                              {report.user.image ? (
+                                <img
+                                  src={report.user.image}
+                                  alt={report.user.name}
+                                  className="w-12 h-12 rounded-2xl object-cover ring-2 ring-white dark:ring-neutral-800 shadow-md transition-transform group-hover:scale-110"
+                                />
+                              ) : (
+                                <div
+                                  className={`w-12 h-12 rounded-2xl ${getAvatarBg(report.user.name)} flex items-center justify-center text-white text-base font-black ring-2 ring-white dark:ring-neutral-800 shadow-md transition-transform group-hover:scale-110`}
+                                >
+                                  {getInitials(report.user.name)}
+                                </div>
+                              )}
                             </div>
                             <div>
                               <p className="font-bold text-slate-800 dark:text-neutral-200">
                                 {report.user.name}
                               </p>
-                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mt-1">
+                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mt-1.5 flex items-center gap-2">
+                                <span className="w-1 h-1 rounded-full bg-indigo-500"></span>
                                 {report.user.department}
                               </p>
                             </div>
@@ -399,6 +525,33 @@ export default function WorkReportsManagementPage() {
               </tbody>
             </table>
           </div>
+        </div>
+
+        {/* Load More Button */}
+        <div className="flex flex-col items-center gap-4 py-8">
+          {hasMore && !loading && (
+            <button
+              onClick={() => fetchReports(true)}
+              disabled={loadingMore}
+              className="group flex items-center gap-3 px-12 py-4 bg-white dark:bg-neutral-900 border-2 border-slate-100 dark:border-neutral-800 rounded-3xl font-black text-xs uppercase tracking-widest transition-all shadow-xl hover:bg-slate-900 dark:hover:bg-white hover:text-white dark:hover:text-slate-900 active:scale-95"
+            >
+              {loadingMore ? (
+                <Loader2 className="animate-spin" size={18} />
+              ) : (
+                <ChevronDown
+                  className="group-hover:translate-y-1 transition-transform"
+                  size={18}
+                />
+              )}
+              โหลดข้อมูลเพิ่มอีก {LIMIT} รายการ
+            </button>
+          )}
+
+          {!hasMore && !loading && reports.length > 0 && (
+            <div className="px-6 py-3 bg-slate-100 dark:bg-neutral-800 rounded-2xl text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+              <Database size={14} /> จำนวนรายงานทั้งหมดที่แสดง: {reports.length}
+            </div>
+          )}
         </div>
       </div>
 

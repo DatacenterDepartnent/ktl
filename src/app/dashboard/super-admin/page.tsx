@@ -22,6 +22,7 @@ import {
   Lock,
   CheckCircle2,
   AlertCircle,
+  Loader2,
 } from "lucide-react";
 import { Calendar } from "antd";
 
@@ -63,11 +64,16 @@ export default function SuperAdminPage() {
   const [logs, setLogs] = useState<ActivityLog[]>([]);
   const [summary, setSummary] = useState<Summary | null>(null);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
   const [adminProfile, setAdminProfile] = useState<{
     _id: string;
     name: string;
   } | null>(null);
+
+  const [searchQuery, setSearchQuery] = useState("");
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
 
   const fetchAdminProfile = async () => {
     try {
@@ -78,40 +84,47 @@ export default function SuperAdminPage() {
     }
   };
 
-  const fetchData = async () => {
+  const fetchData = async (p = 1, q = searchQuery) => {
     try {
-      setLoading(true);
+      if (p === 1) setLoading(true);
+      else setIsFetchingMore(true);
+
       const [usersRes, summaryRes, logsRes] = await Promise.all([
-        fetch("/api/admin/users?_t=" + Date.now()),
-        fetch("/api/admin/reports/summary?_t=" + Date.now()),
-        fetch("/api/admin/logs?_t=" + Date.now()),
+        fetch(`/api/admin/users?page=${p}&search=${q}&_t=${Date.now()}`),
+        p === 1 ? fetch("/api/admin/reports/summary?_t=" + Date.now()) : Promise.resolve(null),
+        p === 1 ? fetch("/api/admin/logs?_t=" + Date.now()) : Promise.resolve(null),
       ]);
 
       if (usersRes.ok) {
         const data = await usersRes.json();
-        setUsers(
-          data.sort((a: User, b: User) => {
-            if (a.orderIndex !== b.orderIndex) {
-              return (a.orderIndex || 0) - (b.orderIndex || 0);
-            }
-            return b._id.localeCompare(a._id);
-          }),
-        );
+        const usersArray = data.users || [];
+        
+        setUsers(prev => p === 1 ? usersArray : [...prev, ...usersArray]);
+        setTotal(data.total || 0);
+        setHasMore(data.hasMore || false);
+        setPage(p);
       }
-      if (summaryRes.ok) setSummary(await summaryRes.json());
-      if (logsRes.ok) setLogs(await logsRes.json());
+
+      if (summaryRes && summaryRes.ok) setSummary(await summaryRes.json());
+      if (logsRes && logsRes.ok) setLogs(await logsRes.json());
     } catch (error) {
+      console.error("Dashboard Fetch Error:", error);
       toast.error("โหลดข้อมูลไม่สำเร็จ กรุณาลองใหม่");
     } finally {
       setLoading(false);
+      setIsFetchingMore(false);
     }
   };
 
-  const filteredUsers = users.filter(
-    (u) =>
-      u.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      u.username.toLowerCase().includes(searchQuery.toLowerCase()),
-  );
+  const handleSearch = (val: string) => {
+    setSearchQuery(val);
+    fetchData(1, val);
+  };
+
+  const handleLoadMore = () => {
+    if (!hasMore || isFetchingMore) return;
+    fetchData(page + 1, searchQuery);
+  };
 
   useEffect(() => {
     fetchAdminProfile();
@@ -337,12 +350,12 @@ export default function SuperAdminPage() {
                 type="text"
                 placeholder="ค้นหาชื่อผู้ใช้หรือชื่อจริง..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => handleSearch(e.target.value)}
                 className="w-full md:w-[400px] pl-14 pr-6 py-5 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-slate-200 dark:border-zinc-800 rounded-3xl focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-slate-800 dark:text-white font-black text-xs uppercase tracking-widest transition-all shadow-xl shadow-black/2"
               />
             </div>
             <button
-              onClick={fetchData}
+              onClick={() => fetchData(1, searchQuery)}
               className="p-5 bg-slate-900 dark:bg-zinc-100 text-white dark:text-slate-900 rounded-3xl hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-slate-900/20"
             >
               <RefreshCcw size={20} />
@@ -422,7 +435,7 @@ export default function SuperAdminPage() {
             <div className="flex items-center gap-2 px-4 py-2 bg-slate-50 dark:bg-zinc-950 rounded-2xl border border-slate-100 dark:border-zinc-800">
               <Users size={16} className="text-slate-400" />
               <span className="text-xs sm:text-sm font-bold text-slate-800 dark:text-white uppercase tabular-nums">
-                รายชื่อทั้งหมด {filteredUsers.length} คน
+                รายชื่อทั้งหมด {total} คน
               </span>
             </div>
           </div>
@@ -441,7 +454,7 @@ export default function SuperAdminPage() {
               </thead>
               <tbody className="divide-y divide-slate-50 dark:divide-zinc-800/50">
                 <AnimatePresence mode="popLayout">
-                  {filteredUsers.map((user, index) => (
+                  {users.map((user, index) => (
                     <motion.tr
                       key={user._id}
                       initial={{ opacity: 0 }}
@@ -521,7 +534,7 @@ export default function SuperAdminPage() {
                           <option value="teacher">ครู (TEACHER)</option>
                           <option value="hr">ฝ่ายบุคคล (HR)</option>
                           <option value="staff">เจ้าหน้าที่ (STAFF)</option>
-                          <option value="janitor">ภารโรง (JANITOR)</option>
+                          <option value="janitor">แม่บ้าน/นักการ (JANITOR)</option>
                           <option value="user">ผู้ใช้ทั่วไป (USER)</option>
                         </select>
                       </td>
@@ -555,7 +568,7 @@ export default function SuperAdminPage() {
                               งานอาคารสถานที่
                             </option>
                             <option value="งานทะเบียน">งานทะเบียน</option>
-                            <option value="งานภารโรง">งานภารโรง</option>
+                            <option value="งานแม่บ้าน/นักการ">งานแม่บ้าน/นักการ</option>
                           </optgroup>
                           <optgroup label="๒. ฝ่ายยุทธศาสตร์และแผนงาน">
                             <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ">
@@ -688,6 +701,32 @@ export default function SuperAdminPage() {
               </tbody>
             </table>
           </div>
+
+          {/* Load More Button */}
+          {hasMore && (
+            <div className="p-8 flex justify-center border-t border-slate-50 dark:border-zinc-800/50 bg-slate-50/30 dark:bg-zinc-900/30">
+              <button
+                onClick={handleLoadMore}
+                disabled={isFetchingMore}
+                className="group flex items-center gap-3 bg-white dark:bg-zinc-800 hover:bg-slate-50 dark:hover:bg-zinc-700 text-slate-900 dark:text-white px-10 py-4 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-zinc-700 transition-all active:scale-95 disabled:opacity-50 font-black text-xs uppercase tracking-widest"
+              >
+                {isFetchingMore ? (
+                  <>
+                    <Loader2 size={18} className="animate-spin text-blue-500" />
+                    <span>กำลังโหลดเพิ่ม...</span>
+                  </>
+                ) : (
+                  <>
+                    <RefreshCcw
+                      size={18}
+                      className="text-blue-500 group-hover:rotate-180 transition-transform duration-500"
+                    />
+                    <span>โหลดข้อมูลเพิ่มเติม 20 รายการ</span>
+                  </>
+                )}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Activity Logs Console */}

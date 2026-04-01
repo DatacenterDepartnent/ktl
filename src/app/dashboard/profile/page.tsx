@@ -267,7 +267,7 @@ export default function ProfilePage() {
                     formData.role === "deputy_student_affairs" ? "รองผู้อำนวยการ ฝ่ายกิจการนักเรียน" :
                     formData.role === "teacher" ? "คณะครู (Teacher)" :
                     formData.role === "staff" ? "เจ้าหน้าที่ (Staff)" :
-                    formData.role === "janitor" ? "นักการภารโรง (Janitor)" :
+                    formData.role === "janitor" ? "แม่บ้าน/นักการ (Maid/Janitor)" :
                     formData.role === "editor" ? "Editor (ผู้ดูแลเนื้อหา)" :
                     formData.role || "สมาชิกทั่วไป"
                   }
@@ -358,7 +358,7 @@ export default function ProfilePage() {
                       <option value="งานพัสดุ">งานพัสดุ</option>
                       <option value="งานอาคารสถานที่">งานอาคารสถานที่</option>
                       <option value="งานทะเบียน">งานทะเบียน</option>
-                      <option value="งานภารโรง">งานภารโรง</option>
+                      <option value="งานแม่บ้าน/นักการ">งานแม่บ้าน/นักการ</option>
                     </optgroup>
                     <optgroup label="2. ฝ่ายยุทธศาสตร์และแผนงาน">
                       <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ">งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ</option>

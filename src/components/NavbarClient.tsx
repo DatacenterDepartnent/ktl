@@ -342,6 +342,15 @@ export default function NavbarClient({
                               ระบบรายงานการเข้างาน
                             </Link>
                             <Link
+                              href="/work-reports"
+                              className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all group"
+                            >
+                              <div className="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 group-hover:bg-emerald-200 transition-colors">
+                                <FileText size={16} />
+                              </div>
+                              ระบบรายงานการทำงาน
+                            </Link>
+                            <Link
                               href="/manage-roles"
                               className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-xl transition-all group"
                             >
@@ -349,15 +358,6 @@ export default function NavbarClient({
                                 <UserCog size={16} />
                               </div>
                               จัดการสิทธิ์บุคลากร
-                            </Link>
-                            <Link
-                              href="/work-reports"
-                              className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-xl transition-all group"
-                            >
-                              <div className="p-1.5 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 group-hover:bg-indigo-200 transition-colors">
-                                <FileText size={16} />
-                              </div>
-                              ระบบรายงานการทำงาน
                             </Link>
                           </>
                         )}
@@ -367,9 +367,9 @@ export default function NavbarClient({
                           role?.toLowerCase() === "deputy_resource") && (
                           <Link
                             href="/leave-approvals"
-                            className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-emerald-600 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 rounded-xl transition-all group mb-1 border-b border-zinc-100 dark:border-zinc-800/50 pb-3"
+                            className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-500/10 rounded-xl transition-all group"
                           >
-                            <div className="p-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 group-hover:bg-emerald-200 transition-colors">
+                            <div className="p-1.5 rounded-lg bg-blue-100 dark:bg-blue-900/30 group-hover:bg-blue-200 transition-colors">
                               <svg
                                 className="w-4 h-4"
                                 fill="none"

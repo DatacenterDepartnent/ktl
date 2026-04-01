@@ -30,7 +30,7 @@ export async function GET() {
       const defaultSettings = [
         { role: "teacher", roleName: "ครู (Teacher)", checkInLimit: "08:00", checkOutTime: "16:30" },
         { role: "staff", roleName: "เจ้าหน้าที่ (Staff)", checkInLimit: "07:30", checkOutTime: "16:30" },
-        { role: "janitor", roleName: "ภารโรง (Janitor)", checkInLimit: "07:00", checkOutTime: "16:00" },
+        { role: "janitor", roleName: "แม่บ้าน/นักการ (Maid/Janitor)", checkInLimit: "07:00", checkOutTime: "16:00" },
       ];
       return NextResponse.json(defaultSettings);
     }

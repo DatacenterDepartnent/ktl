@@ -258,7 +258,7 @@ function CheckInContent() {
 
     setIsProcessing(true);
     try {
-      let cloudinaryUrl = "https://example.com/dummy-photo.jpg";
+      let cloudinaryUrl = "";
 
       if (videoRef.current) {
         const canvas = document.createElement("canvas");
@@ -287,6 +287,12 @@ function CheckInContent() {
             if (uploadedUrl) cloudinaryUrl = uploadedUrl;
           }
         }
+      }
+
+      if (!cloudinaryUrl) {
+        alert("🚨 ไม่สามารถบันทึกรูปภาพได้ กรุณาตรวจสอบการตั้งค่ากล้องแล้วลองใหม่อีกครั้ง");
+        setIsProcessing(false);
+        return;
       }
 
       const payload = {
@@ -427,13 +433,12 @@ function CheckInContent() {
       <div className="max-w-md mx-auto relative z-10">
         {/* Top Nav */}
         <div className="flex items-center justify-between mb-10">
-          <Link
-            href="/wfh"
-            onClick={cancelAction}
+          <button
+            onClick={() => cancelAction()}
             className="p-3.5 bg-white dark:bg-zinc-900 rounded-2xl shadow-xl shadow-black/5 text-slate-400 dark:text-zinc-500 hover:text-slate-800 dark:hover:text-white transition-all active:scale-95 border border-slate-100 dark:border-zinc-800"
           >
             <ArrowLeft size={22} />
-          </Link>
+          </button>
           <div className="text-right">
             <h1 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
               {isCheckIn ? "Check-In" : "Check-Out"}
@@ -598,11 +603,13 @@ function CheckInContent() {
                 <div
                   className={`flex items-center justify-between p-4 rounded-3xl border transition-all ${locationStatus === "found" ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-900/30" : "bg-slate-50 dark:bg-zinc-800/50 border-slate-200 dark:border-zinc-800"}`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div
-                      className={`p-2 rounded-xl ${locationStatus === "found" ? "bg-emerald-500 text-white" : "bg-slate-200 dark:bg-zinc-700 text-slate-400"}`}
-                    >
-                      <MapPin size={18} />
+                  <div className="flex items-center gap-4">
+                    <div className="relative shrink-0">
+                      <div
+                        className={`p-2 rounded-xl ${locationStatus === "found" ? "bg-emerald-500 text-white" : "bg-slate-200 dark:bg-zinc-700 text-slate-400"}`}
+                      >
+                        <MapPin size={18} />
+                      </div>
                     </div>
                     <div>
                       <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-zinc-500">

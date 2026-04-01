@@ -14,13 +14,43 @@ import {
   AlertCircle,
   Filter,
   Image as ImageIcon,
+  Download,
+  RefreshCcw,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+
+const ROLE_TH: Record<string, string> = {
+  all: "ทั้งหมด",
+  teacher: "ครู",
+  staff: "เจ้าหน้าที่",
+  janitor: "แม่บ้าน/นักการ",
+  hr: "ฝ่ายบุคคล",
+  director: "ผู้บริหาร",
+};
 
 export default function AdminWorkReportsPage() {
   const [reports, setReports] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedReport, setSelectedReport] = useState<any | null>(null);
+
+  const getInitials = (name: string) => {
+    return name ? name.trim().charAt(0).toUpperCase() : "?";
+  };
+
+  const getAvatarBg = (name: string) => {
+    const colors = [
+      "bg-emerald-500",
+      "bg-indigo-500",
+      "bg-blue-500",
+      "bg-purple-500",
+      "bg-rose-500",
+      "bg-amber-500",
+      "bg-cyan-500",
+      "bg-violet-500",
+    ];
+    const index = name.length % colors.length;
+    return colors[index];
+  };
 
   const [startDate, setStartDate] = useState(() => {
     const d = new Date();
@@ -32,27 +62,127 @@ export default function AdminWorkReportsPage() {
     return d.toISOString().split("T")[0];
   });
   const [searchQuery, setSearchQuery] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
 
-  const fetchReports = async () => {
-    setLoading(true);
+  const [page, setPage] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
+
+  const fetchReports = async (p = 1) => {
+    if (p === 1) setLoading(true);
+    else setIsFetchingMore(true);
+
     try {
       const res = await fetch(
-        `/api/work-report?startDate=${startDate}&endDate=${endDate}`,
+        `/api/work-report?startDate=${startDate}&endDate=${endDate}&role=${roleFilter}&page=${p}&limit=20`,
       );
       const json = await res.json();
       if (json.success) {
-        setReports(json.data);
+        setReports((prev) => (p === 1 ? json.data : [...prev, ...json.data]));
+        setTotal(json.total || 0);
+        setHasMore(json.hasMore || false);
+        setPage(p);
       }
     } catch (err) {
       console.error("Fetch reports error:", err);
     } finally {
       setLoading(false);
+      setIsFetchingMore(false);
     }
   };
 
+  const handleLoadMore = () => {
+    if (!hasMore || isFetchingMore) return;
+    fetchReports(page + 1);
+  };
+
   useEffect(() => {
-    fetchReports();
-  }, [startDate, endDate]);
+    fetchReports(1);
+  }, [startDate, endDate, roleFilter]);
+
+  const exportToCSV = () => {
+    if (reports.length === 0) {
+      alert("ไม่พบข้อมูลที่จะส่งออกครับ");
+      return;
+    }
+
+    const summaryRows = [
+      ["รายงานการปฏิบัติงาน (Work Report Summary)"],
+      [`ช่วงวันที่`, `${startDate} ถึง ${endDate}`],
+      [`หมวดหมู่พนักงาน`, `${ROLE_TH[roleFilter] || roleFilter}`],
+      [`จำนวนรายงานที่โหลด`, `${reports.length} รายการ`],
+      [`จำนวนรายงานทั้งหมดในระบบ`, `${total} รายการ`],
+      [`วันที่ส่งออกไฟล์`, `${new Date().toLocaleString("th-TH")}`],
+      [],
+    ];
+
+    const headers = [
+      "วันที่",
+      "ชื่อ-สกุล",
+      "ตำแหน่ง",
+      "แผนก",
+      "สรุปภาพรวม",
+      "จำนวนงานทั้งหมด",
+      "จำนวนงานที่เสร็จ",
+      "รายละเอียดงาน (Activities)",
+      "ปัญหาที่พบ",
+      "แผนงานวันถัดไป",
+    ];
+
+    const escape = (val: any) => `"${String(val || "").replace(/"/g, '""')}"`;
+
+    const csvContent = [
+      ...summaryRows.map((row) => row.map(escape).join(",")),
+      headers.map(escape).join(","),
+      ...reports.map((r) => {
+        const d = new Date(r.date).toLocaleDateString("th-TH", {
+          timeZone: "Asia/Bangkok",
+        });
+        const roleName = ROLE_TH[r.user?.role] || r.user?.role || "-";
+
+        const totalTasks = r.activities?.length || 0;
+        const completedTasks =
+          r.activities?.filter((a: any) => a.status === "Completed").length ||
+          0;
+
+        // Detailed activities string
+        const activityDetails =
+          r.activities
+            ?.map(
+              (a: any, i: number) =>
+                `${i + 1}. ${a.taskName}${a.detail ? ` (${a.detail})` : ""} [${a.status}]`,
+            )
+            .join(" | ") || "ไม่มีกิจกรรม";
+
+        return [
+          d,
+          r.user?.name || "-",
+          roleName,
+          r.user?.department || "-",
+          r.summary || "-",
+          totalTasks,
+          completedTasks,
+          activityDetails,
+          r.problems || "-",
+          r.plansNextDay || "-",
+        ]
+          .map(escape)
+          .join(",");
+      }),
+    ].join("\n");
+
+    const blob = new Blob(["\uFEFF" + csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `work_report_${startDate}_to_${endDate}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   const filteredReports = reports.filter(
     (r) =>
@@ -79,18 +209,24 @@ export default function AdminWorkReportsPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 bg-slate-50 dark:bg-neutral-800 p-1.5 rounded-2xl border border-slate-100 dark:border-neutral-700">
-            <button
-              onClick={fetchReports}
-              className="px-4 py-2 bg-white dark:bg-neutral-900 text-slate-800 dark:text-white rounded-xl shadow-sm text-xs font-bold hover:bg-slate-50 transition-all active:scale-95"
-            >
-              รีเฟรชข้อมูล
-            </button>
-          </div>
+          <button
+            onClick={exportToCSV}
+            className="group relative flex items-center gap-3 bg-linear-to-br from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 dark:from-white dark:to-slate-100 dark:hover:from-slate-100 dark:hover:to-white dark:text-black text-white px-8 py-4 rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] hover:shadow-2xl transition-all duration-300 font-black active:scale-95 border border-indigo-500/50 dark:border-slate-200"
+          >
+            <div className="absolute -top-1 -right-1 flex h-4 w-4">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-4 w-4 bg-blue-500"></span>
+            </div>
+            <Download
+              size={22}
+              className="group-hover:translate-y-0.5 transition-transform"
+            />
+            <span className="tracking-tight text-lg">ออกแบบรายงาน (CSV)</span>
+          </button>
         </div>
 
         {/* Filter Section */}
-        <div className="bg-white dark:bg-neutral-900 p-6 rounded-3xl md:rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-neutral-800 grid grid-cols-1 md:grid-cols-4 gap-6 items-end w-full">
+        <div className="bg-white dark:bg-neutral-900 p-6 rounded-3xl md:rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-neutral-800 grid grid-cols-1 md:grid-cols-5 gap-6 items-end w-full">
           <div className="md:col-span-2">
             <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
               ค้นหาจากชื่อพนักงาน / แผนก
@@ -110,25 +246,50 @@ export default function AdminWorkReportsPage() {
             </div>
           </div>
 
-          <div>
+          <div className="md:col-span-1">
             <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
-              วันที่เริ่ม
+              หมวดหมู่พนักงาน
             </label>
             <div className="relative">
-              <Calendar
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-                size={18}
-              />
-              <input
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark"
+              <select
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value)}
+                className="w-full px-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-500 transition-all font-bold text-sm appearance-none"
+              >
+                {Object.entries(ROLE_TH).map(([val, label]) => (
+                  <option key={val} value={val}>
+                    {label} ({val.toUpperCase()})
+                  </option>
+                ))}
+              </select>
+              <Filter
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                size={16}
               />
             </div>
           </div>
 
-          <div>
+          <div className="md:col-span-1 flex gap-4">
+            <div className="flex-1">
+              <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
+                วันที่เริ่ม
+              </label>
+              <div className="relative">
+                <Calendar
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
+                  size={18}
+                />
+                <input
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark text-sm"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="md:col-span-1">
             <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
               วันที่สิ้นสุด
             </label>
@@ -141,8 +302,27 @@ export default function AdminWorkReportsPage() {
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark"
+                className="w-full pl-12 pr-4 py-3.5 bg-slate-50 dark:bg-neutral-800 border border-slate-100 dark:border-neutral-700 rounded-2xl focus:outline-none font-bold appearance-none scheme-light-dark text-sm"
               />
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Summary */}
+        <div className="flex items-center justify-between bg-white/50 dark:bg-neutral-900/50 backdrop-blur-md px-8 py-4 rounded-3xl border border-white/20 dark:border-neutral-800 shadow-sm mb-8">
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2">
+              <FileText size={16} className="text-indigo-500" />
+              <span className="text-sm font-bold text-slate-600 dark:text-neutral-400">
+                พบทั้งหมด: <span className="text-slate-900 dark:text-white font-black">{total}</span> รายงาน
+              </span>
+            </div>
+            <div className="h-4 w-px bg-slate-200 dark:bg-neutral-700" />
+            <div className="flex items-center gap-2">
+              <Search size={16} className="text-blue-500" />
+              <span className="text-sm font-bold text-slate-600 dark:text-neutral-400">
+                แสดงอยู่: <span className="text-slate-900 dark:text-white font-black">{reports.length}</span> รายการ
+              </span>
             </div>
           </div>
         </div>
@@ -150,7 +330,7 @@ export default function AdminWorkReportsPage() {
         {/* Reports Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <AnimatePresence mode="popLayout">
-            {loading ? (
+            {loading && reports.length === 0 ? (
               <div className="col-span-full py-20 text-center">
                 <Loader2
                   size={40}
@@ -186,9 +366,19 @@ export default function AdminWorkReportsPage() {
                   </div>
 
                   <div className="flex items-center gap-4 mb-6">
-                    <div className="w-12 h-12 rounded-2xl bg-slate-50 dark:bg-neutral-800 flex items-center justify-center text-indigo-500">
-                      <UserIcon size={24} />
-                    </div>
+                    {report.user.image ? (
+                      <img
+                        src={report.user.image}
+                        alt={report.user.name}
+                        className="w-14 h-14 rounded-2xl object-cover shadow-lg border border-white dark:border-neutral-700"
+                      />
+                    ) : (
+                      <div
+                        className={`w-14 h-14 rounded-2xl ${getAvatarBg(report.user.name)} flex items-center justify-center text-white font-black text-xl shadow-lg border border-white dark:border-neutral-700`}
+                      >
+                        {getInitials(report.user.name)}
+                      </div>
+                    )}
                     <div>
                       <h3 className="font-black text-slate-800 dark:text-neutral-100 text-lg leading-tight">
                         {report.user.name}
@@ -235,6 +425,31 @@ export default function AdminWorkReportsPage() {
             )}
           </AnimatePresence>
         </div>
+
+        {/* Load More Button */}
+        {hasMore && (
+          <div className="flex justify-center mt-4 mb-20 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={handleLoadMore}
+              disabled={isFetchingMore}
+              className="group flex items-center gap-4 bg-white dark:bg-neutral-900 hover:bg-slate-50 dark:hover:bg-neutral-800 text-slate-900 dark:text-white px-12 py-5 rounded-[2.5rem] shadow-2xl shadow-indigo-500/10 dark:shadow-none border border-slate-200 dark:border-neutral-800 transition-all font-black text-xs uppercase tracking-[0.2em] disabled:opacity-50"
+            >
+              {isFetchingMore ? (
+                <>
+                  <Loader2 size={18} className="animate-spin text-indigo-500" />
+                  <span>กำลังดึงข้อมูล...</span>
+                </>
+              ) : (
+                <>
+                  <RefreshCcw size={18} className="text-indigo-500 group-hover:rotate-180 transition-transform duration-500" />
+                  <span>โหลดข้อมูลเพิ่มเติม 20 รายการ</span>
+                </>
+              )}
+            </motion.button>
+          </div>
+        )}
       </div>
 
       {/* Detail Modal */}
@@ -257,22 +472,37 @@ export default function AdminWorkReportsPage() {
             >
               <div className="p-8 space-y-8 overflow-y-auto max-h-[90vh]">
                 <div className="flex items-start justify-between">
-                  <div>
-                    <h2 className="text-3xl font-black text-slate-800 dark:text-neutral-100 leading-none">
-                      {selectedReport.user.name}
-                    </h2>
-                    <p className="text-sm font-bold text-indigo-500 uppercase tracking-widest mt-2">
-                      Work Report:{" "}
-                      {new Date(selectedReport.date).toLocaleDateString(
-                        "th-TH",
-                        {
-                          timeZone: "Asia/Bangkok",
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        },
-                      )}
-                    </p>
+                  <div className="flex items-center gap-6">
+                    {selectedReport.user.image ? (
+                      <img
+                        src={selectedReport.user.image}
+                        alt={selectedReport.user.name}
+                        className="w-20 h-20 rounded-3xl object-cover shadow-2xl border-2 border-indigo-500/20"
+                      />
+                    ) : (
+                      <div
+                        className={`w-20 h-20 rounded-3xl ${getAvatarBg(selectedReport.user.name)} flex items-center justify-center text-white font-black text-3xl shadow-2xl border-2 border-white/20`}
+                      >
+                        {getInitials(selectedReport.user.name)}
+                      </div>
+                    )}
+                    <div>
+                      <h2 className="text-3xl font-black text-slate-800 dark:text-neutral-100 leading-none">
+                        {selectedReport.user.name}
+                      </h2>
+                      <p className="text-sm font-bold text-indigo-500 uppercase tracking-widest mt-2">
+                        Work Report:{" "}
+                        {new Date(selectedReport.date).toLocaleDateString(
+                          "th-TH",
+                          {
+                            timeZone: "Asia/Bangkok",
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                          },
+                        )}
+                      </p>
+                    </div>
                   </div>
                   <button
                     onClick={() => setSelectedReport(null)}
@@ -357,8 +587,8 @@ export default function AdminWorkReportsPage() {
                 {selectedReport.images && selectedReport.images.length > 0 && (
                   <section className="pt-4">
                     <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 flex items-center gap-2">
-                      <ImageIcon size={14} className="text-blue-500" /> รูปภาพหลักฐานประกอบ
-                      ({selectedReport.images.length})
+                      <ImageIcon size={14} className="text-blue-500" />{" "}
+                      รูปภาพหลักฐานประกอบ ({selectedReport.images.length})
                     </h4>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                       {selectedReport.images.map((img: string, idx: number) => (

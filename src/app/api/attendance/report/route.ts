@@ -18,23 +18,19 @@ export async function GET(req: Request) {
     const { searchParams } = new URL(req.url);
     const startDateParam = searchParams.get('startDate');
     const endDateParam = searchParams.get('endDate');
-    const roleParam = searchParams.get('role'); // New filter
+    const roleParam = searchParams.get('role');
 
-    let dateQuery: any = {};
-    if (startDateParam && endDateParam) {
-      dateQuery = {
-        $gte: new Date(startDateParam + "T00:00:00.000Z"),
-        $lte: new Date(endDateParam + "T23:59:59.999Z")
-      };
-    } else {
-      const today = new Date();
-      today.setUTCHours(0, 0, 0, 0);
-      dateQuery = today;
+    // Create Date Range
+    const startD = startDateParam ? new Date(startDateParam + "T00:00:00.000Z") : new Date();
+    const endD = endDateParam ? new Date(endDateParam + "T23:59:59.999Z") : new Date();
+
+    if (!startDateParam) {
+      startD.setUTCHours(0,0,0,0);
+      endD.setUTCHours(23,59,59,999);
     }
 
     const pipeline: any[] = [
-      { $match: { date: dateQuery } },
-      { $sort: { date: -1, 'checkIn.time': -1 } },
+      { $match: { date: { $gte: startD, $lte: endD } } },
       {
         $addFields: {
           uId: { 
@@ -57,7 +53,6 @@ export async function GET(req: Request) {
       { $unwind: { path: "$userDetails", preserveNullAndEmptyArrays: true } }
     ];
 
-    // ✅ กรองตาม Role ถ้ามีการส่งมา (ครู, เจ้าหน้าที่, ภารโรง)
     if (roleParam && roleParam !== "all") {
       pipeline.push({ $match: { "userDetails.role": roleParam } });
     }
@@ -66,10 +61,12 @@ export async function GET(req: Request) {
       $project: {
         id: { $toString: "$_id" },
         date: 1,
+        userId: { $toString: "$uId" },
         user: {
           name: { $ifNull: ["$userDetails.name", { $ifNull: ["$userDetails.username", "Unknown User"] }] },
           email: { $ifNull: ["$userDetails.email", ""] },
-          role: { $ifNull: ["$userDetails.role", ""] }
+          role: { $ifNull: ["$userDetails.role", ""] },
+          department: { $ifNull: ["$userDetails.department", "ไม่มีสังกัด"] }
         },
         checkInTime: "$checkIn.time",
         checkOutTime: "$checkOut.time",
@@ -80,17 +77,82 @@ export async function GET(req: Request) {
       }
     });
 
-    const records = await db.collection("attendances").aggregate(pipeline).toArray();
+    const attendanceRecords = await db.collection("attendances").aggregate(pipeline).toArray();
 
-    const formattedData = records.map((r: any) => ({
-      ...r,
-      date: typeof r.date === 'string' ? r.date : r.date.toISOString()
-    }));
+    // ✅ Get All Active Users to find who is missing (Absent)
+    const userQuery: any = { isActive: true };
+    if (roleParam && roleParam !== "all") {
+      userQuery.role = roleParam;
+    }
+    const allUsers = await db.collection("users").find(userQuery).toArray();
+
+    // Create full list including Absent
+    const finalData: any[] = [];
+    
+    // Group attendance by date
+    const attendanceByDate: Record<string, any[]> = {};
+    attendanceRecords.forEach(r => {
+      const dStr = new Date(r.date).toISOString().split('T')[0];
+      if (!attendanceByDate[dStr]) attendanceByDate[dStr] = [];
+      attendanceByDate[dStr].push(r);
+    });
+
+    // Iterate over each day in range
+    const current = new Date(startD);
+    const limit = new Date(endD);
+    while (current <= limit) {
+      const dStr = current.toISOString().split('T')[0];
+      const dayAttend = attendanceByDate[dStr] || [];
+      const presentUserIds = new Set(dayAttend.map(r => r.userId));
+
+      // 1. Add those who have attendance records
+      finalData.push(...dayAttend.map(r => ({
+        ...r,
+        group: r.status === "Absent" ? 2 : 1 // Absent goes last
+      })));
+
+      // 2. Find and add those missing
+      allUsers.forEach(u => {
+        const uIdStr = u._id.toString();
+        if (!presentUserIds.has(uIdStr)) {
+          finalData.push({
+            id: `absent-${dStr}-${uIdStr}`,
+            date: new Date(dStr + "T00:00:00.000Z").toISOString(),
+            user: {
+              name: u.name || u.username || "Unknown",
+              email: u.email || "",
+              role: u.role || "",
+              department: u.department || "ไม่มีสังกัด"
+            },
+            checkInTime: null,
+            checkOutTime: null,
+            status: "Absent",
+            otHours: 0,
+            photoUrl: null,
+            checkOutPhotoUrl: null,
+            group: 2 // Bottom group
+          });
+        }
+      });
+
+      current.setDate(current.getDate() + 1);
+    }
+
+    // ✅ Final Sorting: Date DESC, Group ASC (Present/Late/Leave first, Absent last), Name ASC
+    finalData.sort((a, b) => {
+      const dateA = new Date(a.date).getTime();
+      const dateB = new Date(b.date).getTime();
+      if (dateA !== dateB) return dateB - dateA; // Date Desc
+      
+      if (a.group !== b.group) return a.group - b.group; // Group Asc
+
+      return a.user.name.localeCompare(b.user.name); // Name Asc
+    });
 
     const end = Date.now();
-    console.log(`[API] Attendance Report took ${end - start}ms (DB: ${end - midConn}ms). Records: ${formattedData.length}`);
+    console.log(`[API] Attendance Report took ${end - start}ms. Total records: ${finalData.length}`);
 
-    return NextResponse.json({ success: true, data: formattedData });
+    return NextResponse.json({ success: true, data: finalData });
   } catch (error: any) {
     console.error("Report API Error:", error);
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });

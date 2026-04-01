@@ -137,7 +137,7 @@ export async function GET(req: Request) {
               let: { u_id: "$uId" },
               pipeline: [
                 { $match: { $expr: { $eq: ["$_id", "$$u_id"] } } },
-                { $project: { name: 1, username: 1, email: 1, _id: 0 } }
+                { $project: { name: 1, username: 1, email: 1, image: 1, _id: 0 } }
               ],
               as: "user",
             },
@@ -191,7 +191,7 @@ export async function GET(req: Request) {
               let: { u_id: "$uId" },
               pipeline: [
                 { $match: { $expr: { $eq: ["$_id", "$$u_id"] } } },
-                { $project: { name: 1, username: 1, email: 1, _id: 0 } }
+                { $project: { name: 1, username: 1, email: 1, image: 1, _id: 0 } }
               ],
               as: "user",
             },
@@ -241,29 +241,49 @@ export async function DELETE(req: Request) {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
     const type = searchParams.get("type");
+    const deleteAll = searchParams.get("deleteAll") === "true";
 
-    if (!id || !type) return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
+    if (!type) return NextResponse.json({ error: "Missing type" }, { status: 400 });
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
     const collection = type === "attendance" ? "attendances" : type === "leave" ? "leave_requests" : "suvery";
 
-    let query: any = { _id: id };
-    if (ObjectId.isValid(id)) {
-      query = { $or: [{ _id: new ObjectId(id) }, { _id: id }] };
+    let result;
+    if (deleteAll) {
+      // Bulk Delete
+      result = await db.collection(collection).deleteMany({});
+      
+      // Logging Bulk Action
+      await db.collection("logs").insertOne({
+        userName: (session?.user as any)?.name || "Super_Admin",
+        action: `BULK_DELETE_${type.toUpperCase()}`,
+        details: `ลบข้อมูล ${type} ทั้งหมดในระบบ (${result.deletedCount} รายการ)`,
+        timestamp: new Date(),
+        ip: req.headers.get("x-forwarded-for") || "127.0.0.1",
+        role: "super_admin"
+      });
+    } else {
+      // Single Delete
+      if (!id) return NextResponse.json({ error: "Missing ID" }, { status: 400 });
+      
+      let query: any = { _id: id };
+      if (ObjectId.isValid(id)) {
+        query = { $or: [{ _id: new ObjectId(id) }, { _id: id }] };
+      }
+
+      result = await db.collection(collection).deleteOne(query);
+
+      // Logging Single Action
+      await db.collection("logs").insertOne({
+        userName: (session?.user as any)?.name || "Super_Admin",
+        action: `DELETE_${type.toUpperCase()}`,
+        details: `ลบข้อมูล ${type} ID: ${id}`,
+        timestamp: new Date(),
+        ip: req.headers.get("x-forwarded-for") || "127.0.0.1",
+        role: "super_admin"
+      });
     }
-
-    const result = await db.collection(collection).deleteOne(query);
-
-    // Logging Unified
-    await db.collection("logs").insertOne({
-      userName: (session?.user as any)?.name || "Super_Admin",
-      action: `DELETE_${type.toUpperCase()}`,
-      details: `ลบข้อมูล ${type} ID: ${id}`,
-      timestamp: new Date(),
-      ip: req.headers.get("x-forwarded-for") || "127.0.0.1",
-      role: "super_admin"
-    });
 
     return NextResponse.json({ success: true, result });
   } catch (err: any) {

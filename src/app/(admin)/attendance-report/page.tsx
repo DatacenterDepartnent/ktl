@@ -10,6 +10,15 @@ const STATUS_TH: Record<string, string> = {
   Leave: "ลางาน",
 };
 
+const ROLE_TH: Record<string, string> = {
+  all: "ทั้งหมด",
+  teacher: "ครู",
+  staff: "เจ้าหน้าที่",
+  janitor: "แม่บ้าน/นักการ",
+  hr: "ฝ่ายบุคคล",
+  director: "ผู้บริหาร",
+};
+
 type PhotoPreview = {
   url: string;
   label: string; // "เข้างาน" | "ออกงาน"
@@ -58,62 +67,91 @@ export default function AttendanceReportPage() {
 
   const exportToCSV = () => {
     if (filteredRecords.length === 0) {
-      alert(
-        "ไม่พบข้อมูลที่จะส่งออกครับ (เนื่องจากตารางบันทึกเวลานี้ว่างเปล่าในช่วยวันที่คุณเลือก)",
-      );
+      alert("ไม่พบข้อมูลที่จะส่งออกครับ (เนื่องจากตารางบันทึกเวลานี้ว่างเปล่าในช่วงวันที่คุณเลือก)");
       return;
     }
+
+    const summaryRows = [
+      ["รายงานการเข้างาน (Attendance Report)"],
+      [`ช่วงวันที่`, `${startDate} ถึง ${endDate}`],
+      [`หมวดหมู่พนักงาน`, `${ROLE_TH[roleFilter] || roleFilter}`],
+      [`จำนวนรายการทั้งหมด`, `${filteredRecords.length} รายการ`],
+      [`วันที่ส่งออกไฟล์`, `${new Date().toLocaleString("th-TH")}`],
+      [], // Empty row for spacing
+    ];
+
     const headers = [
       "วันที่",
       "ชื่อ-สกุล",
-      "หมวดหมู่/ตำแหน่ง",
+      "ตำแหน่ง",
+      "สังกัด/แผนก",
       "อีเมล",
-      "เวลาเข้างาน",
-      "เวลาออกงาน",
+      "เข้างาน",
+      "ออกงาน",
+      "เวลาทำงาน (ชม.)",
+      "OT (ชม.)",
       "สถานะ",
-      "ชั่วโมง OT",
+      "รูปภาพหลักฐาน",
     ];
-    const csvRows = [headers.join(",")];
 
-    filteredRecords.forEach((r) => {
-      const d = new Date(r.date).toLocaleDateString("th-TH", { timeZone: "Asia/Bangkok" });
-      const inTime = r.checkInTime
-        ? new Date(r.checkInTime).toLocaleTimeString("th-TH", { 
-            timeZone: "Asia/Bangkok",
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false
-          })
-        : "-";
-      const outTime = r.checkOutTime
-        ? new Date(r.checkOutTime).toLocaleTimeString("th-TH", { 
-            timeZone: "Asia/Bangkok",
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: false
-          })
-        : "-";
-      
-      const roleName = r.user?.role === "teacher" ? "ครู" : 
-                       r.user?.role === "staff" ? "เจ้าหน้าที่" : 
-                       r.user?.role === "janitor" ? "ภารโรง" : 
-                       r.user?.role || "-";
+    const escape = (val: any) => `"${String(val).replace(/"/g, '""')}"`;
 
-      csvRows.push(
-        [
-          `"${d}"`,
-          `"${r.user?.name || "-"}"`,
-          `"${roleName}"`,
-          `"${r.user?.email || "-"}"`,
-          `"${inTime}"`,
-          `"${outTime}"`,
-          `"${r.status}"`,
-          `"${r.otHours || 0}"`,
-        ].join(","),
-      );
-    });
+    const csvContent = [
+      ...summaryRows.map(row => row.map(escape).join(",")),
+      headers.map(escape).join(","),
+      ...filteredRecords.map((r) => {
+        const d = new Date(r.date).toLocaleDateString("th-TH", { timeZone: "Asia/Bangkok" });
+        const inDate = r.checkInTime ? new Date(r.checkInTime) : null;
+        const outDate = r.checkOutTime ? new Date(r.checkOutTime) : null;
+        
+        const inTimeStr = inDate
+          ? inDate.toLocaleTimeString("th-TH", { 
+              timeZone: "Asia/Bangkok",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false
+            })
+          : "-";
+        
+        const outTimeStr = outDate
+          ? outDate.toLocaleTimeString("th-TH", { 
+              timeZone: "Asia/Bangkok",
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false
+            })
+          : "-";
 
-    const blob = new Blob(["\uFEFF" + csvRows.join("\n")], {
+        // Calculate Work Duration
+        let duration = "-";
+        if (inDate && outDate) {
+          const diffMs = outDate.getTime() - inDate.getTime();
+          if (diffMs > 0) {
+            duration = (diffMs / (1000 * 60 * 60)).toFixed(2);
+          }
+        }
+
+        const roleName = ROLE_TH[r.user?.role] || r.user?.role || "-";
+        const statusThai = STATUS_TH[r.status] || r.status;
+        const photoLinks = [r.photoUrl, r.checkOutPhotoUrl].filter(Boolean).join(" | ");
+
+        return [
+          d,
+          r.user?.name || "-",
+          roleName,
+          r.user?.department || "-",
+          r.user?.email || "-",
+          inTimeStr,
+          outTimeStr,
+          duration,
+          r.otHours || 0,
+          statusThai,
+          photoLinks || "ไม่มีรูป"
+        ].map(escape).join(",");
+      }),
+    ].join("\n");
+
+    const blob = new Blob(["\uFEFF" + csvContent], {
       type: "text/csv;charset=utf-8;",
     });
     const url = URL.createObjectURL(blob);
@@ -121,7 +159,7 @@ export default function AttendanceReportPage() {
     link.href = url;
     link.setAttribute(
       "download",
-      `attendance_report_${startDate}_to_${endDate}_${roleFilter}.csv`,
+      `report_${startDate}_to_${endDate}_${roleFilter}.csv`,
     );
     document.body.appendChild(link);
     link.click();
@@ -197,9 +235,14 @@ export default function AttendanceReportPage() {
 
           <button
             onClick={exportToCSV}
-            className="flex items-center gap-2 bg-slate-800 hover:bg-slate-900 dark:bg-white dark:hover:bg-slate-200 dark:text-black text-white px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all font-bold active:scale-95"
+            className="group relative flex items-center gap-3 bg-linear-to-br from-slate-800 to-slate-900 hover:from-black hover:to-slate-800 dark:from-white dark:to-slate-100 dark:hover:from-slate-100 dark:hover:to-white dark:text-black text-white px-8 py-4 rounded-2xl shadow-[0_10px_25px_-5px_rgba(0,0,0,0.1),0_8px_10px_-6px_rgba(0,0,0,0.1)] hover:shadow-2xl transition-all duration-300 font-black active:scale-95 border border-slate-700/50 dark:border-slate-200"
           >
-            <Download size={18} /> ออกแบบรายงาน (CSV)
+            <div className="absolute -top-1 -right-1 flex h-4 w-4">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-4 w-4 bg-blue-500"></span>
+            </div>
+            <Download size={22} className="group-hover:translate-y-0.5 transition-transform" /> 
+            <span className="tracking-tight text-lg">ออกแบบรายงาน (CSV)</span>
           </button>
         </div>
 
@@ -268,11 +311,22 @@ export default function AttendanceReportPage() {
           </div>
         </div>
 
-        {/* Legend */}
-        <p className="text-xs text-slate-400 dark:text-neutral-500 flex items-center gap-1.5 px-1">
-          <Camera size={12} />
-          เวลาที่มีไอคอนกล้อง = คลิกเพื่อดูรูปหลักฐาน
-        </p>
+        {/* Legend & Stats */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 px-1">
+          <p className="text-xs text-slate-400 dark:text-neutral-500 flex items-center gap-1.5 font-medium">
+            <Camera size={12} className="text-blue-500" />
+            เวลาที่มีไอคอนกล้อง = คลิกเพื่อดูรูปหลักฐานพนักงาน
+          </p>
+          <div className="flex items-center gap-2 bg-white dark:bg-neutral-900 px-3 py-1.5 rounded-full border border-slate-100 dark:border-neutral-800 shadow-sm">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+            </span>
+            <span className="text-[10px] md:text-xs font-black text-slate-600 dark:text-neutral-400 uppercase tracking-widest">
+              พบ {filteredRecords.length} รายการ
+            </span>
+          </div>
+        </div>
 
         {/* Table Section */}
         <div className="bg-white dark:bg-neutral-900 rounded-2xl md:rounded-3xl shadow-sm border border-slate-100 dark:border-neutral-800 overflow-hidden">
@@ -286,6 +340,9 @@ export default function AttendanceReportPage() {
                   </th>
                   <th className="px-3 md:px-4 py-3 font-bold text-xs md:text-sm whitespace-nowrap">
                     พนักงาน
+                  </th>
+                  <th className="px-3 md:px-4 py-3 font-bold text-xs md:text-sm whitespace-nowrap">
+                    สังกัด / แผนก
                   </th>
                   <th className="px-3 md:px-4 py-3 font-bold text-xs md:text-sm whitespace-nowrap">
                     เข้างาน{" "}
@@ -355,6 +412,13 @@ export default function AttendanceReportPage() {
                             {r.user.email}
                           </p>
                         </div>
+                      </td>
+
+                      {/* สังกัด / แผนก */}
+                      <td className="px-3 md:px-4 py-3">
+                        <span className="text-xs md:text-sm font-medium text-slate-600 dark:text-neutral-400">
+                          {r.user.department || "-"}
+                        </span>
                       </td>
 
                       {/* เวลาเข้า/ออก: ใช้ขนาดตัวอักษรที่ยืดหยุ่น */}

@@ -509,7 +509,7 @@ export default function EditUserPage() {
                     <option value="hr">ฝ่ายบุคคล (HR)</option>
                     <option value="staff">เจ้าหน้าที่ (Staff)</option>
                     <option value="teacher">ครู (Teacher)</option>
-                    <option value="janitor">ภารโรง (Janitor)</option>
+                    <option value="janitor">แม่บ้าน/นักการ (Maid/Janitor)</option>
                     <option value="director">ผู้บริหาร (Director)</option>
                      <option value="deputy_resource">
                       รอง ผอ (บริหารทรัพยากร)
@@ -553,7 +553,7 @@ export default function EditUserPage() {
                       <option value="งานการบัญชี">งานการบัญชี</option>
                       <option value="งานพัสดุ">งานพัสดุ</option>
                       <option value="งานอาคารสถานที่">งานอาคารสถานที่</option>
-                      <option value="งานภารโรง">งานภารโรง</option>
+                      <option value="งานแม่บ้าน/นักการ">งานแม่บ้าน/นักการ</option>
                       <option value="งานทะเบียน">งานทะเบียน</option>
                     </optgroup>
 
