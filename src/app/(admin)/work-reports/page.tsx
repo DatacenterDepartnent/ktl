@@ -194,7 +194,7 @@ export default function AdminWorkReportsPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-neutral-950 px-2 py-4 md:p-8 font-sans overflow-x-hidden">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header Section */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white dark:bg-neutral-900 p-6 rounded-3xl md:rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-neutral-800">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-white dark:bg-neutral-900 p-4 rounded-3xl md:rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-neutral-800">
           <div className="flex items-center gap-4">
             <div className="p-4 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-2xl">
               <FileText size={32} />
@@ -226,7 +226,7 @@ export default function AdminWorkReportsPage() {
         </div>
 
         {/* Filter Section */}
-        <div className="bg-white dark:bg-neutral-900 p-6 rounded-3xl md:rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-neutral-800 grid grid-cols-1 md:grid-cols-5 gap-6 items-end w-full">
+        <div className="bg-white dark:bg-neutral-900 p-4 rounded-3xl md:rounded-[2.5rem] shadow-sm border border-slate-100 dark:border-neutral-800 grid grid-cols-1 md:grid-cols-5 gap-4 items-end w-full">
           <div className="md:col-span-2">
             <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">
               ค้นหาจากชื่อพนักงาน / แผนก
@@ -310,25 +310,33 @@ export default function AdminWorkReportsPage() {
 
         {/* Stats Summary */}
         <div className="flex items-center justify-between bg-white/50 dark:bg-neutral-900/50 backdrop-blur-md px-8 py-4 rounded-3xl border border-white/20 dark:border-neutral-800 shadow-sm mb-8">
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
               <FileText size={16} className="text-indigo-500" />
               <span className="text-sm font-bold text-slate-600 dark:text-neutral-400">
-                พบทั้งหมด: <span className="text-slate-900 dark:text-white font-black">{total}</span> รายงาน
+                พบทั้งหมด:{" "}
+                <span className="text-slate-900 dark:text-white font-black">
+                  {total}
+                </span>{" "}
+                รายงาน
               </span>
             </div>
             <div className="h-4 w-px bg-slate-200 dark:bg-neutral-700" />
             <div className="flex items-center gap-2">
               <Search size={16} className="text-blue-500" />
               <span className="text-sm font-bold text-slate-600 dark:text-neutral-400">
-                แสดงอยู่: <span className="text-slate-900 dark:text-white font-black">{reports.length}</span> รายการ
+                แสดงอยู่:{" "}
+                <span className="text-slate-900 dark:text-white font-black">
+                  {reports.length}
+                </span>{" "}
+                รายการ
               </span>
             </div>
           </div>
         </div>
 
         {/* Reports Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           <AnimatePresence mode="popLayout">
             {loading && reports.length === 0 ? (
               <div className="col-span-full py-20 text-center">
@@ -359,7 +367,7 @@ export default function AdminWorkReportsPage() {
                   animate={{ opacity: 1, scale: 1 }}
                   whileHover={{ y: -5 }}
                   onClick={() => setSelectedReport(report)}
-                  className="bg-white dark:bg-neutral-900 p-6 rounded-4xl border border-slate-100 dark:border-neutral-800 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all cursor-pointer group relative overflow-hidden"
+                  className="bg-white dark:bg-neutral-900 p-4 rounded-4xl border border-slate-100 dark:border-neutral-800 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all cursor-pointer group relative overflow-hidden"
                 >
                   <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                     <FileText size={64} />
@@ -443,7 +451,10 @@ export default function AdminWorkReportsPage() {
                 </>
               ) : (
                 <>
-                  <RefreshCcw size={18} className="text-indigo-500 group-hover:rotate-180 transition-transform duration-500" />
+                  <RefreshCcw
+                    size={18}
+                    className="text-indigo-500 group-hover:rotate-180 transition-transform duration-500"
+                  />
                   <span>โหลดข้อมูลเพิ่มเติม 20 รายการ</span>
                 </>
               )}
@@ -472,7 +483,7 @@ export default function AdminWorkReportsPage() {
             >
               <div className="p-8 space-y-8 overflow-y-auto max-h-[90vh]">
                 <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-4">
                     {selectedReport.user.image ? (
                       <img
                         src={selectedReport.user.image}
@@ -512,7 +523,7 @@ export default function AdminWorkReportsPage() {
                   </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="md:col-span-2 space-y-6">
                     <section>
                       <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 border-b border-slate-100 pb-2">

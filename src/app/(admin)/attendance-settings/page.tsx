@@ -135,7 +135,7 @@ export default function AttendanceSettingsPage() {
       <Toaster />
 
       {/* Header Section */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 bg-white dark:bg-zinc-900 p-6 rounded-3xl md:rounded-4xl border border-zinc-100 dark:border-zinc-800 shadow-sm shadow-blue-500/5">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 bg-white dark:bg-zinc-900 p-4 rounded-3xl md:rounded-4xl border border-zinc-100 dark:border-zinc-800 shadow-sm shadow-blue-500/5">
         <div className="flex items-center gap-5">
           <div className="p-4 bg-linear-to-br from-blue-500 to-indigo-600 text-white rounded-3xl shadow-lg shadow-blue-500/20">
             <Clock size={32} />
@@ -164,7 +164,7 @@ export default function AttendanceSettingsPage() {
             </h2>
           </div>
 
-          <div className="bg-white dark:bg-zinc-900 p-8 rounded-[2.5rem] border border-blue-100 dark:border-blue-900/30 shadow-2xl shadow-blue-500/5 relative overflow-hidden group">
+          <div className="bg-white dark:bg-zinc-900 p-4 rounded-[2.5rem] border border-blue-100 dark:border-blue-900/30 shadow-2xl shadow-blue-500/5 relative overflow-hidden group">
             <div className="absolute top-0 right-0 p-10 opacity-5 group-hover:opacity-10 transition-opacity">
               <ShieldCheck size={120} className="text-blue-600" />
             </div>
@@ -299,13 +299,13 @@ export default function AttendanceSettingsPage() {
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 gap-6">
+      <div className="grid grid-cols-1 gap-4">
         {roleSettings.map((item) => (
           <div
             key={item.role}
-            className="bg-white dark:bg-zinc-900 p-6 rounded-3xl md:rounded-4xl border border-zinc-100 dark:border-zinc-800 shadow-sm transition-all hover:shadow-xl hover:shadow-blue-500/5 group"
+            className="bg-white dark:bg-zinc-900 p-4 rounded-3xl md:rounded-4xl border border-zinc-100 dark:border-zinc-800 shadow-sm transition-all hover:shadow-xl hover:shadow-blue-500/5 group"
           >
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
               <div className="flex-1">
                 <h3 className="text-xl font-black text-zinc-800 dark:text-zinc-100 mb-1">
                   {item.roleName}
@@ -358,7 +358,7 @@ export default function AttendanceSettingsPage() {
         ))}
       </div>
 
-      <div className="mt-12 bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/50 p-6 rounded-3xl">
+      <div className="mt-12 bg-blue-50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-800/50 p-4 rounded-3xl">
         <p className="text-sm font-bold text-blue-800 dark:text-blue-300 flex items-center gap-2">
           💡 คำแนะนำ:
         </p>

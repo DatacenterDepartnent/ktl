@@ -61,7 +61,9 @@ export default function ManageRolesPage() {
   const fetchData = async (q = "") => {
     try {
       setLoading(true);
-      const res = await fetch(`/api/admin/users?all=true&search=${q}&_t=${Date.now()}`);
+      const res = await fetch(
+        `/api/admin/users?all=true&search=${q}&_t=${Date.now()}`,
+      );
       if (res.ok) {
         const data = await res.json();
         setUsers(data.users);
@@ -145,13 +147,21 @@ export default function ManageRolesPage() {
   };
 
   const avatarColors = [
-    "bg-red-500", "bg-blue-500", "bg-emerald-500", 
-    "bg-amber-500", "bg-indigo-500", "bg-purple-500",
-    "bg-rose-500", "bg-sky-500", "bg-teal-500"
+    "bg-red-500",
+    "bg-blue-500",
+    "bg-emerald-500",
+    "bg-amber-500",
+    "bg-indigo-500",
+    "bg-purple-500",
+    "bg-rose-500",
+    "bg-sky-500",
+    "bg-teal-500",
   ];
 
   const getAvatarColor = (id: string) => {
-    const index = id.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const index = id
+      .split("")
+      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return avatarColors[index % avatarColors.length];
   };
 
@@ -182,7 +192,7 @@ export default function ManageRolesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 px-4 py-8 md:p-12 font-sans selection:bg-blue-500/30 overflow-x-hidden relative">
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 px-2 py-8 md:p-12 font-sans selection:bg-blue-500/30 overflow-x-hidden relative">
       <Toaster position="top-right" />
 
       {/* Background Blobs */}
@@ -202,13 +212,16 @@ export default function ManageRolesPage() {
               </Link>
               <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30">
                 <UserCog className="w-3.5 h-3.5 text-blue-600" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">Personnel RBAC</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-blue-600">
+                  Personnel RBAC
+                </span>
               </div>
             </div>
 
             <div className="space-y-2">
               <h1 className="text-4xl sm:text-6xl font-black text-slate-800 dark:text-white tracking-tighter uppercase leading-none">
-                จัดการ <span className="text-blue-600 italic">สิทธิ์บุคลากร</span>
+                จัดการ{" "}
+                <span className="text-blue-600 italic">สิทธิ์บุคลากร</span>
               </h1>
               <p className="text-slate-400 dark:text-zinc-500 font-bold uppercase tracking-[0.2em] text-xs sm:text-sm flex items-center gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
@@ -236,33 +249,38 @@ export default function ManageRolesPage() {
 
         {/* Content Section */}
         <motion.div
-           variants={container}
-           initial="hidden"
-           animate="show"
-           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          variants={container}
+          initial="hidden"
+          animate="show"
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
         >
           {filteredUsers.map((user) => {
-            const isProtected = PROTECTED_ROLES.includes(user.role) && !isSuperAdmin;
-            const roleLabel = allowedRoles.find(r => r.value === user.role)?.label || user.role;
+            const isProtected =
+              PROTECTED_ROLES.includes(user.role) && !isSuperAdmin;
+            const roleLabel =
+              allowedRoles.find((r) => r.value === user.role)?.label ||
+              user.role;
 
             return (
               <motion.div
                 key={user._id}
                 variants={item}
-                className="group relative p-6 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-4xl shadow-sm hover:shadow-2xl hover:shadow-blue-500/5 transition-all duration-500 hover:-translate-y-1"
+                className="group relative p-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-4xl shadow-sm hover:shadow-2xl hover:shadow-blue-500/5 transition-all duration-500 hover:-translate-y-1"
               >
                 {isProtected && (
                   <div className="absolute top-4 right-4 text-rose-500/40">
                     <Lock size={18} />
                   </div>
                 )}
-                
+
                 <div className="flex items-start gap-4 mb-8">
-                  <div className={`w-14 h-14 rounded-2xl overflow-hidden flex items-center justify-center text-white font-black shadow-inner relative transition-all duration-300 group-hover:scale-105 ${user.image ? "bg-zinc-100" : getAvatarColor(user._id)}`}>
+                  <div
+                    className={`w-14 h-14 rounded-2xl overflow-hidden flex items-center justify-center text-white font-black shadow-inner relative transition-all duration-300 group-hover:scale-105 ${user.image ? "bg-zinc-100" : getAvatarColor(user._id)}`}
+                  >
                     {user.image ? (
-                      <img 
-                        src={user.image} 
-                        alt={user.name} 
+                      <img
+                        src={user.image}
+                        alt={user.name}
                         className="w-full h-full object-cover"
                       />
                     ) : (
@@ -287,8 +305,14 @@ export default function ManageRolesPage() {
                     </label>
                     <div className="relative">
                       <select
-                        value={allowedRoles.some((r) => r.value === user.role) ? user.role : "user"}
-                        onChange={(e) => changeRole(user._id, e.target.value, user.name)}
+                        value={
+                          allowedRoles.some((r) => r.value === user.role)
+                            ? user.role
+                            : "user"
+                        }
+                        onChange={(e) =>
+                          changeRole(user._id, e.target.value, user.name)
+                        }
                         disabled={isProtected}
                         className={`w-full bg-slate-50 dark:bg-zinc-800/50 border border-slate-100 dark:border-zinc-800 rounded-2xl p-3.5 text-xs font-bold text-slate-700 dark:text-zinc-200 outline-none focus:border-blue-500 transition-all appearance-none ${isProtected ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
                       >
@@ -298,7 +322,12 @@ export default function ManageRolesPage() {
                           </option>
                         ))}
                       </select>
-                      {!isProtected && <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 rotate-90" size={14} />}
+                      {!isProtected && (
+                        <ChevronRight
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 rotate-90"
+                          size={14}
+                        />
+                      )}
                     </div>
                   </div>
 
@@ -310,198 +339,210 @@ export default function ManageRolesPage() {
                     <div className="relative">
                       <select
                         value={user.department || "ไม่มีสังกัด"}
-                        onChange={(e) => changeDepartment(user._id, e.target.value, user.name)}
+                        onChange={(e) =>
+                          changeDepartment(user._id, e.target.value, user.name)
+                        }
                         disabled={isProtected}
                         className={`w-full bg-slate-50 dark:bg-zinc-800/50 border border-slate-100 dark:border-zinc-800 rounded-2xl p-3.5 text-xs font-bold text-slate-700 dark:text-zinc-200 outline-none focus:border-blue-500 transition-all appearance-none ${isProtected ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-800"}`}
                       >
-                         <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
-                          <option value="ผู้บริหารสถานศึกษา">
-                            ผู้บริหารสถานศึกษา
+                        <option value="ไม่มีสังกัด">- ไม่ระบุสังกัด -</option>
+                        <option value="ผู้บริหารสถานศึกษา">
+                          ผู้บริหารสถานศึกษา
+                        </option>
+                        <optgroup label="1. ฝ่ายบริหารทรัพยากร">
+                          <option value="งานบริหารงานทั่วไป">
+                            งานบริหารงานทั่วไป
                           </option>
-                          <optgroup label="1. ฝ่ายบริหารทรัพยากร">
-                            <option value="งานบริหารงานทั่วไป">
-                              งานบริหารงานทั่วไป
-                            </option>
-                            <option value="งานบริหารและพัฒนาทรัพยากรบุคคล">
-                              งานบริหารและพัฒนาทรัพยากรบุคคล
-                            </option>
-                            <option value="งานการเงิน">งานการเงิน</option>
-                            <option value="งานการบัญชี">งานการบัญชี</option>
-                            <option value="งานพัสดุ">งานพัสดุ</option>
-                            <option value="งานอาคารสถานที่">งานอาคารสถานที่</option>
-                            <option value="งานทะเบียน">งานทะเบียน</option>
-                            <option value="งานแม่บ้าน/นักการ">
-                              งานแม่บ้าน/นักการ
-                            </option>
-                          </optgroup>
-                          <optgroup label="2. ฝ่ายยุทธศาสตร์และแผนงาน">
-                            <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ">
-                              งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ
-                            </option>
-                            <option value="งานมาตรฐานและการประกันคุณภาพ">
-                              งานมาตรฐานและการประกันคุณภาพ
-                            </option>
-                            <option value="งานศูนย์ดิจิทัลและสื่อสารองค์กร">
-                              งานศูนย์ดิจิทัลและสื่อสารองค์กร
-                            </option>
-                            <option value="งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์">
-                              งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์
-                            </option>
-                            <option value="งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ">
-                              งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ
-                            </option>
-                            <option value="งานติดตามและประเมินผล">
-                              งานติดตามและประเมินผล
-                            </option>
-                          </optgroup>
-                          <optgroup label="3. ฝ่ายพัฒนากิจการนักเรียน นักศึกษา">
-                            <option value="งานกิจกรรมนักเรียนนักศึกษา">
-                              งานกิจกรรมนักเรียนนักศึกษา
-                            </option>
-                            <option value="งานครูที่ปรึกษาและการแนะแนว">
-                              งานครูที่ปรึกษาและการแนะแนว
-                            </option>
-                            <option value="งานปกครองและความปลอดภัยนักเรียนนักศึกษา">
-                              งานปกครองและความปลอดภัยนักเรียนนักศึกษา
-                            </option>
-                            <option value="งานสวัสดิการนักเรียนนักศึกษา">
-                              งานสวัสดิการนักเรียนนักศึกษา
-                            </option>
-                            <option value="งานโครงการพิเศษและการบริการ">
-                              งานโครงการพิเศษและการบริการ
-                            </option>
-                          </optgroup>
-                          <optgroup label="4. ฝ่ายวิชาการ">
-                            <option value="งานพัฒนาหลักสูตรและการจัดการเรียนรู้">
-                              งานพัฒนาหลักสูตรและการจัดการเรียนรู้
-                            </option>
-                            <option value="งานวัดผลและประเมินผล">
-                              งานวัดผลและประเมินผล
-                            </option>
-                            <option value="งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ">
-                              งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ
-                            </option>
-                            <option value="งานวิทยบริการและเทคโนโลยีการศึกษา">
-                              งานวิทยบริการและเทคโนโลยีการศึกษา
-                            </option>
-                            <option value="งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา">
-                              งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา
-                            </option>
-                            <option value="งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ">
-                              งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ
-                            </option>
-                          </optgroup>
-                          <optgroup label="5. ระดับชั้นประกาศนียบัตรวิชาชีพ (ปวช.)">
-                            <option value="ปวช. สาขาวิชาการบัญชี">
-                              สาขาวิชาการบัญชี (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชาการตลาด">
-                              สาขาวิชาการตลาด (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชาการโรงเเรม">
-                              สาขาวิชาการโรงเเรม (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชาตัวถังเเละสีรถยนต์">
-                              สาขาวิชาตัวถังเเละสีรถยนต์ (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล">
-                              สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชาช่างยนต์">
-                              สาขาวิชาช่างยนต์ (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชาช่างกลโรงงาน">
-                              สาขาวิชาช่างกลโรงงาน (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชาช่างเชื่อมโลหะ">
-                              สาขาวิชาช่างเชื่อมโลหะ (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชาช่างไฟฟ้า">
-                              สาขาวิชาช่างไฟฟ้า (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชาอิเล็กทรอนิกส์">
-                              สาขาวิชาอิเล็กทรอนิกส์ (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชายานยนต์ไฟฟ้า">
-                              สาขาวิชายานยนต์ไฟฟ้า (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชาโยธา">
-                              สาขาวิชาโยธา (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชาโลจิสติกส์">
-                              สาขาวิชาโลจิสติกส์ (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชาการจัดการสำนักงานดิจิทัล">
-                              สาขาวิชาการจัดการสำนักงานดิจิทัล (ปวช.)
-                            </option>
-                            <option value="ปวช. สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์">
-                              สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์ (ปวช.)
-                            </option>
-                          </optgroup>
-                          <optgroup label="6. ระดับชั้นประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.)">
-                            <option value="ปวส. สาขาวิชาเทคนิคเครื่องกล">
-                              สาขาวิชาเทคนิคเครื่องกล (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาเทคนิคการผลิต">
-                              สาขาวิชาเทคนิคการผลิต (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาเทคนิคโลหะ">
-                              สาขาวิชาเทคนิคโลหะ (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาไฟฟ้า">
-                              สาขาวิชาไฟฟ้า (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาโยธา">
-                              สาขาวิชาโยธา (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาการบัญชี">
-                              สาขาวิชาการบัญชี (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาเทคโนโลยีอิเล็กทรอนิกส์">
-                              สาขาวิชาเทคโนโลยีอิเล็กทรอนิกส์ (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาเทคนิคยานยนต์ไฟฟ้า">
-                              สาขาวิชาเทคนิคยานยนต์ไฟฟ้า (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล">
-                              สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาการตลาด">
-                              สาขาวิชาการตลาด (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาการโรงเเรม">
-                              สาขาวิชาการโรงเเรม (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์">
-                              สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์ (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาเทคโนโลยีอุตสาหกรรมตัวถัง เเละสีรถยนต์">
-                              สาขาวิชาเทคโนโลยีอุตสาหกรรมตัวถัง เเละสีรถยนต์ (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาการจัดการโลจิสติกส์ เเละซัพพลายเชน">
-                              สาขาวิชาการจัดการโลจิสติกส์ เเละซัพพลายเชน (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาการจัดการสำนักงานดิจิทัล">
-                              สาขาวิชาการจัดการสำนักงานดิจิทัล (ปวส.)
-                            </option>
-                            <option value="ปวส. สาขาวิชาคอมพิวเตอร์เกมเเละแอนิเมชั่น">
-                              สาขาวิชาคอมพิวเตอร์เกมเเละแอนิเมชั่น (ปวส.)
-                            </option>
-                          </optgroup>
+                          <option value="งานบริหารและพัฒนาทรัพยากรบุคคล">
+                            งานบริหารและพัฒนาทรัพยากรบุคคล
+                          </option>
+                          <option value="งานการเงิน">งานการเงิน</option>
+                          <option value="งานการบัญชี">งานการบัญชี</option>
+                          <option value="งานพัสดุ">งานพัสดุ</option>
+                          <option value="งานอาคารสถานที่">
+                            งานอาคารสถานที่
+                          </option>
+                          <option value="งานทะเบียน">งานทะเบียน</option>
+                          <option value="งานแม่บ้าน/นักการ">
+                            งานแม่บ้าน/นักการ
+                          </option>
+                        </optgroup>
+                        <optgroup label="2. ฝ่ายยุทธศาสตร์และแผนงาน">
+                          <option value="งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ">
+                            งานพัฒนายุทธศาสตร์ แผนงาน และงบประมาณ
+                          </option>
+                          <option value="งานมาตรฐานและการประกันคุณภาพ">
+                            งานมาตรฐานและการประกันคุณภาพ
+                          </option>
+                          <option value="งานศูนย์ดิจิทัลและสื่อสารองค์กร">
+                            งานศูนย์ดิจิทัลและสื่อสารองค์กร
+                          </option>
+                          <option value="งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์">
+                            งานส่งเสริมการวิจัย นวัตกรรม และสิ่งประดิษฐ์
+                          </option>
+                          <option value="งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ">
+                            งานส่งเสริมธุรกิจและการเป็นผู้ประกอบการ
+                          </option>
+                          <option value="งานติดตามและประเมินผล">
+                            งานติดตามและประเมินผล
+                          </option>
+                        </optgroup>
+                        <optgroup label="3. ฝ่ายพัฒนากิจการนักเรียน นักศึกษา">
+                          <option value="งานกิจกรรมนักเรียนนักศึกษา">
+                            งานกิจกรรมนักเรียนนักศึกษา
+                          </option>
+                          <option value="งานครูที่ปรึกษาและการแนะแนว">
+                            งานครูที่ปรึกษาและการแนะแนว
+                          </option>
+                          <option value="งานปกครองและความปลอดภัยนักเรียนนักศึกษา">
+                            งานปกครองและความปลอดภัยนักเรียนนักศึกษา
+                          </option>
+                          <option value="งานสวัสดิการนักเรียนนักศึกษา">
+                            งานสวัสดิการนักเรียนนักศึกษา
+                          </option>
+                          <option value="งานโครงการพิเศษและการบริการ">
+                            งานโครงการพิเศษและการบริการ
+                          </option>
+                        </optgroup>
+                        <optgroup label="4. ฝ่ายวิชาการ">
+                          <option value="งานพัฒนาหลักสูตรและการจัดการเรียนรู้">
+                            งานพัฒนาหลักสูตรและการจัดการเรียนรู้
+                          </option>
+                          <option value="งานวัดผลและประเมินผล">
+                            งานวัดผลและประเมินผล
+                          </option>
+                          <option value="งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ">
+                            งานอาชีวศึกษาระบบทวิภาคีและความร่วมมือ
+                          </option>
+                          <option value="งานวิทยบริการและเทคโนโลยีการศึกษา">
+                            งานวิทยบริการและเทคโนโลยีการศึกษา
+                          </option>
+                          <option value="งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา">
+                            งานการศึกษาพิเศษและความเสมอภาคทางการศึกษา
+                          </option>
+                          <option value="งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ">
+                            งานพัฒนาหลักสูตรสายเทคโนโลยีหรือสายปฏิบัติการ
+                          </option>
+                        </optgroup>
+                        <optgroup label="5. ระดับชั้นประกาศนียบัตรวิชาชีพ (ปวช.)">
+                          <option value="ปวช. สาขาวิชาการบัญชี">
+                            สาขาวิชาการบัญชี (ปวช.)
+                          </option>
+                          <option value="ปวช. สาขาวิชาการตลาด">
+                            สาขาวิชาการตลาด (ปวช.)
+                          </option>
+                          <option value="ปวช. สาขาวิชาการโรงเเรม">
+                            สาขาวิชาการโรงเเรม (ปวช.)
+                          </option>
+                          <option value="ปวช. สาขาวิชาตัวถังเเละสีรถยนต์">
+                            สาขาวิชาตัวถังเเละสีรถยนต์ (ปวช.)
+                          </option>
+                          <option value="ปวช. สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล">
+                            สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล (ปวช.)
+                          </option>
+                          <option value="ปวช. สาขาวิชาช่างยนต์">
+                            สาขาวิชาช่างยนต์ (ปวช.)
+                          </option>
+                          <option value="ปวช. สาขาวิชาช่างกลโรงงาน">
+                            สาขาวิชาช่างกลโรงงาน (ปวช.)
+                          </option>
+                          <option value="ปวช. สาขาวิชาช่างเชื่อมโลหะ">
+                            สาขาวิชาช่างเชื่อมโลหะ (ปวช.)
+                          </option>
+                          <option value="ปวช. สาขาวิชาช่างไฟฟ้า">
+                            สาขาวิชาช่างไฟฟ้า (ปวช.)
+                          </option>
+                          <option value="ปวช. สาขาวิชาอิเล็กทรอนิกส์">
+                            สาขาวิชาอิเล็กทรอนิกส์ (ปวช.)
+                          </option>
+                          <option value="ปวช. สาขาวิชายานยนต์ไฟฟ้า">
+                            สาขาวิชายานยนต์ไฟฟ้า (ปวช.)
+                          </option>
+                          <option value="ปวช. สาขาวิชาโยธา">
+                            สาขาวิชาโยธา (ปวช.)
+                          </option>
+                          <option value="ปวช. สาขาวิชาโลจิสติกส์">
+                            สาขาวิชาโลจิสติกส์ (ปวช.)
+                          </option>
+                          <option value="ปวช. สาขาวิชาการจัดการสำนักงานดิจิทัล">
+                            สาขาวิชาการจัดการสำนักงานดิจิทัล (ปวช.)
+                          </option>
+                          <option value="ปวช. สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์">
+                            สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์ (ปวช.)
+                          </option>
+                        </optgroup>
+                        <optgroup label="6. ระดับชั้นประกาศนียบัตรวิชาชีพชั้นสูง (ปวส.)">
+                          <option value="ปวส. สาขาวิชาเทคนิคเครื่องกล">
+                            สาขาวิชาเทคนิคเครื่องกล (ปวส.)
+                          </option>
+                          <option value="ปวส. สาขาวิชาเทคนิคการผลิต">
+                            สาขาวิชาเทคนิคการผลิต (ปวส.)
+                          </option>
+                          <option value="ปวส. สาขาวิชาเทคนิคโลหะ">
+                            สาขาวิชาเทคนิคโลหะ (ปวส.)
+                          </option>
+                          <option value="ปวส. สาขาวิชาไฟฟ้า">
+                            สาขาวิชาไฟฟ้า (ปวส.)
+                          </option>
+                          <option value="ปวส. สาขาวิชาโยธา">
+                            สาขาวิชาโยธา (ปวส.)
+                          </option>
+                          <option value="ปวส. สาขาวิชาการบัญชี">
+                            สาขาวิชาการบัญชี (ปวส.)
+                          </option>
+                          <option value="ปวส. สาขาวิชาเทคโนโลยีอิเล็กทรอนิกส์">
+                            สาขาวิชาเทคโนโลยีอิเล็กทรอนิกส์ (ปวส.)
+                          </option>
+                          <option value="ปวส. สาขาวิชาเทคนิคยานยนต์ไฟฟ้า">
+                            สาขาวิชาเทคนิคยานยนต์ไฟฟ้า (ปวส.)
+                          </option>
+                          <option value="ปวส. สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล">
+                            สาขาวิชาเทคโนโลยีธุรกิจดิจิทัล (ปวส.)
+                          </option>
+                          <option value="ปวส. สาขาวิชาการตลาด">
+                            สาขาวิชาการตลาด (ปวส.)
+                          </option>
+                          <option value="ปวส. สาขาวิชาการโรงเเรม">
+                            สาขาวิชาการโรงเเรม (ปวส.)
+                          </option>
+                          <option value="ปวส. สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์">
+                            สาขาวิชาเมคคาทรอนิกส์เเละหุ่นยนต์ (ปวส.)
+                          </option>
+                          <option value="ปวส. สาขาวิชาเทคโนโลยีอุตสาหกรรมตัวถัง เเละสีรถยนต์">
+                            สาขาวิชาเทคโนโลยีอุตสาหกรรมตัวถัง เเละสีรถยนต์
+                            (ปวส.)
+                          </option>
+                          <option value="ปวส. สาขาวิชาการจัดการโลจิสติกส์ เเละซัพพลายเชน">
+                            สาขาวิชาการจัดการโลจิสติกส์ เเละซัพพลายเชน (ปวส.)
+                          </option>
+                          <option value="ปวส. สาขาวิชาการจัดการสำนักงานดิจิทัล">
+                            สาขาวิชาการจัดการสำนักงานดิจิทัล (ปวส.)
+                          </option>
+                          <option value="ปวส. สาขาวิชาคอมพิวเตอร์เกมเเละแอนิเมชั่น">
+                            สาขาวิชาคอมพิวเตอร์เกมเเละแอนิเมชั่น (ปวส.)
+                          </option>
+                        </optgroup>
                       </select>
-                      {!isProtected && <ChevronRight className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 rotate-90" size={14} />}
+                      {!isProtected && (
+                        <ChevronRight
+                          className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 rotate-90"
+                          size={14}
+                        />
+                      )}
                     </div>
                   </div>
                 </div>
 
                 <div className="mt-8 pt-4 border-t border-slate-50 dark:border-zinc-800 flex items-center justify-between">
-                   <div className="flex items-center gap-1.5">
-                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                      <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Current: {user.role}</span>
-                   </div>
-                   <div className="p-1 text-slate-300 hover:text-blue-500 transition-colors">
-                      <MoreVertical size={14} />
-                   </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                    <span className="text-[9px] font-black text-slate-400 uppercase tracking-tighter">
+                      Current: {user.role}
+                    </span>
+                  </div>
+                  <div className="p-1 text-slate-300 hover:text-blue-500 transition-colors">
+                    <MoreVertical size={14} />
+                  </div>
                 </div>
               </motion.div>
             );
@@ -517,19 +558,22 @@ export default function ManageRolesPage() {
               className="py-32 flex flex-col items-center justify-center text-slate-300 dark:text-zinc-800 bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 rounded-[3rem] shadow-inner"
             >
               <Users size={64} className="mb-6 opacity-20" />
-              <p className="font-black text-xl uppercase tracking-tighter">ไม่พบรายชื่อบุคลากร</p>
-              <p className="text-sm font-bold uppercase tracking-widest mt-2 opacity-50">No Personnel Found in Records</p>
+              <p className="font-black text-xl uppercase tracking-tighter">
+                ไม่พบรายชื่อบุคลากร
+              </p>
+              <p className="text-sm font-bold uppercase tracking-widest mt-2 opacity-50">
+                No Personnel Found in Records
+              </p>
             </motion.div>
           )}
         </AnimatePresence>
 
         <div className="pt-20 pb-10 text-center opacity-30">
-           <p className="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-400 dark:text-zinc-600">
-             Personnel Authorization & Governance Hub • v2026.03
-           </p>
+          <p className="text-[10px] font-black uppercase tracking-[0.5em] text-zinc-400 dark:text-zinc-600">
+            Personnel Authorization & Governance Hub • v2026.03
+          </p>
         </div>
       </div>
     </div>
   );
 }
-

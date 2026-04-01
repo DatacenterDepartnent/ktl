@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { format } from "date-fns";
 import { th } from "date-fns/locale";
@@ -24,8 +24,56 @@ import {
   Plus,
   Trash2,
   Loader2,
+  Target,
+  AlertTriangle,
+  Lightbulb,
+  Image as ImageIcon,
 } from "lucide-react";
 import Link from "next/link";
+ 
+// Utility function for client-side image compression (with Safari/iOS fallback)
+const compressImage = async (base64Str: string): Promise<string> => {
+  return new Promise((resolve) => {
+    try {
+      const img = new Image();
+      img.onerror = () => resolve(base64Str);
+      img.onload = () => {
+        try {
+          const canvas = document.createElement("canvas");
+          const MAX_WIDTH = 1200;
+          const MAX_HEIGHT = 1200;
+          let width = img.width;
+          let height = img.height;
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height *= MAX_WIDTH / width;
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width *= MAX_HEIGHT / height;
+              height = MAX_HEIGHT;
+            }
+          }
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) return resolve(base64Str);
+          ctx.drawImage(img, 0, 0, width, height);
+          const dataUrl = canvas.toDataURL("image/jpeg", 0.7);
+          resolve(dataUrl);
+        } catch (canvasErr) {
+          console.error("Canvas compression failed, using original:", canvasErr);
+          resolve(base64Str);
+        }
+      };
+      img.src = base64Str;
+    } catch (err) {
+      console.error("Compression startup failed, using original:", err);
+      resolve(base64Str);
+    }
+  });
+};
 
 export default function WFHHistoryPage() {
   const [activeTab, setActiveTab] = useState<
@@ -44,8 +92,10 @@ export default function WFHHistoryPage() {
     summary: "",
     problems: "",
     plansNextDay: "",
-    activities: [{ taskName: "", detail: "" }],
+    activities: [{ taskName: "", detail: "", status: "Completed" as "Completed" | "In Progress" | "Pending" }],
+    images: [] as string[],
   });
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -127,7 +177,8 @@ export default function WFHHistoryPage() {
       activities:
         report.activities?.length > 0
           ? [...report.activities]
-          : [{ taskName: "", detail: "" }],
+          : [{ taskName: "", detail: "", status: "Completed" }],
+      images: report.images || [],
     });
     setIsEditModalOpen(true);
   };
@@ -170,7 +221,10 @@ export default function WFHHistoryPage() {
   const addActivity = () => {
     setEditFormData({
       ...editFormData,
-      activities: [...editFormData.activities, { taskName: "", detail: "" }],
+      activities: [
+        ...editFormData.activities,
+        { taskName: "", detail: "", status: "Completed" },
+      ],
     });
   };
 
@@ -180,14 +234,32 @@ export default function WFHHistoryPage() {
     setEditFormData({ ...editFormData, activities: newActivities });
   };
 
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+
+    Array.from(files).forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64 = reader.result as string;
+        const compressed = await compressImage(base64);
+        setEditFormData((prev) => ({
+          ...prev,
+          images: [...(prev.images || []), compressed],
+        }));
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 p-2 md:p-8 font-sans selection:bg-blue-500/30 relative overflow-hidden text-left">
+    <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 p-2 md:p-4 font-sans selection:bg-blue-500/30 relative overflow-hidden text-left">
       <div className="fixed top-[-10%] left-[-10%] w-[60%] h-[60%] bg-blue-500/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="fixed bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="max-w-5xl mx-auto space-y-8 relative z-10">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
           <div className="space-y-3">
             <div className="flex items-center gap-4">
               <Link
@@ -262,7 +334,7 @@ export default function WFHHistoryPage() {
               {[1, 2, 3, 4].map((i) => (
                 <div
                   key={i}
-                  className="bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md rounded-3xl p-6 border border-slate-100 dark:border-zinc-800 animate-pulse h-32"
+                  className="bg-white/50 dark:bg-zinc-900/50 backdrop-blur-md rounded-3xl p-4 border border-slate-100 dark:border-zinc-800 animate-pulse h-32"
                 />
               ))}
             </motion.div>
@@ -294,9 +366,9 @@ export default function WFHHistoryPage() {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.05 }}
-                        className="group bg-white dark:bg-zinc-900 rounded-3xl p-6 border border-slate-100 dark:border-zinc-800 shadow-xl shadow-black/2 flex flex-col md:flex-row items-center justify-between gap-6 hover:shadow-2xl transition-all"
+                        className="group bg-white dark:bg-zinc-900 rounded-3xl p-4 border border-slate-100 dark:border-zinc-800 shadow-xl shadow-black/2 flex flex-col md:flex-row items-center justify-between gap-4 hover:shadow-2xl transition-all"
                       >
-                        <div className="flex items-center gap-6 w-full md:w-auto">
+                        <div className="flex items-center gap-4 w-full md:w-auto">
                           <div className="bg-slate-50 dark:bg-zinc-950 w-20 h-20 rounded-4xl flex flex-col items-center justify-center shadow-inner border border-slate-100 dark:border-zinc-800 transition-transform duration-500">
                             <span className="text-[10px] font-black text-blue-500 uppercase tracking-widest">
                               {format(
@@ -410,7 +482,7 @@ export default function WFHHistoryPage() {
                         initial={{ opacity: 0, x: 10 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: index * 0.05 }}
-                        className="group bg-white dark:bg-zinc-900 rounded-3xl p-6 border border-slate-100 dark:border-zinc-800 shadow-xl shadow-black/2 flex flex-col gap-4"
+                        className="group bg-white dark:bg-zinc-900 rounded-3xl p-4 border border-slate-100 dark:border-zinc-800 shadow-xl shadow-black/2 flex flex-col gap-4"
                       >
                         <div className="flex justify-between items-center border-b border-slate-50 dark:border-zinc-950 pb-4">
                           <div className="flex items-center gap-4">
@@ -479,9 +551,9 @@ export default function WFHHistoryPage() {
                     initial={{ opacity: 0, scale: 0.98 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: index * 0.05 }}
-                    className="group bg-white dark:bg-zinc-900 rounded-3xl p-6 border border-slate-100 dark:border-zinc-800 shadow-xl shadow-black/2 hover:shadow-2xl transition-all"
+                    className="group bg-white dark:bg-zinc-900 rounded-3xl p-4 border border-slate-100 dark:border-zinc-800 shadow-xl shadow-black/2 hover:shadow-2xl transition-all"
                   >
-                    <div className="flex flex-col md:flex-row justify-between gap-6 mb-6">
+                    <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
                       <div className="flex items-center gap-5">
                         <div className="bg-blue-50 dark:bg-blue-500/10 w-16 h-16 rounded-2xl flex flex-col items-center justify-center border border-blue-100 dark:border-blue-500/20">
                           <span className="text-[9px] font-black text-blue-500 uppercase tracking-widest">
@@ -491,7 +563,7 @@ export default function WFHHistoryPage() {
                               { locale: th },
                             )}
                           </span>
-                          <span className="text-2xl font-black text-slate-800 dark:text-white leading-none">
+                          <span className="text-2xl font-black text-slate-800 dark:text-white leading-none mt-1">
                             {format(
                               new Date(report.date || report.createdAt),
                               "dd",
@@ -500,13 +572,13 @@ export default function WFHHistoryPage() {
                         </div>
                         <div>
                           <h3 className="text-lg font-black text-slate-800 dark:text-white uppercase tracking-tight mb-1">
-                            รายงานผลการทำงาน
+                            รายงานผลการปฏิบัติงาน
                           </h3>
                           <div className="flex items-center gap-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                            <Calendar size={12} />
+                            <Calendar size={12} className="text-blue-500" />
                             {format(
                               new Date(report.date || report.createdAt),
-                              "EEEE",
+                              "EEEE, d MMMM yyyy",
                               { locale: th },
                             )}
                           </div>
@@ -514,13 +586,13 @@ export default function WFHHistoryPage() {
                       </div>
                       <button
                         onClick={() => handleEdit(report)}
-                        className="flex items-center justify-center gap-2 px-6 py-3 bg-slate-50 dark:bg-zinc-800 hover:bg-blue-600 hover:text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all group/btn"
+                        className="flex items-center justify-center gap-2 px-6 py-3 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all hover:bg-blue-600 dark:hover:bg-blue-500 hover:text-white group/btn active:scale-95 shadow-lg shadow-black/5"
                       >
                         <Edit2
                           size={14}
                           className="group-hover/btn:rotate-12 transition-transform"
                         />
-                        แก้ไขรายการ
+                        แก้ไขรายงาน
                       </button>
                     </div>
 
@@ -528,10 +600,10 @@ export default function WFHHistoryPage() {
                       <div className="p-4 bg-slate-50/50 dark:bg-zinc-950/50 rounded-2xl border border-slate-100 dark:border-zinc-800">
                         <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2">
                           <TrendingUp size={12} className="text-blue-500" />{" "}
-                          สรุปผลงานวันนี้
+                          สรุปผลงานสำคัญ
                         </p>
                         <p className="text-sm font-medium text-slate-600 dark:text-zinc-300 line-clamp-2 italic">
-                          &quot;{report.summary}&quot;
+                          &quot;{report.summary || "ไม่ได้ระบุสรุปผล"}&quot;
                         </p>
                       </div>
                     </div>
@@ -550,10 +622,10 @@ export default function WFHHistoryPage() {
         </div>
       </div>
 
-      {/* Edit Modal */}
+      {/* Modernized Edit Modal */}
       <AnimatePresence>
         {isEditModalOpen && (
-          <div className="fixed inset-0 z-100 flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-100 flex items-center justify-center p-2">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -562,39 +634,192 @@ export default function WFHHistoryPage() {
               className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              initial={{ opacity: 0, scale: 0.9, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-2xl bg-white dark:bg-zinc-900 rounded-[2.5rem] shadow-2xl border border-slate-200 dark:border-zinc-800 overflow-hidden flex flex-col max-h-[90vh]"
+              exit={{ opacity: 0, scale: 0.9, y: 30 }}
+              className="relative w-full max-w-4xl bg-white dark:bg-zinc-950 rounded-[2.5rem] shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] border border-slate-200 dark:border-zinc-800 overflow-hidden flex flex-col max-h-[90vh]"
             >
-              <div className="p-8 border-b border-slate-100 dark:border-zinc-800 flex justify-between items-center text-left">
-                <div>
-                  <h2 className="text-2xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
-                    แก้ไข <span className="text-blue-600">รายงานผลงาน</span>
-                  </h2>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-                    วันที่{" "}
-                    {format(
-                      new Date(editingReport.date || editingReport.createdAt),
-                      "dd MMMM yyyy",
-                      { locale: th },
-                    )}
-                  </p>
+              <div className="p-4 border-b border-slate-100 dark:border-zinc-900 flex justify-between items-center text-left bg-zinc-50 dark:bg-zinc-900/50">
+                <div className="flex items-center gap-5">
+                  <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-500/20">
+                    <Edit2 size={24} />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
+                      ปรับปรุง{" "}
+                      <span className="text-blue-600">
+                        รายงานผลการปฏิบัติงาน
+                      </span>
+                    </h2>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">
+                      เอกสารประจำวัน :{" "}
+                      {format(
+                        new Date(editingReport.date || editingReport.createdAt),
+                        "dd MMMM yyyy",
+                        { locale: th },
+                      )}
+                    </p>
+                  </div>
                 </div>
                 <button
                   onClick={() => setIsEditModalOpen(false)}
-                  className="p-3 bg-slate-50 dark:bg-zinc-800 rounded-full text-slate-400 hover:text-rose-500 transition-colors"
+                  className="p-3 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-full text-slate-400 hover:text-rose-500 transition-all hover:rotate-90 active:scale-90"
                 >
                   <XCircle size={24} />
                 </button>
               </div>
 
-              <div className="p-8 overflow-y-auto space-y-8 text-left">
-                <div className="space-y-4">
-                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2 px-1">
-                    <TrendingUp size={12} className="text-blue-500" />{" "}
-                    สรุปผลงานวันนี้
-                  </label>
+              <div className="p-2 overflow-y-auto space-y-10 text-left custom-scrollbar-thin">
+                {/* Indigo Activities Section */}
+                <div className="space-y-6">
+                  <div className="flex justify-between items-end px-2">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-indigo-100 dark:bg-indigo-500/10 text-indigo-600 rounded-xl flex items-center justify-center">
+                        <Target size={20} />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-black text-indigo-600 uppercase tracking-widest">
+                          รายละเอียดกิจกรรมหลัก
+                        </h3>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase">
+                          เพิ่มหรือระบุสถานะความคืบหน้า
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setEditFormData({
+                          ...editFormData,
+                          activities: [
+                            { taskName: "", detail: "", status: "Completed" },
+                            ...editFormData.activities,
+                          ],
+                        });
+                      }}
+                      className="px-5 py-2.5 bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2 shadow-lg shadow-indigo-500/20 transition-all hover:scale-105 active:scale-95"
+                    >
+                      <Plus size={14} /> เพิ่มรายการใหม่
+                    </button>
+                  </div>
+                  <div className="space-y-4">
+                    {editFormData.activities.map((act: any, idx: number) => (
+                      <div
+                        key={idx}
+                        className="bg-slate-50 dark:bg-zinc-900/50 p-4 rounded-4xl border border-slate-100 dark:border-zinc-800 transition-all hover:border-indigo-500/30"
+                      >
+                        <div className="flex gap-4">
+                          <div className="flex-none w-10 h-10 rounded-xl bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 flex items-center justify-center text-xs font-black text-indigo-600">
+                            {idx + 1}
+                          </div>
+                          <div className="flex-1 space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">
+                                  หัวข้อกิจกรรม
+                                </label>
+                                <input
+                                  value={act.taskName}
+                                  onChange={(e) => {
+                                    const newActs = [
+                                      ...editFormData.activities,
+                                    ];
+                                    newActs[idx].taskName = e.target.value;
+                                    setEditFormData({
+                                      ...editFormData,
+                                      activities: newActs,
+                                    });
+                                  }}
+                                  className="w-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 dark:text-white outline-none focus:ring-2 focus:ring-indigo-500/20"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">
+                                  สถานะความสำเร็จ
+                                </label>
+                                <div className="flex gap-2">
+                                  {(
+                                    [
+                                      "Completed",
+                                      "In Progress",
+                                      "Pending",
+                                    ] as const
+                                  ).map((s) => (
+                                    <button
+                                      key={s}
+                                      type="button"
+                                      onClick={() => {
+                                        const newActs = [
+                                          ...editFormData.activities,
+                                        ];
+                                        newActs[idx].status = s;
+                                        setEditFormData({
+                                          ...editFormData,
+                                          activities: newActs,
+                                        });
+                                      }}
+                                      className={`flex-1 py-3 rounded-xl text-[8px] font-black uppercase tracking-widest border transition-all ${
+                                        act.status === s
+                                          ? "bg-indigo-600 border-indigo-600 text-white shadow-lg shadow-indigo-500/20"
+                                          : "bg-white dark:bg-zinc-900 border-slate-200 dark:border-zinc-800 text-slate-400"
+                                      }`}
+                                    >
+                                      {s === "Completed"
+                                        ? "สำเร็จ"
+                                        : s === "In Progress"
+                                          ? "กำลังทำ"
+                                          : "รอ"}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest pl-1">
+                                รายละเอียดเชิงลึก
+                              </label>
+                              <textarea
+                                value={act.detail}
+                                onChange={(e) => {
+                                  const newActs = [...editFormData.activities];
+                                  newActs[idx].detail = e.target.value;
+                                  setEditFormData({
+                                    ...editFormData,
+                                    activities: newActs,
+                                  });
+                                }}
+                                rows={2}
+                                className="w-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-xl px-4 py-3 text-[11px] font-medium text-slate-600 dark:text-zinc-400 outline-none focus:ring-2 focus:ring-indigo-500/20 italic resize-none"
+                              />
+                            </div>
+                          </div>
+                          <button
+                            onClick={() => removeActivity(idx)}
+                            disabled={editFormData.activities.length <= 1}
+                            className="flex-none p-3 h-10 w-10 text-slate-300 hover:text-rose-500 transition-colors disabled:opacity-0"
+                          >
+                            <Trash2 size={20} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Emerald Summary Section */}
+                <div className="p-4 bg-emerald-50 dark:bg-emerald-500/5 rounded-[2.5rem] border border-emerald-100 dark:border-emerald-900/30 space-y-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-emerald-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-emerald-500/20">
+                      <FileText size={20} />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-black text-emerald-600 uppercase tracking-widest">
+                        สรุปผลงานวันนี้ (Summary)
+                      </h3>
+                      <p className="text-[10px] text-emerald-400 font-bold uppercase">
+                        อธิบายภาพรวมของผลสำเร็จที่เกิดขึ้น
+                      </p>
+                    </div>
+                  </div>
                   <textarea
                     value={editFormData.summary}
                     onChange={(e) =>
@@ -603,73 +828,22 @@ export default function WFHHistoryPage() {
                         summary: e.target.value,
                       })
                     }
-                    className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-2xl p-4 text-sm font-medium focus:ring-2 focus:ring-blue-500/20 outline-none transition-all min-h-[100px]"
+                    rows={4}
+                    className="w-full bg-white dark:bg-zinc-950 border border-emerald-100 dark:border-emerald-900/30 rounded-3xl p-4 text-sm font-medium text-emerald-800 dark:text-emerald-100 outline-none focus:ring-4 focus:ring-emerald-500/5 transition-all resize-none italic"
                   />
                 </div>
 
-                <div className="space-y-4">
-                  <div className="flex justify-between items-end px-1">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                      รายละเอียดกิจกรรม
-                    </label>
-                    <button
-                      onClick={addActivity}
-                      className="text-[10px] font-black text-blue-600 flex items-center gap-1 uppercase hover:underline"
-                    >
-                      <Plus size={14} /> เพิ่มรายการ
-                    </button>
-                  </div>
-                  <div className="space-y-3">
-                    {editFormData.activities.map((act, idx) => (
-                      <div
-                        key={idx}
-                        className="flex gap-3 items-start group/item bg-slate-50 dark:bg-zinc-950 p-4 rounded-2xl border border-slate-100 dark:border-zinc-800/50"
-                      >
-                        <div className="flex-1 space-y-3">
-                          <input
-                            value={act.taskName}
-                            onChange={(e) => {
-                              const newActs = [...editFormData.activities];
-                              newActs[idx].taskName = e.target.value;
-                              setEditFormData({
-                                ...editFormData,
-                                activities: newActs,
-                              });
-                            }}
-                            placeholder="หัวข้อกิจกรรม..."
-                            className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl px-4 py-2 text-xs font-black uppercase tracking-tight outline-none focus:ring-2 focus:ring-blue-500/20"
-                          />
-                          <textarea
-                            value={act.detail}
-                            onChange={(e) => {
-                              const newActs = [...editFormData.activities];
-                              newActs[idx].detail = e.target.value;
-                              setEditFormData({
-                                ...editFormData,
-                                activities: newActs,
-                              });
-                            }}
-                            placeholder="รายละเอียดกิจกรรม..."
-                            className="w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-xl px-4 py-2 text-[11px] font-medium outline-none focus:ring-2 focus:ring-blue-500/20 min-h-[60px]"
-                          />
-                        </div>
-                        <button
-                          onClick={() => removeActivity(idx)}
-                          disabled={editFormData.activities.length <= 1}
-                          className="p-2 bg-rose-50 dark:bg-rose-500/10 text-rose-500 rounded-xl disabled:opacity-0 hover:bg-rose-500 hover:text-white transition-all"
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                {/* Grid for Problems & Plans */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 bg-rose-50 dark:bg-rose-500/5 rounded-[2.5rem] border border-rose-100 dark:border-rose-900/30 space-y-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-rose-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-rose-500/20">
+                        <AlertTriangle size={20} />
                       </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">
-                      ปัญหาและอุปสรรค
-                    </label>
+                      <h3 className="text-sm font-black text-rose-600 uppercase tracking-widest">
+                        ปัญหาที่พบ
+                      </h3>
+                    </div>
                     <textarea
                       value={editFormData.problems}
                       onChange={(e) =>
@@ -678,13 +852,19 @@ export default function WFHHistoryPage() {
                           problems: e.target.value,
                         })
                       }
-                      className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-2xl p-4 text-[11px] font-medium outline-none min-h-[100px]"
+                      rows={3}
+                      className="w-full bg-white dark:bg-zinc-950 border border-rose-100 dark:border-rose-800/30 rounded-2xl p-5 text-xs font-medium text-rose-800 dark:text-rose-100 outline-none resize-none"
                     />
                   </div>
-                  <div className="space-y-3">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest px-1">
-                      แผนงานวันพรุ่งนี้
-                    </label>
+                  <div className="p-4 bg-amber-50 dark:bg-amber-500/5 rounded-[2.5rem] border border-amber-100 dark:border-amber-900/30 space-y-6">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-amber-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20">
+                        <Lightbulb size={20} />
+                      </div>
+                      <h3 className="text-sm font-black text-amber-600 uppercase tracking-widest">
+                        แผนงานพรุ่งนี้
+                      </h3>
+                    </div>
                     <textarea
                       value={editFormData.plansNextDay}
                       onChange={(e) =>
@@ -693,16 +873,104 @@ export default function WFHHistoryPage() {
                           plansNextDay: e.target.value,
                         })
                       }
-                      className="w-full bg-slate-50 dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800 rounded-2xl p-4 text-[11px] font-medium outline-none min-h-[100px]"
+                      rows={3}
+                      className="w-full bg-white dark:bg-zinc-950 border border-amber-100 dark:border-amber-800/30 rounded-2xl p-5 text-xs font-medium text-amber-800 dark:text-amber-100 outline-none resize-none"
                     />
                   </div>
                 </div>
+
+                {/* Images Selection Section */}
+                <div className="p-4 bg-slate-50 dark:bg-zinc-900/50 rounded-[2.5rem] border border-slate-100 dark:border-zinc-800 space-y-4 text-left">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-blue-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/20">
+                        <ImageIcon size={20} />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-black text-slate-700 dark:text-zinc-300 uppercase tracking-widest">
+                          รูปภาพประกอบเดิม
+                        </h3>
+                        <p className="text-[10px] text-slate-400 font-bold uppercase">
+                          คลิกกากบาทเพื่อลบ หรือกด + เพื่อเพิ่มรูปใหม่
+                        </p>
+                      </div>
+                    </div>
+                    <span className="px-3 py-1 bg-white dark:bg-zinc-800 rounded-full text-[10px] font-black text-blue-500 border border-slate-100 dark:border-zinc-700">
+                      {editFormData.images?.length || 0} รูป
+                    </span>
+                  </div>
+
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    multiple
+                    accept="image/*"
+                    className="hidden"
+                  />
+
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 pt-2">
+                    <AnimatePresence>
+                      {editFormData.images?.map((img, idx) => (
+                        <motion.div
+                          key={img + idx}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.8 }}
+                          className="relative aspect-square group/img"
+                        >
+                          <img
+                            src={img}
+                            alt="Preview"
+                            className="w-full h-full object-cover rounded-2xl border border-slate-200 dark:border-zinc-800 shadow-sm"
+                          />
+                          <button
+                            onClick={() => {
+                              const newImgs = editFormData.images.filter(
+                                (_, i) => i !== idx,
+                              );
+                              setEditFormData({
+                                ...editFormData,
+                                images: newImgs,
+                              });
+                            }}
+                            className="absolute -top-1 -right-1 w-6 h-6 bg-rose-500 text-white rounded-full flex items-center justify-center shadow-lg opacity-0 group-hover/img:opacity-100 transition-all hover:scale-110 active:scale-90 z-10"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover/img:opacity-100 transition-opacity rounded-2xl pointer-events-none" />
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+
+                    {/* Add Image Button */}
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="aspect-square border-2 border-dashed border-slate-200 dark:border-zinc-800 rounded-2xl flex flex-col items-center justify-center gap-1 text-slate-400 hover:text-blue-500 hover:border-blue-500/50 transition-all group/add bg-white dark:bg-zinc-950/50 shadow-sm"
+                    >
+                      <div className="p-1.5 bg-slate-50 dark:bg-zinc-900 rounded-full group-hover/add:scale-110 transition-transform">
+                        <Plus size={16} />
+                      </div>
+                      <span className="text-[8px] font-black uppercase tracking-tighter">
+                        เพิ่มรูป
+                      </span>
+                    </button>
+                  </div>
+
+                  {(!editFormData.images || editFormData.images.length === 0) && (
+                    <div className="py-2 text-center">
+                      <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest">
+                        กดปุ่ม + เพื่อเลือกรูปภาพประกอบ
+                      </p>
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div className="p-8 bg-slate-50 dark:bg-zinc-950 border-t border-slate-100 dark:border-zinc-800 flex gap-4">
+              <div className="p-4 bg-zinc-50 dark:bg-zinc-900/80 border-t border-slate-100 dark:border-zinc-800 flex gap-4">
                 <button
                   onClick={() => setIsEditModalOpen(false)}
-                  className="flex-1 py-4 bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-400"
+                  className="flex-1 py-5 bg-white dark:bg-zinc-800 border border-slate-200 dark:border-zinc-700 rounded-2xl text-[10px] font-black uppercase tracking-widest text-slate-400 hover:bg-slate-50 transition-all"
                 >
                   ยกเลิก
                 </button>

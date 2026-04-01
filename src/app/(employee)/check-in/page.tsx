@@ -561,40 +561,43 @@ function CheckInContent() {
 
   return (
     <div
-      className={`min-h-screen ${theme.bg} py-6 px-2 font-sans transition-colors duration-700 overflow-hidden relative`}
+      className={`h-dvh md:min-h-screen ${theme.bg} py-4 md:py-8 px-4 font-sans transition-colors duration-1000 overflow-hidden relative flex flex-col items-center`}
     >
-      {/* Background Blobs */}
-      <div
-        className={`fixed top-[-10%] left-[-10%] w-[50%] h-[50%] ${isCheckIn ? "bg-emerald-500/10" : "bg-rose-500/10"} blur-[120px] rounded-full pointer-events-none`}
-      />
-      <div
-        className={`fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] ${isCheckIn ? "bg-teal-500/10" : "bg-orange-500/10"} blur-[120px] rounded-full pointer-events-none`}
-      />
+      {/* Background Ambient Glows */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div
+          className={`absolute -top-[10%] -left-[10%] w-[70%] h-[70%] ${isCheckIn ? "bg-emerald-500/10" : "bg-rose-500/10"} blur-[120px] rounded-full transition-colors duration-1000`}
+        />
+        <div
+          className={`absolute -bottom-[10%] -right-[10%] w-[60%] h-[60%] ${isCheckIn ? "bg-teal-500/10" : "bg-orange-500/10"} blur-[120px] rounded-full transition-colors duration-1000`}
+        />
+      </div>
 
-      <div className="max-w-md mx-auto relative z-10">
-        {/* Top Nav */}
-        <div className="flex items-center justify-between mb-10">
-          <button
-            onClick={() => {
-              if (isCameraOpen) {
-                cancelAction();
-              } else {
-                router.back();
-              }
-            }}
-            className="p-3.5 bg-white dark:bg-zinc-900 rounded-2xl shadow-xl shadow-black/5 text-slate-400 dark:text-zinc-500 hover:text-slate-800 dark:hover:text-white transition-all active:scale-95 border border-slate-100 dark:border-zinc-800"
+      <div className="w-full max-w-lg relative z-10 flex flex-col h-full max-h-full">
+        {/* Top Navigation Hub */}
+        <div className="flex items-center justify-between mb-4 md:mb-8 shrink-0">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => (isCameraOpen ? cancelAction() : router.back())}
+            className="p-4 bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl rounded-3xl shadow-xl shadow-black/5 text-slate-400 dark:text-zinc-500 hover:text-slate-900 dark:hover:text-white transition-all border border-white dark:border-zinc-800"
           >
-            <ArrowLeft size={22} />
-          </button>
+            <ArrowLeft size={24} />
+          </motion.button>
           <div className="text-right">
-            <h1 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
+            <h1 className="text-2xl font-black text-slate-900 dark:text-white uppercase tracking-tighter leading-none mb-1">
               {isCheckIn ? "ลงเวลาเข้างาน" : "ลงเวลาออกงาน"}
             </h1>
-            <p
-              className={`text-[10px] font-black uppercase tracking-[0.2em] ${theme.accent}`}
-            >
-              {isCheckIn ? "ATTENDANCE CHECK-IN" : "ATTENDANCE CHECK-OUT"}
-            </p>
+            <div className="flex items-center justify-end gap-2">
+              <div
+                className={`w-1.5 h-1.5 rounded-full ${isCheckIn ? "bg-emerald-500" : "bg-rose-500"} animate-pulse`}
+              />
+              <p
+                className={`text-[10px] font-black uppercase tracking-[0.25em] ${theme.accent}`}
+              >
+                {isCheckIn ? "Presence In" : "Presence Out"}
+              </p>
+            </div>
           </div>
         </div>
 
@@ -602,43 +605,41 @@ function CheckInContent() {
           {statusMsg ? (
             <motion.div
               key="success"
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 30 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: -20 }}
-              className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-10 flex flex-col items-center shadow-2xl shadow-black/10 border border-slate-100 dark:border-zinc-800 relative overflow-hidden"
+              exit={{ opacity: 0, scale: 0.9, y: -30 }}
+              className="mt-4 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-3xl rounded-[3.5rem] p-8 md:p-12 flex flex-col items-center shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)] border border-white dark:border-zinc-800 relative overflow-hidden"
             >
               <div
-                className={`absolute top-0 inset-x-0 h-1.5 ${isCheckIn ? "bg-emerald-500" : "bg-rose-500"}`}
+                className={`absolute top-0 inset-x-0 h-2 ${isCheckIn ? "bg-emerald-500" : "bg-rose-500"} opacity-50`}
               />
 
               <div
-                className={`w-24 h-24 rounded-full ${isCheckIn ? "bg-emerald-50 dark:bg-emerald-500/10" : "bg-rose-50 dark:bg-rose-500/10"} flex items-center justify-center mb-8 relative`}
+                className={`w-20 h-20 md:w-24 md:h-24 rounded-full ${isCheckIn ? "bg-emerald-50 dark:bg-emerald-500/10" : "bg-rose-50 dark:bg-rose-500/10"} flex items-center justify-center mb-6 relative`}
               >
                 <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
+                  initial={{ scale: 0, rotate: -20 }}
+                  animate={{ scale: 1, rotate: 0 }}
                   transition={{
                     type: "spring",
-                    damping: 12,
+                    damping: 15,
                     stiffness: 200,
                     delay: 0.2,
                   }}
                 >
-                  <CheckCircle size={56} className={theme.accent} />
+                  <CheckCircle size={40} className={theme.accent} />
                 </motion.div>
-                <div
-                  className={`absolute inset-0 rounded-full border-2 ${isCheckIn ? "border-emerald-500" : "border-rose-500"} animate-ping opacity-20`}
-                />
               </div>
 
-              <h2 className="text-2xl font-black text-slate-800 dark:text-white text-center mb-2">
+              <h2 className="text-2xl font-black text-slate-900 dark:text-white text-center mb-3 leading-tight tracking-tight">
                 {statusMsg}
               </h2>
-              <div className="space-y-1 text-center mb-8">
-                <p className="text-slate-400 dark:text-zinc-500 text-[10px] font-black uppercase tracking-widest leading-none">
-                  เวลาที่บันทึกสำเร็จ (Server Time)
+
+              <div className="space-y-1 text-center mb-8 bg-slate-50 dark:bg-zinc-800/50 py-4 px-8 rounded-3xl border border-slate-100 dark:border-zinc-800 w-full">
+                <p className="text-slate-400 dark:text-zinc-500 text-[9px] font-black uppercase tracking-[0.3em] leading-none mb-1">
+                  Server Confirmation Time
                 </p>
-                <p className="text-4xl font-black text-slate-800 dark:text-white font-mono uppercase">
+                <p className="text-3xl font-black text-slate-900 dark:text-white font-mono tracking-tighter">
                   {recordedTime ||
                     (mounted
                       ? time.toLocaleTimeString("th-TH", { hour12: false })
@@ -646,21 +647,33 @@ function CheckInContent() {
                 </p>
               </div>
 
-              <div className="w-full grid grid-cols-1 gap-4 pt-4 border-t border-slate-100 dark:border-zinc-800">
-                <Link
-                  href={isCheckIn ? "/wfh" : "/work-report"}
-                  className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-5 rounded-3xl font-black text-sm uppercase tracking-widest text-center shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all"
+              <div className="w-full space-y-3 md:space-y-4 pt-4 md:pt-6">
+                <motion.div
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  {isCheckIn ? "กลับสู่หน้าหลัก" : "เขียนรายงานการทำงาน"}
-                </Link>
+                  <Link
+                    href={isCheckIn ? "/wfh" : "/work-report"}
+                    className="w-full bg-slate-950 dark:bg-white text-white dark:text-slate-950 py-4 md:py-6 rounded-3xl md:rounded-[2rem] font-black text-xs md:text-sm uppercase tracking-[0.2em] text-center shadow-2xl block border border-transparent dark:hover:bg-zinc-100 transition-all"
+                  >
+                    {isCheckIn ? "Go to Dashboard" : "Create Work Report"}
+                  </Link>
+                </motion.div>
+
                 {!isCheckIn && (
-                  <p className="text-center text-[10px] text-blue-500 font-black uppercase tracking-widest animate-pulse">
-                    ระบบกำลังพาคุณไปหน้าเขียนรายงานใน 3 วินาที...
-                  </p>
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-center text-[10px] text-blue-500 font-black uppercase tracking-widest animate-pulse"
+                  >
+                    Redirecting to report page in 3s...
+                  </motion.p>
                 )}
-                <p className="text-center text-[10px] text-slate-300 dark:text-zinc-600 font-bold uppercase tracking-[0.3em]">
-                  ระบบลงเวลา KTLTC v1.2
-                </p>
+                <div className="pt-4 flex flex-col items-center gap-1 opacity-20">
+                  <p className="text-[9px] font-black uppercase tracking-[0.5em] text-slate-400">
+                    KTLTC System • v1.2
+                  </p>
+                </div>
               </div>
             </motion.div>
           ) : !isCameraOpen ? (
@@ -719,10 +732,10 @@ function CheckInContent() {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.9 }}
-              className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-6 shadow-2xl shadow-black/10 border border-slate-100 dark:border-zinc-800"
+              className="mt-2 md:mt-4 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-3xl rounded-[2.5rem] md:rounded-[3.5rem] p-4 md:p-8 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.12)] border border-white dark:border-zinc-800 flex-1 overflow-hidden flex flex-col"
             >
               {/* Video Feed Glass Container */}
-              <div className="w-full aspect-4/5 bg-slate-900 rounded-4xl overflow-hidden relative mb-6 shadow-2xl border-4 border-slate-50 dark:border-zinc-800 group">
+              <div className="w-full aspect-square bg-slate-900 rounded-[2rem] md:rounded-[3rem] overflow-hidden relative mb-4 md:mb-8 shadow-2xl border-4 border-white dark:border-zinc-800 group shrink-0">
                 <video
                   ref={videoRef}
                   autoPlay
@@ -755,26 +768,32 @@ function CheckInContent() {
                 </div>
               </div>
 
-              {/* Status Section */}
-              <div className="space-y-3 mb-8">
-                {/* GPS Badge */}
+              {/* Status Controls Selection */}
+              <div className="space-y-2 md:space-y-4 mb-4 md:mb-10">
+                {/* GPS Telemetry Badge */}
                 <div
-                  className={`flex items-center justify-between p-4 rounded-3xl border transition-all ${locationStatus === "found" ? "bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-900/30" : "bg-slate-50 dark:bg-zinc-800/50 border-slate-200 dark:border-zinc-800"}`}
+                  className={`flex items-center justify-between p-3 md:p-5 rounded-[1.5rem] md:rounded-[2.5rem] border transition-all duration-500 ${locationStatus === "found" ? "bg-emerald-500/5 border-emerald-500/20 shadow-inner" : "bg-slate-50 dark:bg-zinc-800/30 border-slate-100 dark:border-zinc-800"}`}
                 >
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 md:gap-5">
                     <div className="relative shrink-0">
-                      <div
-                        className={`p-2 rounded-xl ${locationStatus === "found" ? "bg-emerald-500 text-white" : "bg-slate-200 dark:bg-zinc-700 text-slate-400"}`}
+                      <motion.div
+                        animate={
+                          locationStatus === "searching"
+                            ? { scale: [1, 1.1, 1] }
+                            : {}
+                        }
+                        transition={{ repeat: Infinity, duration: 2 }}
+                        className={`p-2.5 md:p-3.5 rounded-xl md:rounded-2xl ${locationStatus === "found" ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20" : "bg-slate-200 dark:bg-zinc-700 text-slate-400"}`}
                       >
                         <MapPin size={18} />
-                      </div>
+                      </motion.div>
                     </div>
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-zinc-500">
-                        สถานะระบุตำแหน่ง GPS
+                      <p className="text-[9px] font-black uppercase tracking-[0.3em] text-slate-400 dark:text-zinc-500 mb-0.5">
+                        Location Protocol
                       </p>
                       <p
-                        className={`text-xs font-black uppercase ${locationStatus === "found" ? "text-emerald-600 dark:text-emerald-400" : "text-slate-500"}`}
+                        className={`text-xs md:text-sm font-black uppercase ${locationStatus === "found" ? "text-emerald-600 dark:text-emerald-400 tracking-tight" : "text-slate-500 font-bold"}`}
                       >
                         {locationStatus === "found"
                           ? "พบพิกัดตำแหน่งแล้ว"

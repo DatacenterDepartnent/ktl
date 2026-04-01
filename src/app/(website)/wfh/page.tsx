@@ -253,7 +253,7 @@ export default function WFHHubPage() {
               </Link>
             </motion.div>
 
-            <motion.div
+            {/* <motion.div
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               className="sm:col-span-2"
@@ -281,7 +281,7 @@ export default function WFHHubPage() {
                   </div>
                 </div>
               </Link>
-            </motion.div>
+            </motion.div> */}
           </div>
 
           <div className="pt-10 pb-6 text-center">

@@ -151,7 +151,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="px-3 max-w-[1600px] mx-auto overflow-x-hidden relative">
+    <div className="px-2 pt-1 max-w-[1600px] mx-auto overflow-x-hidden relative">
       {/* Background Ambient Glow */}
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden">
         <div className="absolute -top-40 -left-40 h-[600px] w-[600px] rounded-full bg-blue-400/10 blur-[120px] dark:bg-blue-600/10 transition-colors duration-1000" />
@@ -254,7 +254,8 @@ export default function ProfilePage() {
             {/* User Title & Badge */}
             <div className="text-center sm:text-left flex-1">
               <h2 className="text-2xl sm:text-4xl font-black text-zinc-900 dark:text-white leading-none tracking-tight pt-2 sm:pt-12">
-                {formData.username || (loading ? "กำลังโหลด..." : "ไม่มีชื่อผู้ใช้งาน")}
+                {formData.username ||
+                  (loading ? "กำลังโหลด..." : "ไม่มีชื่อผู้ใช้งาน")}
               </h2>
               <div className="mt-3 sm:mt-4 flex flex-wrap items-center justify-center sm:justify-start gap-2 sm:gap-3">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-[10px] sm:text-xs font-bold uppercase tracking-widest shadow-sm">
