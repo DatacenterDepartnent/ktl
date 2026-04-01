@@ -228,64 +228,86 @@ export default function MobileMenu({
                       </div>
                     </div>
 
-                    <Link
-                      href="/dashboard"
-                      onClick={closeMenu}
-                      className="mx-1 block text-center py-3.5 rounded-xl bg-blue-50 text-blue-700 font-bold border border-blue-100 dark:bg-blue-900/20 dark:text-blue-300 transition-colors"
-                    >
-                      🚀 ไปที่ Dashboard
-                    </Link>
+                    {/* 1. Dashboard (General for Admin/Editor) */}
+                    {(userRole === "super_admin" ||
+                      userRole === "admin" ||
+                      userRole === "editor") && (
+                      <Link
+                        href="/dashboard"
+                        onClick={closeMenu}
+                        className="mx-1 block text-center py-3.5 rounded-xl bg-blue-50 text-blue-700 font-bold border border-blue-100 dark:bg-blue-900/20 dark:text-blue-300 transition-colors mb-2"
+                      >
+                        🚀 ไปที่ Dashboard
+                      </Link>
+                    )}
 
-                    {[
-                      "super_admin",
-                      "admin",
-                      "hr",
-                      "director",
-                      "editor",
-                      "deputy_resource",
-                      "deputy_strategy",
-                      "deputy_academic",
-                      "deputy_student_affairs",
-                    ].includes(userRole) && (
+                    {/* 2. Systems for Admin / HR / Director / Deputy / Super Admin */}
+                    {(userRole === "super_admin" ||
+                      userRole === "admin" ||
+                      userRole === "hr" ||
+                      userRole === "director" ||
+                      [
+                        "deputy_resource",
+                        "deputy_strategy",
+                        "deputy_academic",
+                        "deputy_student_affairs",
+                      ].includes(userRole)) && (
                       <div className="flex flex-col gap-2">
-                        {/* เฉพาะรองบริหารทรัพยากร (และผู้บริหารหลัก) ที่เห็นรายงานและการทำงาน */}
-                        {[
-                          "super_admin",
-                          "admin",
-                          "hr",
-                          "director",
-                          "deputy_resource",
-                        ].includes(userRole) && (
-                          <Link
-                            href="/attendance-report"
-                            onClick={closeMenu}
-                            className="mx-1 block text-center py-3.5 rounded-xl bg-emerald-50 text-emerald-700 font-bold border border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300 transition-colors"
-                          >
-                            📊 ระบบรายงานการเข้างาน
-                          </Link>
+                        {/* 2.1 Attendance Dashboard (All Leadership see this) */}
+                        <Link
+                          href="/attendance-dashboard"
+                          onClick={closeMenu}
+                          className="mx-1 block text-center py-3.5 rounded-xl bg-emerald-50 text-emerald-700 font-bold border border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300 transition-colors"
+                        >
+                          📊 เมนูภาพรวมการลงเวลา
+                        </Link>
+
+                        {/* 2.2 Attendance Report & Work Reports (Director/HR/Deputy Resource) */}
+                        {(userRole === "super_admin" ||
+                          userRole === "hr" ||
+                          userRole === "director" ||
+                          userRole === "deputy_resource") && (
+                          <>
+                            <Link
+                              href="/attendance-report"
+                              onClick={closeMenu}
+                              className="mx-1 block text-center py-3.5 rounded-xl bg-emerald-50 text-emerald-700 font-bold border border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300 transition-colors"
+                            >
+                              📋 ระบบรายงานการเข้างาน
+                            </Link>
+                            <Link
+                              href="/work-reports"
+                              onClick={closeMenu}
+                              className="mx-1 block text-center py-3.5 rounded-xl bg-emerald-50 text-emerald-700 font-bold border border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300 transition-colors"
+                            >
+                              📝 ระบบรายงานการปฏิบัติงาน
+                            </Link>
+                          </>
                         )}
-                        {[
-                          "super_admin",
-                          "hr",
-                          "director",
-                          "deputy_resource",
-                        ].includes(userRole) && (
+
+                        {/* 2.3 Leave Approvals (Director/HR/Deputy Resource) */}
+                        {(userRole === "super_admin" ||
+                          userRole === "hr" ||
+                          userRole === "director" ||
+                          userRole === "deputy_resource") && (
                           <Link
                             href="/leave-approvals"
                             onClick={closeMenu}
-                            className="mx-1 block text-center py-3.5 rounded-xl bg-emerald-50 text-emerald-700 font-bold border border-emerald-100 dark:bg-emerald-900/20 dark:text-emerald-300 transition-colors"
+                            className="mx-1 block text-center py-3.5 rounded-xl bg-blue-50 text-blue-700 font-bold border border-blue-100 dark:bg-blue-900/20 dark:text-blue-300 transition-colors"
                           >
                             ✅ จัดการอนุมัติใบลา
                           </Link>
                         )}
-                        {["super_admin", "hr", "deputy_resource"].includes(
-                          userRole,
-                        ) && (
-                          <>
+
+                        {/* 2.4 Staff Management (HR/Deputy Resource Only) */}
+                        {(userRole === "super_admin" ||
+                          userRole === "hr" ||
+                          userRole === "deputy_resource") && (
+                          <div className="flex flex-col gap-2 mt-1 pt-2 border-t border-zinc-100 dark:border-zinc-800/50">
                             <Link
                               href="/manage-roles"
                               onClick={closeMenu}
-                              className="mx-1 block text-center py-3.5 rounded-xl bg-blue-50 text-blue-700 font-bold border border-blue-100 dark:bg-blue-900/20 dark:text-blue-300 transition-colors mb-2"
+                              className="mx-1 block text-center py-3.5 rounded-xl bg-blue-50 text-blue-700 font-bold border border-blue-100 dark:bg-blue-900/20 dark:text-blue-300 transition-colors"
                             >
                               <div className="flex items-center justify-center gap-2">
                                 <UserCog size={18} />
@@ -302,52 +324,39 @@ export default function MobileMenu({
                                 ตั้งค่าเวลาเข้างานตามตำแหน่ง
                               </div>
                             </Link>
-                          </>
-                        )}
-                        {[
-                          "super_admin",
-                          "admin",
-                          "hr",
-                          "director",
-                          "deputy_resource",
-                          "editor",
-                          "staff",
-                        ].includes(userRole) && (
-                          <Link
-                            href="/work-reports"
-                            onClick={closeMenu}
-                            className="mx-1 block text-center py-3.5 rounded-xl bg-indigo-50 text-indigo-700 font-bold border border-indigo-100 dark:bg-indigo-900/20 dark:text-indigo-300 transition-colors"
-                          >
-                            📝 ระบบรายงานการปฏิบัติงาน
-                          </Link>
+                          </div>
                         )}
                       </div>
                     )}
 
+                    {/* 3. Super Admin Specialized Systems */}
                     {userRole === "super_admin" && (
-                      <>
+                      <div className="flex flex-col gap-2 mt-4 pt-4 border-t-2 border-zinc-100 dark:border-zinc-800">
+                        <p className="text-[10px] font-black text-rose-500 uppercase tracking-widest text-center mb-1">
+                          🛡️ Super Admin Control
+                        </p>
                         <Link
                           href="/dashboard/super-admin"
                           onClick={closeMenu}
                           className="mx-1 block text-center py-3.5 rounded-xl bg-purple-50 text-purple-700 font-bold border border-purple-100 dark:bg-purple-900/20 dark:text-purple-300 transition-colors"
                         >
-                          🛡️ ระบบจัดการ Super Admin
+                          ระบบจัดการบัญชีผู้ใช้
                         </Link>
                         <Link
                           href="/dashboard/data-management"
                           onClick={closeMenu}
-                          className="mx-1 mt-2 block text-center py-3.5 rounded-xl bg-rose-50 text-rose-700 font-bold border border-rose-100 dark:bg-rose-900/20 dark:text-rose-300 transition-colors"
+                          className="mx-1 block text-center py-3.5 rounded-xl bg-rose-50 text-rose-700 font-bold border border-rose-100 dark:bg-rose-900/20 dark:text-rose-300 transition-colors"
                         >
-                          🗄️ ระบบจัดการข้อมูลเรคคอร์ดทั้งหมด
+                          จัดการข้อมูลเรคคอร์ดทั้งหมด
                         </Link>
                         <Link
                           href="/work-reports-management"
                           onClick={closeMenu}
-                          className="mx-1 mt-2 block text-center py-3.5 rounded-xl bg-indigo-50 text-indigo-700 font-bold border border-indigo-100 dark:bg-indigo-900/20 dark:text-indigo-300 transition-colors"
+                          className="mx-1 block text-center py-3.5 rounded-xl bg-indigo-50 text-indigo-700 font-bold border border-indigo-100 dark:bg-indigo-900/20 dark:text-indigo-300 transition-colors"
                         >
-                          📝 ระบบจัดการรายงาน (Super Admin)
+                          จัดการรายงาน (Work Reports)
                         </Link>
-                      </>
+                      </div>
                     )}
 
                     <Link

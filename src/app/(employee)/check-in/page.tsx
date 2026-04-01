@@ -18,28 +18,38 @@ import {
   Navigation,
   Info,
 } from "lucide-react";
-import Link from "next/link";
+import { useSession } from "next-auth/react";
 import imageCompression from "browser-image-compression";
 import { uploadToCloudinary } from "@/lib/upload";
 
-type FaceStatus =
-  | "idle"
-  | "loading_models"
-  | "loading_profile"
-  | "no_profile"
-  | "detecting"
-  | "matched"
-  | "not_matched"
-  | "error";
+// --- Types ---
+interface RoleSetting {
+  role: string;
+  checkInLimit?: string;
+  checkOutTime?: string;
+  checkInStart?: string;
+  lateThreshold?: string;
+  checkOutStart?: string;
+  checkOutEnd?: string;
+  systemLockStart?: string;
+  systemLockEnd?: string;
+}
 
 function CheckInContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: session } = useSession();
+  const user = session?.user;
+  const userRole = (user as any)?.role?.toLowerCase() || "user";
+
   const actionType = searchParams.get("action") || "in";
   const isCheckIn = actionType === "in";
 
   const [time, setTime] = useState<Date>(new Date());
   const [mounted, setMounted] = useState(false);
+  const [settings, setSettings] = useState<RoleSetting[]>([]);
+  const [loadingConfig, setLoadingConfig] = useState(true);
+
   const [location, setLocation] = useState<{ lat: number; lng: number } | null>(
     null,
   );
@@ -53,59 +63,110 @@ function CheckInContent() {
   const [faceStatus, setFaceStatus] = useState<FaceStatus>("idle");
   const [faceMsg, setFaceMsg] = useState("");
   const [recordedTime, setRecordedTime] = useState<string>("");
- 
+
   // --- Attendance Time Validation (Thai Time) ---
   const [timeState, setTimeState] = useState({
     isLocked: false,
     lockMsg: "",
-    canProceed: true
+    canProceed: true,
   });
- 
+
+  // Fetch Settings on Mount
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch("/api/admin/role-settings");
+        if (res.ok) {
+          const data = await res.json();
+          setSettings(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch settings:", err);
+      } finally {
+        setLoadingConfig(false);
+      }
+    };
+    fetchSettings();
+  }, []);
+
   useEffect(() => {
     setMounted(true);
     const timer = setInterval(() => {
       const now = new Date();
       setTime(now);
- 
-      // Calculate Thai Time
-      const thNow = new Date(now.getTime() + (7 * 60 * 60 * 1000));
-      const hours = thNow.getUTCHours();
-      const minutes = thNow.getUTCMinutes();
-      const val = hours * 100 + minutes;
- 
+
+      if (loadingConfig) return;
+
+      // 1. ดำเนินการหา Setting ที่เกี่ยวข้อง
+      const global = settings.find((s) => s.role === "system_global");
+      const roleSpecific = settings.find((s) => s.role === userRole);
+
+      // 2. กำหนดค่า Config (ลำดับความสำคัญ: Role > Global > Fallback)
+      const config = {
+        checkInStart: global?.checkInStart || "05:00",
+        lateLimit: roleSpecific?.checkInLimit || global?.lateThreshold || "08:00",
+        checkOutStart: global?.checkOutStart || "16:30",
+        checkOutEnd: global?.checkOutEnd || "18:00",
+        lockStart: global?.systemLockStart || "18:01",
+        lockEnd: global?.systemLockEnd || "04:59",
+      };
+
+      // Helper: HH:mm -> Number
+      const toNum = (t: string) => {
+        const [h, m] = t.split(":").map(Number);
+        return h * 100 + m;
+      };
+
+      const rules = {
+        inStart: toNum(config.checkInStart),
+        outStart: toNum(config.checkOutStart),
+        outEnd: toNum(config.checkOutEnd),
+        lockStart: toNum(config.lockStart),
+        lockEnd: toNum(config.lockEnd),
+      };
+
+      // Thailand Time calculation
+      const thNow = new Date(now.getTime() + 7 * 60 * 60 * 1000);
+      const val = thNow.getUTCHours() * 100 + thNow.getUTCMinutes();
+
       let locked = false;
       let msg = "";
       let canAction = true;
- 
-      // 1. System Lockout (18:01 - 04:59)
-      if (val >= 1801 || val < 500) {
+
+      // A. System Lockout (กรณีข้ามคืน หรือ ปกติ)
+      const isSystemLocked =
+        rules.lockStart > rules.lockEnd
+          ? val >= rules.lockStart || val < rules.lockEnd
+          : val >= rules.lockStart && val < rules.lockEnd;
+
+      if (isSystemLocked) {
         locked = true;
-        msg = "ขณะนี้อยู่นอกเวลาให้บริการ (ระบบปิด 18.01 - 04.59 น.)";
+        msg = `ขณะนี้อยู่นอกเวลาให้บริการ (ระบบปิดระหว่าง ${config.lockStart} - ${config.lockEnd} น.)`;
         canAction = false;
       }
-      // 2. Late check-out cutoff (After 18:00)
-      else if (!isCheckIn && val > 1800) {
+      // B. Early Check-In
+      else if (isCheckIn && val < rules.inStart) {
         locked = true;
-        msg = "เลยเวลาลงเลิกงานแล้ว (สิ้นสุด 18.00 น.) โปรดติดต่อเจ้าหน้าที่";
+        msg = `ยังไม่ถึงเวลาลงเวลาเข้างาน (เริ่ม ${config.checkInStart} น.)`;
         canAction = false;
       }
-      // 3. Early check-out (Before 16:30)
-      else if (!isCheckIn && val < 1630) {
+      // C. Early Check-Out
+      else if (!isCheckIn && val < rules.outStart) {
         locked = true;
-        msg = "ยังไม่ถึงเวลาลงเลิกงาน (เริ่ม 16.30 น. เป็นต้นไป)";
+        msg = `ยังไม่ถึงเวลาลงเวลาออกงาน (เริ่ม ${config.checkOutStart} น. เป็นต้นไป)`;
         canAction = false;
       }
-      // 4. Early check-in (Before 05:00)
-      else if (isCheckIn && val < 500) {
+      // D. Late Check-Out (Over limit)
+      else if (!isCheckIn && val > rules.outEnd) {
         locked = true;
-        msg = "ยังไม่ถึงเวลาลงเวลาเข้างาน (เริ่ม 05.00 น.)";
+        msg = `เลยเวลาลงเวลาออกงานแล้ว (สิ้นสุด ${config.checkOutEnd} น.) โปรดติดต่อเจ้าหน้าที่`;
         canAction = false;
       }
- 
+
       setTimeState({ isLocked: locked, lockMsg: msg, canProceed: canAction });
     }, 1000);
     return () => clearInterval(timer);
-  }, [isCheckIn]);
+  }, [isCheckIn, loadingConfig, settings, userRole]);
  
   const videoRef = useRef<HTMLVideoElement>(null);
   const faceApiRef = useRef<any>(null);
