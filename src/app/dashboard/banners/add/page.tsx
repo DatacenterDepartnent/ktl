@@ -115,7 +115,7 @@ export default function AddBannerPage() {
           className="grid grid-cols-1 lg:grid-cols-12 gap-8"
         >
           <div className="lg:col-span-7 space-y-6">
-            <div className="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-2">
+            <div className="bg-white rounded-4xl shadow-sm border border-slate-200 p-2">
               <div className="flex items-center gap-2 mb-6 text-blue-600">
                 <FiImage className="w-5 h-5" />
                 <h3 className="font-black uppercase tracking-wider text-sm italic">
@@ -125,7 +125,7 @@ export default function AddBannerPage() {
 
               <div className="relative">
                 {!previewUrl ? (
-                  <label className="flex flex-col items-center justify-center w-full aspect-[21/9] border-4 border-dashed border-slate-200 rounded-[2rem] cursor-pointer hover:bg-slate-50 hover:border-blue-400 transition-all group">
+                  <label className="flex flex-col items-center justify-center w-full aspect-21/9 border-4 border-dashed border-slate-200 rounded-4xl cursor-pointer hover:bg-slate-50 hover:border-blue-400 transition-all group">
                     <div className="flex flex-col items-center justify-center pt-5 pb-6">
                       <FiUploadCloud className="w-12 h-12 text-slate-300 group-hover:text-blue-500 mb-4 transition-colors" />
                       <p className="text-sm text-slate-500 font-bold uppercase tracking-tighter">
@@ -143,7 +143,7 @@ export default function AddBannerPage() {
                     />
                   </label>
                 ) : (
-                  <div className="relative aspect-[21/9] rounded-[2rem] overflow-hidden border-4 border-white shadow-xl group bg-slate-900">
+                  <div className="relative aspect-21/9 rounded-4xl overflow-hidden border-4 border-white shadow-xl group bg-slate-900">
                     <Image
                       src={previewUrl}
                       alt="Preview"
@@ -167,7 +167,7 @@ export default function AddBannerPage() {
           </div>
 
           <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white rounded-[2rem] p-4 shadow-sm border border-slate-200">
+            <div className="bg-white rounded-4xl p-4 shadow-sm border border-slate-200">
               <div className="space-y-6">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
@@ -249,7 +249,7 @@ export default function AddBannerPage() {
                 <button
                   type="submit"
                   disabled={uploading}
-                  className="w-full bg-slate-900 text-white font-black py-5 rounded-[1.5rem] hover:bg-blue-600 transition-all shadow-xl flex items-center justify-center gap-3 uppercase disabled:bg-slate-300"
+                  className="w-full bg-slate-900 text-white font-black py-5 rounded-3xl hover:bg-blue-600 transition-all shadow-xl flex items-center justify-center gap-3 uppercase disabled:bg-slate-300"
                 >
                   {uploading ? (
                     <FiLoader className="animate-spin" />

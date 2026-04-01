@@ -151,7 +151,7 @@ export default function EditBannerPage() {
           className="grid grid-cols-1 lg:grid-cols-12 gap-8"
         >
           <div className="lg:col-span-7 space-y-6">
-            <div className="bg-white rounded-[2rem] shadow-sm border border-slate-200 p-4">
+            <div className="bg-white rounded-4xl shadow-sm border border-slate-200 p-4">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-2 text-blue-600">
                   <FiImage className="w-5 h-5" />
@@ -166,7 +166,7 @@ export default function EditBannerPage() {
                 )}
               </div>
 
-              <div className="relative aspect-[21/9] rounded-[2rem] overflow-hidden border-4 border-white shadow-xl group bg-slate-900">
+              <div className="relative aspect-21/9 rounded-4xl overflow-hidden border-4 border-white shadow-xl group bg-slate-900">
                 {previewUrl ? (
                   <>
                     <Image
@@ -201,7 +201,7 @@ export default function EditBannerPage() {
           </div>
 
           <div className="lg:col-span-5 space-y-6">
-            <div className="bg-white rounded-[2rem] p-4 shadow-sm border border-slate-200">
+            <div className="bg-white rounded-4xl p-4 shadow-sm border border-slate-200">
               <div className="space-y-6">
                 <div className="space-y-2">
                   <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">
@@ -279,7 +279,7 @@ export default function EditBannerPage() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="w-full bg-slate-900 text-white font-black py-5 rounded-[1.5rem] hover:bg-blue-600 transition-all shadow-xl flex items-center justify-center gap-3 uppercase disabled:bg-slate-300"
+                  className="w-full bg-slate-900 text-white font-black py-5 rounded-3xl hover:bg-blue-600 transition-all shadow-xl flex items-center justify-center gap-3 uppercase disabled:bg-slate-300"
                 >
                   {saving ? <FiLoader className="animate-spin" /> : <FiSave />}
                   {saving ? "กำลังอัปเดต..." : "บันทึกการเปลี่ยนแปลง"}

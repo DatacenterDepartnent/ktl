@@ -32,9 +32,14 @@ export async function GET(req: Request) {
     // 1. Get Total Personnel Count from Users collection
     const totalUsersCount = await db.collection("users").countDocuments();
 
-    // 2. Aggregate Stats using Native Driver
+    // 2. Aggregate Stats using Native Driver - Using Range Match for consistency
+    const startOfDay = new Date(targetDate);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+    const endOfDay = new Date(targetDate);
+    endOfDay.setUTCHours(23, 59, 59, 999);
+
     const stats = await db.collection("attendances").aggregate([
-      { $match: { date: targetDate } },
+      { $match: { date: { $gte: startOfDay, $lte: endOfDay } } },
       {
         $group: {
           _id: "$status",
@@ -69,7 +74,7 @@ export async function GET(req: Request) {
 
     // 2. Fetch Markers with efficient $lookup instead of populate
     const markers = await db.collection("attendances").aggregate([
-      { $match: { date: targetDate } },
+      { $match: { date: { $gte: startOfDay, $lte: endOfDay } } },
       {
         $addFields: {
           uId: { 

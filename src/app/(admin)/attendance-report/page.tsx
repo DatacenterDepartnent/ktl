@@ -48,7 +48,7 @@ export default function AttendanceReportPage() {
     setLoading(true);
     try {
       const res = await fetch(
-        `/api/attendance/report?startDate=${startDate}&endDate=${endDate}&role=${roleFilter}`,
+        `/api/attendance/report?startDate=${startDate}&endDate=${endDate}&role=${roleFilter}&_t=${Date.now()}`,
       );
       const json = await res.json();
       if (json.success) {

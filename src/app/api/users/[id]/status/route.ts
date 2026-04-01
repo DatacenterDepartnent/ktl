@@ -16,6 +16,24 @@ export async function PATCH(
     const { id } = await params;
     const body = await req.json();
     const { isActive, role } = body;
+ 
+    const currentUserRole = String((session?.user as any)?.role || "").toLowerCase().trim();
+    const allowedAdminRoles = [
+      "super_admin",
+      "admin",
+      "hr",
+      "director",
+      "deputy_resource",
+      "deputy_strategy",
+      "deputy_academic",
+      "deputy_student_affairs",
+      "editor",
+      "staff"
+    ];
+ 
+    if (!allowedAdminRoles.includes(currentUserRole)) {
+      return NextResponse.json({ error: "Access Denied: Administrative role required." }, { status: 403 });
+    }
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");

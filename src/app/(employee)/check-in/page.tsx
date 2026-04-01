@@ -53,22 +53,69 @@ function CheckInContent() {
   const [faceStatus, setFaceStatus] = useState<FaceStatus>("idle");
   const [faceMsg, setFaceMsg] = useState("");
   const [recordedTime, setRecordedTime] = useState<string>("");
-
+ 
+  // --- Attendance Time Validation (Thai Time) ---
+  const [timeState, setTimeState] = useState({
+    isLocked: false,
+    lockMsg: "",
+    canProceed: true
+  });
+ 
+  useEffect(() => {
+    setMounted(true);
+    const timer = setInterval(() => {
+      const now = new Date();
+      setTime(now);
+ 
+      // Calculate Thai Time
+      const thNow = new Date(now.getTime() + (7 * 60 * 60 * 1000));
+      const hours = thNow.getUTCHours();
+      const minutes = thNow.getUTCMinutes();
+      const val = hours * 100 + minutes;
+ 
+      let locked = false;
+      let msg = "";
+      let canAction = true;
+ 
+      // 1. System Lockout (18:01 - 04:59)
+      if (val >= 1801 || val < 500) {
+        locked = true;
+        msg = "ขณะนี้อยู่นอกเวลาให้บริการ (ระบบปิด 18.01 - 04.59 น.)";
+        canAction = false;
+      }
+      // 2. Late check-out cutoff (After 18:00)
+      else if (!isCheckIn && val > 1800) {
+        locked = true;
+        msg = "เลยเวลาลงเลิกงานแล้ว (สิ้นสุด 18.00 น.) โปรดติดต่อเจ้าหน้าที่";
+        canAction = false;
+      }
+      // 3. Early check-out (Before 16:30)
+      else if (!isCheckIn && val < 1630) {
+        locked = true;
+        msg = "ยังไม่ถึงเวลาลงเลิกงาน (เริ่ม 16.30 น. เป็นต้นไป)";
+        canAction = false;
+      }
+      // 4. Early check-in (Before 05:00)
+      else if (isCheckIn && val < 500) {
+        locked = true;
+        msg = "ยังไม่ถึงเวลาลงเวลาเข้างาน (เริ่ม 05.00 น.)";
+        canAction = false;
+      }
+ 
+      setTimeState({ isLocked: locked, lockMsg: msg, canProceed: canAction });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [isCheckIn]);
+ 
   const videoRef = useRef<HTMLVideoElement>(null);
   const faceApiRef = useRef<any>(null);
   const profileDescriptorRef = useRef<Float32Array | null>(null);
   const detectionIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    setMounted(true);
-    const timer = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
   const loadFaceApiAndProfile = async () => {
     try {
       setFaceStatus("loading_models");
-      setFaceMsg("กำลังโหลดระบบตรวจสอบใบหน้า...");
+      setFaceMsg("กำลังโหลดโมเดลใบหน้า...");
 
       // Dynamic import เพื่อป้องกัน SSR error
       const faceApi = await import("@vladmandic/face-api");
@@ -113,8 +160,7 @@ function CheckInContent() {
         .withFaceDescriptor();
 
       if (!detection) {
-        setFaceStatus("no_profile");
-        setFaceMsg("ตรวจไม่พบใบหน้าในรูปโปรไฟล์ — ข้ามการตรวจสอบ");
+        setFaceMsg("ไม่พบใบหน้าในรูปโปรไฟล์ — ระบบข้ามการตรวจสอบใบหน้า");
         return;
       }
 
@@ -127,7 +173,7 @@ function CheckInContent() {
     } catch (err) {
       console.error("Face API Error:", err);
       setFaceStatus("error");
-      setFaceMsg("โหลดระบบตรวจสอบใบหน้าไม่สำเร็จ — ข้ามการตรวจสอบ");
+      setFaceMsg("ระบบตรวจสอบใบหน้ามีปัญหา — ข้ามการตรวจสอบ");
     }
   };
 
@@ -166,11 +212,11 @@ function CheckInContent() {
             );
           } else {
             setFaceStatus("not_matched");
-            setFaceMsg("❌ ใบหน้าไม่ตรงกับโปรไฟล์");
+            setFaceMsg("❌ ใบหน้าไม่ตรงกับข้อมูลในระบบ");
           }
         } else {
           setFaceStatus("detecting");
-          setFaceMsg("ไม่พบใบหน้า — กรุณาหันหน้าเข้ากล้อง");
+          setFaceMsg("ไม่พบใบหน้า — กรุณาหันหน้าเข้าหากล้อง");
         }
       } catch {}
     }, 1500);
@@ -434,19 +480,25 @@ function CheckInContent() {
         {/* Top Nav */}
         <div className="flex items-center justify-between mb-10">
           <button
-            onClick={() => cancelAction()}
+            onClick={() => {
+              if (isCameraOpen) {
+                cancelAction();
+              } else {
+                router.back();
+              }
+            }}
             className="p-3.5 bg-white dark:bg-zinc-900 rounded-2xl shadow-xl shadow-black/5 text-slate-400 dark:text-zinc-500 hover:text-slate-800 dark:hover:text-white transition-all active:scale-95 border border-slate-100 dark:border-zinc-800"
           >
             <ArrowLeft size={22} />
           </button>
           <div className="text-right">
             <h1 className="text-xl font-black text-slate-800 dark:text-white uppercase tracking-tight">
-              {isCheckIn ? "Check-In" : "Check-Out"}
+              {isCheckIn ? "ลงเวลาเข้างาน" : "ลงเวลาออกงาน"}
             </h1>
             <p
               className={`text-[10px] font-black uppercase tracking-[0.2em] ${theme.accent}`}
             >
-              {isCheckIn ? "ลงเวลาเข้างาน" : "ลงเวลาออกงาน"}
+              {isCheckIn ? "ATTENDANCE CHECK-IN" : "ATTENDANCE CHECK-OUT"}
             </p>
           </div>
         </div>
@@ -489,7 +541,7 @@ function CheckInContent() {
               </h2>
               <div className="space-y-1 text-center mb-8">
                 <p className="text-slate-400 dark:text-zinc-500 text-[10px] font-black uppercase tracking-widest leading-none">
-                  Recorded Completion Time
+                  เวลาที่บันทึกสำเร็จ (Server Time)
                 </p>
                 <p className="text-4xl font-black text-slate-800 dark:text-white font-mono uppercase">
                   {recordedTime ||
@@ -504,15 +556,15 @@ function CheckInContent() {
                   href={isCheckIn ? "/wfh" : "/work-report"}
                   className="w-full bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-5 rounded-3xl font-black text-sm uppercase tracking-widest text-center shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all"
                 >
-                  {isCheckIn ? "Return to Dashboard" : "Write Work Report"}
+                  {isCheckIn ? "กลับสู่หน้าหลัก" : "เขียนรายงานการทำงาน"}
                 </Link>
                 {!isCheckIn && (
                   <p className="text-center text-[10px] text-blue-500 font-black uppercase tracking-widest animate-pulse">
-                    Redirecting to Work Report in 3s...
+                    ระบบกำลังพาคุณไปหน้าเขียนรายงานใน 3 วินาที...
                   </p>
                 )}
                 <p className="text-center text-[10px] text-slate-300 dark:text-zinc-600 font-bold uppercase tracking-[0.3em]">
-                  KTL Attendance System v1.2
+                  ระบบลงเวลา KTLTC v1.2
                 </p>
               </div>
             </motion.div>
@@ -540,17 +592,28 @@ function CheckInContent() {
               </p>
 
               <div className="w-full space-y-4">
-                <button
-                  onClick={openCameraForAction}
-                  className={`w-full ${theme.btn} text-white py-5 rounded-3xl font-black text-sm uppercase tracking-[0.2em] flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-2xl`}
-                >
-                  <Camera size={20} />
-                  <span>เปิดกล้องถ่ายรูป</span>
-                </button>
+                {timeState.isLocked ? (
+                  <div className="p-5 bg-rose-50 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 rounded-3xl text-rose-600 dark:text-rose-400">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] mb-2 flex items-center justify-center gap-2">
+                       <AlertCircle size={14} /> System Restricted
+                    </p>
+                    <p className="text-xs font-bold leading-relaxed">
+                      {timeState.lockMsg}
+                    </p>
+                  </div>
+                ) : (
+                  <button
+                    onClick={openCameraForAction}
+                    className={`w-full ${theme.btn} text-white py-5 rounded-3xl font-black text-sm uppercase tracking-[0.2em] flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-2xl`}
+                  >
+                    <Camera size={20} />
+                    <span>เปิดกล้องถ่ายรูป</span>
+                  </button>
+                )}
                 <div className="flex items-center justify-center gap-2 text-slate-400 dark:text-zinc-600">
                   <ShieldCheck size={14} />
                   <span className="text-[10px] font-black uppercase tracking-widest leading-none">
-                    Security Verified Access
+                    ลงเวลาระบบความปลอดภัยสูง
                   </span>
                 </div>
               </div>
@@ -613,7 +676,7 @@ function CheckInContent() {
                     </div>
                     <div>
                       <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-zinc-500">
-                        Location Status
+                        สถานะระบุตำแหน่ง GPS
                       </p>
                       <p
                         className={`text-xs font-black uppercase ${locationStatus === "found" ? "text-emerald-600 dark:text-emerald-400" : "text-slate-500"}`}
@@ -654,12 +717,12 @@ function CheckInContent() {
                   {isProcessing ? (
                     <>
                       <Loader2 className="animate-spin" size={20} />{" "}
-                      PROCESSING...
+                      กำลังทำรายการ...
                     </>
                   ) : isCheckIn ? (
-                    "Punch-In Now"
+                    "ยืนยันลงเวลาเข้างาน"
                   ) : (
-                    "Punch-Out Now"
+                    "ยืนยันลงเวลาออกงาน"
                   )}
                 </button>
 
@@ -668,7 +731,7 @@ function CheckInContent() {
                   className="w-full py-4 text-slate-400 dark:text-zinc-600 font-black text-[10px] uppercase tracking-[0.3em] hover:text-rose-500 dark:hover:text-rose-400 transition-colors"
                 >
                   <span className="flex items-center justify-center gap-2">
-                    <X size={14} /> Cancel Action
+                    <X size={14} /> ยกเลิกรายการนี้
                   </span>
                 </button>
               </div>
@@ -704,7 +767,7 @@ export default function UnifiedCheckInPage() {
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center text-slate-500">
-          Loading Configuration...
+          กำลังโหลดระบบกรุณารอสักครู่...
         </div>
       }
     >

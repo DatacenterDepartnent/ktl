@@ -63,15 +63,33 @@ export async function POST(req: Request) {
         limitMinutes = 30;
       }
     }
-
     // Thailand is UTC+7
     const thTime = new Date(serverTime.getTime() + (7 * 60 * 60 * 1000));
     const thHours = thTime.getUTCHours();
     const thMinutes = thTime.getUTCMinutes();
     const thSeconds = thTime.getUTCSeconds();
+    const currentTimeVal = thHours * 100 + thMinutes;
 
-    // Checking Late status
-    const isLate = thHours > limitHours || (thHours === limitHours && (thMinutes > limitMinutes || thSeconds > 0));
+    // ⛔ 1. ตรวจสอบช่วงเวลาปิดระบบ (18:01 - 04:59)
+    if (currentTimeVal >= 1801 || currentTimeVal < 500) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'ขณะนี้อยู่นอกเวลาให้บริการ (ระบบปิดระหว่าง 18.01 - 04.59 น.)' 
+      }, { status: 403 });
+    }
+
+    // ⛔ 2. ตรวจสอบเวลาเริ่มเข้างาน (05.00)
+    if (currentTimeVal < 500) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'ยังไม่ถึงเวลาลงเวลาเข้างาน (เริ่ม 05.00 น.)' 
+      }, { status: 403 });
+    }
+
+    // 3. ดึงการตั้งค่าเวลาของ Role นี้ (ถ้ามี) แต่ยึดตามกฎระบบใหม่ "หลัง 08.01 สาย"
+    // ถ้าผู้ใช้ต้องการให้ยืดหยุ่นตามแผนผังเดิม ให้ใช้ limitHours/limitMinutes
+    // แต่จากคำสั่ง: "หลัง 08.01 เข้างานสาย" ผมจะใช้ค่านี้เป็นหลัก
+    const isLate = currentTimeVal > 801; 
     const status = isLate ? 'Late' : 'Present';
 
     // วันที่ของวันนี้ (เวลาประเทศไทย)

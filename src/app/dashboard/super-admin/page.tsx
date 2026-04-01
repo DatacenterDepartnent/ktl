@@ -69,7 +69,9 @@ export default function SuperAdminPage() {
   const [adminProfile, setAdminProfile] = useState<{
     _id: string;
     name: string;
+    role?: string;
   } | null>(null);
+  const [isProfileLoading, setIsProfileLoading] = useState(false);
 
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
@@ -209,10 +211,19 @@ export default function SuperAdminPage() {
 
   const fetchAdminProfile = async () => {
     try {
+      setIsProfileLoading(true);
       const res = await fetch("/api/profile");
-      if (res.ok) setAdminProfile(await res.json());
+      if (res.ok) {
+        const profile = await res.json();
+        setAdminProfile(profile);
+        return profile;
+      }
+      return null;
     } catch (error) {
       console.error("Profile Error:", error);
+      return null;
+    } finally {
+      setIsProfileLoading(false);
     }
   };
 
@@ -268,7 +279,15 @@ export default function SuperAdminPage() {
     newDept: string,
     targetName: string,
   ) => {
-    if (!adminProfile) return toast.error("ACCESS_DENIED");
+    let currentProfile = adminProfile;
+    if (!currentProfile && !isProfileLoading) {
+        currentProfile = await fetchAdminProfile();
+    }
+    
+    if (!currentProfile) {
+        return toast.error("ACCESS_DENIED: กรุณาล็อกอินใหม่เพื่อตรวจสอบสิทธิ์");
+    }
+
     try {
       const res = await fetch(`/api/users/${targetId}`, {
         method: "PATCH",
@@ -276,11 +295,14 @@ export default function SuperAdminPage() {
         body: JSON.stringify({ department: newDept }),
       });
       if (res.ok) {
-        toast.success(`เปลี่ยนสังกัด ${targetName} เรียบร้อย`);
+        toast.success(`ย้ายสังกัด ${targetName} เรียบร้อย`);
         fetchData();
+      } else {
+        const err = await res.json();
+        toast.error(err.error || "ย้ายสังกัดไม่สำเร็จ");
       }
     } catch (error) {
-      toast.error("เปลี่ยนสังกัดไม่สำเร็จ");
+      toast.error("ย้ายสังกัดไม่สำเร็จ");
     }
   };
 
@@ -289,7 +311,15 @@ export default function SuperAdminPage() {
     newRole: string,
     targetName: string,
   ) => {
-    if (!adminProfile) return toast.error("ACCESS_DENIED");
+    let currentProfile = adminProfile;
+    if (!currentProfile && !isProfileLoading) {
+        currentProfile = await fetchAdminProfile();
+    }
+    
+    if (!currentProfile) {
+        return toast.error("ACCESS_DENIED: กรุณาล็อกอินใหม่เพื่อตรวจสอบสิทธิ์");
+    }
+
     try {
       const res = await fetch(`/api/users/${targetId}`, {
         method: "PATCH",
@@ -299,18 +329,29 @@ export default function SuperAdminPage() {
       if (res.ok) {
         toast.success(`เปลี่ยนสิทธิ์ ${targetName} เรียบร้อย`);
         fetchData();
+      } else {
+        const err = await res.json();
+        toast.error(err.error || "เปลี่ยนสิทธิ์ไม่สำเร็จ");
       }
     } catch (error) {
       toast.error("เปลี่ยนสิทธิ์ไม่สำเร็จ");
     }
   };
 
-  const toggleStatus = async (
-    targetId: string,
+  const toggleActive = async (
+    targetId: string, 
     currentStatus: boolean,
-    targetName: string,
+    targetName: string
   ) => {
-    if (!adminProfile) return;
+    let currentProfile = adminProfile;
+    if (!currentProfile && !isProfileLoading) {
+        currentProfile = await fetchAdminProfile();
+    }
+    
+    if (!currentProfile) {
+        return toast.error("ACCESS_DENIED: กรุณาล็อกอินใหม่เพื่อตรวจสอบสิทธิ์");
+    }
+
     try {
       const res = await fetch(`/api/users/${targetId}/status`, {
         method: "PATCH",
@@ -320,10 +361,13 @@ export default function SuperAdminPage() {
       if (res.ok) {
         toast.success(
           !currentStatus
-            ? "เปิดใช้งานผู้ใช้เรียบร้อย"
-            : "ระงับการใช้งานเรียบร้อย",
+            ? `เปิดใช้งาน ${targetName} เรียบร้อย`
+            : `ระงับการใช้งาน ${targetName} เรียบร้อย`,
         );
         fetchData();
+      } else {
+        const err = await res.json();
+        toast.error(err.error || "ดำเนินการไม่สำเร็จ");
       }
     } catch (error) {
       toast.error("ไม่สามารถเปลี่ยนสถานะได้");
@@ -331,6 +375,15 @@ export default function SuperAdminPage() {
   };
 
   const deleteUser = async (targetId: string, targetName: string) => {
+    let currentProfile = adminProfile;
+    if (!currentProfile && !isProfileLoading) {
+        currentProfile = await fetchAdminProfile();
+    }
+    
+    if (!currentProfile) {
+        return toast.error("ACCESS_DENIED: กรุณาล็อกอินใหม่เพื่อตรวจสอบสิทธิ์");
+    }
+
     if (
       !confirm(
         `⚠️ ต้องการลบสมาชิก "${targetName}" ออกจากระบบใช่หรือไม่? ไม่สามารถย้อนกลับได้`,
@@ -345,10 +398,11 @@ export default function SuperAdminPage() {
         toast.success(`ลบ "${targetName}" เรียบร้อย`);
         fetchData();
       } else {
-        toast.error("ลบสมาชิกไม่สำเร็จ");
+        const err = await res.json();
+        toast.error(err.error || "ลบสมาชิกไม่สำเร็จ");
       }
     } catch (error) {
-      toast.error("เกิดข้อผิดพลาด");
+      toast.error("เกิดข้อผิดพลาดในการลบสมาชิก");
     }
   };
 
@@ -874,7 +928,7 @@ export default function SuperAdminPage() {
                       <td className="p-4 text-center">
                         <button
                           onClick={() =>
-                            toggleStatus(user._id, user.isActive, user.name)
+                            toggleActive(user._id, user.isActive, user.name)
                           }
                           className={`h-8 w-14 rounded-full transition-all relative p-1 shadow-inner ${user.isActive ? "bg-emerald-500/20 border border-emerald-500/30" : "bg-slate-200 dark:bg-zinc-800 border border-slate-300 dark:border-zinc-700"}`}
                         >

@@ -36,7 +36,35 @@ export async function POST(req: Request) {
 
     // Thailand is UTC+7
     const thTime = new Date(serverTime.getTime() + (7 * 60 * 60 * 1000));
-    
+    const thHours = thTime.getUTCHours();
+    const thMinutes = thTime.getUTCMinutes();
+    const currentTimeVal = thHours * 100 + thMinutes;
+
+    // ⛔ 1. ตรวจสอบช่วงเวลาปิดระบบ (18:01 - 04:59)
+    if (currentTimeVal >= 1801 || currentTimeVal < 500) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'ขณะนี้อยู่นอกเวลาให้บริการ (ระบบปิดระหว่าง 18.01 - 04.59 น.)' 
+      }, { status: 403 });
+    }
+
+    // ⛔ 2. ตรวจสอบเวลาออกงาน (ห้ามออกก่อน 16.29, เริ่ม 16.30)
+    // "ไม่ให้กดออกจากงานได้ก่อนเวลา 16.29 ออกจากงาน 16.30"
+    if (currentTimeVal < 1630) {
+      return NextResponse.json({ 
+        success: false, 
+        message: 'ยังไม่ถึงเวลาลงเวลาออกงาน (ลงได้ตั้งแต่ 16.30 น. เป็นต้นไป)' 
+      }, { status: 403 });
+    }
+
+    // ⛔ 3. ตรวจสอบเวลาคัทออฟการออกงาน (หลัง 18.00 ไม่ให้ลงเวลาออก)
+    if (currentTimeVal > 1800) {
+       return NextResponse.json({ 
+        success: false, 
+        message: 'เลยเวลาลงเวลาออกงานแล้ว (สิ้นสุด 18.00 น.) โปรดติดต่อเจ้าหน้าที่' 
+      }, { status: 403 });
+    }
+
     // วันที่ของวันนี้ (เวลาประเทศไทย)
     const today = new Date(thTime);
     today.setUTCHours(0, 0, 0, 0);

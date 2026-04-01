@@ -161,7 +161,7 @@ export default function FeedManagementPage() {
           <div className="lg:col-span-1">
             <form
               onSubmit={handleSubmit}
-              className="bg-white p-6 rounded-[2rem] shadow-xl border border-slate-100 sticky top-10"
+              className="bg-white p-6 rounded-4xl shadow-xl border border-slate-100 sticky top-10"
             >
               <h2 className="font-black uppercase text-xs tracking-widest text-slate-400 mb-6 flex items-center gap-2">
                 <FiPlus className="text-blue-600" strokeWidth={3} /> Add Content
@@ -231,7 +231,7 @@ export default function FeedManagementPage() {
 
                 <button
                   disabled={isSubmitting}
-                  className="w-full bg-slate-900 text-white py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-[0.2em] hover:bg-blue-600 transition-all shadow-xl active:scale-95 disabled:opacity-50"
+                  className="w-full bg-slate-900 text-white py-5 rounded-3xl font-black text-xs uppercase tracking-[0.2em] hover:bg-blue-600 transition-all shadow-xl active:scale-95 disabled:opacity-50"
                 >
                   {isSubmitting ? (
                     <FiLoader className="animate-spin mx-auto" />
@@ -255,7 +255,7 @@ export default function FeedManagementPage() {
               feeds.map((feed) => (
                 <div
                   key={feed._id}
-                  className="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 flex flex-col md:flex-row items-center justify-between group hover:shadow-xl hover:border-blue-100 transition-all duration-300 gap-4"
+                  className="bg-white p-6 rounded-4xl shadow-sm border border-slate-100 flex flex-col md:flex-row items-center justify-between group hover:shadow-xl hover:border-blue-100 transition-all duration-300 gap-4"
                 >
                   <div className="flex items-center gap-5 w-full">
                     <div

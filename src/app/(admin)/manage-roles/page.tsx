@@ -53,56 +53,37 @@ export default function ManageRolesPage() {
   const { data: session } = useSession();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isMoreLoading, setIsMoreLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
-  const [total, setTotal] = useState(0);
 
   const currentUserRole = (session?.user as any)?.role;
   const isSuperAdmin = currentUserRole === "super_admin";
 
-  const fetchData = async (p = 1, q = "", isLoadMore = false) => {
+  const fetchData = async (q = "") => {
     try {
-      if (!isLoadMore) setLoading(true);
-      else setIsMoreLoading(true);
-
-      const res = await fetch(`/api/admin/users?page=${p}&search=${q}&_t=${Date.now()}`);
+      setLoading(true);
+      const res = await fetch(`/api/admin/users?all=true&search=${q}&_t=${Date.now()}`);
       if (res.ok) {
         const data = await res.json();
-        if (isLoadMore) {
-          setUsers((prev) => [...prev, ...data.users]);
-        } else {
-          setUsers(data.users);
-        }
-        setTotal(data.total);
-        setHasMore(data.hasMore);
-        setPage(data.page);
+        setUsers(data.users);
       }
     } catch (error) {
       toast.error("โหลดข้อมูลไม่สำเร็จ");
     } finally {
       setLoading(false);
-      setIsMoreLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchData(1, "");
+    fetchData("");
   }, []);
 
   // Debounced Search
   useEffect(() => {
     const timer = setTimeout(() => {
-      fetchData(1, searchQuery);
+      fetchData(searchQuery);
     }, 500);
     return () => clearTimeout(timer);
   }, [searchQuery]);
-
-  const loadMore = () => {
-    if (!hasMore || isMoreLoading) return;
-    fetchData(page + 1, searchQuery, true);
-  };
 
   const changeRole = async (
     targetId: string,
@@ -151,7 +132,7 @@ export default function ManageRolesPage() {
             borderRadius: "1rem",
           },
         });
-        fetchData(1, searchQuery); // Re-fetch current state
+        fetchData(searchQuery); // Re-fetch current state
       }
     } catch (error) {
       toast.error("เปลี่ยนสังกัดไม่สำเร็จ");
@@ -526,29 +507,6 @@ export default function ManageRolesPage() {
             );
           })}
         </motion.div>
-
-        {/* Load More Section */}
-        {hasMore && (
-           <div className="pt-12 text-center">
-              <button
-                onClick={loadMore}
-                disabled={isMoreLoading}
-                className="inline-flex items-center gap-3 bg-white dark:bg-zinc-900 px-8 py-4 rounded-3xl border border-zinc-200 dark:border-zinc-800 text-sm font-black text-slate-800 dark:text-zinc-200 hover:bg-slate-50 dark:hover:bg-zinc-800 hover:shadow-xl hover:shadow-blue-500/5 transition-all active:scale-95 disabled:opacity-50"
-              >
-                {isMoreLoading ? (
-                   <>
-                    <Loader2 size={18} className="animate-spin text-blue-500" />
-                    <span>กำลังโหลดเพิ่ม...</span>
-                   </>
-                ) : (
-                   <>
-                    <RefreshCcw size={18} className="text-blue-500" />
-                    <span>โหลดข้อมูลเพิ่มเติม (แสดง {users.length} จาก {total})</span>
-                   </>
-                )}
-              </button>
-           </div>
-        )}
 
         <AnimatePresence>
           {filteredUsers.length === 0 && (

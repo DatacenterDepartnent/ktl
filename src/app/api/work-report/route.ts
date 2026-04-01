@@ -126,16 +126,34 @@ export async function GET(req: Request) {
       });
     }
 
-    // Case 2: Fetch single report for a specific date and user
-    let queryDate: Date;
-    if (dateParam) {
-      queryDate = new Date(dateParam);
-    } else {
-      queryDate = new Date();
-    }
-    queryDate.setUTCHours(0, 0, 0, 0);
-
+    // Case 2: Fetch specific report for a date OR Fetch all history for current user
     const queryUserId = targetUserId || userId;
+
+    if (!dateParam && !startDateParam) {
+      // User history mode
+      const reports = await db.collection("work_reports")
+        .find({ userId: new ObjectId(queryUserId) })
+        .sort({ date: -1, createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .toArray();
+
+      const total = await db.collection("work_reports").countDocuments({
+        userId: new ObjectId(queryUserId),
+      });
+
+      return NextResponse.json({
+        success: true,
+        data: reports.map(r => ({ ...r, id: r._id.toString() })),
+        total,
+        page,
+        limit,
+        hasMore: total > skip + reports.length
+      });
+    }
+
+    let queryDate: Date = new Date(dateParam || new Date());
+    queryDate.setUTCHours(0, 0, 0, 0);
 
     // Security: Only allow fetching own report unless admin
     const allowedRoles = [
@@ -252,35 +270,41 @@ export async function PATCH(req: Request) {
   try {
     const session = await auth();
     const userRole = (session?.user as any)?.role;
-    if (userRole !== "super_admin") {
-      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
-    }
+    const userId = (session?.user as any)?.id;
+
+    if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const data = await req.json();
-    const { id, activities, summary, problems, plansNextDay } = data;
-
-    if (!id)
-      return NextResponse.json({ error: "Missing report ID" }, { status: 400 });
+    const { id, activities, summary, problems, plansNextDay, images } = data;
+    if (!id) return NextResponse.json({ error: "Missing report ID" }, { status: 400 });
 
     const client = await clientPromise;
     const db = client.db("ktltc_db");
 
+    // Security: Check if user owns the report OR is super_admin
+    const existingReport = await db.collection("work_reports").findOne({ _id: new ObjectId(id) });
+    if (!existingReport) return NextResponse.json({ error: "Report not found" }, { status: 404 });
+
+    const isOwner = (existingReport.userId as ObjectId).toString() === userId;
+
+    if (!isOwner && userRole !== "super_admin") {
+      return NextResponse.json({ error: "Forbidden: Not authorized to edit this report" }, { status: 403 });
+    }
+
+    const updates: any = {
+      activities,
+      summary,
+      problems,
+      plansNextDay,
+      updatedAt: new Date(),
+    };
+
+    if (images) updates.images = images;
+
     const result = await db.collection("work_reports").updateOne(
       { _id: new ObjectId(id) },
-      {
-        $set: {
-          activities,
-          summary,
-          problems,
-          plansNextDay,
-          updatedAt: new Date(),
-        },
-      },
+      { $set: updates }
     );
-
-    if (result.matchedCount === 0) {
-      return NextResponse.json({ error: "Report not found" }, { status: 404 });
-    }
 
     return NextResponse.json({
       success: true,

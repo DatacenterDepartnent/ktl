@@ -5,7 +5,18 @@ import bcrypt from "bcryptjs";
 import { auth } from "@/lib/auth";
 
 const PROTECTED_ROLES = ["super_admin", "editor", "admin", "director"];
-const ALLOWED_ADMIN_ROLES = ["super_admin", "admin", "hr", "director", "deputy_resource", "editor", "staff"];
+const ALLOWED_ADMIN_ROLES = [
+  "super_admin",
+  "admin",
+  "hr",
+  "director",
+  "deputy_resource",
+  "deputy_strategy",
+  "deputy_academic",
+  "deputy_student_affairs",
+  "editor",
+  "staff"
+];
 
 export async function PATCH(
   req: Request,
@@ -33,16 +44,17 @@ export async function PATCH(
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    const currentUserRole = (session.user as any)?.role;
+    const currentUserRole = String((session.user as any)?.role || "").toLowerCase().trim();
     const isSuperAdmin = currentUserRole === "super_admin";
-
+ 
     // 🔒 Ensure the current user has administrative permissions
     if (!ALLOWED_ADMIN_ROLES.includes(currentUserRole)) {
       return NextResponse.json({ error: "Access Denied: Administrative role required." }, { status: 403 });
     }
-
+ 
     // 🚫 Check if target user has a protected role and current user is NOT super_admin
-    if (!isSuperAdmin && PROTECTED_ROLES.includes(targetUser.role)) {
+    const targetRole = String(targetUser.role || "").toLowerCase().trim();
+    if (!isSuperAdmin && PROTECTED_ROLES.includes(targetRole)) {
       return NextResponse.json(
         { error: "ACCESS_DENIED: Cannot modify high-level administrative accounts." },
         { status: 403 }
