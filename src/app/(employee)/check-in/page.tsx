@@ -654,7 +654,7 @@ function CheckInContent() {
                 >
                   <Link
                     href={isCheckIn ? "/wfh" : "/work-report"}
-                    className="w-full bg-slate-950 dark:bg-white text-white dark:text-slate-950 py-4 md:py-6 rounded-3xl md:rounded-[2rem] font-black text-xs md:text-sm uppercase tracking-[0.2em] text-center shadow-2xl block border border-transparent dark:hover:bg-zinc-100 transition-all"
+                    className="w-full bg-slate-950 dark:bg-white text-white dark:text-slate-950 py-4 md:py-6 rounded-3xl md:rounded-4xl font-black text-xs md:text-sm uppercase tracking-[0.2em] text-center shadow-2xl block border border-transparent dark:hover:bg-zinc-100 transition-all"
                   >
                     {isCheckIn ? "Go to Dashboard" : "Create Work Report"}
                   </Link>
@@ -735,7 +735,7 @@ function CheckInContent() {
               className="mt-2 md:mt-4 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-3xl rounded-[2.5rem] md:rounded-[3.5rem] p-4 md:p-8 shadow-[0_32px_64px_-16px_rgba(0,0,0,0.12)] border border-white dark:border-zinc-800 flex-1 overflow-hidden flex flex-col"
             >
               {/* Video Feed Glass Container */}
-              <div className="w-full aspect-square bg-slate-900 rounded-[2rem] md:rounded-[3rem] overflow-hidden relative mb-4 md:mb-8 shadow-2xl border-4 border-white dark:border-zinc-800 group shrink-0">
+              <div className="w-full aspect-square bg-slate-900 rounded-4xl md:rounded-[3rem] overflow-hidden relative mb-4 md:mb-8 shadow-2xl border-4 border-white dark:border-zinc-800 group shrink-0">
                 <video
                   ref={videoRef}
                   autoPlay
@@ -772,7 +772,7 @@ function CheckInContent() {
               <div className="space-y-2 md:space-y-4 mb-4 md:mb-10">
                 {/* GPS Telemetry Badge */}
                 <div
-                  className={`flex items-center justify-between p-3 md:p-5 rounded-[1.5rem] md:rounded-[2.5rem] border transition-all duration-500 ${locationStatus === "found" ? "bg-emerald-500/5 border-emerald-500/20 shadow-inner" : "bg-slate-50 dark:bg-zinc-800/30 border-slate-100 dark:border-zinc-800"}`}
+                  className={`flex items-center justify-between p-3 md:p-5 rounded-3xl md:rounded-[2.5rem] border transition-all duration-500 ${locationStatus === "found" ? "bg-emerald-500/5 border-emerald-500/20 shadow-inner" : "bg-slate-50 dark:bg-zinc-800/30 border-slate-100 dark:border-zinc-800"}`}
                 >
                   <div className="flex items-center gap-3 md:gap-5">
                     <div className="relative shrink-0">
