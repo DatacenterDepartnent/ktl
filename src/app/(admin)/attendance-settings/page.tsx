@@ -19,6 +19,7 @@ interface RoleSetting {
   checkOutEnd?: string;
   systemLockStart?: string;
   systemLockEnd?: string;
+  closedDays?: number[];
 }
 
 export default function AttendanceSettingsPage() {
@@ -269,6 +270,64 @@ export default function AttendanceSettingsPage() {
                       );
                     }}
                   />
+                </div>
+              </div>
+
+              <div className="md:col-span-2 space-y-6 pt-8 border-t border-zinc-100 dark:border-zinc-800">
+                <h3 className="text-sm font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 dark:bg-indigo-950/20 px-3 py-1 rounded-lg inline-block">
+                  วันปิดระบบ (System Closure Days)
+                </h3>
+                <p className="text-xs font-bold text-zinc-400 -mt-4 ml-1">
+                  เลือกวันที่ต้องการระงับการใช้งานระบบ (พนักงานจะไม่สามารถลงเวลาได้ในวันที่เลือก)
+                </p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3">
+                  {[
+                    "อาทิตย์",
+                    "จันทร์",
+                    "อังคาร",
+                    "พุธ",
+                    "พฤหัสบดี",
+                    "ศุกร์",
+                    "เสาร์",
+                  ].map((day, idx) => {
+                    const isSelected = (globalSetting.closedDays || []).includes(
+                      idx,
+                    );
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          const current = globalSetting.closedDays || [];
+                          const next = isSelected
+                            ? current.filter((d) => d !== idx)
+                            : [...current, idx];
+                          setSettings(
+                            settings.map((s) =>
+                              s.role === "system_global"
+                                ? { ...s, closedDays: next }
+                                : s,
+                            ),
+                          );
+                        }}
+                        className={`flex flex-col items-center justify-center p-4 rounded-3xl border-2 transition-all ${
+                          isSelected
+                            ? "bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-400 dark:text-indigo-300"
+                            : "bg-zinc-50 border-zinc-50 dark:bg-zinc-800/50 dark:border-zinc-800 text-zinc-400 dark:text-zinc-500 hover:border-zinc-200 dark:hover:border-zinc-700"
+                        }`}
+                      >
+                        <span className="text-[10px] font-black uppercase mb-2 tracking-tighter">
+                          {day}
+                        </span>
+                        <div
+                          className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${isSelected ? "bg-indigo-500 border-indigo-400 shadow-lg shadow-indigo-500/20" : "bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-700"}`}
+                        >
+                          {isSelected && (
+                            <div className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+                          )}
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>

@@ -195,7 +195,7 @@ export default function MobileMenu({
               </div>
 
               {/* Restore Member Management and Admin Sections */}
-              <div className="pt-4 pb-8 space-y-3 border-t border-zinc-100 dark:border-zinc-800 mt-4">
+              {/* <div className="pt-4 pb-8 space-y-3 border-t border-zinc-100 dark:border-zinc-800 mt-4">
                 {status === "loading" ? (
                   <div className="text-center py-4 text-zinc-500">
                     กำลังโหลด...
@@ -229,7 +229,7 @@ export default function MobileMenu({
                     </div>
 
 
-                    {/* 1. Dashboard (General for Admin/Editor) */}
+                   // 1. Dashboard (General for Admin/Editor) 
                     {(userRole === "super_admin" ||
                       userRole === "admin" ||
                       userRole === "editor") && (
@@ -242,7 +242,7 @@ export default function MobileMenu({
                       </Link>
                     )}
 
-                    {/* 2. Systems Control Section */}
+                   2. Systems Control Section 
                     {(userRole === "super_admin" ||
                       userRole === "admin" ||
                       userRole === "hr" ||
@@ -320,7 +320,7 @@ export default function MobileMenu({
                       </div>
                     )}
 
-                    {/* 3. Super Admin Specialized Systems */}
+                   3. Super Admin Specialized Systems 
                     {userRole === "super_admin" && (
                       <div className="flex flex-col gap-2 mt-4 pt-4 border-t-2 border-zinc-100 dark:border-zinc-800">
                         <p className="text-[10px] font-black text-rose-500 uppercase tracking-widest text-center mb-1">
@@ -369,7 +369,7 @@ export default function MobileMenu({
                     เข้าสู่ระบบ / Admin
                   </Link>
                 )}
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

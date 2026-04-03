@@ -229,6 +229,68 @@ export default function NavbarClient({
                       </p>
                     </div>
 
+                    {/* WFH Link - Refined Executive Style */}
+                    <Link
+                      href="/wfh"
+                      className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10 rounded-xl transition-all group"
+                    >
+                      <div className="p-1.5 rounded-lg bg-orange-100 dark:bg-orange-900/30 group-hover:bg-orange-200 transition-colors">
+                        <FileText size={16} />
+                      </div>
+                      รายงานการปฏิบัติงาน (WFH)
+                    </Link>
+
+                    {(isSuperAdmin ||
+                      role?.toLowerCase() === "admin" ||
+                      role?.toLowerCase() === "editor") && (
+                      <Link
+                        href="/dashboard"
+                        className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-all group"
+                      >
+                        <div className="p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 transition-colors">
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+                            />
+                          </svg>
+                        </div>
+                        Dashboard
+                      </Link>
+                    )}
+
+                    <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/50" />
+                    <Link
+                      href="/dashboard/profile"
+                      className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all group"
+                    >
+                      <div className="p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 group-hover:bg-zinc-200 dark:group-hover:bg-zinc-700 transition-colors">
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                          />
+                        </svg>
+                      </div>
+                      โปรไฟล์ส่วนตัว
+                    </Link>
+
+                    <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/50" />
+
                     {/* ✅ เมนูเฉพาะ Super Admin */}
                     {isSuperAdmin && (
                       <>
@@ -417,69 +479,7 @@ export default function NavbarClient({
                       </>
                     )}
 
-                    {(isSuperAdmin ||
-                      role?.toLowerCase() === "admin" ||
-                      role?.toLowerCase() === "editor") && (
-                      <Link
-                        href="/dashboard"
-                        className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-blue-50 dark:hover:bg-blue-500/10 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-all group"
-                      >
-                        <div className="p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 group-hover:bg-blue-100 dark:group-hover:bg-blue-900/30 transition-colors">
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
-                            />
-                          </svg>
-                        </div>
-                        Dashboard
-                      </Link>
-                    )}
-
                     <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/50"></div>
-
-                    {/* WFH Link - Refined Executive Style */}
-                    <Link
-                      href="/wfh"
-                      className="flex items-center gap-3 px-3 py-2.5 text-sm font-bold text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10 rounded-xl transition-all group"
-                    >
-                      <div className="p-1.5 rounded-lg bg-orange-100 dark:bg-orange-900/30 group-hover:bg-orange-200 transition-colors">
-                        <FileText size={16} />
-                      </div>
-                      รายงานการปฏิบัติงาน (WFH)
-                    </Link>
-
-                    <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/50" />
-                    <Link
-                      href="/dashboard/profile"
-                      className="flex items-center gap-3 px-3 py-2.5 text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl transition-all group"
-                    >
-                      <div className="p-1.5 rounded-lg bg-zinc-100 dark:bg-zinc-800 group-hover:bg-zinc-200 dark:group-hover:bg-zinc-700 transition-colors">
-                        <svg
-                          className="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                          />
-                        </svg>
-                      </div>
-                      โปรไฟล์ส่วนตัว
-                    </Link>
-
-                    <div className="my-1 border-t border-zinc-100 dark:border-zinc-800/50" />
 
                     <button
                       onClick={handleLogout}

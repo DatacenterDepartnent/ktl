@@ -47,6 +47,7 @@ interface RoleSetting {
   checkOutEnd?: string;
   systemLockStart?: string;
   systemLockEnd?: string;
+  closedDays?: number[];
 }
 
 function CheckInContent() {
@@ -163,13 +164,29 @@ function CheckInContent() {
       let msg = "";
       let canAction = true;
 
+      // 0. Closed Days Check (วันปิดระบบ)
+      const closedDays = global?.closedDays || [];
+      const thDay = thNow.getUTCDay();
+      if (closedDays.includes(thDay)) {
+        const dayNames = [
+          "อาทิตย์",
+          "จันทร์",
+          "อังคาร",
+          "พุธ",
+          "พฤหัสบดี",
+          "ศุกร์",
+          "เสาร์",
+        ];
+        locked = true;
+        msg = `วันนี้เป็นวัน${dayNames[thDay]} ซึ่งเป็นวันปิดระบบ ไม่สามารถลงเวลาได้`;
+        canAction = false;
+      }
       // A. System Lockout (กรณีข้ามคืน หรือ ปกติ)
-      const isSystemLocked =
+      else if (
         rules.lockStart > rules.lockEnd
           ? val >= rules.lockStart || val < rules.lockEnd
-          : val >= rules.lockStart && val < rules.lockEnd;
-
-      if (isSystemLocked) {
+          : val >= rules.lockStart && val < rules.lockEnd
+      ) {
         locked = true;
         msg = `ขณะนี้อยู่นอกเวลาให้บริการ (ระบบปิดระหว่าง ${config.lockStart} - ${config.lockEnd} น.)`;
         canAction = false;

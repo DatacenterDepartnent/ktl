@@ -79,6 +79,28 @@ export async function POST(req: Request) {
     const lockEnd = toNum(config.systemLockEnd);
     const inStart = toNum(config.checkInStart);
     const lateLimit = toNum(config.lateThreshold);
+    const thDay = thTime.getUTCDay(); // 0=Sunday, 1=Monday...
+
+    // ⛔ 0. ตรวจสอบวันปิดระบบ (Closed Days)
+    const closedDays = globalSetting?.closedDays || [];
+    if (closedDays.includes(thDay)) {
+      const dayNames = [
+        "อาทิตย์",
+        "จันทร์",
+        "อังคาร",
+        "พุธ",
+        "พฤหัสบดี",
+        "ศุกร์",
+        "เสาร์",
+      ];
+      return NextResponse.json(
+        {
+          success: false,
+          message: `วันนี้เป็นวัน${dayNames[thDay]} ซึ่งเป็นวันปิดระบบ ไม่สามารถลงเวลาได้`,
+        },
+        { status: 403 },
+      );
+    }
 
     // ⛔ 1. ตรวจสอบช่วงเวลาปิดระบบ (System Lockout)
     // กรณีข้ามคืน (เช่น 18:01 ถึง 04:59)
