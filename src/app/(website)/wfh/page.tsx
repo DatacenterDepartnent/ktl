@@ -216,79 +216,77 @@ export default function WFHHubPage() {
           <h3 className="text-[10px] font-black text-slate-400 dark:text-zinc-600 uppercase tracking-[0.3em] mb-2 px-6">
             เมนูเพิ่มเติม (Management)
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Link href="/leave-request" className="block h-full">
-                <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 p-6 rounded-4xl flex items-center gap-4 transition shadow-xl shadow-slate-200/50 dark:shadow-black/20 group hover:border-indigo-200 dark:hover:border-indigo-900/40">
-                  <div className="bg-indigo-50 dark:bg-indigo-500/10 p-4 rounded-2xl text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white transition-all shadow-sm">
-                    <CalendarDays size={24} />
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Link href="/leave-request" className="block h-full">
+              <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 p-6 rounded-4xl flex items-center gap-4 transition shadow-xl shadow-slate-200/50 dark:shadow-black/20 group hover:border-indigo-200 dark:hover:border-indigo-900/40">
+                <div className="bg-indigo-50 dark:bg-indigo-500/10 p-4 rounded-2xl text-indigo-500 group-hover:bg-indigo-500 group-hover:text-white transition-all shadow-sm">
+                  <CalendarDays size={24} />
+                </div>
+                <div className="text-left">
+                  <h2 className="font-black text-lg text-slate-800 dark:text-white uppercase tracking-tight line-none">
+                    แจ้งลางาน
+                  </h2>
+                  <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">
+                    Leave Request
+                  </p>
+                </div>
+              </div>
+            </Link>
+          </motion.div>
+
+          <motion.div
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="sm:col-span-2"
+          >
+            <Link href="/work-report" className="block h-full">
+              <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 p-6 rounded-4xl flex items-center justify-between transition shadow-xl shadow-slate-200/50 dark:shadow-black/20 group hover:border-blue-200 dark:hover:border-blue-900/60 overflow-hidden relative">
+                <div className="absolute right-0 top-0 p-6 opacity-0 group-hover:opacity-5 transition-all group-hover:rotate-12 translate-x-4 -translate-y-4">
+                  <ClipboardList size={120} className="text-blue-500" />
+                </div>
+                <div className="flex items-center gap-6 relative z-10">
+                  <div className="bg-blue-50 dark:bg-blue-500/10 p-5 rounded-3xl text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all shadow-sm">
+                    <FileText size={28} />
                   </div>
-                  <div className="text-left">
-                    <h2 className="font-black text-lg text-slate-800 dark:text-white uppercase tracking-tight line-none">
-                      แจ้งลางาน
+                  <div className="text-left space-y-1">
+                    <h2 className="font-black text-xl text-slate-800 dark:text-zinc-100 uppercase tracking-tight">
+                      แบบสรุปรายงานผลการปฏิบัติงาน
                     </h2>
-                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">
-                      Leave Request
+                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest leading-none">
+                      Daily activity & Project reporting
                     </p>
                   </div>
                 </div>
-              </Link>
-            </motion.div>
-
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Link href="/wfh/history" className="block h-full">
-                <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 p-6 rounded-4xl flex items-center gap-4 transition shadow-xl shadow-slate-200/50 dark:shadow-black/20 group hover:border-pink-200 dark:hover:border-pink-900/40">
-                  <div className="bg-pink-50 dark:bg-pink-500/10 p-4 rounded-2xl text-pink-500 group-hover:bg-pink-500 group-hover:text-white transition-all shadow-sm">
-                    <History size={24} />
-                  </div>
-                  <div className="text-left">
-                    <h2 className="font-black text-lg text-slate-800 dark:text-white uppercase tracking-tight">
-                      ประวัติของฉัน
-                    </h2>
-                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">
-                      My History
-                    </p>
-                  </div>
+                <div className="bg-blue-500 text-white p-2.5 rounded-full shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform relative z-10">
+                  <Plus size={20} />
                 </div>
-              </Link>
-            </motion.div>
+              </div>
+            </Link>
+          </motion.div>
 
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="sm:col-span-2"
-            >
-              <Link href="/work-report" className="block h-full">
-                <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 p-6 rounded-4xl flex items-center justify-between transition shadow-xl shadow-slate-200/50 dark:shadow-black/20 group hover:border-blue-200 dark:hover:border-blue-900/60 overflow-hidden relative">
-                  <div className="absolute right-0 top-0 p-6 opacity-0 group-hover:opacity-5 transition-all group-hover:rotate-12 translate-x-4 -translate-y-4">
-                    <ClipboardList size={120} className="text-blue-500" />
-                  </div>
-                  <div className="flex items-center gap-6 relative z-10">
-                    <div className="bg-blue-50 dark:bg-blue-500/10 p-5 rounded-3xl text-blue-500 group-hover:bg-blue-500 group-hover:text-white transition-all shadow-sm">
-                      <FileText size={28} />
-                    </div>
-                    <div className="text-left space-y-1">
-                      <h2 className="font-black text-xl text-slate-800 dark:text-zinc-100 uppercase tracking-tight">
-                        แบบสรุปรายงานผลการปฏิบัติงาน
-                      </h2>
-                      <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest leading-none">
-                        Daily activity & Project reporting
-                      </p>
-                    </div>
-                  </div>
-                  <div className="bg-blue-500 text-white p-2.5 rounded-full shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform relative z-10">
-                    <Plus size={20} />
-                  </div>
+          <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+            <Link href="/wfh/history" className="block h-full">
+              <div className="bg-white dark:bg-zinc-900 border border-slate-100 dark:border-zinc-800 p-6 rounded-4xl flex items-center gap-4 transition shadow-xl shadow-slate-200/50 dark:shadow-black/20 group hover:border-pink-200 dark:hover:border-pink-900/40">
+                <div className="bg-pink-50 dark:bg-pink-500/10 p-4 rounded-2xl text-pink-500 group-hover:bg-pink-500 group-hover:text-white transition-all shadow-sm">
+                  <History size={24} />
                 </div>
-              </Link>
-            </motion.div>
-          </div>
+                <div className="text-left">
+                  <h2 className="font-black text-lg text-slate-800 dark:text-white uppercase tracking-tight">
+                    ประวัติของฉัน
+                  </h2>
+                  <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1">
+                    My History
+                  </p>
+                </div>
+              </div>
+            </Link>
+          </motion.div>
+        </div>
 
-          <div className="pt-10 pb-6 text-center">
-            <p className="text-[10px] text-slate-300 dark:text-zinc-700 font-black uppercase tracking-[0.4em]">
-              KTL Management System • Workplace Portal
-            </p>
-          </div>
+        <div className="pt-10 pb-6 text-center">
+          <p className="text-[10px] text-slate-300 dark:text-zinc-700 font-black uppercase tracking-[0.4em]">
+            KTL Management System • Workplace Portal
+          </p>
         </div>
       </div>
     </div>
